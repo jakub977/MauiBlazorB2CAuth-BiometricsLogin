@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Principal.Telemedicine.BaseApi", "Principal.Telemedicine.BaseApi\Principal.Telemedicine.BaseApi.csproj", "{A6AE70CD-D6FD-4627-97F5-46E97F7E7FCD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Principal.Telemedicine.BaseApi", "Principal.Telemedicine.BaseApi\Principal.Telemedicine.BaseApi.csproj", "{A6AE70CD-D6FD-4627-97F5-46E97F7E7FCD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Principal.Telemedicine.WebApp", "Principal.Telemedicine.WebApp\Principal.Telemedicine.WebApp.csproj", "{7469822C-0F00-49C9-B55B-9359E3CBE1E1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{A6AE70CD-D6FD-4627-97F5-46E97F7E7FCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6AE70CD-D6FD-4627-97F5-46E97F7E7FCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A6AE70CD-D6FD-4627-97F5-46E97F7E7FCD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7469822C-0F00-49C9-B55B-9359E3CBE1E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7469822C-0F00-49C9-B55B-9359E3CBE1E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7469822C-0F00-49C9-B55B-9359E3CBE1E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7469822C-0F00-49C9-B55B-9359E3CBE1E1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
