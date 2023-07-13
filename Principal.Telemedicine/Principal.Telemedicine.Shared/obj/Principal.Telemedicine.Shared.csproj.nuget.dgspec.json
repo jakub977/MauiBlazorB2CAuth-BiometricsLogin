@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Project\\Refactor\\Principal.Telemedicine\\Principal.Telemedicine.Shared\\Principal.Telemedicine.Shared.csproj": {}
+    "C:\\DEV23\\Refactoring\\Principal.Telemedicine\\Principal.Telemedicine.Shared\\Principal.Telemedicine.Shared.csproj": {}
   },
   "projects": {
-    "C:\\Project\\Refactor\\Principal.Telemedicine\\Principal.Telemedicine.Shared\\Principal.Telemedicine.Shared.csproj": {
+    "C:\\DEV23\\Refactoring\\Principal.Telemedicine\\Principal.Telemedicine.Shared\\Principal.Telemedicine.Shared.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Project\\Refactor\\Principal.Telemedicine\\Principal.Telemedicine.Shared\\Principal.Telemedicine.Shared.csproj",
+        "projectUniqueName": "C:\\DEV23\\Refactoring\\Principal.Telemedicine\\Principal.Telemedicine.Shared\\Principal.Telemedicine.Shared.csproj",
         "projectName": "Principal.Telemedicine.Shared",
-        "projectPath": "C:\\Project\\Refactor\\Principal.Telemedicine\\Principal.Telemedicine.Shared\\Principal.Telemedicine.Shared.csproj",
-        "packagesPath": "C:\\Users\\admin\\.nuget\\packages\\",
-        "outputPath": "C:\\Project\\Refactor\\Principal.Telemedicine\\Principal.Telemedicine.Shared\\obj\\",
+        "projectPath": "C:\\DEV23\\Refactoring\\Principal.Telemedicine\\Principal.Telemedicine.Shared\\Principal.Telemedicine.Shared.csproj",
+        "packagesPath": "C:\\Users\\vvaculova\\.nuget\\packages\\",
+        "outputPath": "C:\\DEV23\\Refactoring\\Principal.Telemedicine\\Principal.Telemedicine.Shared\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\vvaculova\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -49,7 +49,8 @@
             "net47",
             "net471",
             "net472",
-            "net48"
+            "net48",
+            "net481"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -58,7 +59,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.313\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     }

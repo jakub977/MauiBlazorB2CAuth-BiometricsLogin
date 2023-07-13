@@ -1,0 +1,12 @@
+C:\DEV23\Refactoring\Principal.Telemedicine\Principal.Telemedicine.B2CApi\obj\Release\net7.0\PubTmp\Out\Principal.Telemedicine.B2CApi.exe
+C:\DEV23\Refactoring\Principal.Telemedicine\Principal.Telemedicine.B2CApi\obj\Release\net7.0\PubTmp\Out\appsettings.Development.json
+C:\DEV23\Refactoring\Principal.Telemedicine\Principal.Telemedicine.B2CApi\obj\Release\net7.0\PubTmp\Out\appsettings.json
+C:\DEV23\Refactoring\Principal.Telemedicine\Principal.Telemedicine.B2CApi\obj\Release\net7.0\PubTmp\Out\Principal.Telemedicine.B2CApi.dll
+C:\DEV23\Refactoring\Principal.Telemedicine\Principal.Telemedicine.B2CApi\obj\Release\net7.0\PubTmp\Out\Principal.Telemedicine.B2CApi.deps.json
+C:\DEV23\Refactoring\Principal.Telemedicine\Principal.Telemedicine.B2CApi\obj\Release\net7.0\PubTmp\Out\Principal.Telemedicine.B2CApi.runtimeconfig.json
+C:\DEV23\Refactoring\Principal.Telemedicine\Principal.Telemedicine.B2CApi\obj\Release\net7.0\PubTmp\Out\Principal.Telemedicine.B2CApi.pdb
+C:\DEV23\Refactoring\Principal.Telemedicine\Principal.Telemedicine.B2CApi\obj\Release\net7.0\PubTmp\Out\Microsoft.AspNetCore.OpenApi.dll
+C:\DEV23\Refactoring\Principal.Telemedicine\Principal.Telemedicine.B2CApi\obj\Release\net7.0\PubTmp\Out\Microsoft.OpenApi.dll
+C:\DEV23\Refactoring\Principal.Telemedicine\Principal.Telemedicine.B2CApi\obj\Release\net7.0\PubTmp\Out\Swashbuckle.AspNetCore.Swagger.dll
+C:\DEV23\Refactoring\Principal.Telemedicine\Principal.Telemedicine.B2CApi\obj\Release\net7.0\PubTmp\Out\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\DEV23\Refactoring\Principal.Telemedicine\Principal.Telemedicine.B2CApi\obj\Release\net7.0\PubTmp\Out\Swashbuckle.AspNetCore.SwaggerUI.dll

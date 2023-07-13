@@ -7,9 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Principal.Telemedicine.Base
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Principal.Telemedicine.WebApp", "Principal.Telemedicine.WebApp\Principal.Telemedicine.WebApp.csproj", "{7469822C-0F00-49C9-B55B-9359E3CBE1E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Principal.Telemedicine.SharedApi", "Principal.Telemedicine.SharedApi\Principal.Telemedicine.SharedApi.csproj", "{826F5609-25F8-468D-881B-1AA80FAB8F73}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Principal.Telemedicine.SharedApi", "Principal.Telemedicine.SharedApi\Principal.Telemedicine.SharedApi.csproj", "{826F5609-25F8-468D-881B-1AA80FAB8F73}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Principal.Telemedicine.Shared", "Principal.Telemedicine.Shared\Principal.Telemedicine.Shared.csproj", "{3ECF516E-86C4-4790-962F-3B1CB58C559E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Principal.Telemedicine.Shared", "Principal.Telemedicine.Shared\Principal.Telemedicine.Shared.csproj", "{3ECF516E-86C4-4790-962F-3B1CB58C559E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Principal.Telemedicine.B2CApi", "Principal.Telemedicine.B2CApi\Principal.Telemedicine.B2CApi.csproj", "{D8F36F07-AC79-45FE-ACB4-D41463ADCECD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{3ECF516E-86C4-4790-962F-3B1CB58C559E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3ECF516E-86C4-4790-962F-3B1CB58C559E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3ECF516E-86C4-4790-962F-3B1CB58C559E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8F36F07-AC79-45FE-ACB4-D41463ADCECD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8F36F07-AC79-45FE-ACB4-D41463ADCECD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8F36F07-AC79-45FE-ACB4-D41463ADCECD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8F36F07-AC79-45FE-ACB4-D41463ADCECD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
