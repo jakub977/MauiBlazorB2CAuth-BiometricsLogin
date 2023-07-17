@@ -4,3 +4,5 @@
 
 /.vs/Refactor/v17/.suo
 .vs
+bin/
+.vs/
