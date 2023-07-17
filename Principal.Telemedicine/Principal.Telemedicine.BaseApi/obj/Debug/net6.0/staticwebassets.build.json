@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "ZcKCAkvNn25Wi2JdC+5aDIL402P+UAp8u5YZZ8VD9Qw=",
+  "Source": "Principal.Telemedicine.BaseApi",
+  "BasePath": "_content/Principal.Telemedicine.BaseApi",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
