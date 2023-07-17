@@ -4,6 +4,11 @@
 
 
 .vs
-bin/
 .vs/
 /.vs
+*.suo
+*.user
+_ReSharper.*
+bin
+obj
+packages
