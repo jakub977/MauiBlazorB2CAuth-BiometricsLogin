@@ -396,16 +396,6 @@
         "runtime": {
           "lib/netcoreapp2.1/_._": {}
         }
-      },
-      "Principal.Telemedicine.Shared/1.0.0": {
-        "type": "project",
-        "framework": ".NETCoreApp,Version=v6.0",
-        "compile": {
-          "bin/placeholder/Principal.Telemedicine.Shared.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/Principal.Telemedicine.Shared.dll": {}
-        }
       }
     }
   },
@@ -1426,11 +1416,6 @@
         "useSharedDesignerContext.txt",
         "version.txt"
       ]
-    },
-    "Principal.Telemedicine.Shared/1.0.0": {
-      "type": "project",
-      "path": "../Principal.Telemedicine.Shared/Principal.Telemedicine.Shared.csproj",
-      "msbuildProject": "../Principal.Telemedicine.Shared/Principal.Telemedicine.Shared.csproj"
     }
   },
   "projectFileDependencyGroups": {
@@ -1438,7 +1423,6 @@
       "Microsoft.AspNetCore.Authentication.JwtBearer >= 6.0.18",
       "Microsoft.AspNetCore.Authentication.OpenIdConnect >= 6.0.18",
       "Microsoft.Identity.Web >= 1.16.0",
-      "Principal.Telemedicine.Shared >= 1.0.0",
       "Swashbuckle.AspNetCore >= 6.5.0"
     ]
   },
@@ -1473,11 +1457,7 @@
       "frameworks": {
         "net6.0": {
           "targetAlias": "net6.0",
-          "projectReferences": {
-            "C:\\Project\\Refactor\\Principal.Telemedicine\\Principal.Telemedicine.Shared\\Principal.Telemedicine.Shared.csproj": {
-              "projectPath": "C:\\Project\\Refactor\\Principal.Telemedicine\\Principal.Telemedicine.Shared\\Principal.Telemedicine.Shared.csproj"
-            }
-          }
+          "projectReferences": {}
         }
       },
       "warningProperties": {
@@ -1525,7 +1505,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.313\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.315\\RuntimeIdentifierGraph.json"
       }
     }
   }

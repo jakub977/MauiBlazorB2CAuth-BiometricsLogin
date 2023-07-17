@@ -10,5 +10,7 @@
 *.user
 _ReSharper.*
 bin
+/bin
+bin/
 obj
 packages
