@@ -246,3 +246,4 @@ paket-files/
 # JetBrains Rider
 .idea/
 *.sln.iml
+/Principal.Telemedicine/Principal.Telemedicine.Shared/obj/Debug/net6.0/Principal.Telemedicine.Shared.assets.cache
