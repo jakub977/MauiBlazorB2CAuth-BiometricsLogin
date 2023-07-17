@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\Principal.Telemedicine.BaseApi.props" />
+</Project>

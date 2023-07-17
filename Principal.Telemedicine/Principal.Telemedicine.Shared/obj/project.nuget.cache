@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "jAW6I2q31u75f+B2xCu24Q+KWkqIFAdA60IPIjnZtRcbgyWuDzVr3mU9RrZYEJZv/myxpOHd6Hbi9TWeDdsbZA==",
+  "dgSpecHash": "+yrukdOrNxlHBH6Iy+Nqrrnf8puxk5hfer0fmAlAFSKKWinVNkoIzQkId7Xyf19Reau5ZhaM+1/nvzF1mA4NXg==",
   "success": true,
-  "projectFilePath": "C:\\Project\\Refactor\\Principal.Telemedicine\\Principal.Telemedicine.Shared\\Principal.Telemedicine.Shared.csproj",
-  "expectedPackageFiles": [],
+  "projectFilePath": "D:\\Source\\Refactoring\\Principal.Telemedicine\\Principal.Telemedicine.Shared\\Principal.Telemedicine.Shared.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\lenka\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512"
+  ],
   "logs": []
 }

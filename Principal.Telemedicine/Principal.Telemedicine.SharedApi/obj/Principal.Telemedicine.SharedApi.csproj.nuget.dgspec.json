@@ -1,24 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Project\\Refactor\\Principal.Telemedicine\\Principal.Telemedicine.SharedApi\\Principal.Telemedicine.SharedApi.csproj": {}
+    "D:\\Source\\Refactoring\\Principal.Telemedicine\\Principal.Telemedicine.SharedApi\\Principal.Telemedicine.SharedApi.csproj": {}
   },
   "projects": {
-    "C:\\Project\\Refactor\\Principal.Telemedicine\\Principal.Telemedicine.SharedApi\\Principal.Telemedicine.SharedApi.csproj": {
+    "D:\\Source\\Refactoring\\Principal.Telemedicine\\Principal.Telemedicine.SharedApi\\Principal.Telemedicine.SharedApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Project\\Refactor\\Principal.Telemedicine\\Principal.Telemedicine.SharedApi\\Principal.Telemedicine.SharedApi.csproj",
+        "projectUniqueName": "D:\\Source\\Refactoring\\Principal.Telemedicine\\Principal.Telemedicine.SharedApi\\Principal.Telemedicine.SharedApi.csproj",
         "projectName": "Principal.Telemedicine.SharedApi",
-        "projectPath": "C:\\Project\\Refactor\\Principal.Telemedicine\\Principal.Telemedicine.SharedApi\\Principal.Telemedicine.SharedApi.csproj",
-        "packagesPath": "C:\\Users\\admin\\.nuget\\packages\\",
-        "outputPath": "C:\\Project\\Refactor\\Principal.Telemedicine\\Principal.Telemedicine.SharedApi\\obj\\",
+        "projectPath": "D:\\Source\\Refactoring\\Principal.Telemedicine\\Principal.Telemedicine.SharedApi\\Principal.Telemedicine.SharedApi.csproj",
+        "packagesPath": "C:\\Users\\lenka\\.nuget\\packages\\",
+        "outputPath": "D:\\Source\\Refactoring\\Principal.Telemedicine\\Principal.Telemedicine.SharedApi\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\lenka\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -32,8 +28,8 @@
           "net6.0": {
             "targetAlias": "net6.0",
             "projectReferences": {
-              "C:\\Project\\Refactor\\Principal.Telemedicine\\Principal.Telemedicine.Shared\\Principal.Telemedicine.Shared.csproj": {
-                "projectPath": "C:\\Project\\Refactor\\Principal.Telemedicine\\Principal.Telemedicine.Shared\\Principal.Telemedicine.Shared.csproj"
+              "D:\\Source\\Refactoring\\Principal.Telemedicine\\Principal.Telemedicine.Shared\\Principal.Telemedicine.Shared.csproj": {
+                "projectPath": "D:\\Source\\Refactoring\\Principal.Telemedicine\\Principal.Telemedicine.Shared\\Principal.Telemedicine.Shared.csproj"
               }
             }
           }
@@ -56,9 +52,27 @@
               "target": "Package",
               "version": "[6.0.18, )"
             },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[7.0.9, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[7.0.9, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[7.0.9, )"
+            },
             "Microsoft.Identity.Web": {
               "target": "Package",
               "version": "[1.16.0, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.3, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
@@ -71,7 +85,8 @@
             "net47",
             "net471",
             "net472",
-            "net48"
+            "net48",
+            "net481"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -83,25 +98,21 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.313\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.203\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Project\\Refactor\\Principal.Telemedicine\\Principal.Telemedicine.Shared\\Principal.Telemedicine.Shared.csproj": {
+    "D:\\Source\\Refactoring\\Principal.Telemedicine\\Principal.Telemedicine.Shared\\Principal.Telemedicine.Shared.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Project\\Refactor\\Principal.Telemedicine\\Principal.Telemedicine.Shared\\Principal.Telemedicine.Shared.csproj",
+        "projectUniqueName": "D:\\Source\\Refactoring\\Principal.Telemedicine\\Principal.Telemedicine.Shared\\Principal.Telemedicine.Shared.csproj",
         "projectName": "Principal.Telemedicine.Shared",
-        "projectPath": "C:\\Project\\Refactor\\Principal.Telemedicine\\Principal.Telemedicine.Shared\\Principal.Telemedicine.Shared.csproj",
-        "packagesPath": "C:\\Users\\admin\\.nuget\\packages\\",
-        "outputPath": "C:\\Project\\Refactor\\Principal.Telemedicine\\Principal.Telemedicine.Shared\\obj\\",
+        "projectPath": "D:\\Source\\Refactoring\\Principal.Telemedicine\\Principal.Telemedicine.Shared\\Principal.Telemedicine.Shared.csproj",
+        "packagesPath": "C:\\Users\\lenka\\.nuget\\packages\\",
+        "outputPath": "D:\\Source\\Refactoring\\Principal.Telemedicine\\Principal.Telemedicine.Shared\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\lenka\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -126,13 +137,20 @@
       "frameworks": {
         "net6.0": {
           "targetAlias": "net6.0",
+          "dependencies": {
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.3, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
             "net47",
             "net471",
             "net472",
-            "net48"
+            "net48",
+            "net481"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -141,7 +159,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.313\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.203\\RuntimeIdentifierGraph.json"
         }
       }
     }
