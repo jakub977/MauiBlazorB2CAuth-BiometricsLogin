@@ -10,5 +10,5 @@ _ReSharper.*
 bin
 /bin
 bin/
-debug
+obj
 packages
