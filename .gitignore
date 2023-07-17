@@ -1,8 +1,14 @@
 ﻿################################################################################
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
-
-/.vs/Refactor/v17/.suo
 .vs
-bin/
 .vs/
+/.vs
+*.suo
+*.user
+_ReSharper.*
+bin
+/bin
+bin/
+debug
+packages
