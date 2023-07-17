@@ -1,7 +1,14 @@
 ﻿################################################################################
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
-
-/.vs/Refactor/v17/.suo
-/Principal.Telemedicine/Principal.Telemedicine.DataConnectors/bin/Debug/net6.0
-/Principal.Telemedicine/.vs/Principal.Telemedicine/FileContentIndex
+.vs
+.vs/
+/.vs
+*.suo
+*.user
+_ReSharper.*
+bin
+/bin
+bin/
+obj
+packages
