@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Collections;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -9,11 +10,12 @@ using Principal.Telemedicine.SharedApi.Models;
 using Microsoft.AspNetCore.SignalR;
 using Principal.Telemedicine.Shared.Models;
 using System.Collections.Generic;
+using System.Net;
 using Microsoft.Identity.Web.Resource;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
 
-    //[Authorize]
+   
     [Route("api/[controller]/[action]")]
     [ApiController]
     [RequiredScope(RequiredScopesConfigurationKey = "PatientInfoApiController:PatientInfoApiControllerScope")]
@@ -21,60 +23,125 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
     {
 
         private readonly ApiDbContext _dbContext;
+        private readonly ILogger<PatientInfoApiController> _logger;
 
 
-        public PatientInfoApiController(ApiDbContext dbContext)
+
+    public PatientInfoApiController(ILogger<PatientInfoApiController> logger, ApiDbContext dbContext)
+    {
+        _dbContext = dbContext;
+        _logger = logger;
+    }
+
+
+    [HttpGet(Name = "GetAggregatedUserSymptomProgressionDataModel")]
+    public IActionResult GetAggregatedUserSymptomProgressionDataModel([FromHeader] string authorization, int userId)
+    {
+
+        try
         {
-            _dbContext = dbContext;
-        }
-
-
-        [HttpGet(Name = "GetAggregatedUserSymptomProgressionDataModel")]
-        public PatientAggregatedSymptomProgressionDataModel GetAggregatedUserSymptomProgressionDataModel([FromHeader] string authorization,int userId)
-        {
-            
             var result = _dbContext.Database.SqlQuery<string>($"dbo.sp_GetAggregatedUserSymptomProgression @userId = {userId}").ToList();
             if (!result.Any())
-                return null;
+                return NotFound();
 
             var sb = new StringBuilder();
             foreach (var jsonPart in result)
                 sb.Append(jsonPart);
 
-            return JsonConvert.DeserializeObject<PatientAggregatedSymptomProgressionDataModel>(sb.ToString());
+            PatientAggregatedSymptomProgressionDataModel patientAggregatedSymptomProgressionDataModel = JsonConvert.DeserializeObject<PatientAggregatedSymptomProgressionDataModel>(sb.ToString());
+
+            return Ok(patientAggregatedSymptomProgressionDataModel);
 
         }
 
-
-        [HttpGet(Name = "GetMedicalDeviceMeasuringHistoryItems")]
-        public List<MedicalDeviceMeasuringHistoryItemDataModel> GetMedicalDeviceMeasuringHistoryItems([FromHeader] string authorization,int userId)
+        catch (Exception ex)
         {
+            _logger.LogError(ex.Message);
+            return Problem();
+        }
 
+    }
+        
+
+    [HttpGet(Name = "GetMedicalDeviceMeasuringHistoryItems")]
+    public IActionResult GetMedicalDeviceMeasuringHistoryItems([FromHeader] string authorization, int userId)
+    {
+
+        if (userId == null)
+            return BadRequest();
+
+        try
+        {
             List<MedicalDeviceMeasuringHistoryItemDataModel> measuredHistoryValues = _dbContext.ExecSqlQuery<MedicalDeviceMeasuringHistoryItemDataModel>($"dbo.sp_GetMedicalDeviceMeasuringHistory @userId = {userId}");
 
-            return measuredHistoryValues.OrderByDescending(x => x.MeasuredDateUtc).ToList();
+            if (measuredHistoryValues.Count < 1)
+                return NotFound();
+
+            return Ok(measuredHistoryValues.OrderByDescending(x => x.MeasuredDateUtc).ToList());
+
         }
 
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            return Problem();
+        }
+    }
+    
 
-        [HttpGet(Name = "GetDiseaseDetectionResultFromMLItems")]
-        public List<DiseaseDetectionResultFromMLItemDataModel> GetDiseaseDetectionResultFromMLItems([FromHeader] string authorization, int userId)
+    [AllowAnonymous]
+    [HttpGet(Name = "GetDiseaseDetectionResultFromMLItems")]
+    public IActionResult GetDiseaseDetectionResultFromMLItems([FromHeader] string authorization, int userId)
+    {
+
+        if (userId == null)
+            return BadRequest();
+
+        try
         {
 
             List<DiseaseDetectionResultFromMLItemDataModel> diseaseDetectionResultsFromML = _dbContext.ExecSqlQuery<DiseaseDetectionResultFromMLItemDataModel>($"dbo.sp_GetDiseaseDetectionResultFromML @userId = {userId}");
+            if (diseaseDetectionResultsFromML.Count < 1)
+                return NotFound();
 
-            return diseaseDetectionResultsFromML;
+            return Ok(diseaseDetectionResultsFromML);
 
         }
 
-
-        [HttpGet(Name = "GetDiseaseOriginDetectionResultFromMLItems")]
-        public List<DiseaseOriginDetectionResultFromMLItemDataModel> GetDiseaseOriginDetectionResultFromMLItems([FromHeader] string authorization, int userId)
+        catch (Exception ex)
         {
+            _logger.LogError(ex.Message);
+            return Problem();
+        }
+    }
 
+
+    [AllowAnonymous]
+    [HttpGet(Name = "GetDiseaseOriginDetectionResultFromMLItems")]
+    public IActionResult GetDiseaseOriginDetectionResultFromMLItems([FromHeader] string authorization, int userId)
+    {
+
+        if (userId == null)
+            return BadRequest();
+
+        try
+        {
+               
             List<DiseaseOriginDetectionResultFromMLItemDataModel> originDetectionResultsFromML = _dbContext.ExecSqlQuery<DiseaseOriginDetectionResultFromMLItemDataModel>($"dbo.sp_GetDiseaseOriginDetectionResultFromML @userId = {userId}");
 
-            return originDetectionResultsFromML;
+            if (originDetectionResultsFromML.Count < 1)
+                    return NotFound();
+
+            return Ok(originDetectionResultsFromML);
+
         }
 
-    } 
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            return Problem();
+        }
+    }
+
+} 
 
