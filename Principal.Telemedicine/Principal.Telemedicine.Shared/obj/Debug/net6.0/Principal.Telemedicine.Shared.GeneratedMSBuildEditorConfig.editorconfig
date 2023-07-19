@@ -8,4 +8,4 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = Principal.Telemedicine.Shared
-build_property.ProjectDir = C:\DEV23\Refactoring\Principal.Telemedicine\Principal.Telemedicine.Shared\
+build_property.ProjectDir = D:\Source\Refactoring\Principal.Telemedicine\Principal.Telemedicine.Shared\

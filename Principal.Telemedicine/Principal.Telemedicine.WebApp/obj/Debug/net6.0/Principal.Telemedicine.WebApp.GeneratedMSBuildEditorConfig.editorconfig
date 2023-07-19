@@ -9,57 +9,57 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = Principal.Telemedicine.WebApp
 build_property.RootNamespace = Principal.Telemedicine.WebApp
-build_property.ProjectDir = C:\DEV23\Refactoring\Principal.Telemedicine\Principal.Telemedicine.WebApp\
+build_property.ProjectDir = D:\Source\Refactoring\Principal.Telemedicine\Principal.Telemedicine.WebApp\
 build_property.RazorLangVersion = 6.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = C:\DEV23\Refactoring\Principal.Telemedicine\Principal.Telemedicine.WebApp
+build_property.MSBuildProjectDirectory = D:\Source\Refactoring\Principal.Telemedicine\Principal.Telemedicine.WebApp
 build_property._RazorSourceGeneratorDebug = 
 
-[C:/DEV23/Refactoring/Principal.Telemedicine/Principal.Telemedicine.WebApp/App.razor]
+[D:/Source/Refactoring/Principal.Telemedicine/Principal.Telemedicine.WebApp/App.razor]
 build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DEV23/Refactoring/Principal.Telemedicine/Principal.Telemedicine.WebApp/Pages/Counter.razor]
+[D:/Source/Refactoring/Principal.Telemedicine/Principal.Telemedicine.WebApp/Pages/Counter.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ291bnRlci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DEV23/Refactoring/Principal.Telemedicine/Principal.Telemedicine.WebApp/Pages/FetchData.razor]
+[D:/Source/Refactoring/Principal.Telemedicine/Principal.Telemedicine.WebApp/Pages/FetchData.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRmV0Y2hEYXRhLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DEV23/Refactoring/Principal.Telemedicine/Principal.Telemedicine.WebApp/Pages/Index.razor]
+[D:/Source/Refactoring/Principal.Telemedicine/Principal.Telemedicine.WebApp/Pages/Index.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXgucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DEV23/Refactoring/Principal.Telemedicine/Principal.Telemedicine.WebApp/Shared/LoginDisplay.razor]
+[D:/Source/Refactoring/Principal.Telemedicine/Principal.Telemedicine.WebApp/Shared/LoginDisplay.razor]
 build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXExvZ2luRGlzcGxheS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DEV23/Refactoring/Principal.Telemedicine/Principal.Telemedicine.WebApp/Shared/SurveyPrompt.razor]
+[D:/Source/Refactoring/Principal.Telemedicine/Principal.Telemedicine.WebApp/Shared/SurveyPrompt.razor]
 build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXFN1cnZleVByb21wdC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DEV23/Refactoring/Principal.Telemedicine/Principal.Telemedicine.WebApp/_Imports.razor]
+[D:/Source/Refactoring/Principal.Telemedicine/Principal.Telemedicine.WebApp/_Imports.razor]
 build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DEV23/Refactoring/Principal.Telemedicine/Principal.Telemedicine.WebApp/Shared/MainLayout.razor]
+[D:/Source/Refactoring/Principal.Telemedicine/Principal.Telemedicine.WebApp/Shared/MainLayout.razor]
 build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXE1haW5MYXlvdXQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = b-57ebv4uzh9
 
-[C:/DEV23/Refactoring/Principal.Telemedicine/Principal.Telemedicine.WebApp/Shared/NavMenu.razor]
+[D:/Source/Refactoring/Principal.Telemedicine/Principal.Telemedicine.WebApp/Shared/NavMenu.razor]
 build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXE5hdk1lbnUucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = b-hg8wjui4w5
 
-[C:/DEV23/Refactoring/Principal.Telemedicine/Principal.Telemedicine.WebApp/Pages/Error.cshtml]
+[D:/Source/Refactoring/Principal.Telemedicine/Principal.Telemedicine.WebApp/Pages/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRXJyb3IuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DEV23/Refactoring/Principal.Telemedicine/Principal.Telemedicine.WebApp/Pages/_Host.cshtml]
+[D:/Source/Refactoring/Principal.Telemedicine/Principal.Telemedicine.WebApp/Pages/_Host.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX0hvc3QuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/DEV23/Refactoring/Principal.Telemedicine/Principal.Telemedicine.WebApp/Pages/_Layout.cshtml]
+[D:/Source/Refactoring/Principal.Telemedicine/Principal.Telemedicine.WebApp/Pages/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX0xheW91dC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
