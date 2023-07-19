@@ -1,7 +1,10 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Principal.Telemedicine.DataConnectors.Models;
+using Principal.Telemedicine.Shared.Logging;
 using Xunit;
 
 namespace Principal.Telemedicine.Shared.Logging.Tests
@@ -11,6 +14,9 @@ namespace Principal.Telemedicine.Shared.Logging.Tests
         [Fact]
         public void AddLogging_Should_Register_CompositeLoggerProvider()
         {
+            var options = new DbContextOptionsBuilder<DbContextGeneral>()
+           .UseInMemoryDatabase(databaseName: "TestDatabase")
+           .Options;
             // Arrange
             var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json")
                 .Build();
@@ -19,7 +25,7 @@ namespace Principal.Telemedicine.Shared.Logging.Tests
             var hostBuilder = new HostBuilder()
                 .ConfigureServices((context, services) =>
                 {
-                   
+                    services.AddDbContext<DbContextGeneral>(fn=>fn.UseInMemoryDatabase(databaseName: "TestDatabase"));
                     // Register the DiRegistration class
                     services.AddLogging(configuration);
                 });
@@ -31,6 +37,14 @@ namespace Principal.Telemedicine.Shared.Logging.Tests
 
             // Assert
             Assert.IsType<CompositeLoggerProvider>(loggerProvider);
+
+            ILogger logger = loggerProvider.CreateLogger("UnitTest");
+            logger.LogInformation("Test");
+
+            using var _context = (DbContextGeneral) serviceProvider.GetServices(typeof(DbContextGeneral));
+            Assert.NotNull(_context.Logs.FirstOrDefault());
+            
+
         }
 
      
