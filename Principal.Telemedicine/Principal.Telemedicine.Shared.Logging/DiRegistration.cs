@@ -8,15 +8,19 @@ using Microsoft.Extensions.Logging.AzureAppServices;
 
 public static class DiRegistration
 {
+    /// <summary>
+    /// Přidání logování do aplikace
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="configuration">instance IConfiguration</param>
+    /// <returns></returns>
     public static IServiceCollection AddLogging(this IServiceCollection services, IConfiguration configuration)
     {
     
-    
-
-        // Vytvoříme instance logovacích poskytovatelů pro TelemedicineDbLogger a Azure App Log
+        // Vytvoříme instance logovacích providerů pro TelemedicineDbLogger
         var telemedicineLoggerProvider = new TelemedicineLoggerProvider(services.BuildServiceProvider().GetService<DbContextGeneral>());
 
-        // Přidáme do DI kontejneru vlastní CompositeLoggerProvider s logovacími poskytovateli
+        // Přidáme do DI kontejneru vlastní CompositeLoggerProvider
         services.AddSingleton<IEnumerable<ILoggerProvider>>(new List<ILoggerProvider>
         {
             telemedicineLoggerProvider
@@ -24,11 +28,9 @@ public static class DiRegistration
 
        
         services.AddSingleton<ILoggerProvider, CompositeLoggerProvider>();
-
+        services.Configure<AzureFileLoggerOptions>(configuration.GetSection("AzureFileLogging"));
         services.AddLogging(builder =>
-        {
-            builder.AddConfiguration(configuration.GetSection("Logging"));        
-            builder.AddAzureWebAppDiagnostics();//logování do Azure AppLog
+        {        
             builder.AddProvider(services.BuildServiceProvider().GetService<ILoggerProvider>()); 
         });
 

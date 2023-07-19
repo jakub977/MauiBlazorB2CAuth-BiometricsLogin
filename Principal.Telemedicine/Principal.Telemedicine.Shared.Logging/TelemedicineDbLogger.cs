@@ -59,7 +59,7 @@ public class TelemedicineDbLogger:ILogger
         }
         catch // Není JSON nebo je jiný než očekávaný
         {
-            logEntry = new() { FullMessage = message, CreatedDateUtc = DateTime.UtcNow, Source = Environment.ProcessPath, FriendlyTopic = logLevel.ToString()  };
+            logEntry = new() { FullMessage = message, ShortMessage = message.Substring(0,message.Length>4000?4000:message.Length), CreatedDateUtc = DateTime.UtcNow, Source = Environment.ProcessPath, FriendlyTopic = logLevel.ToString()  };
         }
         
             _context.Logs.Add(logEntry);

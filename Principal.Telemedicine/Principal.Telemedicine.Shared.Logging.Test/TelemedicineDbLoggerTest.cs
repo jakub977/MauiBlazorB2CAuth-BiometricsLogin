@@ -7,12 +7,12 @@ namespace Principal.Telemedicine.Shared.Logging.Tests
 {
     public class TelemedicineDbLoggerTests
     {
-        [Fact]
+        [Fact(DisplayName ="Test custom logeru pro zápis do databáze")]
         public void TelemedicineDbLogger_Should_Log_To_Database_When_Enabled()
         {
             // Arrange
             var options = new DbContextOptionsBuilder<DbContextGeneral>()
-                .UseInMemoryDatabase(databaseName: "TestDatabase")
+                .UseInMemoryDatabase(databaseName: "TestDatabaseDbLogger")
                 .Options;
 
             using (var context = new DbContextGeneral(options))
@@ -28,7 +28,9 @@ namespace Principal.Telemedicine.Shared.Logging.Tests
                 Assert.NotNull(logEntry);
                 Assert.Contains("Test message", logEntry.FullMessage); // Je logovaná zpráva součástí db?
 
+                context.Database.EnsureDeleted();
             }
+            
         }
     }
 }

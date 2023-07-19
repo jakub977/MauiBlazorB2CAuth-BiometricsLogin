@@ -7,46 +7,54 @@ using Principal.Telemedicine.DataConnectors.Models;
 using Principal.Telemedicine.Shared.Logging;
 using Xunit;
 
-namespace Principal.Telemedicine.Shared.Logging.Tests
+namespace Principal.Telemedicine.Shared.Logging.Tests;
+
+public class DiRegistrationTests
 {
-    public class DiRegistrationTests
+
+    
+    [Fact(DisplayName ="Test Registrace Logování a odzkoušení extenze se zápisem do databáze")]
+    public void AddLogging_Test_CompositeLoggerProvider()
     {
-        [Fact]
-        public void AddLogging_Should_Register_CompositeLoggerProvider()
-        {
-            var options = new DbContextOptionsBuilder<DbContextGeneral>()
-           .UseInMemoryDatabase(databaseName: "TestDatabase")
-           .Options;
-            // Arrange
-            var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json")
-                .Build();
+    
+        // Arrange
+        var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json")
+            .Build();
 
-            // Registr logging
-            var hostBuilder = new HostBuilder()
-                .ConfigureServices((context, services) =>
-                {
-                    services.AddDbContext<DbContextGeneral>(fn=>fn.UseInMemoryDatabase(databaseName: "TestDatabase"));
-                    // Register the DiRegistration class
-                    services.AddLogging(configuration);
-                });
+        // Registr logging
+        var hostBuilder = new HostBuilder()
+            .ConfigureServices((context, services) =>
+            {
+                services.AddDbContext<DbContextGeneral>(fn=>fn.UseInMemoryDatabase(databaseName: "TestDatabaseLogCustom"));
+                // Register the DiRegistration class
+                services.AddLogging(configuration);
+            });
 
-            // Act
-            var host = hostBuilder.Build();
-            var serviceProvider = host.Services;
-            var loggerProvider = serviceProvider.GetRequiredService<ILoggerProvider>();
+        // Act
+        var host = hostBuilder.Build();
+        var serviceProvider = host.Services;
+        var loggerProvider = serviceProvider.GetRequiredService<ILoggerProvider>();
 
-            // Assert
-            Assert.IsType<CompositeLoggerProvider>(loggerProvider);
+        // Asserts
+        Assert.IsType<CompositeLoggerProvider>(loggerProvider);
 
-            ILogger logger = loggerProvider.CreateLogger("UnitTest");
-            logger.LogInformation("Test");
+        var logger = loggerProvider.CreateLogger("Test");
+        logger.LogCustom(Enumerators.CustomLogLevel.Audit, "TestTopic", "this test source", "short message from log", "full message from log", "aditionalInfo from log", "idCommunication");
+        
+        using var _context = serviceProvider.GetService<DbContextGeneral>();
+        var entity = _context?.Logs.FirstOrDefault(m=> m.Id==1);
+        Assert.NotNull(entity);
+        Assert.Equal("short message from log", entity?.ShortMessage);
+       
 
-            using var _context = (DbContextGeneral) serviceProvider.GetServices(typeof(DbContextGeneral));
-            Assert.NotNull(_context.Logs.FirstOrDefault());
-            
 
-        }
+        logger.LogInformation("Text simple message");
+        entity = _context?.Logs.FirstOrDefault(m=> m.Id==2);
+        Assert.NotNull(entity);
+        Assert.Equal("Text simple message", entity?.ShortMessage);
+        _context.Database.EnsureDeleted();
 
-     
     }
+
+ 
 }
