@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\buildMultiTargeting\Principal.Telemedicine.B2CApi.props" />
-</Project>
