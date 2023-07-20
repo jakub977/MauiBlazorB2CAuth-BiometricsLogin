@@ -10,6 +10,9 @@ using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Principal.Telemedicine.Shared.Logging;
+/// <summary>
+/// Custom ILogger pro logování do DB
+/// </summary>
 public class TelemedicineDbLogger:ILogger
 {
     private readonly string _categoryName;
@@ -21,11 +24,22 @@ public class TelemedicineDbLogger:ILogger
        _context = context;
     }
 
+    /// <summary>
+    /// Implementace interface
+    /// </summary>
+    /// <typeparam name="TState"></typeparam>
+    /// <param name="state"></param>
+    /// <returns></returns>
     public IDisposable BeginScope<TState>(TState state)
     {
         return null;
     }
 
+    /// <summary>
+    /// Defaultní hodnota pro IsEnabled - vše, co je víc, nebo rovno Information
+    /// </summary>
+    /// <param name="logLevel"></param>
+    /// <returns></returns>
     public bool IsEnabled(LogLevel logLevel)
     {
       
@@ -37,7 +51,15 @@ public class TelemedicineDbLogger:ILogger
 
         return logLevel >= LogLevel.Information;
     }
-
+    /// <summary>
+    /// Metoda pro zápis logu do databáze
+    /// </summary>
+    /// <typeparam name="TState"></typeparam>
+    /// <param name="logLevel"></param>
+    /// <param name="eventId"></param>
+    /// <param name="state"></param>
+    /// <param name="exception"></param>
+    /// <param name="formatter"></param>
     public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
     {
         if (!IsEnabled(logLevel))
