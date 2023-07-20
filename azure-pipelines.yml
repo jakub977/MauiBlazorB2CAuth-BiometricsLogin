@@ -12,7 +12,7 @@ steps:
 
 - task: VSBuild@1
   inputs:
-    solution: '$(Build.SourcesDirectory)/Principal.Telemedicine/Principal.Telemedicine.sln'  # Upravte cestu k vašemu solution (soubor .sln)
+    solution: 'Principal.Telemedicine/Principal.Telemedicine.sln'  # Upravte cestu k vašemu solution (soubor .sln)
     platform: 'Any CPU'
     configuration: 'Release'
   displayName: 'Build solution'
@@ -20,7 +20,7 @@ steps:
 - task: NuGetCommand@2
   inputs:
     command: 'pack'
-    packagesToPack: '$(Build.SourcesDirectory)/Principal.Telemedicine/Principal.Telemedicine.Shared.Logging/Principal.Telemedicine.Shared.Logging.csproj'  # Upravte cestu k vašemu csproj souboru
+    packagesToPack: 'Principal.Telemedicine/Principal.Telemedicine.Shared.Logging/Principal.Telemedicine.Shared.Logging.csproj'  # Upravte cestu k vašemu csproj souboru
     versioningScheme: 'byEnvVar'
     versionEnvVar: 'Build.BuildNumber'
     includeSymbols: true
