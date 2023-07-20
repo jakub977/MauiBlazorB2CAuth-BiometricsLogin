@@ -12,7 +12,7 @@ steps:
 
 - task: VSBuild@1
   inputs:
-    solution: 'Refactoring/Principal.Telemedicine/Principal.Telemedicine.Shared.Logging/Principal.Telemedicine.Shared.Logging.csproj'  # Upravte cestu k csproj souboru vašeho projektu
+    solution: 'Principal.Telemedicine/Principal.Telemedicine.Shared.Logging/Principal.Telemedicine.Shared.Logging.csproj'  # Upravte cestu k csproj souboru vašeho projektu
     platform: 'Any CPU'
     configuration: 'Release'
   displayName: 'Build Principal.Telemedicine.Shared.Logging project'
@@ -20,7 +20,7 @@ steps:
 - task: NuGetCommand@2
   inputs:
     command: 'pack'
-    packagesToPack: 'Refactoring/Principal.Telemedicine/Principal.Telemedicine.Shared.Logging/Principal.Telemedicine.Shared.Logging.csproj'  # Upravte cestu k csproj souboru vašeho projektu
+    packagesToPack: 'Principal.Telemedicine/Principal.Telemedicine.Shared.Logging/Principal.Telemedicine.Shared.Logging.csproj'  # Upravte cestu k csproj souboru vašeho projektu
     versioningScheme: 'byEnvVar'
     versionEnvVar: 'Build.BuildNumber'
     includeSymbols: true
@@ -34,9 +34,8 @@ steps:
 - task: NuGetCommand@2
   inputs:
     command: 'push'
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/Principal.Telemedicine.Shared.Logging.*.nupkg'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
     nuGetFeedType: 'internal'
     publishVstsFeed: 'Telemedicine'  # Nahraďte názvem svého Artefact Feedu
     includeSymbols: true
-    includeSource: true
   displayName: 'Push NuGet package to Artefact Feed'
