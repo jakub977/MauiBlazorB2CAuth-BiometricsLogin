@@ -12,7 +12,7 @@ steps:
 
 - task: VSBuild@1
   inputs:
-    solution: 'Principal.Telemedicine/Principal.Telemedicine.Shared.Logging/Principal.Telemedicine.Shared.Logging.csproj'  # Upravte cestu k csproj souboru vašeho projektu
+    solution: '$(Build.SourcesDirectory)/Principal.Telemedicine/Principal.Telemedicine.Shared.Logging/Principal.Telemedicine.Shared.Logging.csproj'  # Upravte cestu k csproj souboru vašeho projektu
     platform: 'Any CPU'
     configuration: 'Release'
   displayName: 'Build Principal.Telemedicine.Shared.Logging project'
@@ -24,7 +24,6 @@ steps:
     versioningScheme: 'byEnvVar'
     versionEnvVar: 'Build.BuildNumber'
     includeSymbols: true
-    includeSource: true
     buildProperties: 'Configuration=Release'
   displayName: 'Create NuGet package for Principal.Telemedicine.Shared.Logging'
 
