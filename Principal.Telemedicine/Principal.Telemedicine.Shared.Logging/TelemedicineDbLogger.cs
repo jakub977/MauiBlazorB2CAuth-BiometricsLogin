@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Principal.Telemedicine.Shared.Logging;
@@ -43,38 +44,28 @@ public class TelemedicineDbLogger:ILogger
         {
             return;
         }
-
+        
         var message = formatter(state, exception);
 
         if (string.IsNullOrEmpty(message) && exception == null)
         {
             return;
         }
+        Log? logEntry = null;
 
-        if (exception != null)
+        try
         {
-            var logEntry = new Log
-            {
-              //...
-                CreatedDateUtc = DateTime.UtcNow
-            };
-
-            // Uložení logovacího záznamu do databáze
+            logEntry = JsonSerializer.Deserialize<Log>(message);
+        }
+        catch // Není JSON nebo je jiný než očekávaný
+        {
+            logEntry = new() { FullMessage = message, ShortMessage = message.Substring(0,message.Length>4000?4000:message.Length), CreatedDateUtc = DateTime.UtcNow, Source = Environment.ProcessPath, FriendlyTopic = logLevel.ToString()  };
+        }
+        
             _context.Logs.Add(logEntry);
-
-        }
-        else
-        {
-            var logEntry = new Log()
-            {
-             //.....
-                CreatedDateUtc = DateTime.UtcNow
-            };
-
-            // Uložení logovacího záznamu do databáze
             _context.Add(logEntry);
-        }
-        _context.SaveChanges();
+            _context.SaveChanges();
+        
     }
 }
 

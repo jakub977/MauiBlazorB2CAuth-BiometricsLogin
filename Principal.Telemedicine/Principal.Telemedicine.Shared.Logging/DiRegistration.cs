@@ -1,18 +1,39 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
-using System.Data.SqlClient;
 using Microsoft.Extensions.Logging;
+using Principal.Telemedicine.DataConnectors.Models;
+using Principal.Telemedicine.Shared.Logging;
+using System.Collections.Generic;
+using Microsoft.Extensions.Logging.AzureAppServices;
 
-namespace Principal.Telemedicine.Shared.Logging;
 public static class DiRegistration
 {
+    /// <summary>
+    /// Přidání logování do aplikace
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="configuration">instance IConfiguration</param>
+    /// <returns></returns>
     public static IServiceCollection AddLogging(this IServiceCollection services, IConfiguration configuration)
     {
+    
+        // Vytvoříme instance logovacích providerů pro TelemedicineDbLogger
+        var telemedicineLoggerProvider = new TelemedicineLoggerProvider(services.BuildServiceProvider().GetService<DbContextGeneral>());
 
-        var connectionString = configuration.GetConnectionString("DbLoggerConnectionString");      
-        services.AddSingleton<SqlConnectionLoggerFactory>(sp =>
-          new SqlConnectionLoggerFactory(connectionString));
-        services.AddSingleton<ILoggerProvider, TelemedicineLoggerProvider>();
+        // Přidáme do DI kontejneru vlastní CompositeLoggerProvider
+        services.AddSingleton<IEnumerable<ILoggerProvider>>(new List<ILoggerProvider>
+        {
+            telemedicineLoggerProvider
+        });
+
+       
+        services.AddSingleton<ILoggerProvider, CompositeLoggerProvider>();
+        services.Configure<AzureFileLoggerOptions>(configuration.GetSection("AzureFileLogging"));
+        services.AddLogging(builder =>
+        {        
+            builder.AddProvider(services.BuildServiceProvider().GetService<ILoggerProvider>()); 
+        });
+
         return services;
     }
 }
