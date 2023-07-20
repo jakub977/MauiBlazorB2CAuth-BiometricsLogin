@@ -9,11 +9,11 @@ using Microsoft.Extensions.Logging.AzureAppServices;
 public static class DiRegistration
 {
     /// <summary>
-    /// Přidání logování do aplikace
+    /// Přidání logování TM do aplikace - registrace služeb
     /// </summary>
     /// <param name="services"></param>
     /// <param name="configuration">instance IConfiguration</param>
-    /// <returns></returns>
+    /// <returns>kolekci služeb pro řetězení</returns>
     public static IServiceCollection AddLogging(this IServiceCollection services, IConfiguration configuration)
     {
     

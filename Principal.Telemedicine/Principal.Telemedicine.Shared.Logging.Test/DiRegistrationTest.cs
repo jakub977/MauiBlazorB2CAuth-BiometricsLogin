@@ -4,10 +4,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Principal.Telemedicine.DataConnectors.Models;
-using Principal.Telemedicine.Shared.Logging;
+
 using Xunit;
 
 namespace Principal.Telemedicine.Shared.Logging.Tests;
+
 
 public class DiRegistrationTests
 {

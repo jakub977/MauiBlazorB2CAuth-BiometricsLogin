@@ -5,6 +5,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace Principal.Telemedicine.DataConnectors.Models;
 
+/// <summary>
+/// Db context TMAZWorkStore
+/// </summary>
 public partial class DbContextGeneral : DbContext
 {
     private readonly string _connectionString;
