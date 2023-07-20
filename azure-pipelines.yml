@@ -1,0 +1,42 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: 'windows-latest'
+
+steps:
+- script: nuget restore
+  displayName: 'Restore NuGet packages'
+
+- task: VSBuild@1
+  inputs:
+    solution: 'Refactoring/Principal.Telemedicine/Principal.Telemedicine.Shared.Logging/Principal.Telemedicine.Shared.Logging.csproj'  # Upravte cestu k csproj souboru vašeho projektu
+    platform: 'Any CPU'
+    configuration: 'Release'
+  displayName: 'Build Principal.Telemedicine.Shared.Logging project'
+
+- task: NuGetCommand@2
+  inputs:
+    command: 'pack'
+    packagesToPack: 'Refactoring/Principal.Telemedicine/Principal.Telemedicine.Shared.Logging/Principal.Telemedicine.Shared.Logging.csproj'  # Upravte cestu k csproj souboru vašeho projektu
+    versioningScheme: 'byEnvVar'
+    versionEnvVar: 'Build.BuildNumber'
+    includeSymbols: true
+    includeSource: true
+    buildProperties: 'Configuration=Release'
+  displayName: 'Create NuGet package for Principal.Telemedicine.Shared.Logging'
+
+- task: NuGetAuthenticate@0
+  displayName: 'Authenticate NuGet feed'
+
+- task: NuGetCommand@2
+  inputs:
+    command: 'push'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/Principal.Telemedicine.Shared.Logging.*.nupkg'
+    nuGetFeedType: 'internal'
+    publishVstsFeed: 'Telemedicine'  # Nahraďte názvem svého Artefact Feedu
+    includeSymbols: true
+    includeSource: true
+  displayName: 'Push NuGet package to Artefact Feed'
