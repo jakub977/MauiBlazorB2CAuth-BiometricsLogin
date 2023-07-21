@@ -66,7 +66,7 @@ steps:
 # NuGet authenticate v1
 # Configure NuGet tools to authenticate with Azure Artifacts and other NuGet repositories. Requires NuGet >= 4.8.5385, dotnet >= 6, or MSBuild >= 15.8.166.59604.
 - task: NuGetAuthenticate@1
-  inputs:
+  #inputs:
     #nuGetServiceConnections: # string. Service connection credentials for feeds outside this organization. 
     #forceRe
 
