@@ -37,7 +37,10 @@ steps:
     projects: '$(project)'
     arguments: '--configuration $(buildConfiguration) --output $(build.artifactStagingDirectory)'
 
-- task: VSTest@2
+- task: DotNetCoreCLI@2
+  displayName: 'Run xUnit Tests'
   inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    command: 'custom'
+    custom: 'test'
+    projects: '**/*Tests.csproj'
+    arguments: '--configuration $(buildConfiguration)'
