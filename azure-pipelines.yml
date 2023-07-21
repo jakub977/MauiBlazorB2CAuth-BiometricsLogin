@@ -4,7 +4,15 @@ trigger:
       - main
 
 pool:
-  vmImage: 'windows-latest'
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: UseDotNet@2
+  displayName: 'Install .NET Core SDK'
+  inputs:
+    version: 6.x
+    performMultiLevelLookup: true
+    includePreviewVersions: true # Required for preview versions
 
 steps:
 - script: nuget restore
@@ -35,6 +43,6 @@ steps:
     command: 'push'
     packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
     nuGetFeedType: 'internal'
-    publishVstsFeed: 'TelemedicineFeed'
+    publishVstsFeed: 'Telemedicine'
     includeSymbols: true
   displayName: 'Push NuGet package to Artefact Feed'
