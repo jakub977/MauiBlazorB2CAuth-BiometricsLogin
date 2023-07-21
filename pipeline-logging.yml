@@ -29,8 +29,6 @@ steps:
 - task: NuGetCommand@2
   inputs:
     restoreSolution: '$(solution)'
-    feedsToUse: 'select'
-    vstsFeed: 'Telemedicine'
 
 - task: DotNetCoreCLI@2
   displayName: 'Build project'
@@ -56,3 +54,32 @@ steps:
   inputs:
     pathToPublish: '$(Build.ArtifactStagingDirectory)'
     artifactName: Principal.Telemedicine.Shared.Logging
+    
+- task: DotNetCoreCLI@2
+  displayName: 'Run xUnit Tests'
+  inputs:
+    command: 'custom'
+    custom: 'test'
+    projects: '**/*.Test.csproj'
+    arguments: '--configuration $(buildConfiguration)'
+    buildProperties:
+
+- task: DotNetCoreCLI@2
+  displayName: 'Pack NuGet Package'
+  inputs:
+    command: 'pack'
+    packagesToPack: '$(project)'
+    versioningScheme: 'off'
+    outputDir: '$(Build.ArtifactStagingDirectory)'
+
+- task: NuGetAuthenticate@0
+  displayName: 'NuGet Authenticate'
+
+- task: NuGetCommand@2
+  displayName: 'Push NuGet Package'
+  inputs:
+    command: 'push'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+    nuGetFeedType: 'internal'
+    publishVstsFeed: 'Telemedicine' # Název feedu, kam chceme publikovat balíček
+    allowPackageConflicts: true
