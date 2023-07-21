@@ -55,7 +55,6 @@ steps:
     pathToPublish: '$(Build.ArtifactStagingDirectory)'
     artifactName: Principal.Telemedicine.Shared.Logging
     
-
 - task: DotNetCoreCLI@2
   displayName: 'Pack NuGet Package'
   inputs:
