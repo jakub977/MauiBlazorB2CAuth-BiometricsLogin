@@ -42,5 +42,5 @@ steps:
   inputs:
     command: 'custom'
     custom: 'test'
-    projects: '**/*Tests.csproj'
+    projects: '**/*.Test.csproj'
     arguments: '--configuration $(buildConfiguration)'
