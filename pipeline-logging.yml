@@ -60,21 +60,17 @@ steps:
   inputs:
     command: 'pack'
     packagesToPack: '$(project)'
-    versioningScheme: 'off'
+    versioningScheme: byPrereleaseNumber
+    majorVersion: '$(Major)'
+    minorVersion: '$(Minor)'
+    patchVersion: '$(Patch)'
     outputDir: '$(Build.ArtifactStagingDirectory)'
 
-# NuGet authenticate v1
-# Configure NuGet tools to authenticate with Azure Artifacts and other NuGet repositories. Requires NuGet >= 4.8.5385, dotnet >= 6, or MSBuild >= 15.8.166.59604.
-- task: NuGetAuthenticate@1
-  #inputs:
-    #nuGetServiceConnections: # string. Service connection credentials for feeds outside this organization. 
-    #forceRe
-
+- task: NuGetAuthenticate@0
+  displayName: 'NuGet Authenticate'
 - task: NuGetCommand@2
-  displayName: 'Push NuGet Package'
+  displayName: 'NuGet push'
   inputs:
-    command: 'push'
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
-    nuGetFeedType: 'internal'
-    publishVstsFeed: 'Telemedicine' # Název feedu, kam chceme publikovat balíček
+    command: push
+    publishVstsFeed: 'Telemedicine'
     allowPackageConflicts: true
