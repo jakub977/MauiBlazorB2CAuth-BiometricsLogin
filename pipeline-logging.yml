@@ -75,5 +75,5 @@ steps:
   displayName: 'NuGet push'
   inputs:
     command: push
-    publishVstsFeed: 'Telemedicine'    
+    publishVstsFeed: '[Telemedicína]/Telemedicine'
     allowPackageConflicts: true
