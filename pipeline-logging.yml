@@ -48,15 +48,6 @@ steps:
     projects: '**/*.Test.csproj'
     arguments: '--configuration $(buildConfiguration)'
     buildProperties: 
-- task: CopyFiles@2
-  inputs:
-    sourceFolder: '$(Build.SourcesDirectory)'
-    contents: '**/$(BuildConfiguration)/**/?(*.exe|*.dll|*.pdb)'
-    targetFolder: '$(Build.ArtifactStagingDirectory)'
-- task: PublishBuildArtifacts@1
-  inputs:
-    pathToPublish: '$(Build.ArtifactStagingDirectory)'
-    artifactName: Principal.Telemedicine.Shared.Logging
     
 - task: DotNetCoreCLI@2
   displayName: 'Pack NuGet Package'
