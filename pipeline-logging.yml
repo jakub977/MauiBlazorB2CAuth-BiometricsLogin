@@ -14,6 +14,9 @@ variables:
   project: '**/Principal.Telemedicine.Shared.Logging.csproj'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
+  Major: '1'
+  Minor: '0'
+  Patch: '0'
 
 
 steps:
@@ -72,5 +75,5 @@ steps:
   displayName: 'NuGet push'
   inputs:
     command: push
-    publishVstsFeed: 'Telemedicine'
+    publishVstsFeed: 'Telemedicine'    
     allowPackageConflicts: true
