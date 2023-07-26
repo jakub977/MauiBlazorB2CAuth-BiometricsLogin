@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Principal.Telemedicine.DataConnectors.Models;
+
 using Principal.Telemedicine.Shared.Logging;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging.AzureAppServices;
@@ -33,6 +34,7 @@ public static class DiRegistration
         {        
             builder.AddProvider(services.BuildServiceProvider().GetService<ILoggerProvider>()); 
         });
+       
 
         return services;
     }
