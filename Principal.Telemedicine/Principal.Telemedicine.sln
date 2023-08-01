@@ -13,6 +13,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Principal.Telemedicine.Shar
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Principal.Telemedicine.DataConnectors", "Principal.Telemedicine.DataConnectors\Principal.Telemedicine.DataConnectors.csproj", "{8D406F76-A642-49C2-B467-833F15B710E0}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Principal.Telemedicine.Shared.Logging", "Principal.Telemedicine.Shared.Logging\Principal.Telemedicine.Shared.Logging.csproj", "{FC8EAA85-42C9-4E49-BD87-82B114151BE5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Principal.Telemedicine.Shared.Logging.Test", "Principal.Telemedicine.Shared.Logging.Test\Principal.Telemedicine.Shared.Logging.Test.csproj", "{2FA6DDBE-722C-4AD4-B670-CA74FECA8380}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Principal.Telemedicine.B2CApi", "Principal.Telemedicine.B2CApi\Principal.Telemedicine.B2CApi.csproj", "{F0246219-8820-4F43-8577-4F80E368E036}"
 EndProject
 Global
@@ -41,6 +45,14 @@ Global
 		{8D406F76-A642-49C2-B467-833F15B710E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8D406F76-A642-49C2-B467-833F15B710E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8D406F76-A642-49C2-B467-833F15B710E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC8EAA85-42C9-4E49-BD87-82B114151BE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC8EAA85-42C9-4E49-BD87-82B114151BE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC8EAA85-42C9-4E49-BD87-82B114151BE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC8EAA85-42C9-4E49-BD87-82B114151BE5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FA6DDBE-722C-4AD4-B670-CA74FECA8380}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FA6DDBE-722C-4AD4-B670-CA74FECA8380}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FA6DDBE-722C-4AD4-B670-CA74FECA8380}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FA6DDBE-722C-4AD4-B670-CA74FECA8380}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F0246219-8820-4F43-8577-4F80E368E036}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F0246219-8820-4F43-8577-4F80E368E036}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F0246219-8820-4F43-8577-4F80E368E036}.Release|Any CPU.ActiveCfg = Release|Any CPU
