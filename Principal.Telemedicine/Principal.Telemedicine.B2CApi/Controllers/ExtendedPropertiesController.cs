@@ -1,8 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Principal.Telemedicine.B2CApi.Helpers;
+using Principal.Telemedicine.B2CApi.Models;
+using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -12,97 +16,164 @@ namespace Principal.Telemedicine.B2CApi.Controllers
     [ApiController]
     public class ExtendedPropertiesController : ControllerBase
     {
-        private readonly ILogger _logger;
+        private readonly ILogger<ExtendedPropertiesController> _logger;
 
-        public ExtendedPropertiesController(ILogger logger)
+        public ExtendedPropertiesController(ILogger<ExtendedPropertiesController> logger)
         {
             _logger = logger;
         }
 
-        // POST/ api/ExtendedPropertiesController> / {requestBody}
-        [HttpPost("AddExtendedProperties", Name = "AddExtendedProperties")]
-        public async Task<IActionResult> AddExtendedProperties(string requestBody)
+        [HttpPost]
+        [Route("AddExtendedProperties")]
+        public async Task<IActionResult> AddExtendedProperties()
         {
-            //string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
+            // Allowed domains
+            //string[] allowedDomain = { "fabrikam.com", "fabricam.com" };
+
+            // Check HTTP basic authorization
+            //if (!Authorize(Request, _logger))
+            //{
+            //    _logger.LogWarning("HTTP basic authentication validation failed.");
+            //    return (ActionResult)new UnauthorizedResult();
+            //}
+
+            var req = Request;
+
+            // Get the request body
+
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
 
             if (string.IsNullOrEmpty(requestBody))
             {
-                // pokud přijde prázdné request body, logujeme
-                if (data == null)
-                {
-                    _logger.LogInformation(requestBody);
-                    return NotFound();
-                }
+                _logger.LogWarning("Request body is empty.");
+                return (ActionResult)new OkObjectResult(new ResponseContent("ShowBlockPage", "Request body is empty."));
             }
 
-            _logger.LogInformation(requestBody);
+            dynamic data = JsonConvert.DeserializeObject(requestBody);
 
-            SqlConnection sqlConn = new SqlConnection("Server=tcp:tmworkstoresqlserver.database.windows.net,1433;Initial Catalog=VANDA_TEST;Persist Security Info=False;User ID=workstore_worker;Password=9hXo!dX#6rS2ccRhXRjvD%EiJV$qqbL5;Encrypt=True;Enlist=True;Pooling=True;Min Pool Size=1;Max Pool Size=300;ConnectRetryCount=3;TrustServerCertificate=False;Connection Timeout=450;");
-
-            var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-            var b2cExtensionAppClientId = config.GetValue<string>("AzureAd:B2cExtensionAppClientId");
-            if (string.IsNullOrWhiteSpace(b2cExtensionAppClientId))
+            // If input data is null, show block page
+            if (data == null)
             {
-                throw new ArgumentException("B2cExtensionAppClientId (its Application ID) is missing from appsettings.json. Find it in the App registrations pane in the Azure portal. The app registration has the name 'b2c-extensions-app. Do not modify. Used by AADB2C for storing user data.'.", nameof(b2cExtensionAppClientId));
+                return (ActionResult)new OkObjectResult(new ResponseContent("ShowBlockPage", "There was a problem with your request."));
             }
 
-            // namapování na custom claimy
-            const string customPropertyName1 = "Telephone Number";
-            const string customPropertyName2 = "Global ID";
+            // Print out the request body
+            _logger.LogInformation("Request body: " + requestBody);
+            _logger.Log(LogLevel.Error, "Request body: " + requestBody);
+            //_logger.Log(LogLevel.Error, "Request:" + request);
 
-            // získání názvu atributu včetně cesty (Azure AD extension)
-            ExtendedPropertiesHelper helper = new Helpers.ExtendedPropertiesHelper(b2cExtensionAppClientId);
-            string telephoneNumberClaimPath = helper.GetCompletePropertyName(customPropertyName1);
-            string globalIdClaimPath = helper.GetCompletePropertyName(customPropertyName2);
+            // Get the current user language 
+            string language = (data.ui_locales == null || data.ui_locales.ToString() == "") ? "default" : data.ui_locales.ToString();
+            _logger.LogInformation($"Current language: {language}");
 
-            // response musí obsahovat verzi api a akci
+            // If email claim not found, show block page. Email is required and sent by default.
+            if (data.email == null || data.email.ToString() == "" || data.email.ToString().Contains("@") == false)
+            {
+                return (ActionResult)new OkObjectResult(new ResponseContent("ShowBlockPage", "Email name is mandatory."));
+            }
+
+
+            //// If displayName claim doesn't exist, or it is too short, show validation error message. So, user can fix the input data.
+            //if (data.displayName == null || data.displayName.ToString().Length < 5)
+            //{
+            //    return (ActionResult)new BadRequestObjectResult(new ResponseContent("ValidationError", "Please provide a Display Name with at least five characters."));
+            //}
+
+            // Input validation passed successfully, return `Allow` response.
+            // TO DO: Configure the claims you want to return
+
+            string telephoneNumberClaim = "extension_TelephoneNumber";
+            string globalIdClaim = "extension_GlobalID";
+
             var extendedProperties = new Dictionary<string, string>();
-            extendedProperties.Add("version", "1.0.0.");
-            extendedProperties.Add("action", "Continue");
 
-            // pokud jeden z claimů v requestu vůbec nepřišel, dohledáme jeho hodnotu v db
-            if (data.telephoneNumberClaimPath == null || data.globalIdClaimPath == null)
+            SqlConnection sqlConn = new SqlConnection();
+         
+            using (sqlConn)
             {
-                using (sqlConn)
+
+                using (SqlCommand cmd = new SqlCommand("dbo.sp_GetUserClaims", sqlConn))
                 {
+                    cmd.CommandType = CommandType.StoredProcedure;
 
-                    using (SqlCommand cmd = new SqlCommand("dbo.sp_GetUserClaims", sqlConn))
+                    // vstupní parametr email
+                    SqlParameter par = new SqlParameter("@email", SqlDbType.VarChar);
+                    par.Value = data.email.ToString();
+                    par.Direction = ParameterDirection.Input;
+                    cmd.Parameters.Add(par);
+
+                    sqlConn.Open();
+
+                    // převzetí výsledku
+                    using (SqlDataReader reader = cmd.ExecuteReader())
                     {
-                        cmd.CommandType = CommandType.StoredProcedure;
-
-                        // vstupní parametr email
-                        SqlParameter par = new SqlParameter("@email", SqlDbType.VarChar);
-                        par.Value = data.email.ToString();
-                        par.Direction = ParameterDirection.Input;
-                        cmd.Parameters.Add(par);
-
-                        sqlConn.Open();
-
-                        // převzetí výsledku
-                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        while (reader.Read())
                         {
-                            while (reader.Read())
+                            if (data.telephoneNumberClaim == null)
                             {
-                                if (data.telephoneNumberClaimPath == null)
-                                {
-                                    extendedProperties.Add(telephoneNumberClaimPath, Convert.ToString(reader.GetValue(reader.GetOrdinal("TelephoneNumber"))));
-                                }
+                                extendedProperties.Add(telephoneNumberClaim, Convert.ToString(reader.GetValue(reader.GetOrdinal("TelephoneNumber"))));
+                            }
 
 
-                                if (data.globalIdClaimPath == null)
-                                {
-                                    extendedProperties.Add(globalIdClaimPath, Convert.ToString(reader.GetValue(reader.GetOrdinal("GlobalId"))));
-                                }
+                            if (data.globalIdClaim == null)
+                            {
+                                extendedProperties.Add(globalIdClaim, Convert.ToString(reader.GetValue(reader.GetOrdinal("GlobalId"))));
                             }
                         }
                     }
                 }
-
-                return Ok(extendedProperties);
+            }
+            if (extendedProperties.Count > 0)
+            {
+                return (ActionResult)new OkObjectResult(new ResponseContent(extendedProperties));
             }
 
-            return Ok();
+            else
+            {
+                _logger.Log(LogLevel.Error, "Uživatel nebyl nalezen v databázi");
+                return (ActionResult)new BadRequestObjectResult(new ResponseContent("ValidationError", "User was not found in database"));
+            }
+
+        }
+
+        private static bool Authorize(HttpRequest req, ILogger log)
+        {
+            // Get the environment's credentials 
+            //string username = System.Environment.GetEnvironmentVariable("BASIC_AUTH_USERNAME", EnvironmentVariableTarget.Process);
+            //string password = System.Environment.GetEnvironmentVariable("BASIC_AUTH_PASSWORD", EnvironmentVariableTarget.Process);
+
+            string username = "TEST";
+            string password = "HESLO";
+
+            // Returns authorized if the username is empty or not exists.
+            if (string.IsNullOrEmpty(username))
+            {
+                log.LogInformation("HTTP basic authentication is not set.");
+                return true;
+            }
+
+            // Check if the HTTP Authorization header exist
+            if (!req.Headers.ContainsKey("Authorization"))
+            {
+                log.LogWarning("Missing HTTP basic authentication header.");
+                return false;
+            }
+
+            // Read the authorization header
+            var auth = req.Headers["Authorization"].ToString();
+
+            // Ensure the type of the authorization header id `Basic`
+            if (!auth.StartsWith("Basic "))
+            {
+                log.LogWarning("HTTP basic authentication header must start with 'Basic '.");
+                return false;
+            }
+
+            // Get the the HTTP basinc authorization credentials
+            var cred = System.Text.UTF8Encoding.UTF8.GetString(Convert.FromBase64String(auth.Substring(6))).Split(':');
+
+            // Evaluate the credentials and return the result
+            return (cred[0] == username && cred[1] == password);
         }
     }
 }
