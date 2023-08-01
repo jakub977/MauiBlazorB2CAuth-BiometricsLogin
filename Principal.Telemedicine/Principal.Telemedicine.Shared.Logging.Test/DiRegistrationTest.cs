@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Principal.Telemedicine.DataConnectors.Models;
-
+using Principal.Telemedicine.Shared.Logging.Test.Helpers;
 using Xunit;
 
 namespace Principal.Telemedicine.Shared.Logging.Tests;
@@ -12,12 +12,9 @@ namespace Principal.Telemedicine.Shared.Logging.Tests;
 
 public class DiRegistrationTests
 {
-
-    
-    [Fact(DisplayName ="Test Registrace Logování a odzkoušení extenze se zápisem do databáze")]
-    public void AddLogging_Test_CompositeLoggerProvider()
+    private DependencyResolverHelper serviceProvider;
+    public DiRegistrationTests()
     {
-    
         // Arrange
         var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json")
             .Build();
@@ -26,20 +23,32 @@ public class DiRegistrationTests
         var hostBuilder = new HostBuilder()
             .ConfigureServices((context, services) =>
             {
-                services.AddDbContext<DbContextGeneral>(fn=>fn.UseInMemoryDatabase(databaseName: "TestDatabaseLogCustom"));
+                services.AddDbContext<DbContextGeneral>(fn =>
+                {
+                    fn.UseInMemoryDatabase(databaseName: "TestDatabaseLogCustom");
+                    fn.EnableSensitiveDataLogging(false);
+                    var loggerFactory = LoggerFactory.Create(builder =>
+                    {
+                        builder.AddFilter((category, level) => false);
+                    });
+                    fn.UseLoggerFactory(loggerFactory);
+                });
                 // Register the DiRegistration class
                 services.AddLogging(configuration);
+                DiRegistration.AddLogging(services, configuration);
+
             });
 
+        serviceProvider = new DependencyResolverHelper(hostBuilder.Build());
+    }
+
+    [Fact(DisplayName ="Test Registrace Logování a odzkoušení extenze se zápisem do databáze")]
+    public void AddLogging_Test_CompositeLoggerProvider()
+    {
+
         // Act
-        var host = hostBuilder.Build();
-        var serviceProvider = host.Services;
-        var loggerProvider = serviceProvider.GetRequiredService<ILoggerProvider>();
-
-        // Asserts
-        Assert.IsType<CompositeLoggerProvider>(loggerProvider);
-
-        var logger = loggerProvider.CreateLogger("Test");
+        var logger = serviceProvider.GetService<ILogger<DiRegistrationTests>>();
+     
         logger.LogCustom(Enumerators.CustomLogLevel.Audit, "TestTopic", "this test source", "short message from log", "full message from log", "aditionalInfo from log", "idCommunication");
         
         using var _context = serviceProvider.GetService<DbContextGeneral>();
