@@ -6,6 +6,7 @@ using Principal.Telemedicine.DataConnectors.Models;
 using Principal.Telemedicine.Shared.Logging;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging.AzureAppServices;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 public static class DiRegistration
 {
@@ -17,7 +18,6 @@ public static class DiRegistration
     /// <returns>kolekci služeb pro řetězení</returns>
     public static IServiceCollection AddLogging(this IServiceCollection services, IConfiguration configuration)
     {
-    
         // Vytvoříme instance logovacích providerů pro TelemedicineDbLogger
         var telemedicineLoggerProvider = new TelemedicineLoggerProvider(services.BuildServiceProvider().GetService<DbContextGeneral>());
 
@@ -26,10 +26,10 @@ public static class DiRegistration
         {
             telemedicineLoggerProvider
         });
-
-       
+      
         services.AddSingleton<ILoggerProvider, CompositeLoggerProvider>();
         services.Configure<AzureFileLoggerOptions>(configuration.GetSection("AzureFileLogging"));
+
         services.AddLogging(builder =>
         {        
             builder.AddProvider(services.BuildServiceProvider().GetService<ILoggerProvider>()); 
