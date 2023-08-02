@@ -15,9 +15,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Principal.Telemedicine.Data
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Principal.Telemedicine.Shared.Logging", "Principal.Telemedicine.Shared.Logging\Principal.Telemedicine.Shared.Logging.csproj", "{FC8EAA85-42C9-4E49-BD87-82B114151BE5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Principal.Telemedicine.Shared.Logging.Test", "Principal.Telemedicine.Shared.Logging.Test\Principal.Telemedicine.Shared.Logging.Test.csproj", "{2FA6DDBE-722C-4AD4-B670-CA74FECA8380}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Principal.Telemedicine.Shared.Logging.Test", "Principal.Telemedicine.Shared.Logging.Test\Principal.Telemedicine.Shared.Logging.Test.csproj", "{2FA6DDBE-722C-4AD4-B670-CA74FECA8380}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Principal.Telemedicine.B2CApi", "Principal.Telemedicine.B2CApi\Principal.Telemedicine.B2CApi.csproj", "{F0246219-8820-4F43-8577-4F80E368E036}"
+	ProjectSection(ProjectDependencies) = postProject
+		{826F5609-25F8-468D-881B-1AA80FAB8F73} = {826F5609-25F8-468D-881B-1AA80FAB8F73}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

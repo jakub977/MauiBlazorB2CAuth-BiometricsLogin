@@ -1,12 +1,18 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Principal.Telemedicine.B2CApi.Helpers;
 using Principal.Telemedicine.B2CApi.Models;
+using Principal.Telemedicine.Shared.Models;
+using Principal.Telemedicine.SharedApi.Models;
 using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
+using System.Reflection.PortableExecutable;
+using System.Text;
 using System.Threading.Tasks;
+using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -17,19 +23,18 @@ namespace Principal.Telemedicine.B2CApi.Controllers
     public class ExtendedPropertiesController : ControllerBase
     {
         private readonly ILogger<ExtendedPropertiesController> _logger;
+        private readonly ApiDbContext _context;
 
-        public ExtendedPropertiesController(ILogger<ExtendedPropertiesController> logger)
+        public ExtendedPropertiesController(ILogger<ExtendedPropertiesController> logger, ApiDbContext context)
         {
             _logger = logger;
+            _context = context;
         }
 
         [HttpPost]
         [Route("AddExtendedProperties")]
         public async Task<IActionResult> AddExtendedProperties()
         {
-            // Allowed domains
-            //string[] allowedDomain = { "fabrikam.com", "fabricam.com" };
-
             // Check HTTP basic authorization
             //if (!Authorize(Request, _logger))
             //{
@@ -40,13 +45,13 @@ namespace Principal.Telemedicine.B2CApi.Controllers
             var req = Request;
 
             // Get the request body
-
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+
 
             if (string.IsNullOrEmpty(requestBody))
             {
                 _logger.LogWarning("Request body is empty.");
-                return (ActionResult)new OkObjectResult(new ResponseContent("ShowBlockPage", "Request body is empty."));
+                return new OkObjectResult(new ResponseContent("Request body is empty."));
             }
 
             dynamic data = JsonConvert.DeserializeObject(requestBody);
@@ -54,84 +59,36 @@ namespace Principal.Telemedicine.B2CApi.Controllers
             // If input data is null, show block page
             if (data == null)
             {
-                return (ActionResult)new OkObjectResult(new ResponseContent("ShowBlockPage", "There was a problem with your request."));
+                return new OkObjectResult(new ResponseContent("There was a problem with your request."));
             }
 
-            // Print out the request body
-            _logger.LogInformation("Request body: " + requestBody);
-            _logger.Log(LogLevel.Error, "Request body: " + requestBody);
-            //_logger.Log(LogLevel.Error, "Request:" + request);
+            _logger.Log(LogLevel.Error, "Request:" + requestBody);
 
-            // Get the current user language 
-            string language = (data.ui_locales == null || data.ui_locales.ToString() == "") ? "default" : data.ui_locales.ToString();
-            _logger.LogInformation($"Current language: {language}");
+            string email = Convert.ToString(data.Email);
 
-            // If email claim not found, show block page. Email is required and sent by default.
-            if (data.email == null || data.email.ToString() == "" || data.email.ToString().Contains("@") == false)
+            List<ExtendedPropertiesDataModel> dbResult = new List<ExtendedPropertiesDataModel>();
+
+            _logger.Log(LogLevel.Error, $"Volání db s parametrem email: '{email}' ");
+            dbResult = _context.ExecSqlQuery<ExtendedPropertiesDataModel>($"dbo.sp_GetUserClaims @email = '{email}'");
+
+            if (dbResult.Count == 1)
             {
-                return (ActionResult)new OkObjectResult(new ResponseContent("ShowBlockPage", "Email name is mandatory."));
-            }
+                string foundTelephoneNumberStr = Convert.ToString(dbResult[0].TelephoneNumber);
+                string foundGlobalIdStr = Convert.ToString(dbResult[0].GlobalID);
 
+                _logger.Log(LogLevel.Error, $"Návratové hodnoty TelephoneNumber: '{foundTelephoneNumberStr}', GlobalId: '{foundGlobalIdStr}'");
 
-            //// If displayName claim doesn't exist, or it is too short, show validation error message. So, user can fix the input data.
-            //if (data.displayName == null || data.displayName.ToString().Length < 5)
-            //{
-            //    return (ActionResult)new BadRequestObjectResult(new ResponseContent("ValidationError", "Please provide a Display Name with at least five characters."));
-            //}
-
-            // Input validation passed successfully, return `Allow` response.
-            // TO DO: Configure the claims you want to return
-
-            string telephoneNumberClaim = "extension_TelephoneNumber";
-            string globalIdClaim = "extension_GlobalID";
-
-            var extendedProperties = new Dictionary<string, string>();
-
-            SqlConnection sqlConn = new SqlConnection();
-         
-            using (sqlConn)
-            {
-
-                using (SqlCommand cmd = new SqlCommand("dbo.sp_GetUserClaims", sqlConn))
+                return new OkObjectResult(new ResponseContent()
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
+                    extension_TelephoneNumber = foundTelephoneNumberStr,
+                    extension_GlobalID = foundGlobalIdStr,
+                });
 
-                    // vstupní parametr email
-                    SqlParameter par = new SqlParameter("@email", SqlDbType.VarChar);
-                    par.Value = data.email.ToString();
-                    par.Direction = ParameterDirection.Input;
-                    cmd.Parameters.Add(par);
-
-                    sqlConn.Open();
-
-                    // převzetí výsledku
-                    using (SqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            if (data.telephoneNumberClaim == null)
-                            {
-                                extendedProperties.Add(telephoneNumberClaim, Convert.ToString(reader.GetValue(reader.GetOrdinal("TelephoneNumber"))));
-                            }
-
-
-                            if (data.globalIdClaim == null)
-                            {
-                                extendedProperties.Add(globalIdClaim, Convert.ToString(reader.GetValue(reader.GetOrdinal("GlobalId"))));
-                            }
-                        }
-                    }
-                }
-            }
-            if (extendedProperties.Count > 0)
-            {
-                return (ActionResult)new OkObjectResult(new ResponseContent(extendedProperties));
             }
 
             else
             {
-                _logger.Log(LogLevel.Error, "Uživatel nebyl nalezen v databázi");
-                return (ActionResult)new BadRequestObjectResult(new ResponseContent("ValidationError", "User was not found in database"));
+                return new BadRequestObjectResult(new ResponseContent("User doesnt exist in database."));
             }
 
         }

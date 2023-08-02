@@ -1,4 +1,6 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.ApplicationInsights;
+using Principal.Telemedicine.SharedApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +17,9 @@ builder.Logging.AddApplicationInsights(
             configureApplicationInsightsLoggerOptions: (options) => { }
     );
 
-builder.Services.AddDbContext(options => options.UseSqlServer);
+//Dependency Injection od DbContext Class
+builder.Services.AddDbContext<ApiDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("VANDA_TEST")));
 
 builder.Logging.AddFilter<ApplicationInsightsLoggerProvider>("B2CApi", LogLevel.Trace);
 builder.Services.AddApplicationInsightsTelemetry(builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]);
