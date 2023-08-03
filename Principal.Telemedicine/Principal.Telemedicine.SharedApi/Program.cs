@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Identity.Web;
-using Principal.Telemedicine.SharedApi.Models;
+using Principal.Telemedicine.DataConnectors.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,10 +19,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//Dependency Injection od DbContext Class
+//Dependency Injection of DbContext Class
 builder.Services.AddDbContext<ApiDbContext>(options => 
     options.UseSqlServer(builder.Configuration.GetConnectionString("VANDA_TEST")));
 
+builder.Services.AddLogging();
 
 var app = builder.Build();
 
