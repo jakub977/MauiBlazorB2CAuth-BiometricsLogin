@@ -35,7 +35,7 @@ public class DiRegistrationTests
                 });
                 // Register the DiRegistration class
                 services.AddLogging(configuration);
-                DiRegistration.AddLogging(services, configuration);
+               
 
             });
 
