@@ -1,9 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Principal.Telemedicine.Shared.Configuration;
-using Xunit;
 namespace Principal.Telemedicine.Shared.Configuration.Test;
 public class SecretConfigurationProviderTests
 {
@@ -18,20 +15,20 @@ public class SecretConfigurationProviderTests
     {
         // Arrange
         var secretFilePath = "secured/secrets.json";
-
+        
         // Vytvoření IConfiguration souboru s testovacími hodnotami
         var configuration = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json")
-            .Build();
+            .AddJsonFile("appsettings.json").Build();
+           
 
         // Act
         var secretConfigProvider = new SecretConfigurationProvider<TestSettings>(configuration, secretFilePath, true);
         secretConfigProvider.Load();
 
      
-        secretConfigProvider.TryGet("SecretProperty", out string loadedValue);
+        secretConfigProvider.TryGet("TestSettings:SecretProperty", out string loadedValue);
         // Assert
-        Assert.Equal("SecretValueFromSecretJson", loadedValue);
+        Assert.Equal("SecretTestValue", loadedValue);
     }
 
     [Fact(DisplayName = "Test pro nastavení SecretConfigurationProvider v IHostBuilderu")]
@@ -39,26 +36,25 @@ public class SecretConfigurationProviderTests
     {
         // Arrange
         var secretFilePath = "secured/secrets.json";
-        var isLocal = true;
+        var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json")
+           .Build();
 
         // Act
         var hostBuilder = new HostBuilder()
-            .UseSecretConfiguration<TestSettings>(secretFilePath) // Volání extension metody UseSecretConfiguration
-            .ConfigureServices((context, services) =>
-            {
-                // Registrace služby s konfigurací
-                services.Configure<TestSettings>(context.Configuration);
-            });
+        .UseSecretConfiguration<TestSettings>(configuration, secretFilePath);
+        
+        var host = new DependencyResolverHelper(hostBuilder.Build());
+       
+        var options = host.GetService<IOptions<TestSettings>>();
 
-        var host = hostBuilder.Build();
-        var configurationProvider = host.Services.GetRequiredService<IConfigurationProvider>() as SecretConfigurationProvider<TestSettings>;
-        var options = host.Services.GetRequiredService<IOptions<TestSettings>>();
+
+
         // Assert
 
-        Assert.NotNull(configurationProvider);
+        Assert.NotNull(options);
         Assert.NotNull(options.Value);
         Assert.Equal("PublicValueFromAppsettingsJson", options.Value.PublicProperty);
-        Assert.Equal("SecretValueFromSecretJson", options.Value.SecretProperty);
+        Assert.Equal("SecretTestValue", options.Value.SecretProperty);
 
     }
 
@@ -76,19 +72,18 @@ public class SecretConfigurationProviderTests
 
         // Vytvoření IConfiguration souboru s testovacími hodnotami
         var configuration = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json")
-            .Build();
+            .AddJsonFile("appsettings.json").Build();
 
         // Act
-        var secretConfigProvider = new SecretConfigurationProvider<TestSettings>(configuration, secretFilePath);
+        var secretConfigProvider = new SecretConfigurationProvider<TestSettings>(configuration, secretFilePath, true);
         secretConfigProvider.Load();
 
     
-        secretConfigProvider.TryGet("PublicProperty", out string pubValue);
-        secretConfigProvider.TryGet("SecretProperty", out string secValue);
+        secretConfigProvider.TryGet("TestSettings:PublicProperty", out string pubValue);
+        secretConfigProvider.TryGet("TestSettings:SecretProperty", out string secValue);
 
         // Assert
         Assert.Equal("PublicValueFromAppsettingsJson", pubValue);
-        Assert.Equal("SecretValueFromSecretJson", secValue);
+        Assert.Equal("SecretTestValue", secValue);
     }
 }
