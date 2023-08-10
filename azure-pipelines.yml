@@ -31,14 +31,14 @@ steps:
   inputs:
     restoreSolution: '$(solution)'
 - task: DotNetCoreCLI@2
-  displayName: 'Build main project'
+  displayName: 'Build Configuration project'
   inputs:
     command: 'build'
     projects: '$(mainProject)'
     arguments: '--configuration $(buildConfiguration) --output $(build.artifactStagingDirectory)'
 
 - task: DotNetCoreCLI@2
-  displayName: 'Build data connectors project'
+  displayName: 'Build Shared project'
   inputs:
     command: 'build'
     projects: '$(dataConnectorsProject)'
