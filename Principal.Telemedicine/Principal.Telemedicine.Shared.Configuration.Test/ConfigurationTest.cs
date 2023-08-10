@@ -1,6 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Moq;
+
 namespace Principal.Telemedicine.Shared.Configuration.Test;
 public class SecretConfigurationProviderTests
 {
@@ -19,10 +22,11 @@ public class SecretConfigurationProviderTests
         // Vytvoření IConfiguration souboru s testovacími hodnotami
         var configuration = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json").Build();
-           
+        var mock = new Mock<ILogger<SecretConfigurationProviderTests>>();
+        ILogger<SecretConfigurationProviderTests> logger = mock.Object;
 
         // Act
-        var secretConfigProvider = new SecretConfigurationProvider<TestSettings>(configuration, secretFilePath, true);
+        var secretConfigProvider = new SecretConfigurationProvider<TestSettings>(configuration, secretFilePath,logger, true);
         secretConfigProvider.Load();
 
      
@@ -38,10 +42,11 @@ public class SecretConfigurationProviderTests
         var secretFilePath = "secured/secrets.json";
         var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json")
            .Build();
-
+        var mock = new Mock<ILogger<SecretConfigurationProviderTests>>();
+        ILogger<SecretConfigurationProviderTests> logger = mock.Object;
         // Act
         var hostBuilder = new HostBuilder()
-        .UseSecretConfiguration<TestSettings>(configuration, secretFilePath);
+        .UseSecretConfiguration<TestSettings>(configuration,logger , secretFilePath);
         
         var host = new DependencyResolverHelper(hostBuilder.Build());
        
@@ -73,9 +78,10 @@ public class SecretConfigurationProviderTests
         // Vytvoření IConfiguration souboru s testovacími hodnotami
         var configuration = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json").Build();
-
+        var mock = new Mock<ILogger<SecretConfigurationProviderTests>>();
+        ILogger<SecretConfigurationProviderTests> logger = mock.Object;
         // Act
-        var secretConfigProvider = new SecretConfigurationProvider<TestSettings>(configuration, secretFilePath, true);
+        var secretConfigProvider = new SecretConfigurationProvider<TestSettings>(configuration, secretFilePath,logger, true);
         secretConfigProvider.Load();
 
     
