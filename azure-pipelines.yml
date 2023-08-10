@@ -1,0 +1,103 @@
+# ASP.NET
+# Build and test ASP.NET projects.
+# Add steps that publish symbols, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
+
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  solution: '**/*.sln'
+  mainProject: '**/Principal.Telemedicine.Shared.Configuration.csproj'
+  dataConnectorsProject: '**/Principal.Telemedicine.Shared.csproj'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+
+
+steps:
+- task: UseDotNet@2
+  displayName: 'Install .NET Core SDK'
+  inputs:
+    version: 6.x
+    performMultiLevelLookup: true
+    includePreviewVersions: true # Required for preview versions
+    
+- task: NuGetToolInstaller@1
+
+- task: NuGetCommand@2
+  inputs:
+    restoreSolution: '$(solution)'
+- task: DotNetCoreCLI@2
+  displayName: 'Build main project'
+  inputs:
+    command: 'build'
+    projects: '$(mainProject)'
+    arguments: '--configuration $(buildConfiguration) --output $(build.artifactStagingDirectory)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Build data connectors project'
+  inputs:
+    command: 'build'
+    projects: '$(dataConnectorsProject)'
+    arguments: '--configuration $(buildConfiguration) --output $(build.artifactStagingDirectory)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Run xUnit Tests'
+  inputs:
+    command: 'custom'
+    custom: 'test'
+    projects: '**/Principal.Telemedicine.Shared.Configuration.Test.csproj'
+    arguments: '--configuration $(buildConfiguration)'
+    buildProperties: 
+
+- task: DotNetCoreCLI@2
+  displayName: 'Pack NuGet Package for main project'
+  inputs:
+    command: 'pack'
+    packagesToPack: '$(mainProject)'
+    versioningScheme: byPrereleaseNumber
+    majorVersion: '$(Major)'
+    minorVersion: '$(Minor)'
+    patchVersion: '$(Patch)'
+    outputDir: '$(Build.ArtifactStagingDirectory)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Pack NuGet Package for data connectors project'
+  inputs:
+    command: 'pack'
+    packagesToPack: '$(dataConnectorsProject)'
+    versioningScheme: byPrereleaseNumber
+    majorVersion: '$(Major)'
+    minorVersion: '$(Minor)'
+    patchVersion: '$(Patch)'
+    outputDir: '$(Build.ArtifactStagingDirectory)'
+- task: PowerShell@2
+  displayName: 'Copy DLLs from DataConnectors project to main project'
+  inputs:
+    targetType: 'inline'
+    script: |
+      $dataConnectorsDLLPath = "$(Build.ArtifactStagingDirectory)\Principal.Telemedicine.DataConnectors.*.nupkg"
+      $mainProjectDLLPath = "$(Build.ArtifactStagingDirectory)\Principal.Telemedicine.Shared.Logging.*.nupkg"
+
+      Expand-Archive -Path $dataConnectorsDLLPath -DestinationPath $(Build.ArtifactStagingDirectory)\DataConnectorsPackage
+      Expand-Archive -Path $mainProjectDLLPath -DestinationPath $(Build.ArtifactStagingDirectory)\MainProjectPackage
+
+      $dataConnectorsDLLFiles = Get-ChildItem -Path "$(Build.ArtifactStagingDirectory)\DataConnectorsPackage" -Recurse -Filter "*.dll"
+      $mainProjectDLLFiles = Get-ChildItem -Path "$(Build.ArtifactStagingDirectory)\MainProjectPackage" -Recurse -Filter "*.dll"
+
+      Copy-Item $dataConnectorsDLLFiles -Destination "$(Build.ArtifactStagingDirectory)\MainProjectPackage"
+      
+      Compress-Archive -Path "$(Build.ArtifactStagingDirectory)\MainProjectPackage\*" -DestinationPath "$(Build.ArtifactStagingDirectory)\MergedPackage.zip"
+
+
+- task: NuGetAuthenticate@0
+  displayName: 'NuGet Authenticate'
+- task: NuGetCommand@2
+  displayName: 'NuGet push'
+  inputs:
+    command: push
+    publishVstsFeed: 'Telemedicína/Telemedicine'
+    allowPackageConflicts: true
