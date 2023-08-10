@@ -12,7 +12,6 @@ pool:
 variables:
   solution: '**/*.sln'
   mainProject: '**/Principal.Telemedicine.Shared.Configuration.csproj'
-  dataConnectorsProject: '**/Principal.Telemedicine.Shared.csproj'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
@@ -38,13 +37,6 @@ steps:
     arguments: '--configuration $(buildConfiguration) --output $(build.artifactStagingDirectory)'
 
 - task: DotNetCoreCLI@2
-  displayName: 'Build Shared project'
-  inputs:
-    command: 'build'
-    projects: '$(dataConnectorsProject)'
-    arguments: '--configuration $(buildConfiguration) --output $(build.artifactStagingDirectory)'
-
-- task: DotNetCoreCLI@2
   displayName: 'Run xUnit Tests'
   inputs:
     command: 'custom'
@@ -63,35 +55,6 @@ steps:
     minorVersion: '$(Minor)'
     patchVersion: '$(Patch)'
     outputDir: '$(Build.ArtifactStagingDirectory)'
-
-- task: DotNetCoreCLI@2
-  displayName: 'Pack NuGet Package for data connectors project'
-  inputs:
-    command: 'pack'
-    packagesToPack: '$(dataConnectorsProject)'
-    versioningScheme: byPrereleaseNumber
-    majorVersion: '$(Major)'
-    minorVersion: '$(Minor)'
-    patchVersion: '$(Patch)'
-    outputDir: '$(Build.ArtifactStagingDirectory)'
-- task: PowerShell@2
-  displayName: 'Copy DLLs from DataConnectors project to main project'
-  inputs:
-    targetType: 'inline'
-    script: |
-      $dataConnectorsDLLPath = "$(Build.ArtifactStagingDirectory)\Principal.Telemedicine.DataConnectors.*.nupkg"
-      $mainProjectDLLPath = "$(Build.ArtifactStagingDirectory)\Principal.Telemedicine.Shared.Logging.*.nupkg"
-
-      Expand-Archive -Path $dataConnectorsDLLPath -DestinationPath $(Build.ArtifactStagingDirectory)\DataConnectorsPackage
-      Expand-Archive -Path $mainProjectDLLPath -DestinationPath $(Build.ArtifactStagingDirectory)\MainProjectPackage
-
-      $dataConnectorsDLLFiles = Get-ChildItem -Path "$(Build.ArtifactStagingDirectory)\DataConnectorsPackage" -Recurse -Filter "*.dll"
-      $mainProjectDLLFiles = Get-ChildItem -Path "$(Build.ArtifactStagingDirectory)\MainProjectPackage" -Recurse -Filter "*.dll"
-
-      Copy-Item $dataConnectorsDLLFiles -Destination "$(Build.ArtifactStagingDirectory)\MainProjectPackage"
-      
-      Compress-Archive -Path "$(Build.ArtifactStagingDirectory)\MainProjectPackage\*" -DestinationPath "$(Build.ArtifactStagingDirectory)\MergedPackage.zip"
-
 
 - task: NuGetAuthenticate@0
   displayName: 'NuGet Authenticate'
