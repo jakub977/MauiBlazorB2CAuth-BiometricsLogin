@@ -38,7 +38,7 @@ steps:
 - task: AzurePowerShell@5
   displayName: 'Azure PowerShell script'
   inputs:
-    azureSubscription: '5ae9e1a4-54fc-4ac3-94fb-ab69578006b3'
+    azureSubscription: 'Tech data - Azure subscription 1'
     ScriptType: 'InlineScript'
     Inline: |
       # Přihlášení identitou do Azure
