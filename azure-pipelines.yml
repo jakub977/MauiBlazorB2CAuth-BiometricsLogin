@@ -38,7 +38,7 @@ steps:
 - task: AzurePowerShell@5
   displayName: 'Azure PowerShell script'
   inputs:
-    azureSubscription: 'Tech data - Azure subscription 1'
+    azureSubscription: 'Microsoft Azure Sponsorship - $12.000'
     ScriptType: 'InlineScript'
     Inline: |
       # Přihlášení identitou do Azure
