@@ -35,22 +35,7 @@ steps:
     command: 'build'
     projects: '$(mainProject)'
     arguments: '--configuration $(buildConfiguration) --output $(build.artifactStagingDirectory)'
-- task: AzurePowerShell@5
-  displayName: 'Try identity set'
-  inputs:
-    azureSubscription: 'pipelines-wetnow'
-    ScriptType: 'InlineScript'
-    Inline: |
-      # Instalace modulu Az
-      Install-Module -Name Az -Force -AllowClobber -Scope CurrentUser
 
-      # Přihlášení identitou do Azure
-      $resourceGroupName = 'VetNOW'
-      $keyVaultName = 'kv-wetnow-dev'
-      $identityName = 'VetNowPipelineUami'
-      
-      $identity = Get-AzUserAssignedIdentity -ResourceGroupName $resourceGroupName -Name $identityName
-      Login-AzAccount -Identity $identity
 - task: DotNetCoreCLI@2
   displayName: 'Run xUnit Tests'
   inputs:
