@@ -36,6 +36,15 @@ steps:
     projects: '$(mainProject)'
     arguments: '--configuration $(buildConfiguration) --output $(build.artifactStagingDirectory)'
 
+- task: AzureKeyVault@2
+  inputs:
+    azureSubscription: 'pipelines-wetnow'
+    KeyVaultName: 'kv-wetnow-dev'
+    SecretsFilter: '*'
+    RunAsPreJob: true
+
+
+
 - task: DotNetCoreCLI@2
   displayName: 'Run xUnit Tests'
   inputs:
