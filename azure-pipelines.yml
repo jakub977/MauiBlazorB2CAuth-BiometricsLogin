@@ -36,7 +36,7 @@ steps:
     projects: '$(mainProject)'
     arguments: '--configuration $(buildConfiguration) --output $(build.artifactStagingDirectory)'
 - task: AzurePowerShell@5
-  displayName: 'Azure PowerShell script'
+  displayName: 'Try identity set'
   inputs:
     azureSubscription: 'pipelines-wetnow'
     ScriptType: 'InlineScript'
