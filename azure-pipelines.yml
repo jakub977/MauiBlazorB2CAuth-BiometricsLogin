@@ -36,7 +36,9 @@ steps:
     projects: '$(mainProject)'
     arguments: '--configuration $(buildConfiguration) --output $(build.artifactStagingDirectory)'
 
-
+- powershell: |
+    Write-Host "##vso[task.setvariable variable=EnvironmentName]local"
+  displayName: 'Set EnvironmentName variable'
 - task: DotNetCoreCLI@2
   displayName: 'Run xUnit Tests'
   inputs:
