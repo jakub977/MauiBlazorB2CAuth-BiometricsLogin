@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Principal.Telemedicine.Shared.Configuration.Test": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "EnvironmentName": "local"
+      }
+    }
+  }
+}

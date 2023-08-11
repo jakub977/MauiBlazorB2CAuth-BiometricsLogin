@@ -7,8 +7,8 @@ namespace Principal.Telemedicine.Shared.Configuration;
 /// </summary>
 public static class ExtensionsForIHostEnvironment
 {
-    internal static IEnumerable<string> ENVIRONMENT_NAMES_LOCAL = new string[1] { "local" };
-    internal static IEnumerable<string> ENVIRONMENT_NAMES_OUT = new string[4] { "development", "testing", "staging", "production" };
+    internal static IEnumerable<string> ENVIRONMENT_NAMES_LOCAL = new string[2] { "local", "development" };
+    internal static IEnumerable<string> ENVIRONMENT_NAMES_OUT = new string[3] {  "testing", "staging", "production" };
   
     /// <summary>
     /// Metoda vrací true v případě, že aplikace běží v lokálním prostředí
@@ -17,7 +17,8 @@ public static class ExtensionsForIHostEnvironment
     /// <returns></returns>
     public static bool IsLocalHosted(this IHostEnvironment hostEnvironment)
     {
-        return ENVIRONMENT_NAMES_LOCAL.Contains<string>(hostEnvironment.EnvironmentName, StringComparer.InvariantCultureIgnoreCase);
+        return ENVIRONMENT_NAMES_LOCAL.Contains<string>(hostEnvironment.EnvironmentName, StringComparer.InvariantCultureIgnoreCase) ||
+            ENVIRONMENT_NAMES_LOCAL.Contains<string>(Environment.GetEnvironmentVariable("EnvironmentName")??String.Empty, StringComparer.InvariantCultureIgnoreCase) ;
     }
 
     /// <summary>
@@ -27,6 +28,7 @@ public static class ExtensionsForIHostEnvironment
     /// <returns></returns>
     public static bool IsNotLocalHosted(this IHostEnvironment hostEnvironment)
     {
-        return ENVIRONMENT_NAMES_LOCAL.Contains<string>(hostEnvironment.EnvironmentName, StringComparer.InvariantCultureIgnoreCase);
+        return ENVIRONMENT_NAMES_OUT.Contains<string>(hostEnvironment.EnvironmentName, StringComparer.InvariantCultureIgnoreCase) ||
+            ENVIRONMENT_NAMES_OUT.Contains<string>(Environment.GetEnvironmentVariable("EnvironmentName") ?? String.Empty, StringComparer.InvariantCultureIgnoreCase); ;
     }
 }
