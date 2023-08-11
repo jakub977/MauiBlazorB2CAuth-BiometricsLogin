@@ -11,7 +11,7 @@ public class SecretConfigurationProviderTests
 
     public SecretConfigurationProviderTests()
     {
-
+       
     }
     [Fact(DisplayName ="Test pro načtení hodnot z secrets pouze")]
     public void ShouldLoadSecretValueFromSecretJson()
@@ -46,8 +46,17 @@ public class SecretConfigurationProviderTests
         ILogger<SecretConfigurationProviderTests> logger = mock.Object;
         // Act
         var hostBuilder = new HostBuilder()
-        .UseSecretConfiguration<TestSettings>(configuration,logger , secretFilePath);
-        
+            .ConfigureAppConfiguration((hostingContext, config) =>
+            {
+                config.AddInMemoryCollection(new[]
+                {
+                    new KeyValuePair<string, string>("EnvironmentName", "local")
+                });
+            })
+        .UseSecretConfiguration<TestSettings>(configuration, logger, secretFilePath)
+        ;
+
+
         var host = new DependencyResolverHelper(hostBuilder.Build());
        
         var options = host.GetService<IOptions<TestSettings>>();
