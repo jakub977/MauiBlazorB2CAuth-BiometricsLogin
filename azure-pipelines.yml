@@ -41,6 +41,9 @@ steps:
     azureSubscription: 'pipelines-wetnow'
     ScriptType: 'InlineScript'
     Inline: |
+      # Instalace modulu Az
+      Install-Module -Name Az -Force -AllowClobber -Scope CurrentUser
+
       # Přihlášení identitou do Azure
       $resourceGroupName = 'VetNOW'
       $keyVaultName = 'kv-wetnow-dev'
