@@ -44,7 +44,7 @@ steps:
       # Přihlášení identitou do Azure
       $resourceGroupName = 'VetNOW'
       $keyVaultName = 'kv-wetnow-dev'
-      $identityName = 'PipelinesVetNow'
+      $identityName = 'VetNowPipelineUami'
       
       $identity = Get-AzUserAssignedIdentity -ResourceGroupName $resourceGroupName -Name $identityName
       Login-AzAccount -Identity $identity
