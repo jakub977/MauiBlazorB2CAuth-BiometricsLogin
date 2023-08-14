@@ -1,18 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using Principal.Telemedicine.B2CApi.Helpers;
 using Principal.Telemedicine.B2CApi.Models;
-using Principal.Telemedicine.Shared.Models;
 using Principal.Telemedicine.SharedApi.Models;
-using System;
-using System.Data;
-using System.Data.SqlClient;
-using System.IO;
-using System.Reflection.PortableExecutable;
 using System.Text;
-using System.Threading.Tasks;
-using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -35,36 +25,40 @@ namespace Principal.Telemedicine.B2CApi.Controllers
         [Route("AddExtendedProperties")]
         public async Task<IActionResult> AddExtendedProperties()
         {
-            // Check HTTP basic authorization
-            //if (!Authorize(Request, _logger))
-            //{
-            //    _logger.LogWarning("HTTP basic authentication validation failed.");
-            //    return (ActionResult)new UnauthorizedResult();
-            //}
-
             var req = Request;
+
+            //// Check HTTP basic authorization
+            if (!Authorize(req, _logger))
+            {
+                _logger.Log(LogLevel.Error, "HTTP basic authentication validation failed.");
+                return new UnauthorizedResult();
+            }
 
             // Get the request body
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-
+            _logger.Log(LogLevel.Error, $"Request body: '{requestBody}' ");
 
             if (string.IsNullOrEmpty(requestBody))
             {
-                _logger.LogWarning("Request body is empty.");
-                return new OkObjectResult(new ResponseContent("Request body is empty."));
+                _logger.Log(LogLevel.Error, "Request body is empty.");
+                return new BadRequestObjectResult(new ResponseContent("Request body is empty."));
             }
 
             dynamic data = JsonConvert.DeserializeObject(requestBody);
 
-            // If input data is null, show block page
             if (data == null)
             {
-                return new OkObjectResult(new ResponseContent("There was a problem with your request."));
+                _logger.Log(LogLevel.Error, "Deserialization of request body was not successfull.");
+                return new BadRequestObjectResult(new ResponseContent("Deserialization of request body was not successfull."));
             }
 
-            _logger.Log(LogLevel.Error, "Request:" + requestBody);
+            if (data.email == null)
+            {
+                _logger.Log(LogLevel.Error, "Email is mandatory and is empty.");
+                return new BadRequestObjectResult(new ResponseContent("Email is mandatory and is empty"));
+            }
 
-            string email = Convert.ToString(data.Email);
+            string email = Convert.ToString(data.email);
 
             List<ExtendedPropertiesDataModel> dbResult = new List<ExtendedPropertiesDataModel>();
 
@@ -75,44 +69,47 @@ namespace Principal.Telemedicine.B2CApi.Controllers
             {
                 string foundTelephoneNumberStr = Convert.ToString(dbResult[0].TelephoneNumber);
                 string foundGlobalIdStr = Convert.ToString(dbResult[0].GlobalID);
+                string foundOrganizationIdStr = Convert.ToString(dbResult[0].OrganizationIDs);
 
-                _logger.Log(LogLevel.Error, $"Návratové hodnoty TelephoneNumber: '{foundTelephoneNumberStr}', GlobalId: '{foundGlobalIdStr}'");
+                _logger.Log(LogLevel.Information, $"Návratové hodnoty TelephoneNumber: '{foundTelephoneNumberStr}', GlobalId: '{foundGlobalIdStr}', OrganizationIds: '{foundOrganizationIdStr}'");
 
                 return new OkObjectResult(new ResponseContent()
                 {
                     extension_TelephoneNumber = foundTelephoneNumberStr,
                     extension_GlobalID = foundGlobalIdStr,
+                    extension_OrganizationIDs = foundOrganizationIdStr
                 });
 
             }
 
             else
             {
+                _logger.Log(LogLevel.Error, "User doesnt exist in database.");
                 return new BadRequestObjectResult(new ResponseContent("User doesnt exist in database."));
             }
 
         }
 
-        private static bool Authorize(HttpRequest req, ILogger log)
+        private static bool Authorize(HttpRequest req, ILogger _logger)
         {
-            // Get the environment's credentials 
-            //string username = System.Environment.GetEnvironmentVariable("BASIC_AUTH_USERNAME", EnvironmentVariableTarget.Process);
-            //string password = System.Environment.GetEnvironmentVariable("BASIC_AUTH_PASSWORD", EnvironmentVariableTarget.Process);
+            //Get the environment's credentials 
+            //string username = Environment.GetEnvironmentVariable("BASIC_AUTH_USERNAME", EnvironmentVariableTarget.Process);
+            //string password = Environment.GetEnvironmentVariable("BASIC_AUTH_PASSWORD", EnvironmentVariableTarget.Process);
 
-            string username = "TEST";
-            string password = "HESLO";
+            string username = "test@principal.cz";
+            string password = "Heslo12345.";
 
             // Returns authorized if the username is empty or not exists.
             if (string.IsNullOrEmpty(username))
             {
-                log.LogInformation("HTTP basic authentication is not set.");
+                _logger.Log(LogLevel.Information, "HTTP basic authentication is not set.");
                 return true;
             }
 
             // Check if the HTTP Authorization header exist
             if (!req.Headers.ContainsKey("Authorization"))
             {
-                log.LogWarning("Missing HTTP basic authentication header.");
+                _logger.Log(LogLevel.Error, "Missing HTTP basic authentication header.");
                 return false;
             }
 
@@ -122,15 +119,17 @@ namespace Principal.Telemedicine.B2CApi.Controllers
             // Ensure the type of the authorization header id `Basic`
             if (!auth.StartsWith("Basic "))
             {
-                log.LogWarning("HTTP basic authentication header must start with 'Basic '.");
+                _logger.Log(LogLevel.Error, "HTTP basic authentication header must start with 'Basic '.");
                 return false;
             }
 
             // Get the the HTTP basinc authorization credentials
-            var cred = System.Text.UTF8Encoding.UTF8.GetString(Convert.FromBase64String(auth.Substring(6))).Split(':');
+            var cred = Encoding.UTF8.GetString(Convert.FromBase64String(auth.Substring(6))).Split(':');
+            string userNameCredetials = cred[0];
+            string passwordCredetials = cred[1];
 
             // Evaluate the credentials and return the result
-            return (cred[0] == username && cred[1] == password);
+            return (userNameCredetials == username && passwordCredetials == password);
         }
     }
 }

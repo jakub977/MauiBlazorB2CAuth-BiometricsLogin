@@ -1,19 +1,42 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.ApplicationInsights;
+using Microsoft.Identity.Web;
+using Principal.Telemedicine.DataConnectors.Models;
+using Principal.Telemedicine.Shared.Logging;
 using Principal.Telemedicine.SharedApi.Models;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json")
+           .Build();
+var hostBuilder = new HostBuilder()
+           .ConfigureServices((context, services) =>
+           {
+               //... registrace DbContextGeneral
+               services.AddDbContext<DbContextGeneral> (options =>
+                   options.UseSqlServer(builder.Configuration.GetConnectionString("TMWorkstore")));
+               // Register the DiRegistration class
+               services.AddLogging(configuration);
+           });
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"))
+    .EnableTokenAcquisitionToCallDownstreamApi()
+    .AddDownstreamWebApi("ExtendedPropertiesController", builder.Configuration.GetSection("ExtendedPropertiesControllerScope"))
+    .AddInMemoryTokenCaches();
 
+// Add services to the container.
 builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Logging.AddApplicationInsights(
         configureTelemetryConfiguration: (config) =>
-            config.ConnectionString = "InstrumentationKey=3df3aa50-7fa1-40dd-9fd2-63f6d09533ef;IngestionEndpoint=https://westeurope-5.in.applicationinsights.azure.com/;LiveEndpoint=https://westeurope.livediagnostics.monitor.azure.com/",
+            config.ConnectionString = (builder.Configuration.GetConnectionString("ApplicationInsights")),
             configureApplicationInsightsLoggerOptions: (options) => { }
     );
 
@@ -21,7 +44,10 @@ builder.Logging.AddApplicationInsights(
 builder.Services.AddDbContext<ApiDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("VANDA_TEST")));
 
+builder.Services.AddLogging(configuration);
+
 builder.Logging.AddFilter<ApplicationInsightsLoggerProvider>("B2CApi", LogLevel.Trace);
+
 builder.Services.AddApplicationInsightsTelemetry(builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]);
 
 var app = builder.Build();
@@ -40,4 +66,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.UseMiddleware<LoggingMiddleware>();
+
 app.Run();
+

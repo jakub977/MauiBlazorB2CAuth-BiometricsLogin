@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Principal.Telemedicine.Shared.Logging\Principal.Telemedicine.Shared.Logging.csproj" />
     <ProjectReference Include="..\Principal.Telemedicine.SharedApi\Principal.Telemedicine.SharedApi.csproj" />
   </ItemGroup>
 

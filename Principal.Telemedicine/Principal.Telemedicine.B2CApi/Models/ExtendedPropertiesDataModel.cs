@@ -4,5 +4,6 @@
     {
         public string GlobalID { get; set; }
         public string TelephoneNumber { get; set; }
+        public int OrganizationIDs { get; set; }
     }
 }

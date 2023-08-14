@@ -41,6 +41,9 @@ namespace Principal.Telemedicine.B2CApi.Models
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string extension_GlobalID { get; set; }
 
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string extension_OrganizationIDs { get; set; }
+
     }
 }
 
