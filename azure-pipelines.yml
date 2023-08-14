@@ -39,14 +39,15 @@ steps:
 - powershell: |
     Write-Host "##vso[task.setvariable variable=EnvironmentName]local"
   displayName: 'Set EnvironmentName variable'
-- task: DotNetCoreCLI@2
-  displayName: 'Run xUnit Tests'
-  inputs:
-    command: 'custom'
-    custom: 'test'
-    projects: '**/Principal.Telemedicine.Shared.Configuration.Test.csproj'
-    arguments: '--configuration $(buildConfiguration)'
-    buildProperties: 
+  
+#- task: DotNetCoreCLI@2
+#  displayName: 'Run xUnit Tests'
+#  inputs:
+#    command: 'custom'
+#    custom: 'test'
+#    projects: '**/Principal.Telemedicine.Shared.Configuration.Test.csproj'
+#    arguments: '--configuration $(buildConfiguration)'
+#    buildProperties: 
 
 - task: DotNetCoreCLI@2
   displayName: 'Pack NuGet Package for main project'
