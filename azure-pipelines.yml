@@ -38,6 +38,7 @@ steps:
 
 - powershell: |
     Write-Host "##vso[task.setvariable variable=EnvironmentName]development"
+    $Env:ASPNETCORE_ENVIRONMENT = "development"
   displayName: 'Set EnvironmentName variable'
   
 - task: DotNetCoreCLI@2
