@@ -37,7 +37,7 @@ steps:
     arguments: '--configuration $(buildConfiguration) --output $(build.artifactStagingDirectory)'
 
 - powershell: |
-    Write-Host "##vso[task.setvariable variable=EnvironmentName]development"
+    Write-Host "##vso[task.setvariable variable=ASPNETCORE_ENVIRONMEN]development"
     $Env:ASPNETCORE_ENVIRONMENT = "development"
   displayName: 'Set EnvironmentName variable'
   
