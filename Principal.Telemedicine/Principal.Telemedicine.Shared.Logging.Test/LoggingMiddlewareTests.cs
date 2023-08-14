@@ -49,7 +49,7 @@ namespace Principal.Telemedicine.Shared.Logging.Tests
                                 fn.UseLoggerFactory(loggerFactory);
                             });
                             services.AddLogging(configuration);
-                            DiRegistration.AddLogging(services, configuration);
+                          
                         })
 
                         .Configure(app =>
