@@ -18,7 +18,7 @@ public static class ExtensionsForIHostEnvironment
     public static bool IsLocalHosted(this IHostEnvironment hostEnvironment)
     {
         return ENVIRONMENT_NAMES_LOCAL.Contains<string>(hostEnvironment.EnvironmentName, StringComparer.InvariantCultureIgnoreCase) ||
-            ENVIRONMENT_NAMES_LOCAL.Contains<string>(Environment.GetEnvironmentVariable("EnvironmentName")??String.Empty, StringComparer.InvariantCultureIgnoreCase) ;
+            ENVIRONMENT_NAMES_LOCAL.Contains<string>(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? String.Empty, StringComparer.InvariantCultureIgnoreCase) ;
     }
 
     /// <summary>
@@ -29,6 +29,6 @@ public static class ExtensionsForIHostEnvironment
     public static bool IsNotLocalHosted(this IHostEnvironment hostEnvironment)
     {
         return ENVIRONMENT_NAMES_OUT.Contains<string>(hostEnvironment.EnvironmentName, StringComparer.InvariantCultureIgnoreCase) ||
-            ENVIRONMENT_NAMES_OUT.Contains<string>(Environment.GetEnvironmentVariable("EnvironmentName") ?? String.Empty, StringComparer.InvariantCultureIgnoreCase); ;
+            ENVIRONMENT_NAMES_OUT.Contains<string>(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? String.Empty, StringComparer.InvariantCultureIgnoreCase); ;
     }
 }

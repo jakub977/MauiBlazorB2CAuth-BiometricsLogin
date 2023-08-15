@@ -44,17 +44,10 @@ public class SecretConfigurationProviderTests
            .Build();
         var mock = new Mock<ILogger<SecretConfigurationProviderTests>>();
         ILogger<SecretConfigurationProviderTests> logger = mock.Object;
+        
         // Act
-        var hostBuilder = new HostBuilder()
-            .ConfigureAppConfiguration((hostingContext, config) =>
-            {
-                config.AddInMemoryCollection(new[]
-                {
-                    new KeyValuePair<string, string>("EnvironmentName", "local")
-                });
-            })
-        .UseSecretConfiguration<TestSettings>(configuration, logger, secretFilePath)
-        ;
+        var hostBuilder = new HostBuilder().UseEnvironment("local")
+        .UseSecretConfiguration<TestSettings>(configuration, logger, secretFilePath);
 
 
         var host = new DependencyResolverHelper(hostBuilder.Build());
