@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,8 +10,9 @@ namespace Principal.Telemedicine.Shared.Models;
 
     public class DiseaseDetectionKeyInputsToMLItemDataModel
     {
-        public string Type { get; set; }
+        [Key]
         public int UserId { get; set; }
+        public string Type { get; set; }
         public DateTime CreatedDate { get; set; }
         public string Name { get; set; }
         public int? DiseaseSymptomTypeId { get; set; }

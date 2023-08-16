@@ -9,14 +9,16 @@ using System.Text;
 using Microsoft.AspNetCore.SignalR;
 using Principal.Telemedicine.Shared.Models;
 using System.Collections.Generic;
+using System.Data;
 using System.Net;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Identity.Web.Resource;
 using Principal.Telemedicine.DataConnectors.Models;
+using System.Globalization;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
 
-    [Authorize]
+    //[Authorize]
     [Route("api/[controller]/[action]")]
     [ApiController]
     //[RequiredScope(RequiredScopesConfigurationKey = "PatientInfoApiController:PatientInfoApiControllerScope")]
@@ -42,7 +44,7 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
     /// <param name="userId"></param>
     /// <returns></returns>
     [HttpGet(Name = "GetAggregatedUserSymptomProgressionDataModel")]
-    public IActionResult GetAggregatedUserSymptomProgressionDataModel([FromHeader] string authorization, int userId)
+    public async Task<IActionResult> GetAggregatedUserSymptomProgressionDataModel(/*[FromHeader] string authorization,*/ int userId)
     {
 
         if (userId <= 0)
@@ -75,36 +77,8 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
         }
 
     }
-        
-    //TODO po dohodě smazat
-    //[HttpGet(Name = "GetMedicalDeviceMeasuringHistoryItems")]
-    //public IActionResult GetMedicalDeviceMeasuringHistoryItems([FromHeader] string authorization, int userId)
-    //{
 
-    //    if (userId <= 0)
-    //    {
-    //        return BadRequest();
-    //    }
 
-    //    try
-    //    {
-    //        List<MedicalDeviceMeasuringHistoryItemDataModel> measuredHistoryValues = _dbContext.ExecSqlQuery<MedicalDeviceMeasuringHistoryItemDataModel>($"dbo.sp_GetMedicalDeviceMeasuringHistory @userId = {userId}");
-
-    //        if (measuredHistoryValues.Count < 1)
-    //        {
-    //            return NotFound();
-    //        }
-    //        return Ok(measuredHistoryValues.OrderByDescending(x => x.MeasuredDateUtc).ToList());
-
-    //    }
-
-    //    catch (Exception ex)
-    //    {
-    //        _logger.LogError(ex.Message);
-    //        return Problem();
-    //    }
-    //}
-    
 
     /// <summary>
     /// Vrátí výsledky predikce onemocnění s určitou pravděpodobností pro daného uživatele
@@ -112,8 +86,9 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
     /// <param name="authorization"></param>
     /// <param name="userId"></param>
     /// <returns></returns>
+    [AllowAnonymous]
     [HttpGet(Name = "GetDiseaseDetectionResultFromMLItems")]
-    public IActionResult GetDiseaseDetectionResultFromMLItems([FromHeader] string authorization, int userId)
+    public async Task<IActionResult> GetDiseaseDetectionResultFromMLItems(/*[FromHeader] string authorization,*/ int userId)
     {
 
         if (userId <= 0)
@@ -124,8 +99,20 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
         try
         {
 
-            List<DiseaseDetectionResultFromMLItemDataModel> diseaseDetectionResultsFromML = _dbContext.ExecSqlQuery<DiseaseDetectionResultFromMLItemDataModel>($"dbo.sp_GetDiseaseDetectionResultFromML @userId = {userId}");
-            if (diseaseDetectionResultsFromML.Count < 1)
+            //List<DiseaseDetectionResultFromMLItemDataModel> diseaseDetectionResultsFromML = _dbContext.ExecSqlQuery<DiseaseDetectionResultFromMLItemDataModel>($"dbo.sp_GetDiseaseDetectionResultFromML @userId = {userId}");
+            //if (diseaseDetectionResultsFromML.Count < 1)
+            //{
+            //    return NotFound();
+            //}
+            //return Ok(diseaseDetectionResultsFromML);
+
+            string currentDatetime = DateTime.UtcNow.ToString("yyyy-MM-dd");
+            var currentDate = new SqlParameter("CurrentDateUtc", currentDatetime);
+            currentDate.DbType = DbType.DateTime;
+            
+            var diseaseDetectionResultsFromML = await _dbContext.DetectionResultFromMlItemDataModels.FromSql($"EXEC dbo.sp_GetDiseaseDetectionResultFromML @UserId = {userId}, @CurrentDateUtc = {currentDate} ").AsNoTracking().ToListAsync();
+
+            if (!diseaseDetectionResultsFromML.Any())
             {
                 return NotFound();
             }
@@ -147,8 +134,9 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
     /// <param name="authorization"></param>
     /// <param name="userId"></param>
     /// <returns></returns>
+    [AllowAnonymous]
     [HttpGet(Name = "GetDiseaseOriginDetectionResultFromMLItems")]
-    public IActionResult GetDiseaseOriginDetectionResultFromMLItems([FromHeader] string authorization, int userId)
+    public async Task<IActionResult> GetDiseaseOriginDetectionResultFromMLItems(/*[FromHeader] string authorization,*/ int userId)
     {
 
         if (userId <= 0)
@@ -158,10 +146,22 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
 
         try
         {
-               
-            List<DiseaseOriginDetectionResultFromMLItemDataModel> originDetectionResultsFromML = _dbContext.ExecSqlQuery<DiseaseOriginDetectionResultFromMLItemDataModel>($"dbo.sp_GetDiseaseOriginDetectionResultFromML @userId = {userId}");
 
-            if (originDetectionResultsFromML.Count < 1)
+            //List<DiseaseOriginDetectionResultFromMLItemDataModel> originDetectionResultsFromML = _dbContext.ExecSqlQuery<DiseaseOriginDetectionResultFromMLItemDataModel>($"dbo.sp_GetDiseaseOriginDetectionResultFromML @userId = {userId}");
+
+            //if (originDetectionResultsFromML.Count < 1)
+            //{
+            //    return NotFound();
+            //}
+            //return Ok(originDetectionResultsFromML);
+
+            string currentDatetime = DateTime.UtcNow.ToString("yyyy-MM-dd");
+            var currentDate = new SqlParameter("CurrentDateUtc", currentDatetime);
+            currentDate.DbType = DbType.DateTime;
+
+            var originDetectionResultsFromML = await _dbContext.DiseaseOriginDetectionResultFromMLItemDataModels.FromSql($"EXEC dbo.sp_GetDiseaseOriginDetectionResultFromML @userId = {userId},  @CurrentDateUtc = {currentDate}, @MinimumPredictionProbability = 0 ").AsNoTracking().ToListAsync();
+
+            if (!originDetectionResultsFromML.Any())
             {
                 return NotFound();
             }
@@ -183,8 +183,9 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
     /// <param name="authorization"></param>
     /// <param name="userId"></param>
     /// <returns></returns>
+    [AllowAnonymous]
     [HttpGet(Name = "GetDiseaseDetectionKeyInputsToMLItems")]
-    public IActionResult GetDiseaseDetectionKeyInputsToMLItems([FromHeader] string authorization, int userId)
+    public async Task<IActionResult> GetDiseaseDetectionKeyInputsToMLItems(/*[FromHeader] string authorization,*/ int userId)
     {
 
         if (userId <= 0)
@@ -195,9 +196,16 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
         try
         {
 
-            List<DiseaseDetectionKeyInputsToMLItemDataModel> keyInputsToML = _dbContext.ExecSqlQuery<DiseaseDetectionKeyInputsToMLItemDataModel>($"dbo.sp_GetDiseaseDetectionKeyInputsToML @userId = {userId}");
+            //List<DiseaseDetectionKeyInputsToMLItemDataModel> keyInputsToML = _dbContext.ExecSqlQuery<DiseaseDetectionKeyInputsToMLItemDataModel>($"dbo.sp_GetDiseaseDetectionKeyInputsToML @userId = {userId}");
 
-            if (keyInputsToML.Count < 1)
+            //if (keyInputsToML.Count < 1)
+            //{
+            //    return NotFound();
+            //}
+            //return Ok(keyInputsToML);
+            var keyInputsToML =  await _dbContext.DiseaseDetectionKeyInputsToMLItemDataModels.FromSql($"dbo.sp_GetDiseaseDetectionKeyInputsToML @userId = {userId}").AsNoTracking().ToListAsync();
+
+            if (!keyInputsToML.Any())
             {
                 return NotFound();
             }
@@ -230,9 +238,9 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
         try
         {
 
-            var virtualBasicOverviewDataOverview = _dbContext.VirtualSurgeryBasicOverviewDataModel.FromSql($"dbo.sp_GetVirtualSurgeryBasicOverview @userId = {userId}").ToList();
+            var virtualBasicOverviewDataOverview = await _dbContext.VirtualSurgeryBasicOverviewDataModels.FromSql($"dbo.sp_GetVirtualSurgeryBasicOverview @userId = {userId}").AsNoTracking().ToListAsync();
 
-            if (virtualBasicOverviewDataOverview == null)
+            if (!virtualBasicOverviewDataOverview.Any())
             {
                 return NotFound();
             }
@@ -247,10 +255,14 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
         }
     }
 
-
+    /// <summary>
+    /// Vrátí seznam in/aktivních zařízení daného uživatele
+    /// </summary>
+    /// <param name="userGlobalId"></param>
+    /// <returns></returns>
     [AllowAnonymous]
     [HttpGet(Name = "GetAvailableDeviceListItems")]
-    public IActionResult GetAvailableDeviceListItems(/*[FromHeader] string authorization,*/ string userGlobalId)
+    public async Task<IActionResult> GetAvailableDeviceListItems(/*[FromHeader] string authorization,*/ string userGlobalId)
     {
 
         if (string.IsNullOrEmpty(userGlobalId))
@@ -261,9 +273,9 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
         try
         {
 
-            List<AvailableDeviceListItemDataModel> availableDeviceList = _dbContext.ExecSqlQuery<AvailableDeviceListItemDataModel>($"dbo.sp_GetAvailableDeviceList @userGlobalId = '{userGlobalId}' ");
+            var availableDeviceList = await _dbContext.AvailableDeviceListItemDataModels.FromSql($"dbo.sp_GetAvailableDeviceList @userGlobalId = '{userGlobalId}' ").AsNoTracking().ToListAsync();
 
-            if (availableDeviceList.Count < 1)
+            if (!availableDeviceList.Any())
             {
                 return NotFound();
             }
