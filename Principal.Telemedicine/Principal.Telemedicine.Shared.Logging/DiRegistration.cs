@@ -19,7 +19,7 @@ public static class DiRegistration
     public static IServiceCollection AddLogging(this IServiceCollection services, IConfiguration configuration)
     {
         // Vytvoříme instance logovacích providerů pro TelemedicineDbLogger
-        var telemedicineLoggerProvider = new TelemedicineLoggerProvider(services.BuildServiceProvider().GetService<DbContextGeneral>());
+        var telemedicineLoggerProvider = new TelemedicineLoggerProvider(services.BuildServiceProvider());
 
         // Přidáme do DI kontejneru vlastní CompositeLoggerProvider
         services.AddSingleton<IEnumerable<ILoggerProvider>>(new List<ILoggerProvider>

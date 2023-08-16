@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics.Internal;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,9 +33,10 @@ builder.Services.AddDbContext<DbContextGeneral>(options =>
 //Dependency Injection od DbContext Class
 builder.Services.AddDbContext<ApiDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("VANDA_TEST")));
-
+//Add TM Logging
 builder.Services.AddLogging(configuration);
-
+//Add secrets configuration
+builder.Services.AddSecretConfiguration<AuthorizationSettings>(configuration, secretFilePath);
 // Add services to the container.
 builder.Services.AddControllers();
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Principal.Telemedicine.DataConnectors.Models;
 using System;
@@ -17,19 +18,19 @@ public class TelemedicineDbLogger:ILogger
 {
     private readonly string _categoryName;
     private readonly string? _connString;
-    private DbContextGeneral _dbContextGeneral;
+    private IServiceProvider _serviceProvider;
 
 
-    public TelemedicineDbLogger(string categoryName,string? connString)
+    //public TelemedicineDbLogger(string categoryName,string? connString)
+    //{
+    //    _categoryName = categoryName;
+    //    _connString = connString;
+    //}
+
+    public TelemedicineDbLogger(string categoryName, IServiceProvider serviceProvider)
     {
         _categoryName = categoryName;
-        _connString = connString;
-    }
-
-    public TelemedicineDbLogger(string categoryName, DbContextGeneral dbContextGeneral)
-    {
-        _categoryName = categoryName;
-        _dbContextGeneral = dbContextGeneral;
+        _serviceProvider = serviceProvider;
     }
 
     /// <summary>
@@ -91,20 +92,27 @@ public class TelemedicineDbLogger:ILogger
         {
             logEntry = new() { FullMessage = message, ShortMessage = message.Substring(0,message.Length>4000?4000:message.Length), CreatedDateUtc = DateTime.UtcNow, Source = Environment.ProcessPath.Substring(0, Environment.ProcessPath.Length>50?50:Environment.ProcessPath.Length), FriendlyTopic = logLevel.ToString()  };
         }
-        if (_dbContextGeneral != null)
+        try
         {
-            _dbContextGeneral.Logs.Add(logEntry);
-            _dbContextGeneral.Add(logEntry);
-            _dbContextGeneral.SaveChanges();
-        }
-        else
-        {
-            using (var _context = new DbContextGeneral(_connString))
+            using (var scope = _serviceProvider.CreateScope())
             {
-                _context.Logs.Add(logEntry);
-                _context.Add(logEntry);
-                _context.SaveChanges();
+                var _dbContextGeneral = scope.ServiceProvider.GetRequiredService<DbContextGeneral>();
+
+                if (_dbContextGeneral != null)
+                {
+                    _dbContextGeneral.Logs.Add(logEntry);
+                    _dbContextGeneral.Add(logEntry);
+                    _dbContextGeneral.SaveChanges();
+                }
+                else
+                {
+                    if (logLevel == LogLevel.None) throw new Exception("Logging audit record could not be created, DbContext is null");
+                }
             }
+        }
+        catch(Exception ex)
+        {
+            if (logLevel == LogLevel.None) throw new Exception("Logging audit record failed " + ex.ToString());
         }
     }
 }

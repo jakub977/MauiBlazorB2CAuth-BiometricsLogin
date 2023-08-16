@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Principal.Telemedicine.DataConnectors.Models;
 using Xunit;
@@ -10,26 +11,32 @@ namespace Principal.Telemedicine.Shared.Logging.Tests
         [Fact(DisplayName ="Test custom logeru pro zápis do databáze")]
         public void TelemedicineDbLogger_Should_Log_To_Database_When_Enabled()
         {
-            // Arrange
-            var options = new DbContextOptionsBuilder<DbContextGeneral>()
-                .UseInMemoryDatabase(databaseName: "TestDatabaseDbLogger")
-                .Options;
 
-            using (var context = new DbContextGeneral(options))
+            var services = new ServiceCollection();
+
+           
+            services.AddDbContext<DbContextGeneral>(options =>
+            {             
+                options.UseInMemoryDatabase( databaseName: "TestDatabaseDbTest");
+            });
+            var _serviceProvider = services.BuildServiceProvider();
+
+            string loggedMessage = null;
+            var telemedicineDbLogger = new TelemedicineDbLogger("TestCategory", _serviceProvider);
+
+            // Act
+            telemedicineDbLogger.Log(LogLevel.Information, new EventId(), "Test message", null, (s, e) => s.ToString());
+
+
+            using (var context = _serviceProvider.GetRequiredService<DbContextGeneral>())
             {
-                string loggedMessage = null;
-                var telemedicineDbLogger = new TelemedicineDbLogger("TestCategory", context);
-
-                // Act
-                telemedicineDbLogger.Log(LogLevel.Information, new EventId(), "Test message", null, (s, e) => s.ToString());
 
                 // Assert
                 var logEntry = context.Logs.FirstOrDefault();
                 Assert.NotNull(logEntry);
                 Assert.Contains("Test message", logEntry.FullMessage); // Je logovaná zpráva součástí db?
-
-                context.Database.EnsureDeleted();
             }
+           
             
         }
     }
