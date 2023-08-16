@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Principal.Telemedicine.DataConnectors.Models;
 using System;
 using System.Data.SqlClient;
@@ -28,8 +29,16 @@ public class TelemedicineLoggerProvider: ILoggerProvider
     /// <returns></returns>
     public ILogger CreateLogger(string categoryName)
     {
-
-        return new TelemedicineDbLogger(categoryName, _context);
+        TelemedicineDbLogger retValue = null;
+        try
+        {
+            retValue = new TelemedicineDbLogger(categoryName, _context?.Database?.GetConnectionString());
+        }
+        catch
+        {
+            retValue = new TelemedicineDbLogger(categoryName, _context);
+        }
+        return retValue;
     }
 
     /// <summary>

@@ -16,12 +16,20 @@ namespace Principal.Telemedicine.Shared.Logging;
 public class TelemedicineDbLogger:ILogger
 {
     private readonly string _categoryName;
-    private readonly DbContextGeneral _context;
+    private readonly string? _connString;
+    private DbContextGeneral _dbContextGeneral;
 
-    public TelemedicineDbLogger(string categoryName, DbContextGeneral context)
+
+    public TelemedicineDbLogger(string categoryName,string? connString)
     {
         _categoryName = categoryName;
-       _context = context;
+        _connString = connString;
+    }
+
+    public TelemedicineDbLogger(string categoryName, DbContextGeneral dbContextGeneral)
+    {
+        _categoryName = categoryName;
+        _dbContextGeneral = dbContextGeneral;
     }
 
     /// <summary>
@@ -83,11 +91,21 @@ public class TelemedicineDbLogger:ILogger
         {
             logEntry = new() { FullMessage = message, ShortMessage = message.Substring(0,message.Length>4000?4000:message.Length), CreatedDateUtc = DateTime.UtcNow, Source = Environment.ProcessPath.Substring(0, Environment.ProcessPath.Length>50?50:Environment.ProcessPath.Length), FriendlyTopic = logLevel.ToString()  };
         }
-        
-            _context.Logs.Add(logEntry);
-            _context.Add(logEntry);
-            _context.SaveChanges();
-        
+        if (_dbContextGeneral != null)
+        {
+            _dbContextGeneral.Logs.Add(logEntry);
+            _dbContextGeneral.Add(logEntry);
+            _dbContextGeneral.SaveChanges();
+        }
+        else
+        {
+            using (var _context = new DbContextGeneral(_connString))
+            {
+                _context.Logs.Add(logEntry);
+                _context.Add(logEntry);
+                _context.SaveChanges();
+            }
+        }
     }
 }
 
