@@ -13,6 +13,7 @@ public class SecretConfigurationSource<T> : IConfigurationSource where T : class
     private readonly ILogger _logger;
     private readonly IConfiguration _config;
 
+
     public SecretConfigurationSource(IConfiguration config, string secretFilePath, ILogger logger, bool isLocal = false)
     {
         this.secretFilePath = secretFilePath;
