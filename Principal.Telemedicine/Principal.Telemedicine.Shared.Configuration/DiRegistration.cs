@@ -12,14 +12,22 @@ using Microsoft.Extensions.Options;
 using System.Runtime.CompilerServices;
 
 namespace Principal.Telemedicine.Shared.Configuration;
+
+/// <summary>
+/// Třída řeší registraci v rámci IServiceCollection
+/// </summary>
 public static class DiRegistration
 {
-    public static IServiceCollection AddSecretConfiguration<T>(this IServiceCollection services, IConfiguration configuration, string secretPath=null) where T : class
+    /// <summary>
+    /// Přidává a registruje konfiguraci
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="services"></param>
+    /// <param name="configuration"></param>
+    /// <param name="secretPath">Cesta k json se secrets. V produkci se čte z Kez Vault</param>
+    /// <returns></returns>
+    public static IServiceCollection AddSecretConfiguration<T>(this IServiceCollection services, IConfiguration configuration, string secretPath) where T : class
     {
-
-      
-
-
 
         services.AddSingleton<IConfiguration>(sp =>
         {
