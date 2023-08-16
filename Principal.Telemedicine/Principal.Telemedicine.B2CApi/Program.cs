@@ -1,31 +1,40 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics.Internal;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.ApplicationInsights;
+using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
+using Principal.Telemedicine.B2CApi;
+using Principal.Telemedicine.B2CApi.Controllers;
 using Principal.Telemedicine.DataConnectors.Models;
 using Principal.Telemedicine.Shared.Logging;
+using Microsoft.Extensions.Hosting;
+using Principal.Telemedicine.Shared.Configuration;
 using Principal.Telemedicine.SharedApi.Models;
+using Moq;
+using Microsoft.Extensions.Hosting;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
 var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json")
            .Build();
-var hostBuilder = new HostBuilder()
-           .ConfigureServices((context, services) =>
-           {
-               //... registrace DbContextGeneral
-               services.AddDbContext<DbContextGeneral> (options =>
-                   options.UseSqlServer(builder.Configuration.GetConnectionString("TMWorkstore")));
-               // Register the DiRegistration class
-               services.AddLogging(configuration);
-           });
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"))
-    .EnableTokenAcquisitionToCallDownstreamApi()
-    .AddDownstreamWebApi("ExtendedPropertiesController", builder.Configuration.GetSection("ExtendedPropertiesControllerScope"))
-    .AddInMemoryTokenCaches();
+var secretFilePath = "Secured/secrets.json";
+
+
+//var host = hostBuilder.Build();
+//var options = host.Services.GetService(IOptions<AuthorizationSettings>);
+
+builder.Services.AddDbContext<DbContextGeneral>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("TMWorkstore")));
+
+//Dependency Injection od DbContext Class
+builder.Services.AddDbContext<ApiDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("VANDA_TEST")));
+
+builder.Services.AddLogging(configuration);
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -39,12 +48,6 @@ builder.Logging.AddApplicationInsights(
             config.ConnectionString = (builder.Configuration.GetConnectionString("ApplicationInsights")),
             configureApplicationInsightsLoggerOptions: (options) => { }
     );
-
-//Dependency Injection od DbContext Class
-builder.Services.AddDbContext<ApiDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("VANDA_TEST")));
-
-builder.Services.AddLogging(configuration);
 
 builder.Logging.AddFilter<ApplicationInsightsLoggerProvider>("B2CApi", LogLevel.Trace);
 
