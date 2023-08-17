@@ -16,7 +16,7 @@ public partial class Log
     [Unicode(false)]
     public string? FriendlyTopic { get; set; }
 
-    [StringLength(50)]
+    [StringLength(100)]
     [Unicode(false)]
     public string? Source { get; set; }
 

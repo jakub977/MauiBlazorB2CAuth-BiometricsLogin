@@ -15,68 +15,54 @@ namespace Principal.Telemedicine.B2CApi.Controllers
     {
         private readonly ILogger<ExtendedPropertiesController> _logger;
         private readonly ApiDbContext _context;
+        private readonly AuthorizationSettings _authsettings;
 
-        public ExtendedPropertiesController(ILogger<ExtendedPropertiesController> logger, ApiDbContext context)
+        public ExtendedPropertiesController(ILogger<ExtendedPropertiesController> logger, ApiDbContext context, IOptions<AuthorizationSettings> authsettings)
         {
             _logger = logger;
             _context = context;
+            _authsettings = authsettings?.Value;
         }
 
         [HttpPost]
         [Route("AddExtendedProperties")]
-        public async Task<IActionResult> AddExtendedProperties(string email, string username, string password)
+        public async Task<IActionResult> AddExtendedProperties()
         {
             string environmentName = Environment.GetEnvironmentVariable(variable: "ASPNETCORE_ENVIRONMENT").ToLowerInvariant();
+            var req = Request;
 
-            
-            //string passwordStored = 
+            // Check HTTP basic authorization
+            if (!Authorize(req, _logger, environmentName, _authsettings))
+            {
+                _logger.Log(LogLevel.Error, "HTTP basic authentication validation failed.");
+                return new UnauthorizedResult();
+            }
 
-            //if (passwordStored != password)
-            //{
-            //    _logger.Log(LogLevel.Error, "Password is not valid");
-            //    return new BadRequestObjectResult(new ResponseContent("Password is not valid."));
-            //}
+            // Get the request body
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            _logger.Log(LogLevel.Error, $"Request body: '{requestBody}' ");
 
-            //if (environmentName != username)
-            //{
-            //    _logger.Log(LogLevel.Error, "Username is not valid");
-            //    return new BadRequestObjectResult(new ResponseContent("Username is not valid."));
-            //}
+            if (string.IsNullOrEmpty(requestBody))
+            {
+                _logger.Log(LogLevel.Error, "Request body is empty.");
+                return new BadRequestObjectResult(new ResponseContent("Request body is empty."));
+            }
 
-            //var req = Request;
+            dynamic data = JsonConvert.DeserializeObject(requestBody);
 
-            ////// Check HTTP basic authorization
-            //if (!Authorize(req, _logger))
-            //{
-            //    _logger.Log(LogLevel.Error, "HTTP basic authentication validation failed.");
-            //    return new UnauthorizedResult();
-            //}
+            if (data == null)
+            {
+                _logger.Log(LogLevel.Error, "Deserialization of request body was not successfull.");
+                return new BadRequestObjectResult(new ResponseContent("Deserialization of request body was not successfull."));
+            }
 
-            //// Get the request body
-            //string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            //_logger.Log(LogLevel.Error, $"Request body: '{requestBody}' ");
+            if (data.email == null)
+            {
+                _logger.Log(LogLevel.Error, "Email is mandatory and is empty.");
+                return new BadRequestObjectResult(new ResponseContent("Email is mandatory and is empty"));
+            }
 
-            //if (string.IsNullOrEmpty(requestBody))
-            //{
-            //    _logger.Log(LogLevel.Error, "Request body is empty.");
-            //    return new BadRequestObjectResult(new ResponseContent("Request body is empty."));
-            //}
-
-            //dynamic data = JsonConvert.DeserializeObject(requestBody);
-
-            //if (data == null)
-            //{
-            //    _logger.Log(LogLevel.Error, "Deserialization of request body was not successfull.");
-            //    return new BadRequestObjectResult(new ResponseContent("Deserialization of request body was not successfull."));
-            //}
-
-            //if (data.email == null)
-            //{
-            //    _logger.Log(LogLevel.Error, "Email is mandatory and is empty.");
-            //    return new BadRequestObjectResult(new ResponseContent("Email is mandatory and is empty"));
-            //}
-
-            //string email = Convert.ToString(data.email);
+            string email = Convert.ToString(data.email);
 
             List<ExtendedPropertiesDataModel> dbResult = new List<ExtendedPropertiesDataModel>();
 
@@ -108,21 +94,15 @@ namespace Principal.Telemedicine.B2CApi.Controllers
 
         }
 
-        private static bool Authorize(HttpRequest req, ILogger _logger)
+        private static bool Authorize(HttpRequest req, ILogger _logger, string environmentName, AuthorizationSettings _authsettings)
         {
             //Get the environment's credentials 
-            string username = Environment.GetEnvironmentVariable("PEmail", EnvironmentVariableTarget.Process);
-            string password = Environment.GetEnvironmentVariable("PPassword", EnvironmentVariableTarget.Process);
+            string passwordStored = string.Empty;
+            string emailStored = string.Empty;
 
-            //string username = "test@principal.cz";
-            //string password = "Heslo12345.";
+            emailStored = !string.IsNullOrEmpty(environmentName) && environmentName != "local" ? _authsettings.SEmail : _authsettings.PEmail;
+            passwordStored = !string.IsNullOrEmpty(environmentName) && environmentName != "local" ? _authsettings.SPassword : _authsettings.PPassword;
 
-            // Returns authorized if the username is empty or not exists.
-            if (string.IsNullOrEmpty(username))
-            {
-                _logger.Log(LogLevel.Information, "HTTP basic authentication is not set.");
-                return true;
-            }
 
             // Check if the HTTP Authorization header exist
             if (!req.Headers.ContainsKey("Authorization"))
@@ -143,11 +123,11 @@ namespace Principal.Telemedicine.B2CApi.Controllers
 
             // Get the the HTTP basinc authorization credentials
             var cred = Encoding.UTF8.GetString(Convert.FromBase64String(auth.Substring(6))).Split(':');
-            string userNameCredetials = cred[0];
-            string passwordCredetials = cred[1];
+            string userNameCredentials = cred[0];
+            string passwordCredentials = cred[1];
 
             // Evaluate the credentials and return the result
-            return (userNameCredetials == username && passwordCredetials == password);
+            return (userNameCredentials == emailStored && passwordCredentials == passwordStored);
         }
     }
 }
