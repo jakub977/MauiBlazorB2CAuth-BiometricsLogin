@@ -25,6 +25,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configuration", "Configurat
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Logging", "Logging", "{830549AD-AF84-4641-939B-BCCD2CC0CA2C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Principal.Telemedicine.B2CApi", "Principal.Telemedicine.B2CApi\Principal.Telemedicine.B2CApi.csproj", "{5C6F5A57-F938-4E1B-9BBC-F3F8CB4E0F1D}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".azure", ".azure", "{8003CB93-C706-4C9F-BF74-3FECCC99C5B4}"
 	ProjectSection(SolutionItems) = preProject
 		.azure\azure-pipelines-configuration.yml = .azure\azure-pipelines-configuration.yml
@@ -76,6 +78,10 @@ Global
 		{8E32C05E-F9A2-42AF-BCCF-622522619234}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E32C05E-F9A2-42AF-BCCF-622522619234}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8E32C05E-F9A2-42AF-BCCF-622522619234}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C6F5A57-F938-4E1B-9BBC-F3F8CB4E0F1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C6F5A57-F938-4E1B-9BBC-F3F8CB4E0F1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C6F5A57-F938-4E1B-9BBC-F3F8CB4E0F1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C6F5A57-F938-4E1B-9BBC-F3F8CB4E0F1D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{03485160-B08E-47E6-AC9C-13FC00E81414}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{03485160-B08E-47E6-AC9C-13FC00E81414}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{03485160-B08E-47E6-AC9C-13FC00E81414}.Release|Any CPU.ActiveCfg = Release|Any CPU

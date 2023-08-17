@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Principal.Telemedicine.DataConnectors.Models;
 using System;
@@ -16,12 +17,20 @@ namespace Principal.Telemedicine.Shared.Logging;
 public class TelemedicineDbLogger:ILogger
 {
     private readonly string _categoryName;
-    private readonly DbContextGeneral _context;
+    private readonly string? _connString;
+    private IServiceProvider _serviceProvider;
 
-    public TelemedicineDbLogger(string categoryName, DbContextGeneral context)
+
+    //public TelemedicineDbLogger(string categoryName,string? connString)
+    //{
+    //    _categoryName = categoryName;
+    //    _connString = connString;
+    //}
+
+    public TelemedicineDbLogger(string categoryName, IServiceProvider serviceProvider)
     {
         _categoryName = categoryName;
-       _context = context;
+        _serviceProvider = serviceProvider;
     }
 
     /// <summary>
@@ -81,13 +90,30 @@ public class TelemedicineDbLogger:ILogger
         }
         catch // Není JSON nebo je jiný než očekávaný
         {
-            logEntry = new() { FullMessage = message, ShortMessage = message.Substring(0,message.Length>4000?4000:message.Length), CreatedDateUtc = DateTime.UtcNow, Source = Environment.ProcessPath, FriendlyTopic = logLevel.ToString()  };
+            logEntry = new() { FullMessage = message, ShortMessage = message.Substring(0,message.Length>4000?4000:message.Length), CreatedDateUtc = DateTime.UtcNow, Source = Environment.ProcessPath.Substring(0, Environment.ProcessPath.Length>99?99:Environment.ProcessPath.Length), FriendlyTopic = logLevel.ToString()  };
         }
-        
-            _context.Logs.Add(logEntry);
-            _context.Add(logEntry);
-            _context.SaveChanges();
-        
+        try
+        {
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var _dbContextGeneral = scope.ServiceProvider.GetRequiredService<DbContextGeneral>();
+
+                if (_dbContextGeneral != null)
+                {
+                    _dbContextGeneral.Logs.Add(logEntry);
+                    _dbContextGeneral.Add(logEntry);
+                    _dbContextGeneral.SaveChanges();
+                }
+                else
+                {
+                    if (logLevel == LogLevel.None) throw new Exception("Logging audit record could not be created, DbContext is null");
+                }
+            }
+        }
+        catch(Exception ex)
+        {
+            if (logLevel == LogLevel.None) throw new Exception("Logging audit record failed " + ex.ToString());
+        }
     }
 }
 

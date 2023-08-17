@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Principal.Telemedicine.DataConnectors.Models;
 using System;
 using System.Data.SqlClient;
@@ -10,15 +11,15 @@ namespace Principal.Telemedicine.Shared.Logging;
 /// </summary>
 public class TelemedicineLoggerProvider: ILoggerProvider
 {
-    private readonly DbContextGeneral _context;
+    private readonly IServiceProvider _serviceProvider;
 
     /// <summary>
     /// Konstruktor třídy
-   /// </summary>
+    /// </summary>
     /// <param name="context">Předpokládá instanci DBContextu DbContextGeneral obahující model Log</param>
-    public TelemedicineLoggerProvider(DbContextGeneral context)
+    public TelemedicineLoggerProvider(IServiceProvider serviceProvider)
     {
-        _context = context;
+        _serviceProvider = serviceProvider;
     }
 
     /// <summary>
@@ -28,15 +29,23 @@ public class TelemedicineLoggerProvider: ILoggerProvider
     /// <returns></returns>
     public ILogger CreateLogger(string categoryName)
     {
-
-        return new TelemedicineDbLogger(categoryName, _context);
+        TelemedicineDbLogger retValue = null;
+        try
+        {
+            retValue = new TelemedicineDbLogger(categoryName,_serviceProvider);
+        }
+        catch
+        {
+            //
+        }
+        return retValue;
     }
 
     /// <summary>
-    /// Dispose contextu, pokud existuje.
+    /// Dispose , pokud neco existuje a je potreba disposnout.
     /// </summary>
     public void Dispose()
     {
-        if (_context != null) _context.Dispose();
+      
     }
 }
