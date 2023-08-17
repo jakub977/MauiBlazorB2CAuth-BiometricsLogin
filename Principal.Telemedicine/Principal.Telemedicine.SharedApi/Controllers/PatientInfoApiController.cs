@@ -1,24 +1,18 @@
 ﻿using System.Collections;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Text;
-using Principal.Telemedicine.SharedApi.Models;
-using Microsoft.AspNetCore.SignalR;
 using Principal.Telemedicine.Shared.Models;
-using System.Collections.Generic;
-using System.Net;
-using Microsoft.Identity.Web.Resource;
+using System.Data;
+using Principal.Telemedicine.DataConnectors.Models;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
 
-   
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [RequiredScope(RequiredScopesConfigurationKey = "PatientInfoApiController:PatientInfoApiControllerScope")]
     public class PatientInfoApiController : ControllerBase
     {
 
@@ -34,15 +28,28 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
     }
 
 
+    /// <summary>
+    /// Vrátí agregovaný průběh příznaků uživatele (uživatelů) za časové úseky. Nebo přesněji naměřené hodnoty, subjektivní příznaky a predikce.
+    /// </summary>
+    /// <param name="authorization"></param>
+    /// <param name="userId"></param>
+    /// <returns></returns>
     [HttpGet(Name = "GetAggregatedUserSymptomProgressionDataModel")]
-    public IActionResult GetAggregatedUserSymptomProgressionDataModel([FromHeader] string authorization, int userId)
+    public async Task<IActionResult> GetAggregatedUserSymptomProgressionDataModel(/*[FromHeader(Name = "x-api-key")] string apiKey,*/  int userId)
     {
+
+        if (userId <= 0)
+        {
+            return BadRequest();
+        }
 
         try
         {
             var result = _dbContext.Database.SqlQuery<string>($"dbo.sp_GetAggregatedUserSymptomProgression @userId = {userId}").ToList();
             if (!result.Any())
+            {
                 return NotFound();
+            }
 
             var sb = new StringBuilder();
             foreach (var jsonPart in result)
@@ -61,49 +68,38 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
         }
 
     }
-        
 
-    [HttpGet(Name = "GetMedicalDeviceMeasuringHistoryItems")]
-    public IActionResult GetMedicalDeviceMeasuringHistoryItems([FromHeader] string authorization, int userId)
-    {
 
-        if (userId == null)
-            return BadRequest();
 
-        try
-        {
-            List<MedicalDeviceMeasuringHistoryItemDataModel> measuredHistoryValues = _dbContext.ExecSqlQuery<MedicalDeviceMeasuringHistoryItemDataModel>($"dbo.sp_GetMedicalDeviceMeasuringHistory @userId = {userId}");
-
-            if (measuredHistoryValues.Count < 1)
-                return NotFound();
-
-            return Ok(measuredHistoryValues.OrderByDescending(x => x.MeasuredDateUtc).ToList());
-
-        }
-
-        catch (Exception ex)
-        {
-            _logger.LogError(ex.Message);
-            return Problem();
-        }
-    }
-    
-
+    /// <summary>
+    /// Vrátí výsledky predikce onemocnění s určitou pravděpodobností pro daného uživatele
+    /// </summary>
+    /// <param name="authorization"></param>
+    /// <param name="userId"></param>
+    /// <returns></returns>
     [AllowAnonymous]
     [HttpGet(Name = "GetDiseaseDetectionResultFromMLItems")]
-    public IActionResult GetDiseaseDetectionResultFromMLItems([FromHeader] string authorization, int userId)
+    public async Task<IActionResult> GetDiseaseDetectionResultFromMLItems(/*[FromHeader(Name = "x-api-key")] string apiKey,*/ int userId)
     {
 
-        if (userId == null)
+        if (userId <= 0)
+        {
             return BadRequest();
+        }
 
         try
         {
+            
+            string currentDatetime = DateTime.UtcNow.ToString("yyyy-MM-dd");
+            var currentDate = new SqlParameter("CurrentDateUtc", currentDatetime);
+            currentDate.DbType = DbType.DateTime;
+            
+            var diseaseDetectionResultsFromML = await _dbContext.DetectionResultFromMlItemDataModels.FromSql($"EXEC dbo.sp_GetDiseaseDetectionResultFromML @UserId = {userId}, @CurrentDateUtc = {currentDate} ").AsNoTracking().ToListAsync();
 
-            List<DiseaseDetectionResultFromMLItemDataModel> diseaseDetectionResultsFromML = _dbContext.ExecSqlQuery<DiseaseDetectionResultFromMLItemDataModel>($"dbo.sp_GetDiseaseDetectionResultFromML @userId = {userId}");
-            if (diseaseDetectionResultsFromML.Count < 1)
+            if (!diseaseDetectionResultsFromML.Any())
+            {
                 return NotFound();
-
+            }
             return Ok(diseaseDetectionResultsFromML);
 
         }
@@ -116,23 +112,143 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
     }
 
 
+    /// <summary>
+    /// Vrátí výsledky predikce původce onemocnění s určitou pravděpodobností pro daného uživatele
+    ///  </summary>
+    /// <param name="authorization"></param>
+    /// <param name="userId"></param>
+    /// <returns></returns>
     [AllowAnonymous]
     [HttpGet(Name = "GetDiseaseOriginDetectionResultFromMLItems")]
-    public IActionResult GetDiseaseOriginDetectionResultFromMLItems([FromHeader] string authorization, int userId)
+    public async Task<IActionResult> GetDiseaseOriginDetectionResultFromMLItems(/*[FromHeader(Name = "x-api-key")] string apiKey,*/ int userId)
     {
 
-        if (userId == null)
+        if (userId <= 0)
+        {
             return BadRequest();
+        }
 
         try
         {
-               
-            List<DiseaseOriginDetectionResultFromMLItemDataModel> originDetectionResultsFromML = _dbContext.ExecSqlQuery<DiseaseOriginDetectionResultFromMLItemDataModel>($"dbo.sp_GetDiseaseOriginDetectionResultFromML @userId = {userId}");
 
-            if (originDetectionResultsFromML.Count < 1)
-                    return NotFound();
+            string currentDatetime = DateTime.UtcNow.ToString("yyyy-MM-dd");
+            var currentDate = new SqlParameter("CurrentDateUtc", currentDatetime);
+            currentDate.DbType = DbType.DateTime;
 
+            var originDetectionResultsFromML = await _dbContext.DiseaseOriginDetectionResultFromMLItemDataModels.FromSql($"EXEC dbo.sp_GetDiseaseOriginDetectionResultFromML @userId = {userId},  @CurrentDateUtc = {currentDate}, @MinimumPredictionProbability = 0 ").AsNoTracking().ToListAsync();
+
+            if (!originDetectionResultsFromML.Any())
+            {
+                return NotFound();
+            }
             return Ok(originDetectionResultsFromML);
+
+        }
+
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            return Problem();
+        }
+    }
+
+
+    /// <summary>
+    /// Vrátí informace o klíčových vstupech do ML, které byly rozhodující pro určení diagnózy uživatele 
+    /// </summary>
+    /// <param name="authorization"></param>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    [AllowAnonymous]
+    [HttpGet(Name = "GetDiseaseDetectionKeyInputsToMLItems")]
+    public async Task<IActionResult> GetDiseaseDetectionKeyInputsToMLItems(/*[FromHeader(Name = "x-api-key")] string apiKey,*/ int userId)
+    {
+
+        if (userId <= 0)
+        {
+            return BadRequest();
+        }
+
+        try
+        {
+
+            var keyInputsToML =  await _dbContext.DiseaseDetectionKeyInputsToMLItemDataModels.FromSql($"dbo.sp_GetDiseaseDetectionKeyInputsToML @userId = {userId}").AsNoTracking().ToListAsync();
+
+            if (!keyInputsToML.Any())
+            {
+                return NotFound();
+            }
+            return Ok(keyInputsToML);
+
+        }
+
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            return Problem();
+        }
+    }
+
+    /// <summary>
+    /// Vrátí přehled o aktuálních/nadcházejících prohlídkách/karanténách/izolacích daného pacienta
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    [AllowAnonymous]
+    [HttpGet(Name = "GetVirtualSurgeryBasicOverview")]
+    public async Task<IActionResult> GetVirtualSurgeryBasicOverview(/*[FromHeader(Name = "x-api-key")] string apiKey,*/ int userId)
+    {
+
+        if (userId == 0)
+        {
+            return BadRequest();
+        }
+
+        try
+        {
+
+            var virtualBasicOverviewDataOverview = await _dbContext.VirtualSurgeryBasicOverviewDataModels.FromSql($"dbo.sp_GetVirtualSurgeryBasicOverview @userId = {userId}").AsNoTracking().ToListAsync();
+
+            if (!virtualBasicOverviewDataOverview.Any())
+            {
+                return NotFound();
+            }
+            return Ok(virtualBasicOverviewDataOverview);
+
+        }
+
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            return Problem();
+        }
+    }
+
+    /// <summary>
+    /// Vrátí seznam in/aktivních zařízení daného uživatele
+    /// </summary>
+    /// <param name="userGlobalId"></param>
+    /// <returns></returns>
+    [AllowAnonymous]
+    [HttpGet(Name = "GetAvailableDeviceListItems")]
+    public async Task<IActionResult> GetAvailableDeviceListItems(/*[FromHeader(Name = "x-api-key")] string apiKey,*/ string userGlobalId)
+    {
+
+        if (string.IsNullOrEmpty(userGlobalId))
+        {
+            return BadRequest();
+        }
+
+        try
+        {
+
+            var availableDeviceList = await _dbContext.AvailableDeviceListItemDataModels.FromSql($"dbo.sp_GetAvailableDeviceList @userGlobalId = '{userGlobalId}' ").AsNoTracking().ToListAsync();
+
+            if (!availableDeviceList.Any())
+            {
+                return NotFound();
+            }
+            return Ok(availableDeviceList);
 
         }
 

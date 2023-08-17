@@ -1,9 +1,12 @@
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
-using Principal.Telemedicine.SharedApi.Models;
+using Principal.Telemedicine.DataConnectors.Mapping;
+using Principal.Telemedicine.DataConnectors.Models;
+using Principal.Telemedicine.DataConnectors.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,15 +18,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddInMemoryTokenCaches();   
 
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options => options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull )
+    .AddXmlDataContractSerializerFormatters();
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddAutoMapper(typeof(Mapping).Assembly);
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//Dependency Injection od DbContext Class
+//Dependency Injection of DbContext Class
 builder.Services.AddDbContext<ApiDbContext>(options => 
     options.UseSqlServer(builder.Configuration.GetConnectionString("VANDA_TEST")));
 
+builder.Services.AddLogging();
 
 var app = builder.Build();
 

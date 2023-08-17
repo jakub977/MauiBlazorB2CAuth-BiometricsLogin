@@ -44,17 +44,10 @@ public class SecretConfigurationProviderTests
            .Build();
         var mock = new Mock<ILogger<SecretConfigurationProviderTests>>();
         ILogger<SecretConfigurationProviderTests> logger = mock.Object;
+        
         // Act
-        var hostBuilder = new HostBuilder()
-            .ConfigureAppConfiguration((hostingContext, config) =>
-            {
-                config.AddInMemoryCollection(new[]
-                {
-                    new KeyValuePair<string, string>("EnvironmentName", "local")
-                });
-            })
-        .UseSecretConfiguration<TestSettings>(configuration, logger, secretFilePath)
-        ;
+        var hostBuilder = new HostBuilder().UseEnvironment("local")
+        .UseSecretConfiguration<TestSettings>(configuration, logger, secretFilePath);
 
 
         var host = new DependencyResolverHelper(hostBuilder.Build());
@@ -72,7 +65,38 @@ public class SecretConfigurationProviderTests
 
     }
 
+    [Fact(DisplayName = "Test pro nastavení SecretConfigurationProvider v IServiceCollection")]
+    public void ShouldSetSecretConfigurationProviderInIServiceCollection()
+    {
+        // Arrange
+        var secretFilePath = "secured/secrets.json";
+        var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json")
+           .Build();
+       // var mock = new Mock<ILogger<SecretConfigurationProviderTests>>();
+       // ILogger<SecretConfigurationProviderTests> logger = mock.Object;
 
+        // Act
+        var hostBuilder = new HostBuilder().UseEnvironment("local")
+           .ConfigureServices((hostContext, services) =>
+           {
+               services.AddSecretConfiguration<TestSettings>(configuration, secretFilePath);
+           });
+
+
+        var host = new DependencyResolverHelper(hostBuilder.Build());
+
+        var options = host.GetService<IOptions<TestSettings>>();
+      
+
+
+        // Assert
+
+        Assert.NotNull(options);
+        Assert.NotNull(options.Value);
+        Assert.Equal("PublicValueFromAppsettingsJson", options.Value.PublicProperty);
+        Assert.Equal("SecretTestValue", options.Value.SecretProperty);
+
+    }
 
 
 
