@@ -46,9 +46,12 @@ public partial class ApiDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        //modelBuilder.Entity<AvailableDeviceListItemDataModel>();
-        //modelBuilder.Entity<VirtualSurgeryBasicOverviewDataModel>();
-        //modelBuilder.Entity<DiseaseDetectionResultFromMLItemDataModel>().HasNoKey();
+        modelBuilder.Entity<DiseaseDetectionResultFromMLItemDataModel>().HasNoKey();
+        modelBuilder.Entity<DiseaseOriginDetectionResultFromMLItemDataModel>().HasNoKey();
+        modelBuilder.Entity<DiseaseDetectionKeyInputsToMLItemDataModel>().HasNoKey();
+        modelBuilder.Entity<VirtualSurgeryBasicOverviewDataModel>().HasNoKey();
+        modelBuilder.Entity<AvailableDeviceListItemDataModel>().HasNoKey();
+
 
         modelBuilder.UseCollation("SQL_Latin1_General_CP1250_CI_AS");
 

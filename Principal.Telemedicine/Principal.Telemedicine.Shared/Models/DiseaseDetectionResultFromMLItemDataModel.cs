@@ -10,7 +10,7 @@ namespace Principal.Telemedicine.Shared.Models
 {
     public class DiseaseDetectionResultFromMLItemDataModel
     {
-        [Key]
+        //[Key]
         public int UserId { get; set; }
         public string Type { get; set; }
         public DateTime DetectionDate { get; set; }
@@ -21,7 +21,5 @@ namespace Principal.Telemedicine.Shared.Models
         public int ProbablityPercent { get; set; }
         public SymptomSeverityEnum Severity { get; set; }
         public int DiseaseDetectionResultId { get; set; }
-
-        //public bool IsActual => Type == "actual";
     }
 }

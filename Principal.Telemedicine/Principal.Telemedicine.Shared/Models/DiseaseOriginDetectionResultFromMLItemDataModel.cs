@@ -11,7 +11,7 @@ namespace Principal.Telemedicine.Shared.Models
 {
     public class DiseaseOriginDetectionResultFromMLItemDataModel
     {
-        [Key]
+  
         public int UserId { get; set; }
         public string Type { get; set; }
         public DateTime DetectionDate { get; set; }

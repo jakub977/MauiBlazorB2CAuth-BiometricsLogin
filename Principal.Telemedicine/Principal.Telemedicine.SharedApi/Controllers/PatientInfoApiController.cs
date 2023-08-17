@@ -1,27 +1,18 @@
 ﻿using System.Collections;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Text;
-using Microsoft.AspNetCore.SignalR;
 using Principal.Telemedicine.Shared.Models;
-using System.Collections.Generic;
 using System.Data;
-using System.Net;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Microsoft.Identity.Web.Resource;
 using Principal.Telemedicine.DataConnectors.Models;
-using System.Globalization;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
 
-    //[Authorize]
     [Route("api/[controller]/[action]")]
     [ApiController]
-    //[RequiredScope(RequiredScopesConfigurationKey = "PatientInfoApiController:PatientInfoApiControllerScope")]
     public class PatientInfoApiController : ControllerBase
     {
 
@@ -44,7 +35,7 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
     /// <param name="userId"></param>
     /// <returns></returns>
     [HttpGet(Name = "GetAggregatedUserSymptomProgressionDataModel")]
-    public async Task<IActionResult> GetAggregatedUserSymptomProgressionDataModel(/*[FromHeader] string authorization,*/ int userId)
+    public async Task<IActionResult> GetAggregatedUserSymptomProgressionDataModel(/*[FromHeader(Name = "x-api-key")] string apiKey,*/  int userId)
     {
 
         if (userId <= 0)
@@ -88,7 +79,7 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
     /// <returns></returns>
     [AllowAnonymous]
     [HttpGet(Name = "GetDiseaseDetectionResultFromMLItems")]
-    public async Task<IActionResult> GetDiseaseDetectionResultFromMLItems(/*[FromHeader] string authorization,*/ int userId)
+    public async Task<IActionResult> GetDiseaseDetectionResultFromMLItems(/*[FromHeader(Name = "x-api-key")] string apiKey,*/ int userId)
     {
 
         if (userId <= 0)
@@ -98,14 +89,7 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
 
         try
         {
-
-            //List<DiseaseDetectionResultFromMLItemDataModel> diseaseDetectionResultsFromML = _dbContext.ExecSqlQuery<DiseaseDetectionResultFromMLItemDataModel>($"dbo.sp_GetDiseaseDetectionResultFromML @userId = {userId}");
-            //if (diseaseDetectionResultsFromML.Count < 1)
-            //{
-            //    return NotFound();
-            //}
-            //return Ok(diseaseDetectionResultsFromML);
-
+            
             string currentDatetime = DateTime.UtcNow.ToString("yyyy-MM-dd");
             var currentDate = new SqlParameter("CurrentDateUtc", currentDatetime);
             currentDate.DbType = DbType.DateTime;
@@ -136,7 +120,7 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
     /// <returns></returns>
     [AllowAnonymous]
     [HttpGet(Name = "GetDiseaseOriginDetectionResultFromMLItems")]
-    public async Task<IActionResult> GetDiseaseOriginDetectionResultFromMLItems(/*[FromHeader] string authorization,*/ int userId)
+    public async Task<IActionResult> GetDiseaseOriginDetectionResultFromMLItems(/*[FromHeader(Name = "x-api-key")] string apiKey,*/ int userId)
     {
 
         if (userId <= 0)
@@ -146,14 +130,6 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
 
         try
         {
-
-            //List<DiseaseOriginDetectionResultFromMLItemDataModel> originDetectionResultsFromML = _dbContext.ExecSqlQuery<DiseaseOriginDetectionResultFromMLItemDataModel>($"dbo.sp_GetDiseaseOriginDetectionResultFromML @userId = {userId}");
-
-            //if (originDetectionResultsFromML.Count < 1)
-            //{
-            //    return NotFound();
-            //}
-            //return Ok(originDetectionResultsFromML);
 
             string currentDatetime = DateTime.UtcNow.ToString("yyyy-MM-dd");
             var currentDate = new SqlParameter("CurrentDateUtc", currentDatetime);
@@ -185,7 +161,7 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
     /// <returns></returns>
     [AllowAnonymous]
     [HttpGet(Name = "GetDiseaseDetectionKeyInputsToMLItems")]
-    public async Task<IActionResult> GetDiseaseDetectionKeyInputsToMLItems(/*[FromHeader] string authorization,*/ int userId)
+    public async Task<IActionResult> GetDiseaseDetectionKeyInputsToMLItems(/*[FromHeader(Name = "x-api-key")] string apiKey,*/ int userId)
     {
 
         if (userId <= 0)
@@ -196,13 +172,6 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
         try
         {
 
-            //List<DiseaseDetectionKeyInputsToMLItemDataModel> keyInputsToML = _dbContext.ExecSqlQuery<DiseaseDetectionKeyInputsToMLItemDataModel>($"dbo.sp_GetDiseaseDetectionKeyInputsToML @userId = {userId}");
-
-            //if (keyInputsToML.Count < 1)
-            //{
-            //    return NotFound();
-            //}
-            //return Ok(keyInputsToML);
             var keyInputsToML =  await _dbContext.DiseaseDetectionKeyInputsToMLItemDataModels.FromSql($"dbo.sp_GetDiseaseDetectionKeyInputsToML @userId = {userId}").AsNoTracking().ToListAsync();
 
             if (!keyInputsToML.Any())
@@ -227,7 +196,7 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
     /// <returns></returns>
     [AllowAnonymous]
     [HttpGet(Name = "GetVirtualSurgeryBasicOverview")]
-    public async Task<IActionResult> GetVirtualSurgeryBasicOverview(/*[FromHeader] string authorization,*/ int userId)
+    public async Task<IActionResult> GetVirtualSurgeryBasicOverview(/*[FromHeader(Name = "x-api-key")] string apiKey,*/ int userId)
     {
 
         if (userId == 0)
@@ -262,7 +231,7 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
     /// <returns></returns>
     [AllowAnonymous]
     [HttpGet(Name = "GetAvailableDeviceListItems")]
-    public async Task<IActionResult> GetAvailableDeviceListItems(/*[FromHeader] string authorization,*/ string userGlobalId)
+    public async Task<IActionResult> GetAvailableDeviceListItems(/*[FromHeader(Name = "x-api-key")] string apiKey,*/ string userGlobalId)
     {
 
         if (string.IsNullOrEmpty(userGlobalId))

@@ -10,7 +10,7 @@ namespace Principal.Telemedicine.Shared.Models;
 
     public class AvailableDeviceListItemDataModel
     {
-        [Key]
+        //[Key]
         public string UserGlobalId { get; set; }
         public int IsConsent { get; set; }
         public string DeviceGlobalId { get; set; }

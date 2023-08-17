@@ -9,7 +9,7 @@ namespace Principal.Telemedicine.Shared.Models;
 
     public class VirtualSurgeryBasicOverviewDataModel
     {
-        [Key]
+        
         public int UserId { get; set; }
         public DateTime? IsolationStartDateUtc { get; set; }
         public DateTime? IsolationEndDateUtc { get; set; }

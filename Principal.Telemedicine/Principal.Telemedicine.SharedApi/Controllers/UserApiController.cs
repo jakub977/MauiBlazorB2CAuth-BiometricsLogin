@@ -29,7 +29,7 @@ namespace Principal.Telemedicine.SharedApi.Controllers
         /// <param name="userId"></param>
         /// <returns></returns>
         [HttpGet(Name = "GetUserInfo")]
-        public async Task<IActionResult> GetUserInfo(int userId)
+        public async Task<IActionResult> GetUserInfo([FromHeader(Name = "x-api-key")] string apiKey, int userId)
         {
             try
             {
