@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Principal.Telemedicine.DataConnectors\Principal.Telemedicine.DataConnectors.csproj" />
+    <ProjectReference Include="..\Principal.Telemedicine.Shared.Logging\Principal.Telemedicine.Shared.Logging.csproj" />
     <ProjectReference Include="..\Principal.Telemedicine.Shared\Principal.Telemedicine.Shared.csproj" />
   </ItemGroup>
 

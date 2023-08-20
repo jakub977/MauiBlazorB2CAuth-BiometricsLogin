@@ -62,7 +62,7 @@ namespace Principal.Telemedicine.SharedApi.Test
             var controller = new UserApiController(repository.Object, logger, mapper);
 
             // act
-            var result = await controller.GetUserInfo("Test",8);
+            var result = await controller.GetUserInfo(8);
             var okResult = result as OkObjectResult;
 
             // assert

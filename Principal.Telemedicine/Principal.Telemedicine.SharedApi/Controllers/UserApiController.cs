@@ -29,8 +29,14 @@ namespace Principal.Telemedicine.SharedApi.Controllers
         /// <param name="userId"></param>
         /// <returns></returns>
         [HttpGet(Name = "GetUserInfo")]
-        public async Task<IActionResult> GetUserInfo([FromHeader(Name = "x-api-key")] string apiKey, int userId)
+        public async Task<IActionResult> GetUserInfo(/*[FromHeader(Name = "x-api-key")] string apiKey,*/ int userId)
         {
+
+            if (userId <= 0)
+            {
+                return BadRequest();
+            }
+
             try
             {
                 var user = await _customerRepository.GetCustomerByIdTaskAsync(userId);
@@ -42,7 +48,7 @@ namespace Principal.Telemedicine.SharedApi.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return Problem();
+                return StatusCode(500, "Internal server error");
             }
         }
     }

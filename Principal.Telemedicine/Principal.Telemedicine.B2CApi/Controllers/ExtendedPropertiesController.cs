@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Principal.Telemedicine.B2CApi.Models;
-using Principal.Telemedicine.SharedApi.Models;
 using System.Text;
 using Microsoft.Extensions.Options;
+using Principal.Telemedicine.DataConnectors.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 

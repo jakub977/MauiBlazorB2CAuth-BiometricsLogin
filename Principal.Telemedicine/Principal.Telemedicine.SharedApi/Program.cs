@@ -7,6 +7,7 @@ using Microsoft.Identity.Web;
 using Principal.Telemedicine.DataConnectors.Mapping;
 using Principal.Telemedicine.DataConnectors.Models;
 using Principal.Telemedicine.DataConnectors.Repository;
+using Principal.Telemedicine.Shared.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,7 +29,7 @@ builder.Services.AddAutoMapper(typeof(Mapping).Assembly);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//Dependency Injection of DbContext Class
+//Dependency Injection of ApiDbContext Class
 builder.Services.AddDbContext<ApiDbContext>(options => 
     options.UseSqlServer(builder.Configuration.GetConnectionString("VANDA_TEST")));
 
@@ -55,5 +56,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.UseMiddleware<LoggingMiddleware>();
 
 app.Run();

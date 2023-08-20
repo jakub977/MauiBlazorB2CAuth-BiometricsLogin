@@ -64,7 +64,7 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
         catch (Exception ex)
         {
             _logger.LogError(ex.Message);
-            return Problem();
+            return StatusCode(500, "Internal server error");
         }
 
     }
@@ -107,7 +107,7 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
         catch (Exception ex)
         {
             _logger.LogError(ex.Message);
-            return Problem();
+            return StatusCode(500, "Internal server error");
         }
     }
 
@@ -148,7 +148,7 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
         catch (Exception ex)
         {
             _logger.LogError(ex.Message);
-            return Problem();
+            return StatusCode(500, "Internal server error");
         }
     }
 
@@ -185,7 +185,7 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
         catch (Exception ex)
         {
             _logger.LogError(ex.Message);
-            return Problem();
+            return StatusCode(500, "Internal server error");
         }
     }
 
@@ -199,7 +199,7 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
     public async Task<IActionResult> GetVirtualSurgeryBasicOverview(/*[FromHeader(Name = "x-api-key")] string apiKey,*/ int userId)
     {
 
-        if (userId == 0)
+        if (userId <= 0)
         {
             return BadRequest();
         }
@@ -220,7 +220,7 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
         catch (Exception ex)
         {
             _logger.LogError(ex.Message);
-            return Problem();
+            return StatusCode(500, "Internal server error");
         }
     }
 
@@ -255,7 +255,7 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
         catch (Exception ex)
         {
             _logger.LogError(ex.Message);
-            return Problem();
+            return StatusCode(500, "Internal server error");
         }
     }
 
