@@ -19,6 +19,8 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Identity.Web" Version="1.16.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Principal.Telemedicine.Shared.Configuration" Version="1.1.0-CI-20230817-142752" />
+    <PackageReference Include="Principal.Telemedicine.Shared.Logging" Version="1.1.0-CI-20230811-151912" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 

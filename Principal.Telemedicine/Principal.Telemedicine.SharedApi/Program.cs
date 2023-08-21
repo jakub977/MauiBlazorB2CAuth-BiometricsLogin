@@ -9,6 +9,7 @@ using Principal.Telemedicine.DataConnectors.Models;
 using Principal.Telemedicine.DataConnectors.Repository;
 using Principal.Telemedicine.Shared.Logging;
 
+var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -25,7 +26,6 @@ builder.Services.AddControllers()
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddAutoMapper(typeof(Mapping).Assembly);
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -33,7 +33,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApiDbContext>(options => 
     options.UseSqlServer(builder.Configuration.GetConnectionString("VANDA_TEST")));
 
-builder.Services.AddLogging();
+builder.Services.AddLogging(configuration);
 
 var app = builder.Build();
 
