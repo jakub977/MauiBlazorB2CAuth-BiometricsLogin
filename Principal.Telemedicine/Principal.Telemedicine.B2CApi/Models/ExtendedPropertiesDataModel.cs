@@ -1,9 +1,22 @@
-﻿namespace Principal.Telemedicine.B2CApi.Models
+﻿namespace Principal.Telemedicine.B2CApi.Models;
+
+/// <summary>
+/// Data model definující vlastní přidané atributy/claimy nutné pro práci s uživatelem v rámci AD B2C.
+/// </summary>
+public class ExtendedPropertiesDataModel
 {
-    public class ExtendedPropertiesDataModel
-    {
-        public string GlobalID { get; set; }
-        public string TelephoneNumber { get; set; }
-        public int OrganizationIDs { get; set; }
-    }
+    /// <summary>
+    /// Jedinečný identifikátor uživatele.
+    /// </summary>
+    public string GlobalID { get; set; }
+
+    /// <summary>
+    /// Telefonní číslo vázané na daného uživatele.
+    /// </summary>
+    public string TelephoneNumber { get; set; }
+
+    /// <summary>
+    /// Identifikátor organizace, pod níž je uživatel založen.
+    /// </summary>
+    public int OrganizationIDs { get; set; }
 }
