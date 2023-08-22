@@ -3,15 +3,17 @@ using Microsoft.AspNetCore.Mvc;
 using Principal.Telemedicine.DataConnectors.Repository;
 using Principal.Telemedicine.Shared.Models;
 
-// TODO File scoped namespace
-namespace Principal.Telemedicine.SharedApi.Controllers
-{
+namespace Principal.Telemedicine.SharedApi.Controllers;
+
+    /// <summary>
+    /// API metody vztažené k uživateli
+    /// </summary>
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class UserApiController : ControllerBase
     {
         private readonly ICustomerRepository _customerRepository;
-        private readonly ILogger<UserApiController> _logger; // TODO tady už může být jenom ILogger
+        private readonly ILogger _logger; 
         private readonly IMapper _mapper;
 
         public UserApiController(ICustomerRepository customerRepository, ILogger<UserApiController> logger, IMapper mapper)
@@ -22,13 +24,14 @@ namespace Principal.Telemedicine.SharedApi.Controllers
 
         }
 
-        /// <summary>
-        /// Vrátí základní údaje uživatele
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        [HttpGet(Name = "GetUserInfo")]
-        public async Task<IActionResult> GetUserInfo(/*[FromHeader(Name = "x-api-key")] string apiKey,*/ int userId)
+    /// <summary>
+    /// Vrátí základní údaje uživatele.
+    /// </summary>
+    /// <param name="apiKey"></param>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    [HttpGet(Name = "GetUserInfo")]
+        public async Task<IActionResult> GetUserInfo([FromHeader(Name = "x-api-key")] string apiKey, int userId)
         {
 
             if (userId <= 0)
@@ -47,8 +50,8 @@ namespace Principal.Telemedicine.SharedApi.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return StatusCode(500, "Internal server error"); // TODO použít StatusCode na 500
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
     }
-}
+

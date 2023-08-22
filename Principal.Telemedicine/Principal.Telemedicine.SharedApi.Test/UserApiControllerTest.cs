@@ -8,10 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 using Principal.Telemedicine.DataConnectors.Mapping;
 using Xunit;
 
-namespace Principal.Telemedicine.SharedApi.Test
-{
+namespace Principal.Telemedicine.SharedApi.Test;
 
-    public class UserApiControllerTest
+public class UserApiControllerTest
     {
         
         [Fact(DisplayName = "Test api metody pro vrácení základních údajů uživatele")]
@@ -68,9 +67,6 @@ namespace Principal.Telemedicine.SharedApi.Test
             // assert
             Assert.NotNull(okResult);
             Assert.Equal(200, okResult.StatusCode);
-
-
-
         }
-    }
 }
+

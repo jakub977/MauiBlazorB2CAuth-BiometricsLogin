@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Principal.Telemedicine.DataConnectors.Models;
-// TODO běžná úprava
-namespace Principal.Telemedicine.DataConnectors.Repository
-{
+
+namespace Principal.Telemedicine.DataConnectors.Repository;
+
     public class CustomerRepository : ICustomerRepository
     {
 
@@ -32,4 +27,4 @@ namespace Principal.Telemedicine.DataConnectors.Repository
              return customer;
         }
     }
-}
+

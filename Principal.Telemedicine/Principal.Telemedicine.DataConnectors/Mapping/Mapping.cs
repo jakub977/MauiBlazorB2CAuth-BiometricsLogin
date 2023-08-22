@@ -1,14 +1,9 @@
 ﻿using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Principal.Telemedicine.DataConnectors.Models;
 using Principal.Telemedicine.Shared.Models;
 
-namespace Principal.Telemedicine.DataConnectors.Mapping
-{
+namespace Principal.Telemedicine.DataConnectors.Mapping;
+
     public class Mapping : Profile
     {
         public Mapping()
@@ -44,4 +39,3 @@ namespace Principal.Telemedicine.DataConnectors.Mapping
 
         }
     }
-}

@@ -9,14 +9,17 @@ using System.Data;
 using System.Text;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
-//TODO Popis
-[Route("api/[controller]/[action]")]
-    [ApiController]
+    
+    /// <summary>
+    /// API metody vztažené k sekci Karta pacienta.
+    /// </summary>
+    [Route("api/[controller]/[action]")]
+    [ApiController] 
     public class PatientInfoApiController : ControllerBase
     {
 
         private readonly ApiDbContext _dbContext;
-        private readonly ILogger<PatientInfoApiController> _logger;
+        private readonly ILogger _logger;
 
 
 
@@ -30,11 +33,11 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
     /// <summary>
     /// Vrátí agregovaný průběh příznaků uživatele (uživatelů) za časové úseky. Nebo přesněji naměřené hodnoty, subjektivní příznaky a predikce.
     /// </summary>
-    /// <param name="authorization"></param>
+    /// <param name="apiKey"></param>
     /// <param name="userId"></param>
-    /// <returns></returns>
+    /// <returns> StatusCodes </returns>
     [HttpGet(Name = "GetAggregatedUserSymptomProgressionDataModel")]
-    public async Task<IActionResult> GetAggregatedUserSymptomProgressionDataModel(/*[FromHeader(Name = "x-api-key")] string apiKey,*/  int userId)
+    public async Task<IActionResult> GetAggregatedUserSymptomProgressionDataModel([FromHeader(Name = "x-api-key")] string apiKey, int userId)
     {
 
         if (userId <= 0)
@@ -63,22 +66,19 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
         catch (Exception ex)
         {
             _logger.LogError(ex.Message);
-            return StatusCode(500, "Internal server error"); // TODO použí StatusCode
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
-
     }
 
 
-
     /// <summary>
-    /// Vrátí výsledky predikce onemocnění s určitou pravděpodobností pro daného uživatele
+    /// Vrátí výsledky predikce onemocnění s určitou pravděpodobností pro daného uživatele.
     /// </summary>
-    /// <param name="authorization"></param>
+    /// <param name="apiKey"></param>
     /// <param name="userId"></param>
-    /// <returns></returns>
-    [AllowAnonymous] //TODO pozor na AllowAnonymous u metod, nebo #if DEBUG
+    /// <returns> StatusCodes </returns>
     [HttpGet(Name = "GetDiseaseDetectionResultFromMLItems")]
-    public async Task<IActionResult> GetDiseaseDetectionResultFromMLItems(/*[FromHeader(Name = "x-api-key")] string apiKey,*/ int userId)
+    public async Task<IActionResult> GetDiseaseDetectionResultFromMLItems([FromHeader(Name = "x-api-key")] string apiKey, int userId)
     {
 
         if (userId <= 0)
@@ -106,20 +106,19 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
         catch (Exception ex)
         {
             _logger.LogError(ex.Message);
-            return StatusCode(500, "Internal server error");
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 
 
     /// <summary>
-    /// Vrátí výsledky predikce původce onemocnění s určitou pravděpodobností pro daného uživatele
+    /// Vrátí výsledky predikce původce onemocnění s určitou pravděpodobností pro daného uživatele.
     ///  </summary>
-    /// <param name="authorization"></param>
+    /// <param name="apiKey"></param>
     /// <param name="userId"></param>
-    /// <returns></returns>
-    [AllowAnonymous] //TODO pozor
+    /// <returns> StatusCodes </returns>
     [HttpGet(Name = "GetDiseaseOriginDetectionResultFromMLItems")]
-    public async Task<IActionResult> GetDiseaseOriginDetectionResultFromMLItems(/*[FromHeader(Name = "x-api-key")] string apiKey,*/ int userId)
+    public async Task<IActionResult> GetDiseaseOriginDetectionResultFromMLItems([FromHeader(Name = "x-api-key")] string apiKey, int userId)
     {
 
         if (userId <= 0)
@@ -147,20 +146,19 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
         catch (Exception ex)
         {
             _logger.LogError(ex.Message);
-            return StatusCode(500, "Internal server error");
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 
 
     /// <summary>
-    /// Vrátí informace o klíčových vstupech do ML, které byly rozhodující pro určení diagnózy uživatele 
+    /// Vrátí informace o klíčových vstupech do ML, které byly rozhodující pro určení diagnózy uživatele.
     /// </summary>
-    /// <param name="authorization"></param>
+    /// <param name="apiKey"></param>
     /// <param name="userId"></param>
-    /// <returns></returns>
-    [AllowAnonymous]
+    /// <returns> StatusCodes </returns>
     [HttpGet(Name = "GetDiseaseDetectionKeyInputsToMLItems")]
-    public async Task<IActionResult> GetDiseaseDetectionKeyInputsToMLItems(/*[FromHeader(Name = "x-api-key")] string apiKey,*/ int userId)
+    public async Task<IActionResult> GetDiseaseDetectionKeyInputsToMLItems([FromHeader(Name = "x-api-key")] string apiKey, int userId)
     {
 
         if (userId <= 0)
@@ -184,18 +182,19 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
         catch (Exception ex)
         {
             _logger.LogError(ex.Message);
-            return StatusCode(500, "Internal server error");
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 
+
     /// <summary>
-    /// Vrátí přehled o aktuálních/nadcházejících prohlídkách/karanténách/izolacích daného pacienta
+    /// Vrátí přehled o aktuálních/nadcházejících prohlídkách/karanténách/izolacích daného pacienta.
     /// </summary>
+    /// <param name="apiKey"></param>
     /// <param name="userId"></param>
-    /// <returns></returns>
-    [AllowAnonymous]
+    /// <returns> StatusCodes </returns>
     [HttpGet(Name = "GetVirtualSurgeryBasicOverview")]
-    public async Task<IActionResult> GetVirtualSurgeryBasicOverview(/*[FromHeader(Name = "x-api-key")] string apiKey,*/ int userId)
+    public async Task<IActionResult> GetVirtualSurgeryBasicOverview([FromHeader(Name = "x-api-key")] string apiKey, int userId)
     {
 
         if (userId <= 0)
@@ -219,18 +218,20 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
         catch (Exception ex)
         {
             _logger.LogError(ex.Message);
-            return StatusCode(500, "Internal server error");
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 
+
     /// <summary>
-    /// Vrátí seznam in/aktivních zařízení daného uživatele
+    /// Vrátí seznam in/aktivních zařízení daného uživatele.
     /// </summary>
+    /// <param name="apiKey"></param>
     /// <param name="userGlobalId"></param>
     /// <returns></returns>
     [AllowAnonymous]
     [HttpGet(Name = "GetAvailableDeviceListItems")]
-    public async Task<IActionResult> GetAvailableDeviceListItems(/*[FromHeader(Name = "x-api-key")] string apiKey,*/ string userGlobalId)
+    public async Task<IActionResult> GetAvailableDeviceListItems([FromHeader(Name = "x-api-key")] string apiKey, string userGlobalId)
     {
 
         if (string.IsNullOrEmpty(userGlobalId))
@@ -254,7 +255,7 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
         catch (Exception ex)
         {
             _logger.LogError(ex.Message);
-            return StatusCode(500, "Internal server error");
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 

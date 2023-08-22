@@ -6,6 +6,7 @@ using Principal.Telemedicine.DataConnectors.Models;
 using Principal.Telemedicine.DataConnectors.Repository;
 using Principal.Telemedicine.Shared.Logging;
 using System.Text.Json.Serialization;
+using Principal.Telemedicine.Shared.Configuration;
 
 var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 var builder = WebApplication.CreateBuilder(args);
@@ -14,7 +15,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAdB2C"))
     .EnableTokenAcquisitionToCallDownstreamApi()
-    .AddDownstreamWebApi("PatientInfoApiController", builder.Configuration.GetSection("PatientInfoApiControllerScope"))
     .AddInMemoryTokenCaches();   
 
 
@@ -27,17 +27,14 @@ builder.Services.AddAutoMapper(typeof(Mapping).Assembly);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//Dependency Injection of ApiDbContext Class
 builder.Services.AddDbContext<ApiDbContext>(options => 
     options.UseSqlServer(builder.Configuration.GetConnectionString("VANDA_TEST")));
 
 builder.Services.AddLogging(configuration);
 
 var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-// TODO Použít IsLocalHosted 
-if (app.Environment.IsDevelopment())
+ 
+if (app.Environment.IsLocalHosted())
 {
     app.UseSwagger();
     app.UseSwaggerUI();

@@ -91,7 +91,7 @@ public class Customer
     public string? PostalCode { get; set; }
 
     /// <summary>
-    /// User&apos;s e-mail address
+    /// User's e-mail address
     /// </summary>
     [StringLength(100)]
     [Unicode(false)]
@@ -137,14 +137,14 @@ public class Customer
     public int? PictureId { get; set; }
 
     /// <summary>
-    /// Title before user&apos;s name
+    /// Title before user's name
     /// </summary>
     [StringLength(20)]
     [Unicode(false)]
     public string? TitleBefore { get; set; }
 
     /// <summary>
-    /// Title after user&apos;s name
+    /// Title after user's name
     /// </summary>
     [StringLength(20)]
     [Unicode(false)]
@@ -290,10 +290,16 @@ public class Customer
     [Unicode(false)]
     public string? BirthIdentificationNumber { get; set; }
 
+    /// <summary>
+    /// User's home address
+    /// </summary>
     [StringLength(100)]
     [Unicode(false)]
     public string? Street { get; set; }
 
+    /// <summary>
+    /// Link to dbo.City
+    /// </summary>
     public int? CityId { get; set; }
 
     public bool? IsRiskPatient { get; set; }
