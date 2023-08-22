@@ -11,7 +11,6 @@ using Principal.Telemedicine.Shared.Configuration;
 var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAdB2C"))
     .EnableTokenAcquisitionToCallDownstreamApi()
@@ -42,12 +41,6 @@ if (app.Environment.IsLocalHosted())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-//app.UseSwaggerUI(options =>
-//{
-//    options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-//    options.RoutePrefix = string.Empty;
-//});
 
 app.UseHttpsRedirection();
 
