@@ -1,17 +1,16 @@
-﻿using System.Collections;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using System.Text;
+using Principal.Telemedicine.DataConnectors.Models;
 using Principal.Telemedicine.Shared.Models;
 using System.Data;
-using Principal.Telemedicine.DataConnectors.Models;
+using System.Text;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
-
-    [Route("api/[controller]/[action]")]
+//TODO Popis
+[Route("api/[controller]/[action]")]
     [ApiController]
     public class PatientInfoApiController : ControllerBase
     {
@@ -64,7 +63,7 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
         catch (Exception ex)
         {
             _logger.LogError(ex.Message);
-            return StatusCode(500, "Internal server error");
+            return StatusCode(500, "Internal server error"); // TODO použí StatusCode
         }
 
     }
@@ -77,7 +76,7 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
     /// <param name="authorization"></param>
     /// <param name="userId"></param>
     /// <returns></returns>
-    [AllowAnonymous]
+    [AllowAnonymous] //TODO pozor na AllowAnonymous u metod, nebo #if DEBUG
     [HttpGet(Name = "GetDiseaseDetectionResultFromMLItems")]
     public async Task<IActionResult> GetDiseaseDetectionResultFromMLItems(/*[FromHeader(Name = "x-api-key")] string apiKey,*/ int userId)
     {
@@ -118,7 +117,7 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
     /// <param name="authorization"></param>
     /// <param name="userId"></param>
     /// <returns></returns>
-    [AllowAnonymous]
+    [AllowAnonymous] //TODO pozor
     [HttpGet(Name = "GetDiseaseOriginDetectionResultFromMLItems")]
     public async Task<IActionResult> GetDiseaseOriginDetectionResultFromMLItems(/*[FromHeader(Name = "x-api-key")] string apiKey,*/ int userId)
     {

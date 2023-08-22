@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-
+﻿using System.Runtime.Serialization;
+//TOD Files Scoped
 namespace Principal.Telemedicine.Shared.Models
 {
+    //TODO Popis
     [DataContract]
     public class UserContract 
     {

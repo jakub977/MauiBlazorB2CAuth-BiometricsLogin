@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Principal.Telemedicine.DataConnectors.Models;
-
+// TODO běžná úprava
 namespace Principal.Telemedicine.DataConnectors.Repository
 {
     public class CustomerRepository : ICustomerRepository

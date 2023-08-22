@@ -1,10 +1,9 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Principal.Telemedicine.DataConnectors.Models;
 using Principal.Telemedicine.DataConnectors.Repository;
 using Principal.Telemedicine.Shared.Models;
 
+// TODO File scoped namespace
 namespace Principal.Telemedicine.SharedApi.Controllers
 {
     [Route("api/[controller]/[action]")]
@@ -12,7 +11,7 @@ namespace Principal.Telemedicine.SharedApi.Controllers
     public class UserApiController : ControllerBase
     {
         private readonly ICustomerRepository _customerRepository;
-        private readonly ILogger<UserApiController> _logger;
+        private readonly ILogger<UserApiController> _logger; // TODO tady už může být jenom ILogger
         private readonly IMapper _mapper;
 
         public UserApiController(ICustomerRepository customerRepository, ILogger<UserApiController> logger, IMapper mapper)
@@ -48,7 +47,7 @@ namespace Principal.Telemedicine.SharedApi.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, "Internal server error"); // TODO použít StatusCode na 500
             }
         }
     }
