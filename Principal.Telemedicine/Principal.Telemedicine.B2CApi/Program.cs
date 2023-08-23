@@ -1,20 +1,9 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics.Internal;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.ApplicationInsights;
-using Microsoft.Extensions.Options;
-using Microsoft.Identity.Web;
 using Principal.Telemedicine.B2CApi;
-using Principal.Telemedicine.B2CApi.Controllers;
 using Principal.Telemedicine.DataConnectors.Models;
-using Principal.Telemedicine.Shared.Logging;
-using Microsoft.Extensions.Hosting;
 using Principal.Telemedicine.Shared.Configuration;
-using Principal.Telemedicine.SharedApi.Models;
-using Moq;
-using Microsoft.Extensions.Hosting;
+using Principal.Telemedicine.Shared.Logging;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,24 +12,18 @@ var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json")
            .Build();
 var secretFilePath = "Secured/secrets.json";
 
-
-//var host = hostBuilder.Build();
-//var options = host.Services.GetService(IOptions<AuthorizationSettings>);
-
 builder.Services.AddDbContext<DbContextGeneral>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("TMWorkstore")));
 
-//Dependency Injection od DbContext Class
 builder.Services.AddDbContext<ApiDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("VANDA_TEST")));
-//Add TM Logging
+
 builder.Services.AddLogging(configuration);
-//Add secrets configuration
+
 builder.Services.AddSecretConfiguration<AuthorizationSettings>(configuration, secretFilePath);
-// Add services to the container.
+
 builder.Services.AddControllers();
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -57,12 +40,11 @@ builder.Services.AddApplicationInsightsTelemetry(builder.Configuration["APPLICAT
 var app = builder.Build();
 
 
-// Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
-app.UseSwagger();
+if (app.Environment.IsLocalHosted())
+{
+    app.UseSwagger();
     app.UseSwaggerUI();
-//}
+}
 
 app.UseHttpsRedirection();
 
