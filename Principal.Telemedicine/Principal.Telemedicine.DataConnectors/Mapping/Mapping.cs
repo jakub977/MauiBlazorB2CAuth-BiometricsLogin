@@ -4,6 +4,9 @@ using Principal.Telemedicine.Shared.Models;
 
 namespace Principal.Telemedicine.DataConnectors.Mapping;
 
+    /// <summary>
+    /// Mapper objektu na objekt.
+    /// </summary>
     public class Mapping : Profile
     {
         public Mapping()

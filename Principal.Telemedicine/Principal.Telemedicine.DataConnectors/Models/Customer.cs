@@ -302,18 +302,33 @@ public class Customer
     /// </summary>
     public int? CityId { get; set; }
 
+    /// <summary>
+    /// Bit identifier whether an user is at risk of any health issue
+    /// </summary>
     public bool? IsRiskPatient { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who creates an user
+    /// </summary>
     [ForeignKey("CreatedByCustomerId")]
     [InverseProperty("InverseCreatedByCustomer")]
     public virtual Customer? CreatedByCustomer { get; set; }
 
+    /// <summary>
+    /// Inverse collection of Customer
+    /// </summary>
     [InverseProperty("CreatedByCustomer")]
     public virtual ICollection<Customer> InverseCreatedByCustomer { get; set; } = new List<Customer>();
 
+    /// <summary>
+    /// Inverse collection of Customer
+    /// </summary>
     [InverseProperty("UpdatedByCustomer")]
     public virtual ICollection<Customer> InverseUpdatedByCustomer { get; set; } = new List<Customer>();
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who updates an user
+    /// </summary>
     [ForeignKey("UpdatedByCustomerId")]
     [InverseProperty("InverseUpdatedByCustomer")]
     public virtual Customer? UpdatedByCustomer { get; set; }

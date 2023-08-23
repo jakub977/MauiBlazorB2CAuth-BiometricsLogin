@@ -275,6 +275,9 @@ namespace Principal.Telemedicine.Shared.Models;
         [DataMember]
         public int? CityId { get; set; }
 
+        /// <summary>
+        /// Bit identifier whether an user is at risk of any health issue
+        /// </summary>
         public bool? IsRiskPatient { get; set; }
 
     }

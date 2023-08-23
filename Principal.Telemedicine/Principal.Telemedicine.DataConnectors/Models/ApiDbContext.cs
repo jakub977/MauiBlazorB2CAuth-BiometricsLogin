@@ -6,6 +6,9 @@ using Principal.Telemedicine.Shared.Models;
 
 namespace Principal.Telemedicine.DataConnectors.Models;
 
+/// <summary>
+/// Db context VANDA_TEST
+/// </summary>
 public partial class ApiDbContext : DbContext
 {
     public ApiDbContext()
@@ -116,6 +119,12 @@ public partial class ApiDbContext : DbContext
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 
+    /// <summary>
+    /// Pomocná metoda vykonávající query a vracející list objektů.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="query"></param>
+    /// <returns> List objektů </returns>
     public List<T> ExecSqlQuery<T>(string query)
     {
         using var command = Database.GetDbConnection().CreateCommand();
