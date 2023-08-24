@@ -1,12 +1,10 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Principal.Telemedicine.Shared.Models
-{
+namespace Principal.Telemedicine.Shared.Models;
+
+    /// <summary>
+    /// Data model agregovaných naměřených hodnot, subjektivních příznak a predikcí.
+    /// </summary>
     public class PatientAggregatedSymptomProgressionDataModel
     {
         [JsonProperty("MeasuredValues")]
@@ -18,4 +16,4 @@ namespace Principal.Telemedicine.Shared.Models
         [JsonProperty("DiseasePrediction")]
         public List<PatientDiseasePredictionDataModel> DiseasePrediction { get; set; } = new List<PatientDiseasePredictionDataModel>();
     }
-}
+

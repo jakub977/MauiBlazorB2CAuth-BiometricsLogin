@@ -1,12 +1,10 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Principal.Telemedicine.Shared.Models
-{
+namespace Principal.Telemedicine.Shared.Models;
+
+    /// <summary>
+    /// Data model predikce onemocnění.
+    /// </summary>
     public class PatientDiseasePredictionDataModel
     {
         [JsonProperty("DataType")]
@@ -24,4 +22,4 @@ namespace Principal.Telemedicine.Shared.Models
         [JsonProperty("DiseaseType")]
         public string DiseaseType { get; set; }
     }
-}
+

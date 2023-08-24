@@ -1,14 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Principal.Telemedicine.DataConnectors.Models;
-using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
+using Principal.Telemedicine.DataConnectors.Contexts;
+using Principal.Telemedicine.DataConnectors.Models.General;
 
 namespace Principal.Telemedicine.Shared.Logging;
 /// <summary>

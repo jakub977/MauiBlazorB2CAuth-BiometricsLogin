@@ -2,20 +2,21 @@
 using System.Data;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
+using Principal.Telemedicine.DataConnectors.Models.Shared;
 using Principal.Telemedicine.Shared.Models;
 
-namespace Principal.Telemedicine.DataConnectors.Models;
+namespace Principal.Telemedicine.DataConnectors.Contexts;
 
 /// <summary>
 /// Db context VANDA_TEST
 /// </summary>
-public partial class ApiDbContext : DbContext
+public partial class DbContextApi : DbContext
 {
-    public ApiDbContext()
+    public DbContextApi()
     {
     }
 
-    public ApiDbContext(DbContextOptions<ApiDbContext> options)
+    public DbContextApi(DbContextOptions<DbContextApi> options)
         : base(options)
     {
     }

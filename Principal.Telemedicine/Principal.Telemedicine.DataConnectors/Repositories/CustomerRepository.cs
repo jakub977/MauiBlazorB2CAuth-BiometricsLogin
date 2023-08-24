@@ -1,15 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Principal.Telemedicine.DataConnectors.Models;
+using Principal.Telemedicine.DataConnectors.Contexts;
+using Principal.Telemedicine.DataConnectors.Models.Shared;
 
-namespace Principal.Telemedicine.DataConnectors.Repository;
+namespace Principal.Telemedicine.DataConnectors.Repositories;
 
     /// <inheritdoc/>
     public class CustomerRepository : ICustomerRepository
     {
 
-        private readonly ApiDbContext _dbContext;
+        private readonly DbContextApi _dbContext;
 
-        public CustomerRepository(ApiDbContext dbContext)
+        public CustomerRepository(DbContextApi dbContext)
         {
             _dbContext = dbContext;
         }

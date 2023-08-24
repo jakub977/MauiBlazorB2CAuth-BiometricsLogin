@@ -1,8 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Principal.Telemedicine.Shared.Logging.Enumerators;
-using System;
-using Principal.Telemedicine.DataConnectors.Models;
 using System.Text.Json;
+using Principal.Telemedicine.DataConnectors.Models.General;
 
 namespace Principal.Telemedicine.Shared.Logging;
 /// <summary>

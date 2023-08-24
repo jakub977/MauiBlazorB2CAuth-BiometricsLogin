@@ -4,6 +4,7 @@ using Principal.Telemedicine.DataConnectors.Models;
 using Principal.Telemedicine.Shared.Models;
 using Principal.Telemedicine.SharedApi.Controllers;
 using Microsoft.AspNetCore.Mvc;
+using Principal.Telemedicine.DataConnectors.Contexts;
 using Xunit;
 
 namespace Principal.Telemedicine.SharedApi.Test;
@@ -17,16 +18,16 @@ namespace Principal.Telemedicine.SharedApi.Test;
             // arrange
             int userId = 8;
             var logger = new LoggerFactory().CreateLogger<PatientInfoApiController>();
-            var dbOptionsBuilder = new DbContextOptionsBuilder<ApiDbContext>()
+            var dbOptionsBuilder = new DbContextOptionsBuilder<DbContextApi>()
                 .Options;
 
-            using var context = new ApiDbContext(dbOptionsBuilder);
+            using var context = new DbContextApi(dbOptionsBuilder);
 
             // create the controller
             var controller = new PatientInfoApiController(logger, context);
 
             // act
-            var result = await controller.GetAggregatedUserSymptomProgressionDataModel(userId);
+            var result = await controller.GetAggregatedUserSymptomProgressionDataModel("api-key", userId);
             var okResult = result as OkObjectResult;
 
             // assert
@@ -41,10 +42,10 @@ namespace Principal.Telemedicine.SharedApi.Test;
             // arrange
             int userId = 8;
             var logger = new LoggerFactory().CreateLogger<PatientInfoApiController>();
-            var dbOptionsBuilder = new DbContextOptionsBuilder<ApiDbContext>()
+            var dbOptionsBuilder = new DbContextOptionsBuilder<DbContextApi>()
                 .Options;
 
-            using var context = new ApiDbContext(dbOptionsBuilder);
+            using var context = new DbContextApi(dbOptionsBuilder);
 
             using var transaction = context.Database.BeginTransaction();
 
@@ -66,7 +67,7 @@ namespace Principal.Telemedicine.SharedApi.Test;
             var controller = new PatientInfoApiController(logger, context);
 
             // act
-            var result = await controller.GetDiseaseDetectionResultFromMLItems(userId);
+            var result = await controller.GetDiseaseDetectionResultFromMLItems("api-key", userId);
             var okResult = result as OkObjectResult;
 
             // assert
@@ -83,10 +84,10 @@ namespace Principal.Telemedicine.SharedApi.Test;
             // arrange
             int userId = 8;
             var logger = new LoggerFactory().CreateLogger<PatientInfoApiController>();
-            var dbOptionsBuilder = new DbContextOptionsBuilder<ApiDbContext>()
+            var dbOptionsBuilder = new DbContextOptionsBuilder<DbContextApi>()
                 .Options;
 
-            using var context = new ApiDbContext(dbOptionsBuilder);
+            using var context = new DbContextApi(dbOptionsBuilder);
 
             using var transaction = context.Database.BeginTransaction();
 
@@ -108,7 +109,7 @@ namespace Principal.Telemedicine.SharedApi.Test;
             var controller = new PatientInfoApiController(logger, context);
 
             // act
-            var result = await controller.GetDiseaseOriginDetectionResultFromMLItems(userId);
+            var result = await controller.GetDiseaseOriginDetectionResultFromMLItems("api-key", userId);
             var okResult = result as OkObjectResult;
 
             // assert
@@ -125,10 +126,10 @@ namespace Principal.Telemedicine.SharedApi.Test;
             // arrange
             int userId = 8;
             var logger = new LoggerFactory().CreateLogger<PatientInfoApiController>();
-            var dbOptionsBuilder = new DbContextOptionsBuilder<ApiDbContext>()
+            var dbOptionsBuilder = new DbContextOptionsBuilder<DbContextApi>()
                 .Options;
 
-            using var context = new ApiDbContext(dbOptionsBuilder);
+            using var context = new DbContextApi(dbOptionsBuilder);
             
             using var transaction = context.Database.BeginTransaction();
 
@@ -155,7 +156,7 @@ namespace Principal.Telemedicine.SharedApi.Test;
             var controller = new PatientInfoApiController(logger, context);
 
             // act
-            var result = await controller.GetDiseaseDetectionKeyInputsToMLItems(userId);
+            var result = await controller.GetDiseaseDetectionKeyInputsToMLItems("api-key", userId);
             var okResult = result as OkObjectResult;
 
             // assert
@@ -173,10 +174,10 @@ namespace Principal.Telemedicine.SharedApi.Test;
             int userId = 8;
             var logger = new LoggerFactory().CreateLogger<PatientInfoApiController>();
 
-            var dbOptionsBuilder = new DbContextOptionsBuilder<ApiDbContext>()
+            var dbOptionsBuilder = new DbContextOptionsBuilder<DbContextApi>()
                 .Options;
 
-            using var context = new ApiDbContext(dbOptionsBuilder);
+            using var context = new DbContextApi(dbOptionsBuilder);
 
             using var transaction = context.Database.BeginTransaction();
 
@@ -212,7 +213,7 @@ namespace Principal.Telemedicine.SharedApi.Test;
             var controller = new PatientInfoApiController(logger, context);
 
             // act
-            var result = await controller.GetVirtualSurgeryBasicOverview(userId);
+            var result = await controller.GetVirtualSurgeryBasicOverview("api-key", userId);
             OkObjectResult okResult = result as OkObjectResult;
 
             // assert
@@ -230,10 +231,10 @@ namespace Principal.Telemedicine.SharedApi.Test;
             string userGlobalId = "15651bb054a84e8ca2c9f7dfc9bffb07";
             var logger = new LoggerFactory().CreateLogger<PatientInfoApiController>();
 
-            var dbOptionsBuilder = new DbContextOptionsBuilder<ApiDbContext>()
+            var dbOptionsBuilder = new DbContextOptionsBuilder<DbContextApi>()
                 .Options;
 
-            using var context = new ApiDbContext(dbOptionsBuilder);
+            using var context = new DbContextApi(dbOptionsBuilder);
 
             using var transaction = context.Database.BeginTransaction();
 
@@ -256,7 +257,7 @@ namespace Principal.Telemedicine.SharedApi.Test;
             var controller = new PatientInfoApiController(logger, context);
 
             // act
-            var result = await controller.GetAvailableDeviceListItems(userGlobalId);
+            var result = await controller.GetAvailableDeviceListItems("api-key", userGlobalId);
             OkObjectResult okResult = result as OkObjectResult;
 
             // assert

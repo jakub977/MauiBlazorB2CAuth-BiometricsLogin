@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Principal.Telemedicine.DataConnectors.Models.General;
 
-namespace Principal.Telemedicine.DataConnectors.Models;
+namespace Principal.Telemedicine.DataConnectors.Contexts;
 
 /// <summary>
 /// Db context TMAZWorkStore

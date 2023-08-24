@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Principal.Telemedicine.DataConnectors.Models;
+using Principal.Telemedicine.DataConnectors.Contexts;
 using Xunit;
 
 namespace Principal.Telemedicine.Shared.Logging.Tests

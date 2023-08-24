@@ -1,11 +1,11 @@
 ﻿using Moq;
 using AutoMapper;
-using Principal.Telemedicine.DataConnectors.Repository;
 using Principal.Telemedicine.SharedApi.Controllers;
-using Principal.Telemedicine.DataConnectors.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
 using Principal.Telemedicine.DataConnectors.Mapping;
+using Principal.Telemedicine.DataConnectors.Models.Shared;
+using Principal.Telemedicine.DataConnectors.Repositories;
 using Xunit;
 
 namespace Principal.Telemedicine.SharedApi.Test;
@@ -61,7 +61,7 @@ public class UserApiControllerTest
             var controller = new UserApiController(repository.Object, logger, mapper);
 
             // act
-            var result = await controller.GetUserInfo(8);
+            var result = await controller.GetUserInfo("api-key", 8);
             var okResult = result as OkObjectResult;
 
             // assert

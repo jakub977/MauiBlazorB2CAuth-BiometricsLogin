@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Principal.Telemedicine.DataConnectors.Models;
+using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.Shared.Logging.Test.Helpers;
 using Xunit;
 
