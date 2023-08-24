@@ -1,15 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Principal.Telemedicine.DataConnectors.Models;
+﻿using Principal.Telemedicine.DataConnectors.Models;
 
-namespace Principal.Telemedicine.DataConnectors.Repository
-{
+namespace Principal.Telemedicine.DataConnectors.Repository;
+
+    /// <summary>
+    /// Pomocná třída základních operací nad objektem Customer.
+    /// </summary>
     public interface ICustomerRepository
     {
+        /// <summary>
+        /// Metoda vrací všechny uživatele.
+        /// </summary>
+        /// <returns> Seznam uživatelů </returns>
         Task<IEnumerable<Customer>> GetCustomersTaskAsyncTask();
+
+        /// <summary>
+        /// Metoda vrací konkrétního uživatele na základě id.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns> Konkrétní uživatel </returns>
         Task<Customer?> GetCustomerByIdTaskAsync(int id);
     }
-}
+

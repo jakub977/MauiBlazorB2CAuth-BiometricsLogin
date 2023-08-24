@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Principal.Telemedicine.DataConnectors.Models;
 
-namespace Principal.Telemedicine.DataConnectors.Repository
-{
+namespace Principal.Telemedicine.DataConnectors.Repository;
+
+    /// <inheritdoc/>
     public class CustomerRepository : ICustomerRepository
     {
 
@@ -18,6 +14,7 @@ namespace Principal.Telemedicine.DataConnectors.Repository
             _dbContext = dbContext;
         }
 
+        /// <inheritdoc/>
         public async Task<IEnumerable<Customer>> GetCustomersTaskAsyncTask()
         {
             var listOfCustomers = await _dbContext.Customers.OrderBy(p => p.Id).ToListAsync();
@@ -25,6 +22,7 @@ namespace Principal.Telemedicine.DataConnectors.Repository
             return listOfCustomers;
         }
 
+        /// <inheritdoc/>
         public async Task<Customer?> GetCustomerByIdTaskAsync(int id)
         {
              var customer = await _dbContext.Customers.Where(p => p.Id == id).FirstOrDefaultAsync();
@@ -32,4 +30,4 @@ namespace Principal.Telemedicine.DataConnectors.Repository
              return customer;
         }
     }
-}
+

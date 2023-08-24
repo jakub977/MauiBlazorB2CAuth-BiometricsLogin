@@ -4,16 +4,14 @@ using Principal.Telemedicine.DataConnectors.Models;
 using Principal.Telemedicine.Shared.Models;
 using Principal.Telemedicine.SharedApi.Controllers;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Xunit;
-using Microsoft.EntityFrameworkCore.Storage;
 
-namespace Principal.Telemedicine.SharedApi.Test
-{
+namespace Principal.Telemedicine.SharedApi.Test;
+
     public class PatientInfoApiControllerTest
     {
 
-        [Fact(DisplayName = "Test api metody pro vrácení souhrnných informací uživatele ohledně naměřených hodnot, predikcí a podobně")]
+        [Fact(DisplayName = "Test api metody pro vrácení souhrnných informací uživatele ohledně naměřených hodnot, predikcí a podobně.")]
         public async Task GetAggregatedUserSymptomProgressionDataModel_Should_Return_Ok_Result()
         {
             // arrange
@@ -34,12 +32,10 @@ namespace Principal.Telemedicine.SharedApi.Test
             // assert
             Assert.NotNull(okResult);
             Assert.Equal(200, okResult.StatusCode);
-
         }
 
 
-
-        [Fact(DisplayName = "Test api metody pro vrácení výsledků predikce nemoci")]
+        [Fact(DisplayName = "Test api metody pro vrácení výsledků predikce nemoci.")]
         public async Task GetDiseaseDetectionResultFromMLItems_Should_Return_Ok_Result()
         {
             // arrange
@@ -78,11 +74,10 @@ namespace Principal.Telemedicine.SharedApi.Test
             Assert.Equal(200, okResult.StatusCode);
 
             transaction.Rollback();
-
         }
 
 
-        [Fact(DisplayName = "Test api metody pro vrácení výsledků predikce původce nemoci")]
+        [Fact(DisplayName = "Test api metody pro vrácení výsledků predikce původce nemoci.")]
         public async Task GetDiseaseOriginDetectionResultFromMLItems_Should_Return_Ok_Result()
         {
             // arrange
@@ -121,11 +116,10 @@ namespace Principal.Telemedicine.SharedApi.Test
             Assert.Equal(200, okResult.StatusCode);
 
             transaction.Rollback();
-
         }
 
 
-        [Fact(DisplayName = "Test api metody pro vrácení informací o klíčových vstupech")]
+        [Fact(DisplayName = "Test api metody pro vrácení informací o klíčových vstupech.")]
         public async Task GetDiseaseDetectionKeyInputsToMLItems_Should_Return_Ok_Result()
         {
             // arrange
@@ -169,10 +163,10 @@ namespace Principal.Telemedicine.SharedApi.Test
             Assert.Equal(200, okResult.StatusCode);
 
             transaction.Rollback();
-
         }
 
-        [Fact(DisplayName = "Test api metody pro vrácení přehledu o aktuálních/nadcházejících prohlídkách/karanténách/izolacích daného pacienta")]
+
+        [Fact(DisplayName = "Test api metody pro vrácení přehledu o aktuálních/nadcházejících prohlídkách/karanténách/izolacích daného pacienta.")]
         public async Task GetVirtualSurgeryBasicOverview_Should_Return_Ok_Result()
         {
             // arrange
@@ -226,13 +220,10 @@ namespace Principal.Telemedicine.SharedApi.Test
             Assert.Equal(200, okResult.StatusCode);
 
             transaction.Rollback();
-
         }
 
-    
 
-
-        [Fact(DisplayName = "Test api metody pro vrácení in/aktivních zařízení daného uživatele")]
+        [Fact(DisplayName = "Test api metody pro vrácení in/aktivních zařízení daného uživatele.")]
         public async Task GetAvailableDeviceListItems_Should_Return_Ok_Result()
         {
             // arrange
@@ -273,12 +264,10 @@ namespace Principal.Telemedicine.SharedApi.Test
             Assert.Equal(200, okResult.StatusCode);
 
             transaction.Rollback();
-
         }
-
     }
 
-}
+
 
 
 

@@ -8,10 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 using Principal.Telemedicine.DataConnectors.Mapping;
 using Xunit;
 
-namespace Principal.Telemedicine.SharedApi.Test
-{
+namespace Principal.Telemedicine.SharedApi.Test;
 
-    public class UserApiControllerTest
+public class UserApiControllerTest
     {
         
         [Fact(DisplayName = "Test api metody pro vrácení základních údajů uživatele")]
@@ -62,15 +61,12 @@ namespace Principal.Telemedicine.SharedApi.Test
             var controller = new UserApiController(repository.Object, logger, mapper);
 
             // act
-            var result = await controller.GetUserInfo("Test",8);
+            var result = await controller.GetUserInfo(8);
             var okResult = result as OkObjectResult;
 
             // assert
             Assert.NotNull(okResult);
             Assert.Equal(200, okResult.StatusCode);
-
-
-
         }
-    }
 }
+
