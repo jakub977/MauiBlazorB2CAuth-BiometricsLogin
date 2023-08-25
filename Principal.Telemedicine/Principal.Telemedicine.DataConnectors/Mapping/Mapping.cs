@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Principal.Telemedicine.DataConnectors.Models;
+using Principal.Telemedicine.DataConnectors.Models.Shared;
 using Principal.Telemedicine.Shared.Models;
 
 namespace Principal.Telemedicine.DataConnectors.Mapping;

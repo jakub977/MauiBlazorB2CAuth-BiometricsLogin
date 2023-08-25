@@ -1,13 +1,11 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Principal.Telemedicine.Shared.Enums;
 
-namespace Principal.Telemedicine.Shared.Models
-{
+namespace Principal.Telemedicine.Shared.Models;
+
+    /// <summary>
+    /// Data model subjektivních symptomů daného pacienta.
+    /// </summary>
     public class PatientSubjectiveSymptomDataModel
     {
         [JsonProperty("DataType")]
@@ -45,4 +43,4 @@ namespace Principal.Telemedicine.Shared.Models
 
         public DiseaseSymptomCategoryEnum DiseaseSymptomCategoryEnum => (DiseaseSymptomCategoryEnum)System.Enum.ToObject(typeof(DiseaseSymptomCategoryEnum), DiseaseSymptomCategoryId);
     }
-}
+

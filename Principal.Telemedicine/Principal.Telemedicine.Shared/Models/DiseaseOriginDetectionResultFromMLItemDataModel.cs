@@ -1,15 +1,11 @@
 ﻿using Principal.Telemedicine.Shared.Enums;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Principal.Telemedicine.Shared.Models
-{
-    public class DiseaseOriginDetectionResultFromMLItemDataModel
+namespace Principal.Telemedicine.Shared.Models;
+
+/// <summary>
+/// Data model výsledku predikce původce onemocnění s určitou pravděpodobností pro daného uživatele.
+/// </summary>
+public class DiseaseOriginDetectionResultFromMLItemDataModel
     {
   
         public int UserId { get; set; }
@@ -21,4 +17,4 @@ namespace Principal.Telemedicine.Shared.Models
         public SymptomSeverityEnum Severity { get; set; }
         public int DiseaseOriginDetectionResultId { get; set; }
     }
-}
+

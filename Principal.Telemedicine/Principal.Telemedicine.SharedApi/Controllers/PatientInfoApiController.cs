@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using Principal.Telemedicine.DataConnectors.Models;
 using Principal.Telemedicine.Shared.Models;
 using System.Data;
 using System.Text;
+using Principal.Telemedicine.DataConnectors.Contexts;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
     
@@ -18,12 +18,12 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
     public class PatientInfoApiController : ControllerBase
     {
 
-        private readonly ApiDbContext _dbContext;
+        private readonly DbContextApi _dbContext;
         private readonly ILogger _logger;
 
 
 
-    public PatientInfoApiController(ILogger<PatientInfoApiController> logger, ApiDbContext dbContext)
+    public PatientInfoApiController(ILogger<PatientInfoApiController> logger, DbContextApi dbContext)
     {
         _dbContext = dbContext;
         _logger = logger;

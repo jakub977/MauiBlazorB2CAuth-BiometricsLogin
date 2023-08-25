@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace Principal.Telemedicine.DataConnectors.Models;
+namespace Principal.Telemedicine.DataConnectors.Models.Shared;
 
 /// <summary>
 /// Table of users

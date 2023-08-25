@@ -1,6 +1,6 @@
-﻿using Principal.Telemedicine.DataConnectors.Models;
+﻿using Principal.Telemedicine.DataConnectors.Models.Shared;
 
-namespace Principal.Telemedicine.DataConnectors.Repository;
+namespace Principal.Telemedicine.DataConnectors.Repositories;
 
     /// <summary>
     /// Pomocná třída základních operací nad objektem Customer.

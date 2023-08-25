@@ -2,10 +2,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
 using Principal.Telemedicine.DataConnectors.Mapping;
-using Principal.Telemedicine.DataConnectors.Models;
-using Principal.Telemedicine.DataConnectors.Repository;
 using Principal.Telemedicine.Shared.Logging;
 using System.Text.Json.Serialization;
+using Principal.Telemedicine.DataConnectors.Contexts;
+using Principal.Telemedicine.DataConnectors.Repositories;
 using Principal.Telemedicine.Shared.Configuration;
 
 var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
@@ -26,7 +26,7 @@ builder.Services.AddAutoMapper(typeof(Mapping).Assembly);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<ApiDbContext>(options => 
+builder.Services.AddDbContext<DbContextApi>(options => 
     options.UseSqlServer(builder.Configuration.GetConnectionString("VANDA_TEST")));
 
 builder.Services.AddDbContext<DbContextGeneral>(options =>

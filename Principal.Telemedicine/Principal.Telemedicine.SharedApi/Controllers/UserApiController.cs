@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Principal.Telemedicine.DataConnectors.Repository;
+using Principal.Telemedicine.DataConnectors.Repositories;
 using Principal.Telemedicine.Shared.Models;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;

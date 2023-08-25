@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 
 namespace Principal.Telemedicine.Shared.Models;
 
+    /// <summary>
+    /// Data model aktuálních/nadcházejících prohlídkách/karanténách/izolacích daného pacienta.
+    /// </summary>
     public class VirtualSurgeryBasicOverviewDataModel
     {
         

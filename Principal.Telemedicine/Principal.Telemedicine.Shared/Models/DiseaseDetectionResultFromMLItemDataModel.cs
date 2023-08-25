@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Principal.Telemedicine.Shared.Enums;
+﻿using Principal.Telemedicine.Shared.Enums;
 
-namespace Principal.Telemedicine.Shared.Models
-{
+namespace Principal.Telemedicine.Shared.Models;
+
+    /// <summary>
+    /// Data model výsledku predikce onemocnění s určitou pravděpodobností pro daného uživatele.
+    /// </summary>
     public class DiseaseDetectionResultFromMLItemDataModel
     {
-        //[Key]
+        
         public int UserId { get; set; }
         public string Type { get; set; }
         public DateTime DetectionDate { get; set; }
@@ -22,4 +19,4 @@ namespace Principal.Telemedicine.Shared.Models
         public SymptomSeverityEnum Severity { get; set; }
         public int DiseaseDetectionResultId { get; set; }
     }
-}
+
