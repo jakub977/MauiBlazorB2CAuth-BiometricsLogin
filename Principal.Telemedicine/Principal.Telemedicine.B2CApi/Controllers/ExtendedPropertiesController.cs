@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Principal.Telemedicine.B2CApi.Models;
-using Principal.Telemedicine.DataConnectors.Models;
+using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.Shared.Configuration;
 using System.Text;
 

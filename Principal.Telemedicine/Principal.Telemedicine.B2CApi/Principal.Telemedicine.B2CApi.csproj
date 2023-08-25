@@ -21,7 +21,7 @@
     <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.1" />
     <PackageReference Include="Moq" Version="4.18.4" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Principal.Telemedicine.Shared.Configuration" Version="1.1.0-CI-20230816-165913" />
+    <PackageReference Include="Principal.Telemedicine.Shared.Configuration" Version="1.1.0-CI-20230817-142752" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
   </ItemGroup>
