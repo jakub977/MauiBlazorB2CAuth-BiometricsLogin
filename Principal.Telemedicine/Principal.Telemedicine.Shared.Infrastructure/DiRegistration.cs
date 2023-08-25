@@ -19,12 +19,13 @@ public static class DiRegistration
     /// <returns></returns>
     public static IServiceCollection AddTmInfrastructure(this IServiceCollection services, IConfiguration configuration) 
     {
+        services.AddHttpContextAccessor();
 
-        services.Configure<TmAppConfiguration>(configuration.GetSection(nameof(TmAppConfiguration)));
-        services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+        services.ConfigureOptions<TmAppConfigurationSetup>();        
         services.AddTransient<CustomHeaderHandler>();
         services.AddHttpClient<TmHttpClient>()
               .AddHttpMessageHandler<CustomHeaderHandler>();
+        
         return services;
     }
 }

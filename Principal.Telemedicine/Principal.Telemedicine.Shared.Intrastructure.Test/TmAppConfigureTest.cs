@@ -16,14 +16,17 @@ public class TmAppConfigureTest
     public TmAppConfigureTest()
     {
         // Arrange
-        var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json")
-            .Build();
+        var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+            
 
         // Registr logging
         var hostBuilder = new HostBuilder()
+           .ConfigureAppConfiguration((hostContext, configApp) =>
+           {
+               configApp.AddConfiguration(configuration);
+           })
             .ConfigureServices((context, services) =>
-            {
-                
+            {                   
                 services.AddTmInfrastructure(configuration);
             });
 
@@ -33,9 +36,9 @@ public class TmAppConfigureTest
     [Fact(DisplayName = "Test konfigurace prostředí aplikace")]
     public void TestKonfigurace()
     {
-        var iOption = serviceProvider.GetService<IOptions<TmAppConfiguration>>();
-        Assert.NotNull(iOption);
-        Assert.Equal("-", iOption.Value.IdentificationDelimeter);
-        Assert.Equal("testApi", iOption.Value.IdentificationId, true );
+        var config = serviceProvider.GetService<IOptions<TmAppConfiguration>>();
+        Assert.NotNull(config);
+        Assert.Equal("-", config.Value.IdentificationDelimeter);
+        Assert.Equal("testApi", config.Value.IdentificationId, true );
     }
 }
