@@ -16,11 +16,11 @@ namespace Principal.Telemedicine.B2CApi.Controllers;
 public class ExtendedPropertiesController : ControllerBase
 {
     private readonly ILogger<ExtendedPropertiesController> _logger;
-    private readonly ApiDbContext _context;
+    private readonly DbContextApi _context;
     private readonly AuthorizationSettings _authsettings;
     private readonly HostBuilderContext _extension;
 
-    public ExtendedPropertiesController(ILogger<ExtendedPropertiesController> logger, ApiDbContext context, IOptions<AuthorizationSettings> authsettings, HostBuilderContext extension)
+    public ExtendedPropertiesController(ILogger<ExtendedPropertiesController> logger, DbContextApi context, IOptions<AuthorizationSettings> authsettings, HostBuilderContext extension)
     {
         _logger = logger;
         _context = context;

@@ -1,23 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Principal.Telemedicine.DataConnectors.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Principal.Telemedicine.DataConnectors.Contexts;
+using Principal.Telemedicine.DataConnectors.Models.Shared;
 
-namespace Principal.Telemedicine.DataConnectors.Repository
-{
+namespace Principal.Telemedicine.DataConnectors.Repositories;
+
+    /// <inheritdoc/>
     public class CustomerRepository : ICustomerRepository
     {
 
-        private readonly ApiDbContext _dbContext;
+        private readonly DbContextApi _dbContext;
 
-        public CustomerRepository(ApiDbContext dbContext)
+        public CustomerRepository(DbContextApi dbContext)
         {
             _dbContext = dbContext;
         }
 
+        /// <inheritdoc/>
         public async Task<IEnumerable<Customer>> GetCustomersTaskAsyncTask()
         {
             var listOfCustomers = await _dbContext.Customers.OrderBy(p => p.Id).ToListAsync();
@@ -25,6 +23,7 @@ namespace Principal.Telemedicine.DataConnectors.Repository
             return listOfCustomers;
         }
 
+        /// <inheritdoc/>
         public async Task<Customer?> GetCustomerByIdTaskAsync(int id)
         {
              var customer = await _dbContext.Customers.Where(p => p.Id == id).FirstOrDefaultAsync();
@@ -32,4 +31,4 @@ namespace Principal.Telemedicine.DataConnectors.Repository
              return customer;
         }
     }
-}
+

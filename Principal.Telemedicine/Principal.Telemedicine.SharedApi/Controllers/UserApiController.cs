@@ -1,18 +1,19 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Principal.Telemedicine.DataConnectors.Models;
-using Principal.Telemedicine.DataConnectors.Repository;
+using Principal.Telemedicine.DataConnectors.Repositories;
 using Principal.Telemedicine.Shared.Models;
 
-namespace Principal.Telemedicine.SharedApi.Controllers
-{
+namespace Principal.Telemedicine.SharedApi.Controllers;
+
+    /// <summary>
+    /// API metody vztažené k uživateli
+    /// </summary>
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class UserApiController : ControllerBase
     {
         private readonly ICustomerRepository _customerRepository;
-        private readonly ILogger<UserApiController> _logger;
+        private readonly ILogger _logger; 
         private readonly IMapper _mapper;
 
         public UserApiController(ICustomerRepository customerRepository, ILogger<UserApiController> logger, IMapper mapper)
@@ -23,14 +24,21 @@ namespace Principal.Telemedicine.SharedApi.Controllers
 
         }
 
-        /// <summary>
-        /// Vrátí základní údaje uživatele
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        [HttpGet(Name = "GetUserInfo")]
+    /// <summary>
+    /// Vrátí základní údaje uživatele.
+    /// </summary>
+    /// <param name="apiKey"></param>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    [HttpGet(Name = "GetUserInfo")]
         public async Task<IActionResult> GetUserInfo([FromHeader(Name = "x-api-key")] string apiKey, int userId)
         {
+
+            if (userId <= 0)
+            {
+                return BadRequest();
+            }
+
             try
             {
                 var user = await _customerRepository.GetCustomerByIdTaskAsync(userId);
@@ -42,8 +50,8 @@ namespace Principal.Telemedicine.SharedApi.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return Problem();
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
     }
-}
+

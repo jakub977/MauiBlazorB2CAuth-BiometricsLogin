@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace Principal.Telemedicine.Shared.Models;
 
-    public class AvailableDeviceListItemDataModel
+/// <summary>
+/// Data model in/aktivních zařízení daného uživatele
+/// </summary>
+public class AvailableDeviceListItemDataModel
     {
-        //[Key]
+        
         public string UserGlobalId { get; set; }
         public int IsConsent { get; set; }
         public string DeviceGlobalId { get; set; }

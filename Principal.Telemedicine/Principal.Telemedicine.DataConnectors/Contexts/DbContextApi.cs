@@ -1,20 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
+using Principal.Telemedicine.DataConnectors.Models.Shared;
 using Principal.Telemedicine.Shared.Models;
 
-namespace Principal.Telemedicine.DataConnectors.Models;
+namespace Principal.Telemedicine.DataConnectors.Contexts;
 
-public partial class ApiDbContext : DbContext
+/// <summary>
+/// Db context VANDA_TEST
+/// </summary>
+public partial class DbContextApi : DbContext
 {
-    public ApiDbContext()
+    public DbContextApi()
     {
     }
 
-    public ApiDbContext(DbContextOptions<ApiDbContext> options)
+    public DbContextApi(DbContextOptions<DbContextApi> options)
         : base(options)
     {
     }
@@ -118,6 +120,12 @@ public partial class ApiDbContext : DbContext
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 
+    /// <summary>
+    /// Pomocná metoda vykonávající query a vracející list objektů.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="query"></param>
+    /// <returns> List objektů </returns>
     public List<T> ExecSqlQuery<T>(string query)
     {
         using var command = Database.GetDbConnection().CreateCommand();
