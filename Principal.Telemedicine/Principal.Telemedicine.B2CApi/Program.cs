@@ -12,6 +12,7 @@ var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json")
            .Build();
 var secretFilePath = "Secured/secrets.json";
 
+
 builder.Services.AddDbContext<DbContextGeneral>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("TMWorkstore")));
 

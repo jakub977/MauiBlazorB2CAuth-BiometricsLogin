@@ -36,70 +36,80 @@ public class ExtendedPropertiesController : ControllerBase
     [Route("AddExtendedProperties")]
     public async Task<IActionResult> AddExtendedProperties()
     {
-        bool isLocal = _extension.HostingEnvironment.IsLocalHosted();
-
-        var req = Request;
-
-        // check HTTP basic authorization
-        if (!Authorize(req, _logger, isLocal, _authsettings))
+        try
         {
-            _logger.Log(LogLevel.Error, "HTTP basic authentication validation failed.");
-            return new UnauthorizedObjectResult("|API_ERROR_1:|Authentication validation failed|");
-        }
+            bool isLocal = _extension.HostingEnvironment.IsLocalHosted();
 
-        // get the request body
-        string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-        _logger.Log(LogLevel.Error, $"Request body: '{requestBody}' ");
+            var req = Request;
 
-        if (string.IsNullOrEmpty(requestBody))
-        {
-            _logger.Log(LogLevel.Error, "Request body is empty.");
-            return new BadRequestObjectResult(new ResponseContent("|API_ERROR_2:|General error|"));
-        }
-
-        dynamic data = JsonConvert.DeserializeObject(requestBody);
-
-        if (data == null)
-        {
-            _logger.Log(LogLevel.Error, "Deserialization of request body was not successfull.");
-            return new BadRequestObjectResult(new ResponseContent("|API_ERROR_2:|General error|"));
-        }
-
-        if (data.email == null)
-        {
-            _logger.Log(LogLevel.Error, "Email is mandatory and is empty.");
-            return new BadRequestObjectResult(new ResponseContent("|API_ERROR_3:|Email is empty|"));
-        }
-
-        string email = Convert.ToString(data.email);
-
-        List<ExtendedPropertiesDataModel> dbResult = new List<ExtendedPropertiesDataModel>();
-
-        // call stored procedure in dedicated database
-        _logger.Log(LogLevel.Error, $"Volání db s parametrem email: '{email}' ");
-        dbResult = _context.ExecSqlQuery<ExtendedPropertiesDataModel>($"dbo.sp_GetUserClaims @email = '{email}'");
-
-        if (dbResult.Count == 1)
-        {
-            string foundTelephoneNumberStr = Convert.ToString(dbResult[0].TelephoneNumber);
-            string foundGlobalIdStr = Convert.ToString(dbResult[0].GlobalID);
-            string foundOrganizationIdStr = Convert.ToString(dbResult[0].OrganizationIDs);
-
-            _logger.Log(LogLevel.Information, $"Návratové hodnoty TelephoneNumber: '{foundTelephoneNumberStr}', GlobalId: '{foundGlobalIdStr}', OrganizationIds: '{foundOrganizationIdStr}'");
-
-            return new OkObjectResult(new ResponseContent()
+            // check HTTP basic authorization
+            if (!Authorize(req, _logger, isLocal, _authsettings))
             {
-                extension_TelephoneNumber = foundTelephoneNumberStr,
-                extension_GlobalID = foundGlobalIdStr,
-                extension_OrganizationIDs = foundOrganizationIdStr
-            });
+                _logger.Log(LogLevel.Error, "HTTP basic authentication validation failed.");
+                return new UnauthorizedObjectResult("|API_ERROR_1:|Authentication validation failed|");
+            }
+
+            // get the request body
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            _logger.Log(LogLevel.Error, $"Request body: '{requestBody}' ");
+
+            if (string.IsNullOrEmpty(requestBody))
+            {
+                _logger.Log(LogLevel.Error, "Request body is empty.");
+                return new BadRequestObjectResult(new ResponseContent("|API_ERROR_2:|General error|"));
+            }
+
+            dynamic data = JsonConvert.DeserializeObject(requestBody);
+
+            if (data == null)
+            {
+                _logger.Log(LogLevel.Error, "Deserialization of request body was not successfull.");
+                return new BadRequestObjectResult(new ResponseContent("|API_ERROR_2:|General error|"));
+            }
+
+            if (data.email == null)
+            {
+                _logger.Log(LogLevel.Error, "Email is mandatory and is empty.");
+                return new BadRequestObjectResult(new ResponseContent("|API_ERROR_3:|Email is empty|"));
+            }
+
+            string email = Convert.ToString(data.email);
+
+            List<ExtendedPropertiesDataModel> dbResult = new List<ExtendedPropertiesDataModel>();
+
+            // call stored procedure in dedicated database
+            _logger.Log(LogLevel.Error, $"Volání db s parametrem email: '{email}' ");
+            dbResult = _context.ExecSqlQuery<ExtendedPropertiesDataModel>($"dbo.sp_GetUserClaims @email = '{email}'");
+
+            if (dbResult.Count == 1)
+            {
+                string foundTelephoneNumberStr = Convert.ToString(dbResult[0].TelephoneNumber);
+                string foundGlobalIdStr = Convert.ToString(dbResult[0].GlobalID);
+                string foundOrganizationIdStr = Convert.ToString(dbResult[0].OrganizationIDs);
+
+                _logger.Log(LogLevel.Information, $"Návratové hodnoty TelephoneNumber: '{foundTelephoneNumberStr}', GlobalId: '{foundGlobalIdStr}', OrganizationIds: '{foundOrganizationIdStr}'");
+
+                return new OkObjectResult(new ResponseContent()
+                {
+                    extension_TelephoneNumber = foundTelephoneNumberStr,
+                    extension_GlobalID = foundGlobalIdStr,
+                    extension_OrganizationIDs = foundOrganizationIdStr
+                });
+
+            }
+
+            else
+            {
+                _logger.Log(LogLevel.Error, $"User '{email}' doesnt exist in database.");
+                return new BadRequestObjectResult(new ResponseContent($"|API_ERROR_4:|User doesnt exist in database|'{email}|'"));
+            }
 
         }
 
-        else
+        catch (Exception ex)
         {
-            _logger.Log(LogLevel.Error, $"User '{email}' doesnt exist in database.");
-            return new BadRequestObjectResult(new ResponseContent($"|API_ERROR_4:|User doesnt exist in database|'{email}|'"));
+            _logger.LogError(ex.Message);
+            return Problem();
         }
 
     }
