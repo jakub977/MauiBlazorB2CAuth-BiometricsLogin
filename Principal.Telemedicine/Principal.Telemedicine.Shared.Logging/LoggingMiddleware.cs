@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Principal.Telemedicine.Shared.Contants;
 using System.Text;
 
 
@@ -12,7 +13,7 @@ public class LoggingMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<LoggingMiddleware> _logger;
-    private  const string TRACE_KEY = "global_trace_key";
+
     private string _traceMethod;
     private string _tracePath;
     private string _sessionTraceCall = Guid.NewGuid().ToString();
@@ -52,7 +53,7 @@ public class LoggingMiddleware
         responseContent.AppendLine("-- headers");
         foreach (var (headerKey, headerValue) in context.Response.Headers)
         {
-            if (headerKey.Equals(TRACE_KEY, StringComparison.InvariantCulture)) traceResponse = headerValue;
+            if (headerKey.Equals(HeaderKeysConst.TRACE_KEY, StringComparison.InvariantCulture)) traceResponse = headerValue;
             responseContent.AppendLine($"header = {headerKey}    value = {headerValue}");
         }
 
@@ -81,7 +82,7 @@ public class LoggingMiddleware
         foreach (var (headerKey, headerValue) in context.Request.Headers)
         {
             requestContent.AppendLine($"header = {headerKey}    value = {headerValue}");
-            if (headerKey.Equals(TRACE_KEY, StringComparison.InvariantCulture)) traceRequest = headerValue;
+            if (headerKey.Equals(HeaderKeysConst.TRACE_KEY, StringComparison.InvariantCulture)) traceRequest = headerValue;
         }
 
         requestContent.AppendLine("-- body");
