@@ -45,7 +45,7 @@ public class SecretConfigurationProvider<T> : ConfigurationProvider where T: cla
             SecretClient? secretClient = null;
             if (_isLocal)
             {
-                secretConfig = new ConfigurationBuilder().AddJsonFile(_secretPath).Build();
+               if(File.Exists(_secretPath)) secretConfig = new ConfigurationBuilder().AddJsonFile(_secretPath).Build();
 
             }
             else

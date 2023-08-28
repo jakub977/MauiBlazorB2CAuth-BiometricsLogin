@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Principal.Telemedicine.Shared.Contants;
+using Principal.Telemedicine.Shared.Constants;
 using System.Text;
 
 

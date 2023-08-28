@@ -1,12 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Principal.Telemedicine.Shared.Infrastructure;
+/// <summary>
+/// Setup třída pro registraci konfigurace.
+/// </summary>
 public class TmAppConfigurationSetup : IConfigureOptions<TmAppConfiguration>
 {
     private string SectionName = typeof(TmAppConfiguration).Name;
