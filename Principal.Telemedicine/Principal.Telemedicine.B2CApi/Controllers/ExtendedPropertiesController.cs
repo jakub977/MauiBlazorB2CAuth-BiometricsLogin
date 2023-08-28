@@ -46,7 +46,7 @@ public class ExtendedPropertiesController : ControllerBase
             if (!Authorize(req, _logger, isLocal, _authsettings))
             {
                 _logger.Log(LogLevel.Error, "HTTP basic authentication validation failed.");
-                return new UnauthorizedObjectResult("|API_ERROR_1:|Authentication validation failed|");
+                return new UnauthorizedObjectResult("|API_ERROR_1|Authentication validation failed|");
             }
 
             // get the request body
@@ -56,7 +56,7 @@ public class ExtendedPropertiesController : ControllerBase
             if (string.IsNullOrEmpty(requestBody))
             {
                 _logger.Log(LogLevel.Error, "Request body is empty.");
-                return new BadRequestObjectResult(new ResponseContent("|API_ERROR_2:|General error|"));
+                return new BadRequestObjectResult(new ResponseContent("|API_ERROR_2|General error|"));
             }
 
             dynamic data = JsonConvert.DeserializeObject(requestBody);
@@ -64,13 +64,13 @@ public class ExtendedPropertiesController : ControllerBase
             if (data == null)
             {
                 _logger.Log(LogLevel.Error, "Deserialization of request body was not successfull.");
-                return new BadRequestObjectResult(new ResponseContent("|API_ERROR_2:|General error|"));
+                return new BadRequestObjectResult(new ResponseContent("|API_ERROR_2|General error|"));
             }
 
             if (data.email == null)
             {
                 _logger.Log(LogLevel.Error, "Email is mandatory and is empty.");
-                return new BadRequestObjectResult(new ResponseContent("|API_ERROR_3:|Email is empty|"));
+                return new BadRequestObjectResult(new ResponseContent("|API_ERROR_3|Email is empty|"));
             }
 
             string email = Convert.ToString(data.email);
@@ -101,7 +101,7 @@ public class ExtendedPropertiesController : ControllerBase
             else
             {
                 _logger.Log(LogLevel.Error, $"User '{email}' doesnt exist in database.");
-                return new BadRequestObjectResult(new ResponseContent($"|API_ERROR_4:|User doesnt exist in database|'{email}|'"));
+                return new BadRequestObjectResult(new ResponseContent($"|API_ERROR_4|User doesnt exist in database|'{email}|'"));
             }
 
         }
