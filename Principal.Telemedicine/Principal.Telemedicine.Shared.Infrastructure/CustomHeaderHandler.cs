@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
-using Principal.Telemedicine.Shared.Contants;
+using Principal.Telemedicine.Shared.Constants;
 
 namespace Principal.Telemedicine.Shared.Infrastructure;
+/// <summary>
+/// HttpClient Handler pro přidávání Http handleru. Podmínkou je přítomný IHttpContextAccessor.
+/// </summary>
 public class CustomHeaderHandler : DelegatingHandler
 {
     private readonly IMemoryCache _cache;

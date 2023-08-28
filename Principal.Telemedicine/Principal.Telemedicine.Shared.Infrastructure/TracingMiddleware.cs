@@ -3,8 +3,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
-using Principal.Telemedicine.Shared.Contants;
-using System.Text;
+using Principal.Telemedicine.Shared.Constants;
 
 namespace Principal.Telemedicine.Shared.Infrastructure;
 

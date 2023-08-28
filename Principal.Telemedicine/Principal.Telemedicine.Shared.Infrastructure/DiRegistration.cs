@@ -1,8 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 
 namespace Principal.Telemedicine.Shared.Infrastructure;
 /// <summary>
@@ -11,7 +8,7 @@ namespace Principal.Telemedicine.Shared.Infrastructure;
 public static class DiRegistration
 {
     /// <summary>
-    /// Přidává a registruje konfiguraci
+    /// Přidává a registruje konfiguraci aplikace a přidává handler pro Http klienta.
     /// </summary>    
     /// <param name="services"></param>
     /// <param name="configuration"></param>
