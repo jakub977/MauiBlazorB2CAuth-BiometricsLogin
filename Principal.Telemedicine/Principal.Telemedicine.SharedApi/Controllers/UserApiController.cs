@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.DataConnectors.Repositories;
 using Principal.Telemedicine.Shared.Models;
 
@@ -72,9 +74,7 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
             try
             {
                 var user = await _customerRepository.GetCustomerByIdTaskAsync(userId);
-                
-                
-                
+
                 var mappedUser = _mapper.Map<UserContract>(user);
 
                 return Ok(mappedUser);

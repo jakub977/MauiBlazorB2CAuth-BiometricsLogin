@@ -26,9 +26,13 @@ namespace Principal.Telemedicine.DataConnectors.Repositories;
         /// <inheritdoc/>
         public async Task<Customer?> GetCustomerByIdTaskAsync(int id)
         {
-             var customer = await _dbContext.Customers.Where(p => p.Id == id).FirstOrDefaultAsync();
+             var customer = await _dbContext.Customers
+                 .Include(p => p.RoleMemberDirectUsers)
+                 .Include(p => p.EffectiveUserUsers)
+                 .Include(p => p.UserPermissionUsers)
+                 .Where(p => p.Id == id).FirstOrDefaultAsync();
 
              return customer;
         }
-    }
+}
 
