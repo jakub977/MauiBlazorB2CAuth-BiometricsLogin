@@ -1,15 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.Data;
-using System.Reflection;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Principal.Telemedicine.DataConnectors.Models;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
 using Principal.Telemedicine.Shared.Models;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Data;
+using System.Reflection;
 
 namespace Principal.Telemedicine.DataConnectors.Contexts;
 
-/// <summary>
-/// Db context VANDA_TEST
-/// </summary>
 public partial class DbContextApi : DbContext
 {
     public DbContextApi()
@@ -38,6 +36,14 @@ public partial class DbContextApi : DbContext
 
     public virtual DbSet<Customer> Customers { get; set; }
 
+    public virtual DbSet<EffectiveUser> EffectiveUsers { get; set; }
+
+    public virtual DbSet<GroupEffectiveMember> GroupEffectiveMembers { get; set; }
+
+    public virtual DbSet<RoleMember> RoleMembers { get; set; }
+
+    public virtual DbSet<UserPermission> UserPermissions { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
@@ -48,14 +54,12 @@ public partial class DbContextApi : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.UseCollation("SQL_Latin1_General_CP1250_CI_AS");
         modelBuilder.Entity<DiseaseDetectionResultFromMLItemDataModel>().HasNoKey();
         modelBuilder.Entity<DiseaseOriginDetectionResultFromMLItemDataModel>().HasNoKey();
         modelBuilder.Entity<DiseaseDetectionKeyInputsToMLItemDataModel>().HasNoKey();
         modelBuilder.Entity<VirtualSurgeryBasicOverviewDataModel>().HasNoKey();
         modelBuilder.Entity<AvailableDeviceListItemDataModel>().HasNoKey();
-
-
-        modelBuilder.UseCollation("SQL_Latin1_General_CP1250_CI_AS");
 
         modelBuilder.Entity<Customer>(entity =>
         {
@@ -89,7 +93,7 @@ public partial class DbContextApi : DbContext
             entity.Property(e => e.InvalidLoginsCount);
             entity.Property(e => e.IsOrganizationAdminAccount);
             entity.Property(e => e.IsProviderAdminAccount);
-            entity.Property(e => e.IsRiskPatient);
+            entity.Property(e => e.IsRiskPatient).HasDefaultValueSql("((0))");
             entity.Property(e => e.IsSuperAdminAccount);
             entity.Property(e => e.IsSystemAccount);
             entity.Property(e => e.LastActivityDateUtc);
@@ -113,6 +117,98 @@ public partial class DbContextApi : DbContext
             entity.Property(e => e.TitleBefore);
             entity.Property(e => e.UpdateDateUtc);
             entity.Property(e => e.UpdatedByCustomerId);
+        });
+
+        modelBuilder.Entity<EffectiveUser>(entity =>
+        {
+            entity.ToTable("EffectiveUser");
+
+            entity.Property(e => e.Id);
+            entity.Property(e => e.Active)
+                .HasDefaultValueSql("((1))");
+            entity.Property(e => e.CreatedByCustomerId);
+            entity.Property(e => e.CreatedDateUtc)
+                .HasDefaultValueSql("(getutcdate())");
+            entity.Property(e => e.Deleted);
+            entity.Property(e => e.ProviderId);
+            entity.Property(e => e.UpdateDateUtc);
+            entity.Property(e => e.UpdatedByCustomerId);
+            entity.Property(e => e.UserId);
+
+            entity.HasOne(d => d.CreatedByCustomer).WithMany(p => p.EffectiveUserCreatedByCustomers).OnDelete(DeleteBehavior.ClientSetNull);
+
+            entity.HasOne(d => d.User).WithMany(p => p.EffectiveUserUsers)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_EffectiveUser_Customer");
+        });
+
+        modelBuilder.Entity<GroupEffectiveMember>(entity =>
+        {
+            entity.ToTable("GroupEffectiveMember");
+
+            entity.Property(e => e.Id);
+            entity.Property(e => e.Active)
+                .HasDefaultValueSql("((1))");
+            entity.Property(e => e.CreatedByCustomerId);
+            entity.Property(e => e.CreatedDateUtc)
+                .HasDefaultValueSql("(getutcdate())");
+            entity.Property(e => e.Deleted);
+            entity.Property(e => e.EffectiveUserId);
+            entity.Property(e => e.GroupId);
+            entity.Property(e => e.UpdateDateUtc);
+            entity.Property(e => e.UpdatedByCustomerId);
+
+            entity.HasOne(d => d.CreatedByCustomer).WithMany(p => p.GroupEffectiveMemberCreatedByCustomers).OnDelete(DeleteBehavior.ClientSetNull);
+
+            entity.HasOne(d => d.EffectiveUser).WithMany(p => p.GroupEffectiveMembers)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_GroupEffectiveMember_EffectiveUser");
+        });
+
+        modelBuilder.Entity<RoleMember>(entity =>
+        {
+            entity.ToTable("RoleMember");
+
+            entity.Property(e => e.Id);
+            entity.Property(e => e.Active)
+                .HasDefaultValueSql("((1))");
+            entity.Property(e => e.CreatedByCustomerId);
+            entity.Property(e => e.CreatedDateUtc)
+                .HasDefaultValueSql("(getutcdate())");
+            entity.Property(e => e.Deleted);
+            entity.Property(e => e.DirectUserId);
+            entity.Property(e => e.EffectiveUserId);
+            entity.Property(e => e.RoleId);
+            entity.Property(e => e.UpdateDateUtc);
+            entity.Property(e => e.UpdatedByCustomerId);
+
+            entity.HasOne(d => d.CreatedByCustomer).WithMany(p => p.RoleMemberCreatedByCustomers).OnDelete(DeleteBehavior.ClientSetNull);
+
+            entity.HasOne(d => d.DirectUser).WithMany(p => p.RoleMemberDirectUsers).HasConstraintName("FK_RoleMember_Customer_DirectUser");
+
+            entity.HasOne(d => d.EffectiveUser).WithMany(p => p.RoleMembers).HasConstraintName("FK_RoleMember_EffectiveUser");
+        });
+
+        modelBuilder.Entity<UserPermission>(entity =>
+        {
+            entity.ToTable("UserPermission");
+            entity.Property(e => e.Id);
+            entity.Property(e => e.Active)
+                .HasDefaultValueSql("((1))");
+            entity.Property(e => e.CreatedByCustomerId);
+            entity.Property(e => e.CreatedDateUtc)
+                .HasDefaultValueSql("(getutcdate())");
+            entity.Property(e => e.Deleted);
+            entity.Property(e => e.IsDeniedPermission);
+            entity.Property(e => e.PermissionId);
+            entity.Property(e => e.ProviderId);
+            entity.Property(e => e.UpdateDateUtc);
+            entity.Property(e => e.UpdatedByCustomerId);
+            entity.Property(e => e.UserId);
+
+            entity.HasOne(d => d.CreatedByCustomer).WithMany(p => p.UserPermissionCreatedByCustomers).OnDelete(DeleteBehavior.ClientSetNull);
+
+            entity.HasOne(d => d.User).WithMany(p => p.UserPermissionUsers).OnDelete(DeleteBehavior.ClientSetNull);
         });
 
         OnModelCreatingPartial(modelBuilder);

@@ -332,4 +332,37 @@ public class Customer
     [ForeignKey("UpdatedByCustomerId")]
     [InverseProperty("InverseUpdatedByCustomer")]
     public virtual Customer? UpdatedByCustomer { get; set; }
+
+    [InverseProperty("CreatedByCustomer")]
+    public virtual ICollection<EffectiveUser> EffectiveUserCreatedByCustomers { get; set; } = new List<EffectiveUser>();
+
+    [InverseProperty("UpdatedByCustomer")]
+    public virtual ICollection<EffectiveUser> EffectiveUserUpdatedByCustomers { get; set; } = new List<EffectiveUser>();
+
+    [InverseProperty("User")]
+    public virtual ICollection<EffectiveUser> EffectiveUserUsers { get; set; } = new List<EffectiveUser>();
+
+    [InverseProperty("CreatedByCustomer")]
+    public virtual ICollection<GroupEffectiveMember> GroupEffectiveMemberCreatedByCustomers { get; set; } = new List<GroupEffectiveMember>();
+
+    [InverseProperty("UpdatedByCustomer")]
+    public virtual ICollection<GroupEffectiveMember> GroupEffectiveMemberUpdatedByCustomers { get; set; } = new List<GroupEffectiveMember>();
+
+    [InverseProperty("CreatedByCustomer")]
+    public virtual ICollection<RoleMember> RoleMemberCreatedByCustomers { get; set; } = new List<RoleMember>();
+
+    [InverseProperty("DirectUser")]
+    public virtual ICollection<RoleMember> RoleMemberDirectUsers { get; set; } = new List<RoleMember>();
+
+    [InverseProperty("UpdatedByCustomer")]
+    public virtual ICollection<RoleMember> RoleMemberUpdatedByCustomers { get; set; } = new List<RoleMember>();
+
+    [InverseProperty("CreatedByCustomer")]
+    public virtual ICollection<UserPermission> UserPermissionCreatedByCustomers { get; set; } = new List<UserPermission>();
+
+    [InverseProperty("UpdatedByCustomer")]
+    public virtual ICollection<UserPermission> UserPermissionUpdatedByCustomers { get; set; } = new List<UserPermission>();
+
+    [InverseProperty("User")]
+    public virtual ICollection<UserPermission> UserPermissionUsers { get; set; } = new List<UserPermission>();
 }

@@ -1,7 +1,10 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\Principal.Telemedicine",
+    "\\Principal.Telemedicine\\Principal.Telemedicine.B2CApi",
+    "\\Principal.Telemedicine\\Principal.Telemedicine.B2CApi\\Controllers"
   ],
-  "SelectedNode": "\\C:\\DEV23\\Refactoring",
+  "SelectedNode": "\\Principal.Telemedicine\\Principal.Telemedicine.B2CApi\\Controllers\\ExtendedPropertiesController.cs",
   "PreviewInSolutionExplorer": false
 }

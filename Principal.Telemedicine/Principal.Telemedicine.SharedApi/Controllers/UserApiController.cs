@@ -53,5 +53,38 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
-    }
+
+
+    /// <summary>
+    /// Vrátí údaje uživatele včetně rolí, efektivních uživatelů a oprávnění.
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    [HttpGet(Name = "GetUser")]
+        public async Task<IActionResult> GetUser(int userId)
+        {
+
+            if (userId <= 0)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                var user = await _customerRepository.GetCustomerByIdTaskAsync(userId);
+                
+                
+                
+                var mappedUser = _mapper.Map<UserContract>(user);
+
+                return Ok(mappedUser);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+}
 
