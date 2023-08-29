@@ -38,11 +38,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Principal.Telemedicine.Shar
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{FAC8AF6F-4AD3-44E5-B0B3-F6FA11588388}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Principal.Telemedicine.Shared.Infrastructure", "Principal.Telemedicine.Shared.Infrastructure\Principal.Telemedicine.Shared.Infrastructure.csproj", "{9C97FC9D-B512-4FFC-9232-336899BF5901}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Principal.Telemedicine.Shared.Infrastructure", "Principal.Telemedicine.Shared.Infrastructure\Principal.Telemedicine.Shared.Infrastructure.csproj", "{9C97FC9D-B512-4FFC-9232-336899BF5901}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Security", "Security", "{29E7E94F-FCBF-4E6F-8233-BF3223A2BF1F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Principal.Telemedicine.Shared.Intrastructure.Test", "Principal.Telemedicine.Shared.Intrastructure.Test\Principal.Telemedicine.Shared.Intrastructure.Test.csproj", "{AC7FBA1A-87DE-4C49-AE30-95935084CCF3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Principal.Telemedicine.Shared.Infrastructure.Test", "Principal.Telemedicine.Shared.Infrastructure.Test\Principal.Telemedicine.Shared.Infrastructure.Test.csproj", "{61D9957C-C3CD-4A4D-B230-EA29DD427228}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -98,10 +98,10 @@ Global
 		{9C97FC9D-B512-4FFC-9232-336899BF5901}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9C97FC9D-B512-4FFC-9232-336899BF5901}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9C97FC9D-B512-4FFC-9232-336899BF5901}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AC7FBA1A-87DE-4C49-AE30-95935084CCF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AC7FBA1A-87DE-4C49-AE30-95935084CCF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AC7FBA1A-87DE-4C49-AE30-95935084CCF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AC7FBA1A-87DE-4C49-AE30-95935084CCF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61D9957C-C3CD-4A4D-B230-EA29DD427228}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61D9957C-C3CD-4A4D-B230-EA29DD427228}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61D9957C-C3CD-4A4D-B230-EA29DD427228}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61D9957C-C3CD-4A4D-B230-EA29DD427228}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -112,7 +112,7 @@ Global
 		{FF2AC56E-2358-4E64-A3B5-0D0637DA4C5B} = {AF4A9949-6A78-4412-BDB8-3478F6C5F132}
 		{8E32C05E-F9A2-42AF-BCCF-622522619234} = {AF4A9949-6A78-4412-BDB8-3478F6C5F132}
 		{9C97FC9D-B512-4FFC-9232-336899BF5901} = {FAC8AF6F-4AD3-44E5-B0B3-F6FA11588388}
-		{AC7FBA1A-87DE-4C49-AE30-95935084CCF3} = {FAC8AF6F-4AD3-44E5-B0B3-F6FA11588388}
+		{61D9957C-C3CD-4A4D-B230-EA29DD427228} = {FAC8AF6F-4AD3-44E5-B0B3-F6FA11588388}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F5F516D6-896C-44FA-A02E-D96212B32E65}
