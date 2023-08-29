@@ -27,7 +27,7 @@ public class TmInfrastructureTest
     {
         var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json")
             .Build();
-             var hostBuilder = new HostBuilder()
+             var hostBuilder = new HostBuilder()            
             .ConfigureWebHost(webBuilder =>
             {
                 webBuilder
@@ -35,18 +35,7 @@ public class TmInfrastructureTest
                     .ConfigureServices(services =>
                     {
                         services.AddMemoryCache();
-                        services.AddDbContext<DbContextGeneral>(fn =>
-                        {
-                            fn.UseInMemoryDatabase(databaseName: "TestDatabaseMiddleware");
-                            fn.EnableSensitiveDataLogging(false);
-                            var loggerFactory = LoggerFactory.Create(builder =>
-                            {
-                                // Vypnutí logování pro všechny kategorie
-                                builder.AddFilter((category, level) => false);
-                            });
-
-                            fn.UseLoggerFactory(loggerFactory);
-                        });
+                       
                         services.AddLogging();
                         services.AddSecretConfiguration<TmAppConfiguration>(configuration,"/secrets.json");
                         services.AddTmInfrastructure(configuration);
@@ -74,16 +63,19 @@ public class TmInfrastructureTest
         
         var response = client.SendAsync(c => {
             c.Request.Method = HttpMethods.Get;
-            c.Request.Path= "/";
-            c.Request.Headers.Add(HeaderKeysConst.TRACE_KEY, HEADER_PUV);
+            c.Request.Path= "/";            
+            c.Request.Headers.Add(HeaderKeysConst.TRACE_KEY, HEADER_PUV); // simulace puvodni jiz existujiciho trace
         }).Result;
+        string idTrace = response.Request.HttpContext.TraceIdentifier;
 
         var _cache = serviceProvider.GetService<IMemoryCache>();
         var _conf = serviceProvider.GetService<IOptions<TmAppConfiguration>>().Value;
+        string key = $"{HeaderKeysConst.TRACE_KEY}_{idTrace}";
         //Fakt
         Assert.NotNull(_cache);
         Assert.Equal($"{HEADER_PUV}{_conf.IdentificationDelimeter}{_conf.IdentificationId}", response.Response.Headers[HeaderKeysConst.TRACE_KEY].First(), true);
-        
+        Assert.NotNull(_cache.Get<string>(key));// umisteni do kratkodobe cache
+        Assert.Equal($"{HEADER_PUV}{_conf.IdentificationDelimeter}{_conf.IdentificationId}", _cache.Get<string>(key));// cache obsahuje trace
     }
 
 

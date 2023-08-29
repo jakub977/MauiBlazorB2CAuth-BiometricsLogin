@@ -60,9 +60,10 @@ public class TracingMiddleware
         catch (Exception ex) { _logger.LogError(ex.ToString()); }
         finally
         {
-            await _next.Invoke(context);
+          
             //zpátky posílám 
             context.Response.Headers.Add(HeaderKeysConst.TRACE_KEY, actualValue);
+            await _next.Invoke(context);
         }
     }
 }
