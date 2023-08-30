@@ -1,5 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
 
@@ -71,6 +74,14 @@ public partial class UserPermission
     [ForeignKey("CreatedByCustomerId")]
     [InverseProperty("UserPermissionCreatedByCustomers")]
     public virtual Customer CreatedByCustomer { get; set; } = null!;
+
+    [ForeignKey("PermissionId")]
+    [InverseProperty("UserPermissions")]
+    public virtual Permission Permission { get; set; } = null!;
+
+    [ForeignKey("ProviderId")]
+    [InverseProperty("UserPermissions")]
+    public virtual Provider? Provider { get; set; }
 
     [ForeignKey("UpdatedByCustomerId")]
     [InverseProperty("UserPermissionUpdatedByCustomers")]

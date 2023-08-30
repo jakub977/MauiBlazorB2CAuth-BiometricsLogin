@@ -7,69 +7,74 @@ using Microsoft.EntityFrameworkCore;
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
 
 /// <summary>
-/// Table of effective users who are members of groups
+/// Table of combinations of categories and subcategories of roles
 /// </summary>
-[Table("GroupEffectiveMember")]
-public partial class GroupEffectiveMember
+[Table("RoleCategoryCombination")]
+public partial class RoleCategoryCombination
 {
     /// <summary>
-    /// Primary identifier of a group member
+    /// Primary identifier of a combination
     /// </summary>
     [Key]
     public int Id { get; set; }
 
     /// <summary>
-    /// Bit identifier if a group member is active
+    /// Bit identifier if combination is active
     /// </summary>
     [Required]
     public bool? Active { get; set; }
 
     /// <summary>
-    /// Bit identifier if a group member is deleted
+    /// Bit identifier if combination is deleted
     /// </summary>
     public bool Deleted { get; set; }
 
     /// <summary>
-    /// Link to dbo.Customer as an user who creates a group member
+    /// Link to dbo.Customer as an user who creates combination
     /// </summary>
     public int CreatedByCustomerId { get; set; }
 
     /// <summary>
-    /// Date of group member creation, using coordinated universal time
+    /// Date of combination creation, using coordinated universal time
     /// </summary>
     [Column(TypeName = "datetime")]
     public DateTime CreatedDateUtc { get; set; }
 
     /// <summary>
-    /// Link to dbo.Customer as an user who updates a group member
+    /// Link to dbo.Customer as an user who updates combination
     /// </summary>
     public int? UpdatedByCustomerId { get; set; }
 
     /// <summary>
-    /// Date of group member update, using coordinated universal time
+    /// Date of combination update, using coordinated universal time
     /// </summary>
     [Column(TypeName = "datetime")]
     public DateTime? UpdateDateUtc { get; set; }
 
     /// <summary>
-    /// Link to dbo.EffectiveUser as an effective user (i.e. user who is member of a directory and not only of an organization) who is a member of group
+    /// Link to dbo.RoleCategory as a role category of combination
     /// </summary>
-    public int EffectiveUserId { get; set; }
+    public int RoleCategoryId { get; set; }
 
     /// <summary>
-    /// Link to dbo.Group as a group of which user is a member
+    /// Link to dbo.RoleSubCategory as a role subcategory of combination
     /// </summary>
-    public int GroupId { get; set; }
+    public int? RoleSubCategoryId { get; set; }
+
+    /// <summary>
+    /// Name of a combination
+    /// </summary>
+    [StringLength(200)]
+    public string? Name { get; set; }
 
     [ForeignKey("CreatedByCustomerId")]
-    [InverseProperty("GroupEffectiveMemberCreatedByCustomers")]
+    [InverseProperty("RoleCategoryCombinationCreatedByCustomers")]
     public virtual Customer CreatedByCustomer { get; set; } = null!;
 
-    [ForeignKey("EffectiveUserId")]
-    [InverseProperty("GroupEffectiveMembers")]
-    public virtual EffectiveUser EffectiveUser { get; set; } = null!;
+    [InverseProperty("RoleCategoryCombination")]
+    public virtual ICollection<Role> Roles { get; set; } = new List<Role>();
 
     [ForeignKey("UpdatedByCustomerId")]
-    [InverseProperty("GroupEffectiveMemberUpdatedByCustomers")]
+    [InverseProperty("RoleCategoryCombinationUpdatedByCustomers")]
     public virtual Customer? UpdatedByCustomer { get; set; }
 }

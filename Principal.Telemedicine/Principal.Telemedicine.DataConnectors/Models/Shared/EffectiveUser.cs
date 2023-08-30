@@ -1,8 +1,10 @@
-﻿using Principal.Telemedicine.DataConnectors.Models.Shared;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
-namespace Principal.Telemedicine.DataConnectors.Models;
+namespace Principal.Telemedicine.DataConnectors.Models.Shared;
 
 /// <summary>
 /// Table of effective users, i.e. members of provider. We also distinguish direct users, who are members of an organization only and not of a provider (these are users in dbo.Customer without row in this table).
@@ -65,6 +67,10 @@ public partial class EffectiveUser
 
     [InverseProperty("EffectiveUser")]
     public virtual ICollection<GroupEffectiveMember> GroupEffectiveMembers { get; set; } = new List<GroupEffectiveMember>();
+
+    [ForeignKey("ProviderId")]
+    [InverseProperty("EffectiveUsers")]
+    public virtual Provider Provider { get; set; } = null!;
 
     [InverseProperty("EffectiveUser")]
     public virtual ICollection<RoleMember> RoleMembers { get; set; } = new List<RoleMember>();

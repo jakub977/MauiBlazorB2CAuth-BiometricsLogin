@@ -7,69 +7,70 @@ using Microsoft.EntityFrameworkCore;
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
 
 /// <summary>
-/// Table of effective users who are members of groups
+/// Table of categories of permissions
 /// </summary>
-[Table("GroupEffectiveMember")]
-public partial class GroupEffectiveMember
+[Table("PermissionCategory")]
+public partial class PermissionCategory
 {
     /// <summary>
-    /// Primary identifier of a group member
+    /// Primary identifier of a category
     /// </summary>
     [Key]
     public int Id { get; set; }
 
     /// <summary>
-    /// Bit identifier if a group member is active
+    /// Bit identifier if category is active
     /// </summary>
     [Required]
     public bool? Active { get; set; }
 
     /// <summary>
-    /// Bit identifier if a group member is deleted
+    /// Bit identifier if category is deleted
     /// </summary>
     public bool Deleted { get; set; }
 
     /// <summary>
-    /// Link to dbo.Customer as an user who creates a group member
+    /// Link to dbo.Customer as an user who creates category
     /// </summary>
     public int CreatedByCustomerId { get; set; }
 
     /// <summary>
-    /// Date of group member creation, using coordinated universal time
+    /// Date of category creation, using coordinated universal time
     /// </summary>
     [Column(TypeName = "datetime")]
     public DateTime CreatedDateUtc { get; set; }
 
     /// <summary>
-    /// Link to dbo.Customer as an user who updates a group member
+    /// Link to dbo.Customer as an user who updates category
     /// </summary>
     public int? UpdatedByCustomerId { get; set; }
 
     /// <summary>
-    /// Date of group member update, using coordinated universal time
+    /// Date of category update, using coordinated universal time
     /// </summary>
     [Column(TypeName = "datetime")]
     public DateTime? UpdateDateUtc { get; set; }
 
     /// <summary>
-    /// Link to dbo.EffectiveUser as an effective user (i.e. user who is member of a directory and not only of an organization) who is a member of group
+    /// Name of a category
     /// </summary>
-    public int EffectiveUserId { get; set; }
+    [StringLength(200)]
+    public string Name { get; set; } = null!;
 
     /// <summary>
-    /// Link to dbo.Group as a group of which user is a member
+    /// Detailed description of a category
     /// </summary>
-    public int GroupId { get; set; }
+    [StringLength(200)]
+    public string? Description { get; set; }
 
     [ForeignKey("CreatedByCustomerId")]
-    [InverseProperty("GroupEffectiveMemberCreatedByCustomers")]
+    [InverseProperty("PermissionCategoryCreatedByCustomers")]
     public virtual Customer CreatedByCustomer { get; set; } = null!;
 
-    [ForeignKey("EffectiveUserId")]
-    [InverseProperty("GroupEffectiveMembers")]
-    public virtual EffectiveUser EffectiveUser { get; set; } = null!;
+    [InverseProperty("PermissionCategory")]
+    public virtual ICollection<Permission> Permissions { get; set; } = new List<Permission>();
 
     [ForeignKey("UpdatedByCustomerId")]
-    [InverseProperty("GroupEffectiveMemberUpdatedByCustomers")]
+    [InverseProperty("PermissionCategoryUpdatedByCustomers")]
     public virtual Customer? UpdatedByCustomer { get; set; }
 }

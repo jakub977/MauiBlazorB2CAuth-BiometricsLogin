@@ -1,5 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
 
@@ -74,6 +77,10 @@ public partial class RoleMember
     [ForeignKey("EffectiveUserId")]
     [InverseProperty("RoleMembers")]
     public virtual EffectiveUser? EffectiveUser { get; set; }
+
+    [ForeignKey("RoleId")]
+    [InverseProperty("RoleMembers")]
+    public virtual Role Role { get; set; } = null!;
 
     [ForeignKey("UpdatedByCustomerId")]
     [InverseProperty("RoleMemberUpdatedByCustomers")]

@@ -5,6 +5,7 @@ using Principal.Telemedicine.DataConnectors.Mapping;
 using Principal.Telemedicine.Shared.Logging;
 using System.Text.Json.Serialization;
 using Principal.Telemedicine.DataConnectors.Contexts;
+using Principal.Telemedicine.DataConnectors.Models;
 using Principal.Telemedicine.DataConnectors.Repositories;
 using Principal.Telemedicine.Shared.Configuration;
 

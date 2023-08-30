@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,7 +11,7 @@ namespace Principal.Telemedicine.DataConnectors.Models.Shared;
 /// </summary>
 [Table("Customer")]
 [Index("GlobalId", Name = "IX_Customer_RI_TEST", IsUnique = true)]
-public class Customer
+public partial class Customer
 {
     /// <summary>
     /// Primary identifier of an user
@@ -91,7 +93,7 @@ public class Customer
     public string? PostalCode { get; set; }
 
     /// <summary>
-    /// User's e-mail address
+    /// User&apos;s e-mail address
     /// </summary>
     [StringLength(100)]
     [Unicode(false)]
@@ -137,14 +139,14 @@ public class Customer
     public int? PictureId { get; set; }
 
     /// <summary>
-    /// Title before user's name
+    /// Title before user&apos;s name
     /// </summary>
     [StringLength(20)]
     [Unicode(false)]
     public string? TitleBefore { get; set; }
 
     /// <summary>
-    /// Title after user's name
+    /// Title after user&apos;s name
     /// </summary>
     [StringLength(20)]
     [Unicode(false)]
@@ -290,48 +292,25 @@ public class Customer
     [Unicode(false)]
     public string? BirthIdentificationNumber { get; set; }
 
-    /// <summary>
-    /// User's home address
-    /// </summary>
     [StringLength(100)]
     [Unicode(false)]
     public string? Street { get; set; }
 
-    /// <summary>
-    /// Link to dbo.City
-    /// </summary>
     public int? CityId { get; set; }
 
-    /// <summary>
-    /// Bit identifier whether an user is at risk of any health issue
-    /// </summary>
     public bool? IsRiskPatient { get; set; }
 
-    /// <summary>
-    /// Link to dbo.Customer as an user who creates an user
-    /// </summary>
+    [ForeignKey("CityId")]
+    [InverseProperty("Customers")]
+    public virtual AddressCity? City { get; set; }
+
     [ForeignKey("CreatedByCustomerId")]
     [InverseProperty("InverseCreatedByCustomer")]
     public virtual Customer? CreatedByCustomer { get; set; }
 
-    /// <summary>
-    /// Inverse collection of Customer
-    /// </summary>
-    [InverseProperty("CreatedByCustomer")]
-    public virtual ICollection<Customer> InverseCreatedByCustomer { get; set; } = new List<Customer>();
-
-    /// <summary>
-    /// Inverse collection of Customer
-    /// </summary>
-    [InverseProperty("UpdatedByCustomer")]
-    public virtual ICollection<Customer> InverseUpdatedByCustomer { get; set; } = new List<Customer>();
-
-    /// <summary>
-    /// Link to dbo.Customer as an user who updates an user
-    /// </summary>
-    [ForeignKey("UpdatedByCustomerId")]
-    [InverseProperty("InverseUpdatedByCustomer")]
-    public virtual Customer? UpdatedByCustomer { get; set; }
+    [ForeignKey("CreatedByProviderId")]
+    [InverseProperty("Customers")]
+    public virtual Provider? CreatedByProvider { get; set; }
 
     [InverseProperty("CreatedByCustomer")]
     public virtual ICollection<EffectiveUser> EffectiveUserCreatedByCustomers { get; set; } = new List<EffectiveUser>();
@@ -349,13 +328,87 @@ public class Customer
     public virtual ICollection<GroupEffectiveMember> GroupEffectiveMemberUpdatedByCustomers { get; set; } = new List<GroupEffectiveMember>();
 
     [InverseProperty("CreatedByCustomer")]
+    public virtual ICollection<Customer> InverseCreatedByCustomer { get; set; } = new List<Customer>();
+
+    [InverseProperty("UpdatedByCustomer")]
+    public virtual ICollection<Customer> InverseUpdatedByCustomer { get; set; } = new List<Customer>();
+
+    [ForeignKey("OrganizationId")]
+    [InverseProperty("Customers")]
+    public virtual Organization? Organization { get; set; }
+
+    [InverseProperty("CreatedByCustomer")]
+    public virtual ICollection<PermissionCategory> PermissionCategoryCreatedByCustomers { get; set; } = new List<PermissionCategory>();
+
+    [InverseProperty("UpdatedByCustomer")]
+    public virtual ICollection<PermissionCategory> PermissionCategoryUpdatedByCustomers { get; set; } = new List<PermissionCategory>();
+
+    [InverseProperty("CreatedByCustomer")]
+    public virtual ICollection<Permission> PermissionCreatedByCustomers { get; set; } = new List<Permission>();
+
+    [InverseProperty("UpdatedByCustomer")]
+    public virtual ICollection<Permission> PermissionUpdatedByCustomers { get; set; } = new List<Permission>();
+
+    [ForeignKey("PictureId")]
+    [InverseProperty("Customers")]
+    public virtual Picture? Picture { get; set; }
+
+    [InverseProperty("CreatedByCustomer")]
+    public virtual ICollection<Picture> PictureCreatedByCustomers { get; set; } = new List<Picture>();
+
+    [InverseProperty("UpdatedByCustomer")]
+    public virtual ICollection<Picture> PictureUpdatedByCustomers { get; set; } = new List<Picture>();
+
+    [InverseProperty("User")]
+    public virtual ICollection<Picture> PictureUsers { get; set; } = new List<Picture>();
+
+    [ForeignKey("ProfessionTypeId")]
+    [InverseProperty("Customers")]
+    public virtual ProfessionType? ProfessionType { get; set; }
+
+    [InverseProperty("CreatedByCustomer")]
+    public virtual ICollection<ProfessionType> ProfessionTypeCreatedByCustomers { get; set; } = new List<ProfessionType>();
+
+    [InverseProperty("UpdatedByCustomer")]
+    public virtual ICollection<ProfessionType> ProfessionTypeUpdatedByCustomers { get; set; } = new List<ProfessionType>();
+
+    [InverseProperty("CreatedByCustomer")]
+    public virtual ICollection<Provider> ProviderCreatedByCustomers { get; set; } = new List<Provider>();
+
+    [InverseProperty("UpdatedByCustomer")]
+    public virtual ICollection<Provider> ProviderUpdatedByCustomers { get; set; } = new List<Provider>();
+
+    [InverseProperty("CreatedByCustomer")]
+    public virtual ICollection<RoleCategoryCombination> RoleCategoryCombinationCreatedByCustomers { get; set; } = new List<RoleCategoryCombination>();
+
+    [InverseProperty("UpdatedByCustomer")]
+    public virtual ICollection<RoleCategoryCombination> RoleCategoryCombinationUpdatedByCustomers { get; set; } = new List<RoleCategoryCombination>();
+
+    [InverseProperty("CreatedByCustomer")]
+    public virtual ICollection<Role> RoleCreatedByCustomers { get; set; } = new List<Role>();
+
+    [InverseProperty("CreatedByCustomer")]
     public virtual ICollection<RoleMember> RoleMemberCreatedByCustomers { get; set; } = new List<RoleMember>();
 
     [InverseProperty("DirectUser")]
     public virtual ICollection<RoleMember> RoleMemberDirectUsers { get; set; } = new List<RoleMember>();
 
+
     [InverseProperty("UpdatedByCustomer")]
     public virtual ICollection<RoleMember> RoleMemberUpdatedByCustomers { get; set; } = new List<RoleMember>();
+
+    [InverseProperty("UpdatedByCustomer")]
+    public virtual ICollection<Role> RoleUpdatedByCustomers { get; set; } = new List<Role>();
+
+    [InverseProperty("CreatedByCustomer")]
+    public virtual ICollection<Subject> SubjectCreatedByCustomers { get; set; } = new List<Subject>();
+
+    [InverseProperty("UpdatedByCustomer")]
+    public virtual ICollection<Subject> SubjectUpdatedByCustomers { get; set; } = new List<Subject>();
+
+    [ForeignKey("UpdatedByCustomerId")]
+    [InverseProperty("InverseUpdatedByCustomer")]
+    public virtual Customer? UpdatedByCustomer { get; set; }
 
     [InverseProperty("CreatedByCustomer")]
     public virtual ICollection<UserPermission> UserPermissionCreatedByCustomers { get; set; } = new List<UserPermission>();
@@ -365,4 +418,6 @@ public class Customer
 
     [InverseProperty("User")]
     public virtual ICollection<UserPermission> UserPermissionUsers { get; set; } = new List<UserPermission>();
+
+
 }

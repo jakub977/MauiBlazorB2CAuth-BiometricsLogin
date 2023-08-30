@@ -7,6 +7,7 @@ using Principal.Telemedicine.Shared.Models;
 using System.Data;
 using System.Text;
 using Principal.Telemedicine.DataConnectors.Contexts;
+using Principal.Telemedicine.DataConnectors.Models;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
     
