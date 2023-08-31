@@ -27,8 +27,8 @@ builder.Services.AddAutoMapper(typeof(Mapping).Assembly);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<DbContextApi>(options => 
-    options.UseSqlServer(builder.Configuration.GetConnectionString("VANDA_TEST")));
+builder.Services.AddDbContext<DbContextApi>(options => options.UseLazyLoadingProxies().
+UseSqlServer(builder.Configuration.GetConnectionString("VANDA_TEST")));
 
 builder.Services.AddDbContext<DbContextGeneral>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("TMWorkstore")));

@@ -114,6 +114,9 @@ public partial class Provider
     [InverseProperty("Provider")]
     public virtual ICollection<EffectiveUser> EffectiveUsers { get; set; } = new List<EffectiveUser>();
 
+    [InverseProperty("Provider")]
+    public virtual ICollection<Group> Groups { get; set; } = new List<Group>();
+
     [ForeignKey("OrganizationId")]
     [InverseProperty("Providers")]
     public virtual Organization Organization { get; set; } = null!;
@@ -124,6 +127,9 @@ public partial class Provider
 
     [InverseProperty("Provider")]
     public virtual ICollection<Role> Roles { get; set; } = new List<Role>();
+
+    [InverseProperty("Provider")]
+    public virtual ICollection<SubjectAllowedToProvider> SubjectAllowedToProviders { get; set; } = new List<SubjectAllowedToProvider>();
 
     [ForeignKey("UpdatedByCustomerId")]
     [InverseProperty("ProviderUpdatedByCustomers")]

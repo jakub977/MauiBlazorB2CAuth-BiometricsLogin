@@ -71,6 +71,14 @@ public partial class RoleCategoryCombination
     [InverseProperty("RoleCategoryCombinationCreatedByCustomers")]
     public virtual Customer CreatedByCustomer { get; set; } = null!;
 
+    [ForeignKey("RoleCategoryId")]
+    [InverseProperty("RoleCategoryCombinations")]
+    public virtual RoleCategory RoleCategory { get; set; } = null!;
+
+    [ForeignKey("RoleSubCategoryId")]
+    [InverseProperty("RoleCategoryCombinations")]
+    public virtual RoleSubCategory? RoleSubCategory { get; set; }
+
     [InverseProperty("RoleCategoryCombination")]
     public virtual ICollection<Role> Roles { get; set; } = new List<Role>();
 

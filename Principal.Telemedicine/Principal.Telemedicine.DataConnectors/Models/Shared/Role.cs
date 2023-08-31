@@ -114,6 +114,9 @@ public partial class Role
     [InverseProperty("Role")]
     public virtual ICollection<RoleMember> RoleMembers { get; set; } = new List<RoleMember>();
 
+    [InverseProperty("Role")]
+    public virtual ICollection<RolePermission> RolePermissions { get; set; } = new List<RolePermission>();
+
     [ForeignKey("UpdatedByCustomerId")]
     [InverseProperty("RoleUpdatedByCustomers")]
     public virtual Customer? UpdatedByCustomer { get; set; }

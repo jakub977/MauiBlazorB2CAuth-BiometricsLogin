@@ -321,11 +321,37 @@ public partial class Customer
     [InverseProperty("User")]
     public virtual ICollection<EffectiveUser> EffectiveUserUsers { get; set; } = new List<EffectiveUser>();
 
+    [ForeignKey("GenderTypeId")]
+    [InverseProperty("Customers")]
+    public virtual GenderType? GenderType { get; set; }
+
+    [InverseProperty("CreatedByCustomer")]
+    public virtual ICollection<Group> GroupCreatedByCustomers { get; set; } = new List<Group>();
+
     [InverseProperty("CreatedByCustomer")]
     public virtual ICollection<GroupEffectiveMember> GroupEffectiveMemberCreatedByCustomers { get; set; } = new List<GroupEffectiveMember>();
 
     [InverseProperty("UpdatedByCustomer")]
     public virtual ICollection<GroupEffectiveMember> GroupEffectiveMemberUpdatedByCustomers { get; set; } = new List<GroupEffectiveMember>();
+
+    [InverseProperty("CreatedByCustomer")]
+    public virtual ICollection<GroupPermission> GroupPermissionCreatedByCustomers { get; set; } = new List<GroupPermission>();
+
+    [InverseProperty("UpdatedByCustomer")]
+    public virtual ICollection<GroupPermission> GroupPermissionUpdatedByCustomers { get; set; } = new List<GroupPermission>();
+
+    [InverseProperty("UpdatedByCustomer")]
+    public virtual ICollection<Group> GroupUpdatedByCustomers { get; set; } = new List<Group>();
+
+    [ForeignKey("HealthCareInsurerId")]
+    [InverseProperty("Customers")]
+    public virtual HealthCareInsurer? HealthCareInsurer { get; set; }
+
+    [InverseProperty("CreatedByCustomer")]
+    public virtual ICollection<HealthCareInsurer> HealthCareInsurerCreatedByCustomers { get; set; } = new List<HealthCareInsurer>();
+
+    [InverseProperty("UpdatedByCustomer")]
+    public virtual ICollection<HealthCareInsurer> HealthCareInsurerUpdatedByCustomers { get; set; } = new List<HealthCareInsurer>();
 
     [InverseProperty("CreatedByCustomer")]
     public virtual ICollection<Customer> InverseCreatedByCustomer { get; set; } = new List<Customer>();
@@ -336,6 +362,10 @@ public partial class Customer
     [ForeignKey("OrganizationId")]
     [InverseProperty("Customers")]
     public virtual Organization? Organization { get; set; }
+
+    [ForeignKey("PasswordFormatTypeId")]
+    [InverseProperty("Customers")]
+    public virtual PasswordFormatType PasswordFormatType { get; set; } = null!;
 
     [InverseProperty("CreatedByCustomer")]
     public virtual ICollection<PermissionCategory> PermissionCategoryCreatedByCustomers { get; set; } = new List<PermissionCategory>();
@@ -385,6 +415,12 @@ public partial class Customer
     public virtual ICollection<RoleCategoryCombination> RoleCategoryCombinationUpdatedByCustomers { get; set; } = new List<RoleCategoryCombination>();
 
     [InverseProperty("CreatedByCustomer")]
+    public virtual ICollection<RoleCategory> RoleCategoryCreatedByCustomers { get; set; } = new List<RoleCategory>();
+
+    [InverseProperty("UpdatedByCustomer")]
+    public virtual ICollection<RoleCategory> RoleCategoryUpdatedByCustomers { get; set; } = new List<RoleCategory>();
+
+    [InverseProperty("CreatedByCustomer")]
     public virtual ICollection<Role> RoleCreatedByCustomers { get; set; } = new List<Role>();
 
     [InverseProperty("CreatedByCustomer")]
@@ -393,12 +429,35 @@ public partial class Customer
     [InverseProperty("DirectUser")]
     public virtual ICollection<RoleMember> RoleMemberDirectUsers { get; set; } = new List<RoleMember>();
 
-
     [InverseProperty("UpdatedByCustomer")]
     public virtual ICollection<RoleMember> RoleMemberUpdatedByCustomers { get; set; } = new List<RoleMember>();
 
+    [InverseProperty("CreatedByCustomer")]
+    public virtual ICollection<RolePermission> RolePermissionCreatedByCustomers { get; set; } = new List<RolePermission>();
+
+    [InverseProperty("UpdatedByCustomer")]
+    public virtual ICollection<RolePermission> RolePermissionUpdatedByCustomers { get; set; } = new List<RolePermission>();
+
+    [InverseProperty("CreatedByCustomer")]
+    public virtual ICollection<RoleSubCategory> RoleSubCategoryCreatedByCustomers { get; set; } = new List<RoleSubCategory>();
+
+    [InverseProperty("UpdatedByCustomer")]
+    public virtual ICollection<RoleSubCategory> RoleSubCategoryUpdatedByCustomers { get; set; } = new List<RoleSubCategory>();
+
     [InverseProperty("UpdatedByCustomer")]
     public virtual ICollection<Role> RoleUpdatedByCustomers { get; set; } = new List<Role>();
+
+    [InverseProperty("CreatedByCustomer")]
+    public virtual ICollection<SubjectAllowedToOrganization> SubjectAllowedToOrganizationCreatedByCustomers { get; set; } = new List<SubjectAllowedToOrganization>();
+
+    [InverseProperty("UpdatedByCustomer")]
+    public virtual ICollection<SubjectAllowedToOrganization> SubjectAllowedToOrganizationUpdatedByCustomers { get; set; } = new List<SubjectAllowedToOrganization>();
+
+    [InverseProperty("CreatedByCustomer")]
+    public virtual ICollection<SubjectAllowedToProvider> SubjectAllowedToProviderCreatedByCustomers { get; set; } = new List<SubjectAllowedToProvider>();
+
+    [InverseProperty("UpdatedByCustomer")]
+    public virtual ICollection<SubjectAllowedToProvider> SubjectAllowedToProviderUpdatedByCustomers { get; set; } = new List<SubjectAllowedToProvider>();
 
     [InverseProperty("CreatedByCustomer")]
     public virtual ICollection<Subject> SubjectCreatedByCustomers { get; set; } = new List<Subject>();
@@ -418,6 +477,4 @@ public partial class Customer
 
     [InverseProperty("User")]
     public virtual ICollection<UserPermission> UserPermissionUsers { get; set; } = new List<UserPermission>();
-
-
 }

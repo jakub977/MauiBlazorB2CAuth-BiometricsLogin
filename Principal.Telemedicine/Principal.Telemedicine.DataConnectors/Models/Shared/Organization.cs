@@ -82,4 +82,7 @@ public partial class Organization
 
     [InverseProperty("Organization")]
     public virtual ICollection<Role> Roles { get; set; } = new List<Role>();
+
+    [InverseProperty("Organization")]
+    public virtual ICollection<SubjectAllowedToOrganization> SubjectAllowedToOrganizations { get; set; } = new List<SubjectAllowedToOrganization>();
 }

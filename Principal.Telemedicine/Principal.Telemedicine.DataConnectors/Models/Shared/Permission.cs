@@ -94,6 +94,9 @@ public partial class Permission
     [InverseProperty("PermissionCreatedByCustomers")]
     public virtual Customer CreatedByCustomer { get; set; } = null!;
 
+    [InverseProperty("Permission")]
+    public virtual ICollection<GroupPermission> GroupPermissions { get; set; } = new List<GroupPermission>();
+
     [InverseProperty("ParentPermission")]
     public virtual ICollection<Permission> InverseParentPermission { get; set; } = new List<Permission>();
 
@@ -108,6 +111,9 @@ public partial class Permission
     [ForeignKey("PermissionTypeId")]
     [InverseProperty("Permissions")]
     public virtual PermissionType PermissionType { get; set; } = null!;
+
+    [InverseProperty("Permission")]
+    public virtual ICollection<RolePermission> RolePermissions { get; set; } = new List<RolePermission>();
 
     [ForeignKey("SubjectId")]
     [InverseProperty("Permissions")]

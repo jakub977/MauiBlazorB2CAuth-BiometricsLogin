@@ -1,16 +1,14 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.DataConnectors.Repositories;
 using Principal.Telemedicine.Shared.Models;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
 
-    /// <summary>
-    /// API metody vztažené k uživateli
-    /// </summary>
-    [Route("api/[controller]/[action]")]
+/// <summary>
+/// API metody vztažené k uživateli
+/// </summary>
+[Route("api/[controller]/[action]")]
     [ApiController]
     public class UserApiController : ControllerBase
     {
@@ -23,7 +21,6 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
             _customerRepository = customerRepository;
             _logger = logger;
             _mapper = mapper;
-
         }
 
     /// <summary>
@@ -74,6 +71,8 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
             try
             {
                 var user = await _customerRepository.GetCustomerByIdTaskAsync(userId);
+
+                //todo: udělat mapování
 
                 var mappedUser = _mapper.Map<UserContract>(user);
 

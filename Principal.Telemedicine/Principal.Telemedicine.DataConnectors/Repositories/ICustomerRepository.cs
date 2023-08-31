@@ -1,4 +1,5 @@
-﻿using Principal.Telemedicine.DataConnectors.Models.Shared;
+﻿using Principal.Telemedicine.DataConnectors.Models;
+using Principal.Telemedicine.DataConnectors.Models.Shared;
 
 namespace Principal.Telemedicine.DataConnectors.Repositories;
 

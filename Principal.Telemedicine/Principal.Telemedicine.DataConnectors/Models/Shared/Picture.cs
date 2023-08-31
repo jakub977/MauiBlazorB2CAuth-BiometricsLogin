@@ -142,6 +142,9 @@ public partial class Picture
     public virtual ICollection<Customer> Customers { get; set; } = new List<Customer>();
 
     [InverseProperty("Picture")]
+    public virtual ICollection<Group> Groups { get; set; } = new List<Group>();
+
+    [InverseProperty("Picture")]
     public virtual ICollection<Provider> Providers { get; set; } = new List<Provider>();
 
     [ForeignKey("UpdatedByCustomerId")]

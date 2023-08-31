@@ -95,6 +95,13 @@ public partial class Subject
     [InverseProperty("Subject")]
     public virtual ICollection<Permission> Permissions { get; set; } = new List<Permission>();
 
+    [InverseProperty("Subject")]
+    public virtual ICollection<SubjectAllowedToOrganization> SubjectAllowedToOrganizations { get; set; } = new List<SubjectAllowedToOrganization>();
+
+    [ForeignKey("SubjectTypeId")]
+    [InverseProperty("Subjects")]
+    public virtual SubjectType SubjectType { get; set; } = null!;
+
     [ForeignKey("UpdatedByCustomerId")]
     [InverseProperty("SubjectUpdatedByCustomers")]
     public virtual Customer? UpdatedByCustomer { get; set; }

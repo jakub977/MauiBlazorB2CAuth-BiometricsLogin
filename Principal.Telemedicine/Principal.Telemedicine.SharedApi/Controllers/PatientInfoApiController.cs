@@ -3,18 +3,17 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Principal.Telemedicine.DataConnectors.Models;
 using Principal.Telemedicine.Shared.Models;
 using System.Data;
 using System.Text;
-using Principal.Telemedicine.DataConnectors.Contexts;
-using Principal.Telemedicine.DataConnectors.Models;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
-    
-    /// <summary>
-    /// API metody vztažené k sekci Karta pacienta.
-    /// </summary>
-    [Route("api/[controller]/[action]")]
+
+/// <summary>
+/// API metody vztažené k sekci Karta pacienta.
+/// </summary>
+[Route("api/[controller]/[action]")]
     [ApiController] 
     public class PatientInfoApiController : ControllerBase
     {
