@@ -1,15 +1,19 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
 
-namespace Principal.Telemedicine.DataConnectors.Models.Shared;
+namespace Principal.Telemedicine.Shared.Models;
 
-[Table("AddressCity")]
-public partial class AddressCity
+/// <summary>
+/// Data contract derived from AddressCity.cs
+/// </summary>
+[DataContract]
+public class AddressCityContract
 {
     /// <summary>
     /// Primary identifier of city
     /// </summary>
-    [Key]
+
     public int Id { get; set; }
 
     /// <summary>
@@ -66,8 +70,8 @@ public partial class AddressCity
     public string? ExtendedName { get; set; }
 
     [InverseProperty("City")]
-    public virtual ICollection<Customer> Customers { get; set; } = new List<Customer>();
+    public virtual ICollection<UserContract> Customers { get; set; } = new List<UserContract>();
 
     [InverseProperty("City")]
-    public virtual ICollection<Provider> Providers { get; set; } = new List<Provider>();
+    public virtual ICollection<ProviderContract> Providers { get; set; } = new List<ProviderContract>();
 }

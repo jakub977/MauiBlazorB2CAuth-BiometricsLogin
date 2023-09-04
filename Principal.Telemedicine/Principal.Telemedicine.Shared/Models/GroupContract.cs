@@ -1,14 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
+using System.Runtime.Serialization;
 
-namespace Principal.Telemedicine.DataConnectors.Models.Shared;
+namespace Principal.Telemedicine.Shared.Models;
 
 /// <summary>
-/// Table of groups, third level of organization hierarchy
+/// Data contract derived from Group.cs
 /// </summary>
-[Table("Group")]
-public partial class Group
+[DataContract]
+public class GroupContract
 {
+
     /// <summary>
     /// Primary identifier of a group
     /// </summary>
@@ -81,16 +84,16 @@ public partial class Group
 
     [ForeignKey("CreatedByCustomerId")]
     [InverseProperty("GroupCreatedByCustomers")]
-    public virtual Customer CreatedByCustomer { get; set; } = null!;
+    public virtual UserContract CreatedByCustomer { get; set; } = null!;
 
     [InverseProperty("Group")]
-    public virtual ICollection<GroupEffectiveMember> GroupEffectiveMembers { get; set; } = new List<GroupEffectiveMember>();
+    public virtual ICollection<GroupEffectiveMemberContract> GroupEffectiveMembers { get; set; } = new List<GroupEffectiveMemberContract>();
 
     [InverseProperty("Group")]
-    public virtual ICollection<GroupPermission> GroupPermissions { get; set; } = new List<GroupPermission>();
+    public virtual ICollection<GroupPermissionContract> GroupPermissions { get; set; } = new List<GroupPermissionContract>();
 
     [InverseProperty("ParentGroup")]
-    public virtual ICollection<Group> InverseParentGroup { get; set; } = new List<Group>();
+    public virtual ICollection<GroupContract> InverseParentGroup { get; set; } = new List<GroupContract>();
 
     [ForeignKey("ParentGroupId")]
     [InverseProperty("InverseParentGroup")]
@@ -98,13 +101,13 @@ public partial class Group
 
     [ForeignKey("PictureId")]
     [InverseProperty("Groups")]
-    public virtual Picture? Picture { get; set; }
+    public virtual PictureContract? Picture { get; set; }
 
     [ForeignKey("ProviderId")]
     [InverseProperty("Groups")]
-    public virtual Provider Provider { get; set; } = null!;
+    public virtual ProviderContract Provider { get; set; } = null!;
 
     [ForeignKey("UpdatedByCustomerId")]
     [InverseProperty("GroupUpdatedByCustomers")]
-    public virtual Customer? UpdatedByCustomer { get; set; }
+    public virtual UserContract? UpdatedByCustomer { get; set; }
 }

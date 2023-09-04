@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
 using Principal.Telemedicine.Shared.Models;
 
-namespace Principal.Telemedicine.DataConnectors.Models;
+namespace Principal.Telemedicine.DataConnectors.Contexts;
 
 public partial class DbContextApi : DbContext
 {

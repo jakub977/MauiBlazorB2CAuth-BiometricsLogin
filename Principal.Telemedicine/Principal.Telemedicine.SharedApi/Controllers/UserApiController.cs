@@ -74,7 +74,8 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
 
                 //todo: udělat mapování
 
-                var mappedUser = _mapper.Map<UserContract>(user);
+
+                var mappedUser = _mapper.Map<CompleteUserContract>(user);
 
                 return Ok(mappedUser);
 

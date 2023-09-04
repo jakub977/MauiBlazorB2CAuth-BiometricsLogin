@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Principal.Telemedicine.DataConnectors.Models;
+using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
 
 namespace Principal.Telemedicine.DataConnectors.Repositories;
@@ -27,7 +27,7 @@ public class CustomerRepository : ICustomerRepository
         public async Task<Customer?> GetCustomerByIdTaskAsync(int id)
         {
              var customer = await _dbContext.Customers
-                 .Include(p => p.EffectiveUserUsers).DefaultIfEmpty() // efektivního uživatele mají jenom uživatelé, kteřé mají vyplněné ProviderId - do RoleMember vazba přes EffectiveUserId -- pacient, lékař atd.
+                 .Include(p => p.EffectiveUserUsers).ThenInclude(efus => efus.RoleMembers).DefaultIfEmpty()// efektivního uživatele mají jenom uživatelé, kteřé mají vyplněné ProviderId - do RoleMember vazba přes EffectiveUserId -- pacient, lékař atd.
                  .Include (p => p.RoleMemberDirectUsers).DefaultIfEmpty() // uživatelé bez ProviderId mají vazbu do RoleMember přes DirectUserId -- administrativní role
                  .Include( p => p.UserPermissionUsers).DefaultIfEmpty() //DeniedPermissions
                  .Where(p => p.Id == id).FirstOrDefaultAsync();
