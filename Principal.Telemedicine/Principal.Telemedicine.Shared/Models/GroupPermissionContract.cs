@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace Principal.Telemedicine.Shared.Models;
 
@@ -13,13 +11,11 @@ public class GroupPermissionContract
     /// <summary>
     /// Primary identifier of a group permission
     /// </summary>
-    [DataMember]
     public int Id { get; set; }
 
     /// <summary>
     /// Bit identifier if a group permission is active
     /// </summary>
-    [Required]
     public bool? Active { get; set; }
 
     /// <summary>
@@ -35,7 +31,6 @@ public class GroupPermissionContract
     /// <summary>
     /// Date of group permission creation, using coordinated universal time
     /// </summary>
-    [Column(TypeName = "datetime")]
     public DateTime CreatedDateUtc { get; set; }
 
     /// <summary>
@@ -46,7 +41,6 @@ public class GroupPermissionContract
     /// <summary>
     /// Date of group permission update, using coordinated universal time
     /// </summary>
-    [Column(TypeName = "datetime")]
     public DateTime? UpdateDateUtc { get; set; }
 
     /// <summary>
@@ -59,19 +53,12 @@ public class GroupPermissionContract
     /// </summary>
     public int PermissionId { get; set; }
 
-    [ForeignKey("CreatedByCustomerId")]
-    [InverseProperty("GroupPermissionCreatedByCustomers")]
-    public virtual UserContract CreatedByCustomer { get; set; } = null!;
 
-    [ForeignKey("GroupId")]
-    [InverseProperty("GroupPermissions")]
-    public virtual GroupContract Group { get; set; } = null!;
+    //public virtual UserContract CreatedByCustomer { get; set; } = null!;
 
-    [ForeignKey("PermissionId")]
-    [InverseProperty("GroupPermissions")]
-    public virtual PermissionContract Permission { get; set; } = null!;
+    //public virtual GroupContract Group { get; set; } = null!;
 
-    [ForeignKey("UpdatedByCustomerId")]
-    [InverseProperty("GroupPermissionUpdatedByCustomers")]
-    public virtual UserContract? UpdatedByCustomer { get; set; }
+    //public virtual PermissionContract Permission { get; set; } = null!;
+
+    //public virtual UserContract? UpdatedByCustomer { get; set; }
 }

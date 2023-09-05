@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace Principal.Telemedicine.Shared.Models;
 
@@ -13,13 +11,11 @@ public class RoleCategoryCombinationContract
     /// <summary>
     /// Primary identifier of a combination
     /// </summary>
-    [Key]
     public int Id { get; set; }
 
     /// <summary>
     /// Bit identifier if combination is active
     /// </summary>
-    [Required]
     public bool? Active { get; set; }
 
     /// <summary>
@@ -35,7 +31,6 @@ public class RoleCategoryCombinationContract
     /// <summary>
     /// Date of combination creation, using coordinated universal time
     /// </summary>
-    [Column(TypeName = "datetime")]
     public DateTime CreatedDateUtc { get; set; }
 
     /// <summary>
@@ -46,7 +41,6 @@ public class RoleCategoryCombinationContract
     /// <summary>
     /// Date of combination update, using coordinated universal time
     /// </summary>
-    [Column(TypeName = "datetime")]
     public DateTime? UpdateDateUtc { get; set; }
 
     /// <summary>
@@ -62,25 +56,15 @@ public class RoleCategoryCombinationContract
     /// <summary>
     /// Name of a combination
     /// </summary>
-    [StringLength(200)]
     public string? Name { get; set; }
 
-    [ForeignKey("CreatedByCustomerId")]
-    [InverseProperty("RoleCategoryCombinationCreatedByCustomers")]
-    public virtual UserContract CreatedByCustomer { get; set; } = null!;
+   // public virtual UserContract CreatedByCustomer { get; set; } = null!;
 
-    [ForeignKey("RoleCategoryId")]
-    [InverseProperty("RoleCategoryCombinations")]
-    public virtual RoleCategoryContract RoleCategory { get; set; } = null!;
+    //public virtual RoleCategoryContract RoleCategory { get; set; } = null!;
 
-    [ForeignKey("RoleSubCategoryId")]
-    [InverseProperty("RoleCategoryCombinations")]
-    public virtual RoleSubCategoryContract? RoleSubCategory { get; set; }
+   // public virtual RoleSubCategoryContract? RoleSubCategory { get; set; }
 
-    [InverseProperty("RoleCategoryCombination")]
-    public virtual ICollection<RoleContract> Roles { get; set; } = new List<RoleContract>();
+    //public virtual ICollection<RoleContract> Roles { get; set; } = new List<RoleContract>();
 
-    [ForeignKey("UpdatedByCustomerId")]
-    [InverseProperty("RoleCategoryCombinationUpdatedByCustomers")]
-    public virtual UserContract? UpdatedByCustomer { get; set; }
+    //public virtual UserContract? UpdatedByCustomer { get; set; }
 }

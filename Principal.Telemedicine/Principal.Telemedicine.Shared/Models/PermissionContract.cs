@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace Principal.Telemedicine.Shared.Models;
 
@@ -13,13 +11,11 @@ public class PermissionContract
     /// <summary>
     /// Primary identifier of a permission
     /// </summary>
-    [Key]
     public int Id { get; set; }
 
     /// <summary>
     /// Bit identifier if a permission is active
     /// </summary>
-    [Required]
     public bool? Active { get; set; }
 
     /// <summary>
@@ -35,7 +31,6 @@ public class PermissionContract
     /// <summary>
     /// Date of permission creation, using coordinated universal time
     /// </summary>
-    [Column(TypeName = "datetime")]
     public DateTime CreatedDateUtc { get; set; }
 
     /// <summary>
@@ -46,7 +41,6 @@ public class PermissionContract
     /// <summary>
     /// Date of permission update, using coordinated universal time
     /// </summary>
-    [Column(TypeName = "datetime")]
     public DateTime? UpdateDateUtc { get; set; }
 
     /// <summary>
@@ -72,54 +66,35 @@ public class PermissionContract
     /// <summary>
     /// Name of a permission
     /// </summary>
-    [StringLength(200)]
     public string Name { get; set; } = null!;
 
     /// <summary>
     /// System name of a permission
     /// </summary>
-    [StringLength(200)]
     public string SystemName { get; set; } = null!;
 
     /// <summary>
     /// Detailed description of a permission
     /// </summary>
-    [StringLength(200)]
     public string? Description { get; set; }
 
-    [ForeignKey("CreatedByCustomerId")]
-    [InverseProperty("PermissionCreatedByCustomers")]
-    public virtual UserContract CreatedByCustomer { get; set; } = null!;
+    //public virtual UserContract CreatedByCustomer { get; set; } = null!;
 
-    [InverseProperty("Permission")]
-    public virtual ICollection<GroupPermissionContract> GroupPermissions { get; set; } = new List<GroupPermissionContract>();
+    //public virtual ICollection<GroupPermissionContract> GroupPermissions { get; set; } = new List<GroupPermissionContract>();
 
-    [InverseProperty("ParentPermission")]
-    public virtual ICollection<PermissionContract> InverseParentPermission { get; set; } = new List<PermissionContract>();
+    //public virtual ICollection<PermissionContract> InverseParentPermission { get; set; } = new List<PermissionContract>();
 
-    [ForeignKey("ParentPermissionId")]
-    [InverseProperty("InverseParentPermission")]
-    public virtual PermissionContract? ParentPermission { get; set; }
+    //public virtual PermissionContract? ParentPermission { get; set; }
 
-    [ForeignKey("PermissionCategoryId")]
-    [InverseProperty("Permissions")]
-    public virtual PermissionCategoryContract? PermissionCategory { get; set; }
+    //public virtual PermissionCategoryContract? PermissionCategory { get; set; }
 
-    [ForeignKey("PermissionTypeId")]
-    [InverseProperty("Permissions")]
-    public virtual PermissionTypeContract PermissionType { get; set; } = null!;
+    //public virtual PermissionTypeContract PermissionType { get; set; } = null!;
 
-    [InverseProperty("Permission")]
-    public virtual ICollection<RolePermissionContract> RolePermissions { get; set; } = new List<RolePermissionContract>();
+    //public virtual ICollection<RolePermissionContract> RolePermissions { get; set; } = new List<RolePermissionContract>();
 
-    [ForeignKey("SubjectId")]
-    [InverseProperty("Permissions")]
-    public virtual SubjectContract Subject { get; set; } = null!;
+    //public virtual SubjectContract Subject { get; set; } = null!;
 
-    [ForeignKey("UpdatedByCustomerId")]
-    [InverseProperty("PermissionUpdatedByCustomers")]
-    public virtual UserContract? UpdatedByCustomer { get; set; }
+    //public virtual UserContract? UpdatedByCustomer { get; set; }
 
-    [InverseProperty("Permission")]
-    public virtual ICollection<UserPermissionContract> UserPermissions { get; set; } = new List<UserPermissionContract>();
+    //public virtual ICollection<UserPermissionContract> UserPermissions { get; set; } = new List<UserPermissionContract>();
 }

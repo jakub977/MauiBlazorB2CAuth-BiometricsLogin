@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace Principal.Telemedicine.Shared.Models;
 
@@ -13,13 +11,11 @@ public class RoleContract
     /// <summary>
     /// Primary identifier of a role
     /// </summary>
-    [Key]
     public int Id { get; set; }
 
     /// <summary>
     /// Bit identifier if role is active
     /// </summary>
-    [Required]
     public bool? Active { get; set; }
 
     /// <summary>
@@ -35,7 +31,6 @@ public class RoleContract
     /// <summary>
     /// Date of role creation, using coordinated universal time
     /// </summary>
-    [Column(TypeName = "datetime")]
     public DateTime CreatedDateUtc { get; set; }
 
     /// <summary>
@@ -46,7 +41,6 @@ public class RoleContract
     /// <summary>
     /// Date of role update, using coordinated universal time
     /// </summary>
-    [Column(TypeName = "datetime")]
     public DateTime? UpdateDateUtc { get; set; }
 
     /// <summary>
@@ -67,13 +61,11 @@ public class RoleContract
     /// <summary>
     /// Name of a role
     /// </summary>
-    [StringLength(200)]
     public string Name { get; set; } = null!;
 
     /// <summary>
     /// Detailed description of a role
     /// </summary>
-    [StringLength(200)]
     public string? Description { get; set; }
 
     /// <summary>
@@ -86,36 +78,21 @@ public class RoleContract
     /// </summary>
     public int RoleCategoryCombinationId { get; set; }
 
-    [ForeignKey("CreatedByCustomerId")]
-    [InverseProperty("RoleCreatedByCustomers")]
-    public virtual UserContract CreatedByCustomer { get; set; } = null!;
+   // public virtual UserContract CreatedByCustomer { get; set; } = null!;
 
-    [InverseProperty("ParentRole")]
-    public virtual ICollection<RoleContract> InverseParentRole { get; set; } = new List<RoleContract>();
+   // public virtual ICollection<RoleContract> InverseParentRole { get; set; } = new List<RoleContract>();
 
-    [ForeignKey("OrganizationId")]
-    [InverseProperty("Roles")]
-    public virtual OrganizationContract? Organization { get; set; }
+   // public virtual OrganizationContract? Organization { get; set; }
 
-    [ForeignKey("ParentRoleId")]
-    [InverseProperty("InverseParentRole")]
-    public virtual RoleContract? ParentRole { get; set; }
+   // public virtual RoleContract? ParentRole { get; set; }
 
-    [ForeignKey("ProviderId")]
-    [InverseProperty("Roles")]
-    public virtual ProviderContract? Provider { get; set; }
+   // public virtual ProviderContract? Provider { get; set; } todo: odkomentovat
 
-    [ForeignKey("RoleCategoryCombinationId")]
-    [InverseProperty("Roles")]
-    public virtual RoleCategoryCombinationContract RoleCategoryCombination { get; set; } = null!;
+    //public virtual RoleCategoryCombinationContract RoleCategoryCombination { get; set; } = null!;
 
-    [InverseProperty("Role")]
-    public virtual ICollection<RoleMemberContract> RoleMembers { get; set; } = new List<RoleMemberContract>();
+    //public virtual ICollection<RoleMemberContract> RoleMembers { get; set; } = new List<RoleMemberContract>();
 
-    [InverseProperty("Role")]
-    public virtual ICollection<RolePermissionContract> RolePermissions { get; set; } = new List<RolePermissionContract>();
+   // public virtual ICollection<RolePermissionContract> RolePermissions { get; set; } = new List<RolePermissionContract>();
 
-    [ForeignKey("UpdatedByCustomerId")]
-    [InverseProperty("RoleUpdatedByCustomers")]
-    public virtual UserContract? UpdatedByCustomer { get; set; }
+   // public virtual UserContract? UpdatedByCustomer { get; set; }
 }

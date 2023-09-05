@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using System.Text.RegularExpressions;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace Principal.Telemedicine.Shared.Models;
 
@@ -15,13 +12,11 @@ public class GroupContract
     /// <summary>
     /// Primary identifier of a group
     /// </summary>
-    [Key]
     public int Id { get; set; }
 
     /// <summary>
     /// Bit identifier if a group is active
     /// </summary>
-    [Required]
     public bool? Active { get; set; }
 
     /// <summary>
@@ -37,7 +32,6 @@ public class GroupContract
     /// <summary>
     /// Date of group creation, using coordinated universal time
     /// </summary>
-    [Column(TypeName = "datetime")]
     public DateTime CreatedDateUtc { get; set; }
 
     /// <summary>
@@ -48,7 +42,6 @@ public class GroupContract
     /// <summary>
     /// Date of group update, using coordinated universal time
     /// </summary>
-    [Column(TypeName = "datetime")]
     public DateTime? UpdateDateUtc { get; set; }
 
     /// <summary>
@@ -69,7 +62,6 @@ public class GroupContract
     /// <summary>
     /// Name of a group
     /// </summary>
-    [StringLength(200)]
     public string Name { get; set; } = null!;
 
     /// <summary>
@@ -82,32 +74,19 @@ public class GroupContract
     /// </summary>
     public bool IsRiskGroup { get; set; }
 
-    [ForeignKey("CreatedByCustomerId")]
-    [InverseProperty("GroupCreatedByCustomers")]
-    public virtual UserContract CreatedByCustomer { get; set; } = null!;
+    //public virtual UserContract CreatedByCustomer { get; set; } = null!;
 
-    [InverseProperty("Group")]
-    public virtual ICollection<GroupEffectiveMemberContract> GroupEffectiveMembers { get; set; } = new List<GroupEffectiveMemberContract>();
+    //public virtual ICollection<GroupEffectiveMemberContract> GroupEffectiveMembers { get; set; } = new List<GroupEffectiveMemberContract>();
 
-    [InverseProperty("Group")]
-    public virtual ICollection<GroupPermissionContract> GroupPermissions { get; set; } = new List<GroupPermissionContract>();
+    //public virtual ICollection<GroupPermissionContract> GroupPermissions { get; set; } = new List<GroupPermissionContract>();
 
-    [InverseProperty("ParentGroup")]
-    public virtual ICollection<GroupContract> InverseParentGroup { get; set; } = new List<GroupContract>();
+    //public virtual ICollection<GroupContract> InverseParentGroup { get; set; } = new List<GroupContract>();
 
-    [ForeignKey("ParentGroupId")]
-    [InverseProperty("InverseParentGroup")]
-    public virtual Group? ParentGroup { get; set; }
+    //public virtual Group? ParentGroup { get; set; }
 
-    [ForeignKey("PictureId")]
-    [InverseProperty("Groups")]
-    public virtual PictureContract? Picture { get; set; }
+    //public virtual PictureContract? Picture { get; set; }
 
-    [ForeignKey("ProviderId")]
-    [InverseProperty("Groups")]
-    public virtual ProviderContract Provider { get; set; } = null!;
+    //public virtual ProviderContract Provider { get; set; } = null!;
 
-    [ForeignKey("UpdatedByCustomerId")]
-    [InverseProperty("GroupUpdatedByCustomers")]
-    public virtual UserContract? UpdatedByCustomer { get; set; }
+    //public virtual UserContract? UpdatedByCustomer { get; set; }
 }

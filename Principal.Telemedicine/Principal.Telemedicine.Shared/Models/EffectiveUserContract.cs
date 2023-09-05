@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace Principal.Telemedicine.Shared.Models;
 
@@ -13,13 +11,11 @@ public class EffectiveUserContract
     /// <summary>
     /// Primary identifier of an effective user
     /// </summary>
-    [DataMember]
     public int Id { get; set; }
 
     /// <summary>
     /// Bit identifier if effective user is active
     /// </summary>
-    [DataMember]
     public bool? Active { get; set; }
 
     /// <summary>
@@ -35,7 +31,6 @@ public class EffectiveUserContract
     /// <summary>
     /// Date of effective user creation, using coordinated universal time
     /// </summary>
-    [Column(TypeName = "datetime")]
     public DateTime CreatedDateUtc { get; set; }
 
     /// <summary>
@@ -46,7 +41,6 @@ public class EffectiveUserContract
     /// <summary>
     /// Date of effective user update, using coordinated universal time
     /// </summary>
-    [Column(TypeName = "datetime")]
     public DateTime? UpdateDateUtc { get; set; }
 
     /// <summary>
@@ -59,27 +53,16 @@ public class EffectiveUserContract
     /// </summary>
     public int ProviderId { get; set; }
 
-    [ForeignKey("CreatedByCustomerId")]
-    [InverseProperty("EffectiveUserCreatedByCustomers")]
-    public virtual UserContract CreatedByCustomer { get; set; } = null!;
-
-    [InverseProperty("EffectiveUser")]
-    [DataMember]
-    public virtual ICollection<GroupEffectiveMemberContract> GroupEffectiveMembers { get; set; } = new List<GroupEffectiveMemberContract>();
-
-    [ForeignKey("ProviderId")]
-    [InverseProperty("EffectiveUsers")]
-    public virtual ProviderContract Provider { get; set; } = null!;
-
-    [InverseProperty("EffectiveUser")]
-    [DataMember]
     public virtual ICollection<RoleMemberContract> RoleMembers { get; set; } = new List<RoleMemberContract>();
 
-    [ForeignKey("UpdatedByCustomerId")]
-    [InverseProperty("EffectiveUserUpdatedByCustomers")]
-    public virtual UserContract? UpdatedByCustomer { get; set; }
+    public virtual ICollection<GroupEffectiveMemberContract> GroupEffectiveMembers { get; set; } = new List<GroupEffectiveMemberContract>();
 
-    [ForeignKey("UserId")]
-    [InverseProperty("EffectiveUserUsers")]
-    public virtual UserContract User { get; set; } = null!;
+    // public virtual UserContract CreatedByCustomer { get; set; } = null!;
+
+    // public virtual ProviderContract Provider { get; set; } = null!;
+
+
+    // public virtual UserContract? UpdatedByCustomer { get; set; }
+
+    // public virtual UserContract User { get; set; } = null!;
 }

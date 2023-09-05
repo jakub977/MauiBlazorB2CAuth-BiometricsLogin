@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace Principal.Telemedicine.Shared.Models;
 
@@ -19,7 +17,6 @@ public class AddressCityContract
     /// <summary>
     /// Bit identifier if city is active
     /// </summary>
-    [Required]
     public bool? Active { get; set; }
 
     /// <summary>
@@ -30,25 +27,21 @@ public class AddressCityContract
     /// <summary>
     /// Date of city creation, using coordinated universal time
     /// </summary>
-    [Column(TypeName = "datetime")]
     public DateTime CreatedDateUtc { get; set; }
 
     /// <summary>
     /// Date of city update, using coordinated universal time
     /// </summary>
-    [Column(TypeName = "datetime")]
     public DateTime? UpdateDateUtc { get; set; }
 
     /// <summary>
     /// City code
     /// </summary>
-    [StringLength(10)]
     public string Code { get; set; } = null!;
 
     /// <summary>
     /// City name
     /// </summary>
-    [StringLength(200)]
     public string Name { get; set; } = null!;
 
     /// <summary>
@@ -66,12 +59,9 @@ public class AddressCityContract
     /// </summary>
     public int IdAddressMunicipalityWithExtendedCompetence { get; set; }
 
-    [StringLength(1000)]
     public string? ExtendedName { get; set; }
 
-    [InverseProperty("City")]
-    public virtual ICollection<UserContract> Customers { get; set; } = new List<UserContract>();
+    //public virtual ICollection<UserContract> Customers { get; set; } = new List<UserContract>();
 
-    [InverseProperty("City")]
-    public virtual ICollection<ProviderContract> Providers { get; set; } = new List<ProviderContract>();
+    //public virtual ICollection<ProviderContract> Providers { get; set; } = new List<ProviderContract>();
 }

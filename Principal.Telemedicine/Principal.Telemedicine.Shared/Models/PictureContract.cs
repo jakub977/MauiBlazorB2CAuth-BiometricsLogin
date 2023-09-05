@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace Principal.Telemedicine.Shared.Models;
 
@@ -13,20 +11,17 @@ public class PictureContract
     /// <summary>
     /// Primary identifier of a picture
     /// </summary>
-    [Key]
     public int Id { get; set; }
 
     /// <summary>
     /// 
     /// Mime type of a picture
     /// </summary>
-    [StringLength(40)]
     public string MimeType { get; set; } = null!;
 
     /// <summary>
     /// SEO file name of a picture
     /// </summary>
-    [StringLength(300)]
     public string? SeoFilename { get; set; }
 
     /// <summary>
@@ -42,7 +37,6 @@ public class PictureContract
     /// <summary>
     /// Date of picture update, using coordinated universal time
     /// </summary>
-    [Column(TypeName = "datetime")]
     public DateTime? UpdatedOnUtc { get; set; }
 
     /// <summary>
@@ -63,7 +57,6 @@ public class PictureContract
     /// <summary>
     /// Bit identifier if a picture is active
     /// </summary>
-    [Required]
     public bool? Active { get; set; }
 
     /// <summary>
@@ -84,13 +77,11 @@ public class PictureContract
     /// <summary>
     /// Date of picture creation, using coordinated universal time
     /// </summary>
-    [Column(TypeName = "datetime")]
     public DateTime CreatedDateUtc { get; set; }
 
     /// <summary>
     /// Friendly name of a picture
     /// </summary>
-    [StringLength(200)]
     public string? FriendlyName { get; set; }
 
     /// <summary>
@@ -116,37 +107,27 @@ public class PictureContract
     /// <summary>
     /// Size of original picture, in kB.
     /// </summary>
-    [Column(TypeName = "decimal(10, 2)")]
     public decimal? OriginalSizeInkB { get; set; }
 
     /// <summary>
     /// Size of converted picture, in kB.
     /// </summary>
-    [Column(TypeName = "decimal(10, 2)")]
     public decimal? ConvertedSizeInkB { get; set; }
 
     public int? ThumbnailWidth { get; set; }
 
     public int? ThumbnailHeight { get; set; }
 
-    [ForeignKey("CreatedByCustomerId")]
-    [InverseProperty("PictureCreatedByCustomers")]
-    public virtual UserContract CreatedByCustomer { get; set; } = null!;
 
-    [InverseProperty("Picture")]
-    public virtual ICollection<UserContract> Customers { get; set; } = new List<UserContract>();
+    //public virtual UserContract CreatedByCustomer { get; set; } = null!;
 
-    [InverseProperty("Picture")]
-    public virtual ICollection<GroupContract> Groups { get; set; } = new List<GroupContract>();
+    //public virtual ICollection<UserContract> Customers { get; set; } = new List<UserContract>();
 
-    [InverseProperty("Picture")]
-    public virtual ICollection<ProviderContract> Providers { get; set; } = new List<ProviderContract>();
+    //public virtual ICollection<GroupContract> Groups { get; set; } = new List<GroupContract>();
 
-    [ForeignKey("UpdatedByCustomerId")]
-    [InverseProperty("PictureUpdatedByCustomers")]
-    public virtual UserContract? UpdatedByCustomer { get; set; }
+    //public virtual ICollection<ProviderContract> Providers { get; set; } = new List<ProviderContract>();
 
-    [ForeignKey("UserId")]
-    [InverseProperty("PictureUsers")]
-    public virtual UserContract? User { get; set; }
+    //public virtual UserContract? UpdatedByCustomer { get; set; }
+
+    //public virtual UserContract? User { get; set; }
 }

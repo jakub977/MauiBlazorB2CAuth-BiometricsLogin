@@ -1,8 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿namespace Principal.Telemedicine.Shared.Models;
 
-namespace Principal.Telemedicine.Shared.Models;
-
+/// <summary>
+/// Data contract derived from GenderType.cs
+/// </summary>
 public class GenderTypeContract
 {
     /// <summary>
@@ -14,7 +14,6 @@ public class GenderTypeContract
     /// <summary>
     /// Bit identifier if a gender type is active
     /// </summary>
-    [Required]
     public bool? Active { get; set; }
 
     /// <summary>
@@ -25,15 +24,12 @@ public class GenderTypeContract
     /// <summary>
     /// Date of gender type creation, using coordinated universal time
     /// </summary>
-    [Column(TypeName = "datetime")]
     public DateTime CreatedDateUtc { get; set; }
 
     /// <summary>
     /// Nname of a gender type
     /// </summary>
-    [StringLength(200)]
     public string Name { get; set; } = null!;
 
-    [InverseProperty("GenderType")]
-    public virtual ICollection<UserContract> Customers { get; set; } = new List<UserContract>();
+    //public virtual ICollection<UserContract> Customers { get; set; } = new List<UserContract>();
 }

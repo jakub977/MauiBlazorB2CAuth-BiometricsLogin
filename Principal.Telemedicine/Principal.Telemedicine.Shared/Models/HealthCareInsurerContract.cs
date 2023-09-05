@@ -1,8 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿namespace Principal.Telemedicine.Shared.Models;
 
-namespace Principal.Telemedicine.Shared.Models;
-
+/// <summary>
+/// Data contract derived from HealthCareInsurer.cs
+/// </summary>
 public class HealthCareInsurerContract
 {
     /// <summary>
@@ -13,7 +13,6 @@ public class HealthCareInsurerContract
     /// <summary>
     /// Bit identifier if an insurer is active
     /// </summary>
-    [Required]
     public bool? Active { get; set; }
 
     /// <summary>
@@ -29,7 +28,6 @@ public class HealthCareInsurerContract
     /// <summary>
     /// Date of insurance company creation, using coordinated universal time
     /// </summary>
-    [Column(TypeName = "datetime")]
     public DateTime CreatedDateUtc { get; set; }
 
     /// <summary>
@@ -40,25 +38,21 @@ public class HealthCareInsurerContract
     /// <summary>
     /// Date of insurance company update, using coordinated universal time
     /// </summary>
-    [Column(TypeName = "datetime")]
     public DateTime? UpdateDateUtc { get; set; }
 
     /// <summary>
     /// Name of an insurer
     /// </summary>
-    [StringLength(200)]
     public string Name { get; set; } = null!;
 
     /// <summary>
     /// Short name of an insurer
     /// </summary>
-    [StringLength(10)]
     public string? ShortName { get; set; }
 
     /// <summary>
     /// Code of an insurer
     /// </summary>
-    [StringLength(20)]
     public string Code { get; set; } = null!;
 
     /// <summary>
@@ -66,14 +60,9 @@ public class HealthCareInsurerContract
     /// </summary>
     public int CountryId { get; set; }
 
-    [ForeignKey("CreatedByCustomerId")]
-    [InverseProperty("HealthCareInsurerCreatedByCustomers")]
-    public virtual UserContract CreatedByCustomer { get; set; } = null!;
+    //public virtual UserContract CreatedByCustomer { get; set; } = null!;
 
-    [InverseProperty("HealthCareInsurer")]
-    public virtual ICollection<UserContract> Customers { get; set; } = new List<UserContract>();
+    //public virtual ICollection<UserContract> Customers { get; set; } = new List<UserContract>();
 
-    [ForeignKey("UpdatedByCustomerId")]
-    [InverseProperty("HealthCareInsurerUpdatedByCustomers")]
-    public virtual UserContract? UpdatedByCustomer { get; set; }
+    //public virtual UserContract? UpdatedByCustomer { get; set; }
 }

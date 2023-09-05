@@ -1,20 +1,18 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿namespace Principal.Telemedicine.Shared.Models;
 
-namespace Principal.Telemedicine.Shared.Models;
-
+/// <summary>
+/// Data contract derived from ProfessionType.cs
+/// </summary>
 public class ProfessionTypeContract
 {
     /// <summary>
     /// Primary identifier of a profession type
     /// </summary>
-    [Key]
     public int Id { get; set; }
 
     /// <summary>
     /// Bit identifier if a profession type is active
     /// </summary>
-    [Required]
     public bool? Active { get; set; }
 
     /// <summary>
@@ -30,7 +28,6 @@ public class ProfessionTypeContract
     /// <summary>
     /// Date of profession type creation, using coordinated universal time
     /// </summary>
-    [Column(TypeName = "datetime")]
     public DateTime CreatedDateUtc { get; set; }
 
     /// <summary>
@@ -41,29 +38,22 @@ public class ProfessionTypeContract
     /// <summary>
     /// Date of profession type update, using coordinated universal time
     /// </summary>
-    [Column(TypeName = "datetime")]
     public DateTime? UpdateDateUtc { get; set; }
 
     /// <summary>
     /// Name of a profession type
     /// </summary>
-    [StringLength(200)]
     public string Name { get; set; } = null!;
 
     /// <summary>
     /// Detailed description of a profession type
     /// </summary>
-    [StringLength(200)]
     public string? Description { get; set; }
 
-    [ForeignKey("CreatedByCustomerId")]
-    [InverseProperty("ProfessionTypeCreatedByCustomers")]
-    public virtual UserContract CreatedByCustomer { get; set; } = null!;
 
-    [InverseProperty("ProfessionType")]
-    public virtual ICollection<UserContract> Customers { get; set; } = new List<UserContract>();
+    //public virtual UserContract CreatedByCustomer { get; set; } = null!;
 
-    [ForeignKey("UpdatedByCustomerId")]
-    [InverseProperty("ProfessionTypeUpdatedByCustomers")]
-    public virtual UserContract? UpdatedByCustomer { get; set; }
+    //public virtual ICollection<UserContract> Customers { get; set; } = new List<UserContract>();
+
+    //public virtual UserContract? UpdatedByCustomer { get; set; }
 }

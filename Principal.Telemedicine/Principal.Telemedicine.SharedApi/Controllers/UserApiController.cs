@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Principal.Telemedicine.DataConnectors.Repositories;
 using Principal.Telemedicine.Shared.Models;
+using System.Collections.ObjectModel;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
 
@@ -71,10 +72,6 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
             try
             {
                 var user = await _customerRepository.GetCustomerByIdTaskAsync(userId);
-
-                //todo: udělat mapování
-
-
                 var mappedUser = _mapper.Map<CompleteUserContract>(user);
 
                 return Ok(mappedUser);

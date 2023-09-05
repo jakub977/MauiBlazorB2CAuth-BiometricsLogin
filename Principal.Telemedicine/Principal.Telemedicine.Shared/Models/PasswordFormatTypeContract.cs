@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-
-namespace Principal.Telemedicine.Shared.Models;
+﻿namespace Principal.Telemedicine.Shared.Models;
 
 public class PasswordFormatTypeContract
 {
@@ -13,7 +10,6 @@ public class PasswordFormatTypeContract
     /// <summary>
     /// Bit identifier if a password format is active
     /// </summary>
-    [Required]
     public bool? Active { get; set; }
 
     /// <summary>
@@ -24,15 +20,12 @@ public class PasswordFormatTypeContract
     /// <summary>
     /// Date of password format creation, using coordinated universal time
     /// </summary>
-    [Column(TypeName = "datetime")]
     public DateTime CreatedDateUtc { get; set; }
 
     /// <summary>
     /// Name of a password format
     /// </summary>
-    [StringLength(200)]
     public string Name { get; set; } = null!;
 
-    [InverseProperty("PasswordFormatType")]
-    public virtual ICollection<UserContract> Customers { get; set; } = new List<UserContract>();
+    //public virtual ICollection<UserContract> Customers { get; set; } = new List<UserContract>();
 }
