@@ -35,6 +35,10 @@ public partial class DbContextApi : DbContext
     [NotMapped]
     public virtual DbSet<AvailableDeviceListItemDataModel> AvailableDeviceListItemDataModels { get; set; }
 
+    [NotMapped]
+    public virtual DbSet<UserCalendarWithMeasuredValuesDataModel> UserCalendarWithMeasuredValuesDataModels { get; set; }
+    
+
 
     public virtual DbSet<AddressCity> AddressCities { get; set; }
 
@@ -106,6 +110,7 @@ public partial class DbContextApi : DbContext
         modelBuilder.Entity<DiseaseDetectionKeyInputsToMLItemDataModel>().HasNoKey();
         modelBuilder.Entity<VirtualSurgeryBasicOverviewDataModel>().HasNoKey();
         modelBuilder.Entity<AvailableDeviceListItemDataModel>().HasNoKey();
+        modelBuilder.Entity<UserCalendarWithMeasuredValuesDataModel>().HasNoKey();
 
         modelBuilder.Entity<AddressCity>(entity =>
         {

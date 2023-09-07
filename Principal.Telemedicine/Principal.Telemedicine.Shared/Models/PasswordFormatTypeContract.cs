@@ -1,5 +1,11 @@
-﻿namespace Principal.Telemedicine.Shared.Models;
+﻿using System.Runtime.Serialization;
 
+namespace Principal.Telemedicine.Shared.Models;
+
+/// <summary>
+/// Data contract derived from PasswordFormatType.cs
+/// </summary>
+[DataContract]
 public class PasswordFormatTypeContract
 {
     /// <summary>

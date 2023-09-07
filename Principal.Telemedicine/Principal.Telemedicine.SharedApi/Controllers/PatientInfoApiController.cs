@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.DataConnectors.Models;
+using Principal.Telemedicine.Shared.Enums;
 using Principal.Telemedicine.Shared.Models;
 using System.Data;
 using System.Text;
@@ -260,5 +261,44 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
         }
     }
 
+
+    /// <summary>
+    /// Vrátí plánovač pacienta s naměřenými hodnotami.
+    /// </summary>
+    /// <param name="apiKey"></param>
+    /// <param name="userGlobalId"></param>
+    /// <returns></returns>
+    [AllowAnonymous]
+    [HttpGet(Name = "GeneralGetUserCalendarWithMeasuredValues")]
+    public async Task<IActionResult> GeneralGetUserCalendarWithMeasuredValues([FromHeader(Name = "x-api-key")] string apiKey, string userGlobalId, string preferredLanguageCode)
+    {
+
+        if (string.IsNullOrEmpty(userGlobalId) || string.IsNullOrEmpty(preferredLanguageCode))
+        {
+            return BadRequest();
+        }
+
+        LanguageCodeEnum lce = Enum.Parse<LanguageCodeEnum>(preferredLanguageCode);
+        int languageId = (int)lce;
+
+        try
+        {
+
+            var calendarWMeasuredValues = await _dbContext.UserCalendarWithMeasuredValuesDataModels.FromSql($"dbo.sp_GetUserCalendarWithMeasuredValues @GlobalId = {userGlobalId}, @LanguageId = {languageId} ").AsNoTracking().ToListAsync();
+
+            if (!calendarWMeasuredValues.Any())
+            {
+                return NotFound();
+            }
+            return Ok(calendarWMeasuredValues);
+
+        }
+
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
 } 
 

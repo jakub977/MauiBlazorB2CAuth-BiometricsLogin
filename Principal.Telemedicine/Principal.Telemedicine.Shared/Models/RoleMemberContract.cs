@@ -58,14 +58,16 @@ public class RoleMemberContract
     /// </summary>
     public int RoleId { get; set; }
 
-    public virtual UserContract? DirectUser { get; set; }
+   // public virtual UserContract? UpdatedByCustomer { get; set; }
+
+    // public virtual UserContract? DirectUser { get; set; }
 
 
     //public virtual UserContract CreatedByCustomer { get; set; } = null!;
 
-    // public virtual EffectiveUserContract? EffectiveUser { get; set; } todo: zde odkomentovat
+   // public virtual EffectiveUserContract? EffectiveUser { get; set; } //todo: zde odkomentovat
 
     //public virtual RoleContract Role { get; set; } = null!;
 
-    //public virtual UserContract? UpdatedByCustomer { get; set; }
+
 }

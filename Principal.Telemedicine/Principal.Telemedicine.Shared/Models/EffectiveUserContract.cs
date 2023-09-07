@@ -57,9 +57,9 @@ public class EffectiveUserContract
 
     public virtual ICollection<GroupEffectiveMemberContract> GroupEffectiveMembers { get; set; } = new List<GroupEffectiveMemberContract>();
 
-    // public virtual UserContract CreatedByCustomer { get; set; } = null!;
+   // public virtual UserContract CreatedByCustomer { get; set; } = null!; //zakoomentováno
 
-    // public virtual ProviderContract Provider { get; set; } = null!;
+  //  public virtual ProviderContract Provider { get; set; } = null!;
 
 
     // public virtual UserContract? UpdatedByCustomer { get; set; }

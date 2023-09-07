@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Principal.Telemedicine.Shared.Models;
 
@@ -9,6 +9,7 @@ namespace Principal.Telemedicine.Shared.Models;
 [DataContract]
 public class CompleteUserContract
 {
+
     /// <summary>
     /// Primary identifier of an user
     /// </summary>
@@ -34,21 +35,25 @@ public class CompleteUserContract
     /// <summary>
     /// Link to dbo.Customer as an user who creates an user
     /// </summary>
+    [DataMember]
     public int? CreatedByCustomerId { get; set; }
 
     /// <summary>
     /// Date of user creation, using coordinated universal time
     /// </summary>
+    [DataMember]
     public DateTime CreatedDateUtc { get; set; }
 
     /// <summary>
     /// Link to dbo.Customer as an user who updates an user
     /// </summary>
+    [DataMember]
     public int? UpdatedByCustomerId { get; set; }
 
     /// <summary>
     /// Date of user update, using coordinated universal time
     /// </summary>
+    [DataMember]
     public DateTime? UpdateDateUtc { get; set; }
 
     /// <summary>
@@ -126,6 +131,7 @@ public class CompleteUserContract
     /// <summary>
     /// Link to dbo.Picture as a photo of an user
     /// </summary>
+    [DataMember]
     public int? PictureId { get; set; }
 
     /// <summary>
@@ -177,6 +183,7 @@ public class CompleteUserContract
     /// <summary>
     /// Password format identifier
     /// </summary>
+    [JsonIgnore]
     public int PasswordFormatTypeId { get; set; }
 
     /// <summary>
@@ -202,6 +209,7 @@ public class CompleteUserContract
     /// <summary>
     /// Number of failed login attempts
     /// </summary>
+    [JsonIgnore]
     public int InvalidLoginsCount { get; set; }
 
     /// <summary>
@@ -236,12 +244,12 @@ public class CompleteUserContract
     /// </summary>
     public int? ProfessionTypeId { get; set; }
 
-    [DataMember]
     public string? ProfessionName { get; set; }
 
     /// <summary>
     /// Employer of user
     /// </summary>
+    [DataMember]
     public string? EmployerName { get; set; }
 
     /// <summary>
@@ -258,11 +266,13 @@ public class CompleteUserContract
     /// <summary>
     /// Link to dbo.HealthCareInsurer as a health care insurer of an user
     /// </summary>
+    [DataMember]
     public int? HealthCareInsurerId { get; set; }
 
     /// <summary>
     /// Birth identification number of an user
     /// </summary>
+    [DataMember]
     public string? BirthIdentificationNumber { get; set; }
 
     /// <summary>
@@ -283,13 +293,7 @@ public class CompleteUserContract
     public bool? IsRiskPatient { get; set; }
 
     [DataMember]
-    public virtual AddressCityContract? City { get; set; }
-
-    [DataMember]
-    public virtual UserContract? CreatedByCustomer { get; set; }
-
-    [DataMember]
-    public ICollection<EffectiveUserContract> EffectiveUserUsers { get; set; } = new List<EffectiveUserContract>();
+    public ICollection<EffectiveUserContract> EffectiveUserUsers { get; set; } = new List<EffectiveUserContract>(); //EffectiveUserUsers
 
     [DataMember]
     public virtual GenderTypeContract? GenderType { get; set; } //nenačítá se
@@ -298,15 +302,24 @@ public class CompleteUserContract
     public virtual OrganizationContract? Organization { get; set; }
 
     [DataMember]
-    public virtual ProviderContract? CreatedByProvider { get; set; }
-
-    [DataMember]
     public virtual ICollection<RoleMemberContract> RoleMemberDirectUsers { get; set; } = new List<RoleMemberContract>();
 
     [DataMember]
     public virtual ICollection<UserPermissionContract> UserPermissionUsers { get; set; } = new List<UserPermissionContract>();
 
+    //[DataMember]
+    //public virtual ICollection<UserPermissionContract> UserPermissions
+    //{
+    //    get { return UserPermissionUsers; }
+    //    protected set { UserPermissionUsers = value; }
+    //}
 
+
+    // public virtual ProviderContract? CreatedByProvider { get; set; }
+
+    //public virtual AddressCityContract? City { get; set; }
+
+    //public virtual UserContract? CreatedByCustomer { get; set; }
 
     //public virtual ICollection<EffectiveUserContract> EffectiveUserCreatedByCustomers { get; set; } = new List<EffectiveUserContract>();
 
