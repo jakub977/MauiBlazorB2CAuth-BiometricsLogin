@@ -1,11 +1,8 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Principal.Telemedicine.DataConnectors.Contexts;
-using Principal.Telemedicine.DataConnectors.Repositories;
 using Principal.Telemedicine.Shared.Enums;
-using Principal.Telemedicine.Shared.Models;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
 
@@ -33,8 +30,8 @@ public class PatientValuesApiController : ControllerBase
     /// <param name="userGlobalId"></param>
     /// <returns></returns>
     [AllowAnonymous]
-    [HttpGet(Name = "PENEGetUserPregnancyCalendarWithMeasuredValues")]
-    public async Task<IActionResult> PENEGetUserPregnancyCalendarWithMeasuredValues([FromHeader(Name = "x-api-key")] string apiKey, string userGlobalId, string preferredLanguageCode)
+    [HttpGet(Name = "PENEGetUserPregnancyCalendarWithMeasuredValues")]          //[FromHeader(Name = "x-api-key")] string apiKey,
+    public async Task<IActionResult> PENEGetUserPregnancyCalendarWithMeasuredValues(string userGlobalId, string preferredLanguageCode)
     {
 
         if (string.IsNullOrEmpty(userGlobalId) || string.IsNullOrEmpty(preferredLanguageCode))
@@ -47,13 +44,13 @@ public class PatientValuesApiController : ControllerBase
         try
         {
 
-            var calendarWMeasuredValues = await _dbContext.UserCalendarWithMeasuredValuesDataModels.FromSql($"dbo.sp_GetUserPregnancyCalendarWithMeasuredValues @GlobalId = {userGlobalId}, @LanguageId = {languageId} ").AsNoTracking().ToListAsync();
+            var peneCalendar = await _dbContext.PENECalendarWithMeasuredValuesDataModel.FromSql($"dbo.sp_GetUserPregnancyCalendarWithMeasuredValues @GlobalId = {userGlobalId}, @LanguageId = {languageId} ").AsNoTracking().ToListAsync();
 
-            if (!calendarWMeasuredValues.Any())
+            if (!peneCalendar.Any())
             {
                 return NotFound();
             }
-            return Ok(calendarWMeasuredValues);
+            return Ok(peneCalendar);
 
         }
 

@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
 using Principal.Telemedicine.Shared.Models;
+
 
 namespace Principal.Telemedicine.DataConnectors.Contexts;
 
@@ -36,9 +35,13 @@ public partial class DbContextApi : DbContext
     public virtual DbSet<AvailableDeviceListItemDataModel> AvailableDeviceListItemDataModels { get; set; }
 
     [NotMapped]
-    public virtual DbSet<UserCalendarWithMeasuredValuesDataModel> UserCalendarWithMeasuredValuesDataModels { get; set; }
-    
+    public virtual DbSet<ACalendarWithMeasuredValuesDataModel> ACalendarWithMeasuredValuesDataModels { get; set; }
 
+    [NotMapped]
+    public virtual DbSet<UserCalendarWithMeasuredValuesDataModel> UserCalendarWithMeasuredValuesDataModels { get; set; }
+
+    [NotMapped]
+    public virtual DbSet<PENECalendarWithMeasuredValuesDataModel> PENECalendarWithMeasuredValuesDataModel { get; set; }
 
     public virtual DbSet<AddressCity> AddressCities { get; set; }
 
@@ -98,7 +101,8 @@ public partial class DbContextApi : DbContext
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseSqlServer("Data Source=tmworkstoresqlserver.database.windows.net;Initial Catalog=VANDA_TEST;Application Name=VANDA_TEST_AZURE;Integrated Security=False;User ID=TM_DB_dev;Password=Ap7M9$eWSj8TUQ734FcGdqnfHkqw$BHf;Persist Security Info=True;Enlist=False;Pooling=True;Min Pool Size=1;Max Pool Size=100;Connect Timeout=45;User Instance=False;MultipleActiveResultSets=True;");
+            //optionsBuilder.UseSqlServer("Data Source=tmworkstoresqlserver.database.windows.net;Initial Catalog=VANDA_TEST;Application Name=VANDA_TEST_AZURE;Integrated Security=False;User ID=TM_DB_dev;Password=Ap7M9$eWSj8TUQ734FcGdqnfHkqw$BHf;Persist Security Info=True;Enlist=False;Pooling=True;Min Pool Size=1;Max Pool Size=100;Connect Timeout=45;User Instance=False;MultipleActiveResultSets=True;");
+           optionsBuilder.UseSqlServer("Data Source=tmworkstoresqlserver.database.windows.net;Initial Catalog=PENELOPE_TEST;Application Name=PENELOPE_TEST_AZURE;Integrated Security=False;User ID=TM_DB_contributor;Password=vK2SfM#aC28LVV^Ah@vNVT$@@5Xryv7M;Persist Security Info=True;Enlist=True;Pooling=True;Min Pool Size=1;Max Pool Size=300;Connect Timeout=450;");
         }
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -110,7 +114,10 @@ public partial class DbContextApi : DbContext
         modelBuilder.Entity<DiseaseDetectionKeyInputsToMLItemDataModel>().HasNoKey();
         modelBuilder.Entity<VirtualSurgeryBasicOverviewDataModel>().HasNoKey();
         modelBuilder.Entity<AvailableDeviceListItemDataModel>().HasNoKey();
+
         modelBuilder.Entity<UserCalendarWithMeasuredValuesDataModel>().HasNoKey();
+        modelBuilder.Entity<PENECalendarWithMeasuredValuesDataModel>().HasNoKey();
+        modelBuilder.Entity<ACalendarWithMeasuredValuesDataModel>().HasNoKey();
 
         modelBuilder.Entity<AddressCity>(entity =>
         {
