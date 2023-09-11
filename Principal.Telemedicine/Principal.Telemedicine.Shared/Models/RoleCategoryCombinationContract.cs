@@ -57,14 +57,4 @@ public class RoleCategoryCombinationContract
     /// Name of a combination
     /// </summary>
     public string? Name { get; set; }
-
-   // public virtual UserContract CreatedByCustomer { get; set; } = null!;
-
-    //public virtual RoleCategoryContract RoleCategory { get; set; } = null!;
-
-   // public virtual RoleSubCategoryContract? RoleSubCategory { get; set; }
-
-    //public virtual ICollection<RoleContract> Roles { get; set; } = new List<RoleContract>();
-
-    //public virtual UserContract? UpdatedByCustomer { get; set; }
 }

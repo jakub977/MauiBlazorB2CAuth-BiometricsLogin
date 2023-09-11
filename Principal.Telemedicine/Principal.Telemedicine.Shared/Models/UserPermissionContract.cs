@@ -62,15 +62,4 @@ public class UserPermissionContract
     /// Bit identifier if permission is denied (1) or granted (0) to user beyond the granted permission based on assigned role or membership in an organizational unit
     /// </summary>
     public bool IsDeniedPermission { get; set; }
-
-
-    //public virtual UserContract CreatedByCustomer { get; set; } = null!;
-
-    //public virtual PermissionContract Permission { get; set; } = null!;
-
-    //public virtual ProviderContract? Provider { get; set; }
-
-    //public virtual UserContract? UpdatedByCustomer { get; set; }
-
-    //public virtual UserContract User { get; set; } = null!;
 }

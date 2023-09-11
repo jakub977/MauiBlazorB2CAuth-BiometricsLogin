@@ -74,19 +74,19 @@ public class GroupContract
     /// </summary>
     public bool IsRiskGroup { get; set; }
 
-    //public virtual UserContract CreatedByCustomer { get; set; } = null!;
+    public virtual UserContract CreatedByCustomer { get; set; } = null!;
 
-    //public virtual ICollection<GroupEffectiveMemberContract> GroupEffectiveMembers { get; set; } = new List<GroupEffectiveMemberContract>();
+    public virtual ICollection<GroupEffectiveMemberContract> GroupEffectiveMembers { get; set; } = new List<GroupEffectiveMemberContract>();
 
-    //public virtual ICollection<GroupPermissionContract> GroupPermissions { get; set; } = new List<GroupPermissionContract>();
+    public virtual ICollection<GroupPermissionContract> GroupPermissions { get; set; } = new List<GroupPermissionContract>();
 
-    //public virtual ICollection<GroupContract> InverseParentGroup { get; set; } = new List<GroupContract>();
+    public virtual ICollection<GroupContract> InverseParentGroup { get; set; } = new List<GroupContract>();
 
-    //public virtual Group? ParentGroup { get; set; }
+    public virtual GroupContract? ParentGroup { get; set; }
 
-    //public virtual PictureContract? Picture { get; set; }
+    public virtual PictureContract? Picture { get; set; }
 
-    //public virtual ProviderContract Provider { get; set; } = null!;
+    public virtual ProviderContract Provider { get; set; } = null!;
 
-    //public virtual UserContract? UpdatedByCustomer { get; set; }
+    public virtual UserContract? UpdatedByCustomer { get; set; }
 }

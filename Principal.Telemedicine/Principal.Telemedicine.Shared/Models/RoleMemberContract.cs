@@ -57,17 +57,4 @@ public class RoleMemberContract
     /// Link to dbo.Role as a role which is grant to a (direct or effective) user
     /// </summary>
     public int RoleId { get; set; }
-
-   // public virtual UserContract? UpdatedByCustomer { get; set; }
-
-    // public virtual UserContract? DirectUser { get; set; }
-
-
-    //public virtual UserContract CreatedByCustomer { get; set; } = null!;
-
-   // public virtual EffectiveUserContract? EffectiveUser { get; set; } //todo: zde odkomentovat
-
-    //public virtual RoleContract Role { get; set; } = null!;
-
-
 }

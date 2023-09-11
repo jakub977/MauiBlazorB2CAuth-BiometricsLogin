@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Principal.Telemedicine.Shared.Models;
 
@@ -57,14 +58,5 @@ public class OrganizationContract
     /// Postal code of an organization
     /// </summary>
     public string PostalCode { get; set; } = null!;
-
-    //public virtual ICollection<UserContract> Customers { get; set; } = new List<UserContract>();
-
-    //public virtual ICollection<ProviderContract> Providers { get; set; } = new List<ProviderContract>();
-
-   // public virtual ICollection<RoleContract> Roles { get; set; } = new List<RoleContract>();
-
-    //[InverseProperty("Organization")]
-    //public virtual ICollection<SubjectAllowedToOrganizationContract> SubjectAllowedToOrganizations { get; set; } = new List<SubjectAllowedToOrganizationContract>();
 
 }

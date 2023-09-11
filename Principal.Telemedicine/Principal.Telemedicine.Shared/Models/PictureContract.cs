@@ -117,17 +117,4 @@ public class PictureContract
     public int? ThumbnailWidth { get; set; }
 
     public int? ThumbnailHeight { get; set; }
-
-
-    //public virtual UserContract CreatedByCustomer { get; set; } = null!;
-
-    //public virtual ICollection<UserContract> Customers { get; set; } = new List<UserContract>();
-
-    //public virtual ICollection<GroupContract> Groups { get; set; } = new List<GroupContract>();
-
-    //public virtual ICollection<ProviderContract> Providers { get; set; } = new List<ProviderContract>();
-
-    //public virtual UserContract? UpdatedByCustomer { get; set; }
-
-    //public virtual UserContract? User { get; set; }
 }

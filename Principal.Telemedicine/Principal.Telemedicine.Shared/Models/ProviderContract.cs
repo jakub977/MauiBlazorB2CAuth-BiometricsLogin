@@ -81,26 +81,4 @@ public class ProviderContract
     public string? Street { get; set; }
 
     public int? CityId { get; set; }
-
-    //public virtual AddressCityContract? City { get; set; }
-
-    //public virtual UserContract CreatedByCustomer { get; set; } = null!;
-
-    //public virtual ICollection<UserContract> Customers { get; set; } = new List<UserContract>();
-
-    //public virtual ICollection<EffectiveUserContract> EffectiveUsers { get; set; } = new List<EffectiveUserContract>();
-
-    //public virtual ICollection<GroupContract> Groups { get; set; } = new List<GroupContract>();
-
-   // public virtual OrganizationContract Organization { get; set; } = null!;
-
-    //public virtual PictureContract? Picture { get; set; }
-
-    //public virtual ICollection<RoleContract> Roles { get; set; } = new List<RoleContract>();
-
-    //public virtual ICollection<SubjectAllowedToProviderContract> SubjectAllowedToProviders { get; set; } = new List<SubjectAllowedToProviderContract>();
-
-    //public virtual UserContract? UpdatedByCustomer { get; set; }
-
-   // public virtual ICollection<UserPermissionContract> UserPermissions { get; set; } = new List<UserPermissionContract>();
 }

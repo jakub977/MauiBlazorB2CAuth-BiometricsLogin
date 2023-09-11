@@ -37,6 +37,4 @@ public class PermissionTypeContract
     /// Detailed description of a permission type
     /// </summary>
     public string? Description { get; set; }
-
-   // public virtual ICollection<PermissionContract> Permissions { get; set; } = new List<PermissionContract>();
 }

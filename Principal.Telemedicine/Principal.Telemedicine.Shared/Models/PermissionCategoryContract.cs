@@ -53,10 +53,9 @@ public class PermissionCategoryContract
     /// </summary>
     public string? Description { get; set; }
 
+    public virtual UserContract CreatedByCustomer { get; set; } = null!;
 
-    //public virtual UserContract CreatedByCustomer { get; set; } = null!;
+    public virtual ICollection<PermissionContract> Permissions { get; set; } = new List<PermissionContract>();
 
-    //public virtual ICollection<PermissionContract> Permissions { get; set; } = new List<PermissionContract>();
-
-    //public virtual UserContract? UpdatedByCustomer { get; set; }
+    public virtual UserContract? UpdatedByCustomer { get; set; }
 }

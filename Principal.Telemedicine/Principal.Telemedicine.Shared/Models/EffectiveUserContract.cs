@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Principal.Telemedicine.Shared.Models;
 
@@ -53,16 +54,10 @@ public class EffectiveUserContract
     /// </summary>
     public int ProviderId { get; set; }
 
+    [JsonPropertyName("roles")]
     public virtual ICollection<RoleMemberContract> RoleMembers { get; set; } = new List<RoleMemberContract>();
 
+    [JsonPropertyName("groups")]
     public virtual ICollection<GroupEffectiveMemberContract> GroupEffectiveMembers { get; set; } = new List<GroupEffectiveMemberContract>();
 
-   // public virtual UserContract CreatedByCustomer { get; set; } = null!; //zakoomentováno
-
-  //  public virtual ProviderContract Provider { get; set; } = null!;
-
-
-    // public virtual UserContract? UpdatedByCustomer { get; set; }
-
-    // public virtual UserContract User { get; set; } = null!;
 }

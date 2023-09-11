@@ -77,22 +77,4 @@ public class RoleContract
     /// Link to dbo.RoleCategoryCombination as a combination of role category and its subcategory
     /// </summary>
     public int RoleCategoryCombinationId { get; set; }
-
-   // public virtual UserContract CreatedByCustomer { get; set; } = null!;
-
-   // public virtual ICollection<RoleContract> InverseParentRole { get; set; } = new List<RoleContract>();
-
-   // public virtual OrganizationContract? Organization { get; set; }
-
-   // public virtual RoleContract? ParentRole { get; set; }
-
-   // public virtual ProviderContract? Provider { get; set; } todo: odkomentovat
-
-    //public virtual RoleCategoryCombinationContract RoleCategoryCombination { get; set; } = null!;
-
-    //public virtual ICollection<RoleMemberContract> RoleMembers { get; set; } = new List<RoleMemberContract>();
-
-   // public virtual ICollection<RolePermissionContract> RolePermissions { get; set; } = new List<RolePermissionContract>();
-
-   // public virtual UserContract? UpdatedByCustomer { get; set; }
 }

@@ -84,6 +84,8 @@ public class UserApiController : ControllerBase
             }
             else
             {
+                // todo: zjistit jestli má uživatel oprávnění read na jiného uživatele
+                // možno nastudovat v Vanda -> SmartMVC.Services -> Customers -> CustomerService.cs, metoda GetAllCustomers na ř. 161
                 mappedUser = _mapper.Map<CompleteUserContract>(user);
             }
 

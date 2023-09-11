@@ -37,6 +37,4 @@ public class SubjectTypeContract
     /// Detailed description of a subject type
     /// </summary>
     public string? Description { get; set; }
-
-    //public virtual ICollection<SubjectContract> Subjects { get; set; } = new List<SubjectContract>();
 }

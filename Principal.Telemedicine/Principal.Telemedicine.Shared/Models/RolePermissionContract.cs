@@ -52,12 +52,4 @@ public class RolePermissionContract
     /// Link to dbo.Permission as a permission which is assigned to role
     /// </summary>
     public int PermissionId { get; set; }
-
-    //public virtual UserContract CreatedByCustomer { get; set; } = null!;
-
-    //public virtual PermissionContract Permission { get; set; } = null!;
-
-    //public virtual RoleContract Role { get; set; } = null!;
-
-    //public virtual UserContract? UpdatedByCustomer { get; set; }
 }

@@ -67,18 +67,4 @@ public class SubjectContract
     /// Name of subject icon from available web icon set (e.g. Font Awesome)
     /// </summary>
     public string? IconName { get; set; }
-
-    //public virtual UserContract CreatedByCustomer { get; set; } = null!;
-
-    //public virtual ICollection<SubjectContract> InverseParentSubject { get; set; } = new List<SubjectContract>();
-
-    //public virtual SubjectContract? ParentSubject { get; set; }
-
-    //public virtual ICollection<PermissionContract> Permissions { get; set; } = new List<PermissionContract>();
-
-    //public virtual ICollection<SubjectAllowedToOrganizationContract> SubjectAllowedToOrganizations { get; set; } = new List<SubjectAllowedToOrganizationContract>();
-
-    //public virtual SubjectTypeContract SubjectType { get; set; } = null!;
-
-    //public virtual UserContract? UpdatedByCustomer { get; set; }
 }

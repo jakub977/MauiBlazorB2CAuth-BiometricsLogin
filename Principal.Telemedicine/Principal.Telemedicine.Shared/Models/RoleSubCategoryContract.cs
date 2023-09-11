@@ -52,10 +52,4 @@ public class RoleSubCategoryContract
     /// Detailed description of a subcategory
     /// </summary>
     public string? Description { get; set; }
-
-    //public virtual UserContract CreatedByCustomer { get; set; } = null!;
-
-    //public virtual ICollection<RoleCategoryCombinationContract> RoleCategoryCombinations { get; set; } = new List<RoleCategoryCombinationContract>();
-
-    //public virtual UserContract? UpdatedByCustomer { get; set; }
 }

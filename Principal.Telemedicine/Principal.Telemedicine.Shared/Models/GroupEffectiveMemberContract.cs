@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Principal.Telemedicine.Shared.Models;
 
@@ -53,13 +54,4 @@ public class GroupEffectiveMemberContract
     /// Link to dbo.Group as a group of which user is a member
     /// </summary>
     public int GroupId { get; set; }
-
-   
-    //public virtual UserContract CreatedByCustomer { get; set; } = null!;
-
-    //public virtual EffectiveUserContract EffectiveUser { get; set; } = null!;
-
-    //public virtual GroupContract Group { get; set; } = null!;
-
-    //public virtual UserContract? UpdatedByCustomer { get; set; }
 }

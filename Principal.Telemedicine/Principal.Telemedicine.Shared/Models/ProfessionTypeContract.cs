@@ -50,10 +50,9 @@ public class ProfessionTypeContract
     /// </summary>
     public string? Description { get; set; }
 
+    public virtual UserContract CreatedByCustomer { get; set; } = null!;
 
-    //public virtual UserContract CreatedByCustomer { get; set; } = null!;
+    public virtual ICollection<UserContract> Customers { get; set; } = new List<UserContract>();
 
-    //public virtual ICollection<UserContract> Customers { get; set; } = new List<UserContract>();
-
-    //public virtual UserContract? UpdatedByCustomer { get; set; }
+    public virtual UserContract? UpdatedByCustomer { get; set; }
 }

@@ -62,12 +62,4 @@ public class SubjectAllowedToProviderContract
     /// Date to which subject (module) is allowed to organization, using coordinated universal time
     /// </summary>
     public DateTime? AllowedToDateUtc { get; set; }
-
-    //public virtual UserContract CreatedByCustomer { get; set; } = null!;
-
-    //public virtual ProviderContract Provider { get; set; } = null!;
-
-    //public virtual SubjectAllowedToOrganizationContract SubjectAllowedToOrganization { get; set; } = null!;
-
-    //public virtual UserContract? UpdatedByCustomer { get; set; }
 }

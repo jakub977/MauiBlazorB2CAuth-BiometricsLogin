@@ -78,23 +78,23 @@ public class PermissionContract
     /// </summary>
     public string? Description { get; set; }
 
-    //public virtual UserContract CreatedByCustomer { get; set; } = null!;
+    public virtual UserContract CreatedByCustomer { get; set; } = null!;
 
-    //public virtual ICollection<GroupPermissionContract> GroupPermissions { get; set; } = new List<GroupPermissionContract>();
+    public virtual ICollection<GroupPermissionContract> GroupPermissions { get; set; } = new List<GroupPermissionContract>();
 
-    //public virtual ICollection<PermissionContract> InverseParentPermission { get; set; } = new List<PermissionContract>();
+    public virtual ICollection<PermissionContract> InverseParentPermission { get; set; } = new List<PermissionContract>();
 
-    //public virtual PermissionContract? ParentPermission { get; set; }
+    public virtual PermissionContract? ParentPermission { get; set; }
 
-    //public virtual PermissionCategoryContract? PermissionCategory { get; set; }
+    public virtual PermissionCategoryContract? PermissionCategory { get; set; }
 
-    //public virtual PermissionTypeContract PermissionType { get; set; } = null!;
+    public virtual PermissionTypeContract PermissionType { get; set; } = null!;
 
-    //public virtual ICollection<RolePermissionContract> RolePermissions { get; set; } = new List<RolePermissionContract>();
+    public virtual ICollection<RolePermissionContract> RolePermissions { get; set; } = new List<RolePermissionContract>();
 
-    //public virtual SubjectContract Subject { get; set; } = null!;
+    public virtual SubjectContract Subject { get; set; } = null!;
 
-    //public virtual UserContract? UpdatedByCustomer { get; set; }
+    public virtual UserContract? UpdatedByCustomer { get; set; }
 
-    //public virtual ICollection<UserPermissionContract> UserPermissions { get; set; } = new List<UserPermissionContract>();
+    public virtual ICollection<UserPermissionContract> UserPermissions { get; set; } = new List<UserPermissionContract>();
 }

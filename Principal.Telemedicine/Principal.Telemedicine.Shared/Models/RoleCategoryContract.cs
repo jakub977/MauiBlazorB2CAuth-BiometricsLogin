@@ -52,15 +52,4 @@ public class RoleCategoryContract
     /// Detailed description of a category
     /// </summary>
     public string? Description { get; set; }
-
-    //[ForeignKey("CreatedByCustomerId")]
-    //[InverseProperty("RoleCategoryCreatedByCustomers")]
-    //public virtual UserContract CreatedByCustomer { get; set; } = null!;
-
-    //[InverseProperty("RoleCategory")]
-    //public virtual ICollection<RoleCategoryCombinationContract> RoleCategoryCombinations { get; set; } = new List<RoleCategoryCombinationContract>();
-
-    //[ForeignKey("UpdatedByCustomerId")]
-    //[InverseProperty("RoleCategoryUpdatedByCustomers")]
-    //public virtual UserContract? UpdatedByCustomer { get; set; }
 }

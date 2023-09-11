@@ -293,6 +293,7 @@ public class CompleteUserContract
     public bool? IsRiskPatient { get; set; }
 
     [DataMember]
+    [JsonPropertyName("efUsers")]
     public ICollection<EffectiveUserContract> EffectiveUserUsers { get; set; } = new List<EffectiveUserContract>(); //EffectiveUserUsers
 
     [DataMember]
@@ -302,120 +303,11 @@ public class CompleteUserContract
     public virtual OrganizationContract? Organization { get; set; }
 
     [DataMember]
+    [JsonPropertyName("customerRoles")]
     public virtual ICollection<RoleMemberContract> RoleMemberDirectUsers { get; set; } = new List<RoleMemberContract>();
 
     [DataMember]
+    [JsonPropertyName("userPermissions")]
     public virtual ICollection<UserPermissionContract> UserPermissionUsers { get; set; } = new List<UserPermissionContract>();
-
-    //[DataMember]
-    //public virtual ICollection<UserPermissionContract> UserPermissions
-    //{
-    //    get { return UserPermissionUsers; }
-    //    protected set { UserPermissionUsers = value; }
-    //}
-
-
-    // public virtual ProviderContract? CreatedByProvider { get; set; }
-
-    //public virtual AddressCityContract? City { get; set; }
-
-    //public virtual UserContract? CreatedByCustomer { get; set; }
-
-    //public virtual ICollection<EffectiveUserContract> EffectiveUserCreatedByCustomers { get; set; } = new List<EffectiveUserContract>();
-
-    //public virtual ICollection<EffectiveUserContract> EffectiveUserUpdatedByCustomers { get; set; } = new List<EffectiveUserContract>();
-
-    //public virtual ICollection<ProviderContract> ProviderCreatedByCustomers { get; set; } = new List<ProviderContract>();
-
-    //public virtual ICollection<ProviderContract> ProviderUpdatedByCustomers { get; set; } = new List<ProviderContract>();
-
-    //public virtual ICollection<RoleContract> RoleUpdatedByCustomers { get; set; } = new List<RoleContract>();
-
-    //public virtual ICollection<GroupContract> GroupCreatedByCustomers { get; set; } = new List<GroupContract>();
-
-    //public virtual ICollection<GroupEffectiveMemberContract> GroupEffectiveMemberCreatedByCustomers { get; set; } = new List<GroupEffectiveMemberContract>();
-
-    //public virtual ICollection<GroupEffectiveMemberContract> GroupEffectiveMemberUpdatedByCustomers { get; set; } = new List<GroupEffectiveMemberContract>();
-
-    //public virtual ICollection<GroupPermissionContract> GroupPermissionCreatedByCustomers { get; set; } = new List<GroupPermissionContract>();
-
-    //public virtual ICollection<GroupPermissionContract> GroupPermissionUpdatedByCustomers { get; set; } = new List<GroupPermissionContract>();
-
-    //public virtual ICollection<GroupContract> GroupUpdatedByCustomers { get; set; } = new List<GroupContract>();
-
-    //public virtual HealthCareInsurerContract? HealthCareInsurer { get; set; }
-
-    //public virtual ICollection<HealthCareInsurerContract> HealthCareInsurerCreatedByCustomers { get; set; } = new List<HealthCareInsurerContract>();
-
-    //public virtual ICollection<HealthCareInsurerContract> HealthCareInsurerUpdatedByCustomers { get; set; } = new List<HealthCareInsurerContract>();
-
-    //public virtual ICollection<UserContract> InverseCreatedByCustomer { get; set; } = new List<UserContract>();
-
-    //public virtual ICollection<UserContract> InverseUpdatedByCustomer { get; set; } = new List<UserContract>();
-
-    //public virtual PasswordFormatTypeContract PasswordFormatType { get; set; } = null!;
-
-    //public virtual ICollection<PermissionCategoryContract> PermissionCategoryCreatedByCustomers { get; set; } = new List<PermissionCategoryContract>();
-
-    //public virtual ICollection<PermissionCategoryContract> PermissionCategoryUpdatedByCustomers { get; set; } = new List<PermissionCategoryContract>();
-
-    //public virtual ICollection<PermissionContract> PermissionCreatedByCustomers { get; set; } = new List<PermissionContract>();
-
-    //public virtual ICollection<PermissionContract> PermissionUpdatedByCustomers { get; set; } = new List<PermissionContract>();
-
-    //public virtual PictureContract? Picture { get; set; }
-
-    //public virtual ICollection<PictureContract> PictureCreatedByCustomers { get; set; } = new List<PictureContract>();
-
-    //public virtual ICollection<PictureContract> PictureUpdatedByCustomers { get; set; } = new List<PictureContract>();
-
-    //public virtual ICollection<PictureContract> PictureUsers { get; set; } = new List<PictureContract>();
-
-    //public virtual ProfessionTypeContract? ProfessionType { get; set; }
-
-    //public virtual ICollection<ProfessionTypeContract> ProfessionTypeCreatedByCustomers { get; set; } = new List<ProfessionTypeContract>();
-
-    //public virtual ICollection<ProfessionTypeContract> ProfessionTypeUpdatedByCustomers { get; set; } = new List<ProfessionTypeContract>();
-
-    //public virtual ICollection<RoleCategoryCombinationContract> RoleCategoryCombinationCreatedByCustomers { get; set; } = new List<RoleCategoryCombinationContract>();
-
-    //public virtual ICollection<RoleCategoryCombinationContract> RoleCategoryCombinationUpdatedByCustomers { get; set; } = new List<RoleCategoryCombinationContract>();
-
-    //public virtual ICollection<RoleCategoryContract> RoleCategoryCreatedByCustomers { get; set; } = new List<RoleCategoryContract>();
-
-    //public virtual ICollection<RoleCategoryContract> RoleCategoryUpdatedByCustomers { get; set; } = new List<RoleCategoryContract>();
-
-    //public virtual ICollection<RoleContract> RoleCreatedByCustomers { get; set; } = new List<RoleContract>();
-
-    //public virtual ICollection<RoleMemberContract> RoleMemberCreatedByCustomers { get; set; } = new List<RoleMemberContract>();
-
-    //public virtual ICollection<RoleMemberContract> RoleMemberUpdatedByCustomers { get; set; } = new List<RoleMemberContract>();
-
-    //public virtual ICollection<RolePermissionContract> RolePermissionCreatedByCustomers { get; set; } = new List<RolePermissionContract>();
-
-    //public virtual ICollection<RolePermissionContract> RolePermissionUpdatedByCustomers { get; set; } = new List<RolePermissionContract>();
-
-    //public virtual ICollection<RoleSubCategoryContract> RoleSubCategoryCreatedByCustomers { get; set; } = new List<RoleSubCategoryContract>();
-
-    //public virtual ICollection<RoleSubCategoryContract> RoleSubCategoryUpdatedByCustomers { get; set; } = new List<RoleSubCategoryContract>();
-
-    //public virtual ICollection<SubjectAllowedToOrganizationContract> SubjectAllowedToOrganizationCreatedByCustomers { get; set; } = new List<SubjectAllowedToOrganizationContract>();
-
-    //public virtual ICollection<SubjectAllowedToOrganizationContract> SubjectAllowedToOrganizationUpdatedByCustomers { get; set; } = new List<SubjectAllowedToOrganizationContract>();
-
-    //public virtual ICollection<SubjectAllowedToProviderContract> SubjectAllowedToProviderCreatedByCustomers { get; set; } = new List<SubjectAllowedToProviderContract>();
-
-    //public virtual ICollection<SubjectAllowedToProviderContract> SubjectAllowedToProviderUpdatedByCustomers { get; set; } = new List<SubjectAllowedToProviderContract>();
-
-    //public virtual ICollection<SubjectContract> SubjectCreatedByCustomers { get; set; } = new List<SubjectContract>();
-
-    //public virtual ICollection<SubjectContract> SubjectUpdatedByCustomers { get; set; } = new List<SubjectContract>();
-
-    //public virtual UserContract? UpdatedByCustomer { get; set; }
-
-    //public virtual ICollection<UserPermissionContract> UserPermissionCreatedByCustomers { get; set; } = new List<UserPermissionContract>();
-
-    //public virtual ICollection<UserPermissionContract> UserPermissionUpdatedByCustomers { get; set; } = new List<UserPermissionContract>();
-
 
 }

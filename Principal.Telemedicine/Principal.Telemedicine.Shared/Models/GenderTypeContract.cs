@@ -31,5 +31,5 @@ public class GenderTypeContract
     /// </summary>
     public string Name { get; set; } = null!;
 
-    //public virtual ICollection<UserContract> Customers { get; set; } = new List<UserContract>();
+    public virtual ICollection<UserContract> Customers { get; set; } = new List<UserContract>();
 }

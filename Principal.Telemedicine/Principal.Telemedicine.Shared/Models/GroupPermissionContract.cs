@@ -53,12 +53,11 @@ public class GroupPermissionContract
     /// </summary>
     public int PermissionId { get; set; }
 
+    public virtual UserContract CreatedByCustomer { get; set; } = null!;
 
-    //public virtual UserContract CreatedByCustomer { get; set; } = null!;
+    public virtual GroupContract Group { get; set; } = null!;
 
-    //public virtual GroupContract Group { get; set; } = null!;
+    public virtual PermissionContract Permission { get; set; } = null!;
 
-    //public virtual PermissionContract Permission { get; set; } = null!;
-
-    //public virtual UserContract? UpdatedByCustomer { get; set; }
+    public virtual UserContract? UpdatedByCustomer { get; set; }
 }
