@@ -61,7 +61,4 @@ public class AddressCityContract
 
     public string? ExtendedName { get; set; }
 
-    public virtual ICollection<UserContract> Customers { get; set; } = new List<UserContract>();
-
-    public virtual ICollection<ProviderContract> Providers { get; set; } = new List<ProviderContract>();
 }

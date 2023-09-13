@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Principal.Telemedicine.Shared.Models;
 
@@ -77,4 +78,12 @@ public class RoleContract
     /// Link to dbo.RoleCategoryCombination as a combination of role category and its subcategory
     /// </summary>
     public int RoleCategoryCombinationId { get; set; }
+
+    [JsonPropertyName("providerObject")]
+    public virtual ProviderContract? Provider { get; set; }
+
+    [JsonPropertyName("roleCategoryCombinationObject")]
+    public virtual RoleCategoryCombinationContract? RoleCategoryCombination { get; set; }
+
+    public virtual ICollection<RolePermissionContract> RolePermissions { get; set; } = new List<RolePermissionContract>();
 }

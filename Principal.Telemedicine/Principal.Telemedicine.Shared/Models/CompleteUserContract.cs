@@ -293,13 +293,22 @@ public class CompleteUserContract
     public bool? IsRiskPatient { get; set; }
 
     [DataMember]
+    [JsonPropertyName("cityObject")]
+    public virtual AddressCityContract? City { get; set; }
+
+    [DataMember]
+    [JsonPropertyName("pictureObject")]
+    public virtual PictureContract? Picture { get; set; }
+
+    [DataMember]
     [JsonPropertyName("efUsers")]
-    public ICollection<EffectiveUserContract> EffectiveUserUsers { get; set; } = new List<EffectiveUserContract>(); //EffectiveUserUsers
+    public ICollection<EffectiveUserContract> EffectiveUserUsers { get; set; } = new List<EffectiveUserContract>();
 
     [DataMember]
-    public virtual GenderTypeContract? GenderType { get; set; } //nenačítá se
+    public virtual GenderTypeContract? GenderType { get; set; }
 
     [DataMember]
+    [JsonPropertyName("organizationObject")]
     public virtual OrganizationContract? Organization { get; set; }
 
     [DataMember]

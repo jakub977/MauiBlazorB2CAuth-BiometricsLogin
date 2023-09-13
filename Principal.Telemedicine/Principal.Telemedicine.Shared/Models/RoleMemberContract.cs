@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Principal.Telemedicine.Shared.Models;
 
@@ -57,4 +58,7 @@ public class RoleMemberContract
     /// Link to dbo.Role as a role which is grant to a (direct or effective) user
     /// </summary>
     public int RoleId { get; set; }
+
+    [JsonPropertyName("roleObject")]
+    public virtual RoleContract? Role { get; set; }
 }

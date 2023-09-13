@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Serialization;
+using System.Security;
 
 namespace Principal.Telemedicine.Shared.Models;
 
@@ -52,4 +53,6 @@ public class RolePermissionContract
     /// Link to dbo.Permission as a permission which is assigned to role
     /// </summary>
     public int PermissionId { get; set; }
+
+    public virtual PermissionContract? Permission { get; set; }
 }

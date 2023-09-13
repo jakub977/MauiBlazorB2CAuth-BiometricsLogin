@@ -17,7 +17,7 @@ builder.Services.AddSwaggerGen();
 
 
 builder.Services.AddDbContext<DbContextApi>(options => options.UseLazyLoadingProxies().
-UseSqlServer(builder.Configuration.GetConnectionString("PENELOPE_TEST")));
+UseSqlServer(builder.Configuration.GetConnectionString("PENELOPE_TEST"))); //todo: main db pøejmenovat
 
 builder.Services.AddDbContext<DbContextGeneral>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("TMWorkstore")));

@@ -269,8 +269,8 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
     /// <param name="userGlobalId"></param>
     /// <returns></returns>
     [AllowAnonymous]
-    [HttpGet(Name = "GeneralGetUserCalendarWithMeasuredValues")]
-    public async Task<IActionResult> GeneralGetUserCalendarWithMeasuredValues([FromHeader(Name = "x-api-key")] string apiKey, string userGlobalId, string preferredLanguageCode)
+    [HttpGet(Name = "GeneralGetUserCalendarWithMeasuredValues")] //[FromHeader(Name = "x-api-key")] string apiKey,
+    public async Task<IActionResult> GeneralGetUserCalendarWithMeasuredValues(string userGlobalId, string preferredLanguageCode)
     {
 
         if (string.IsNullOrEmpty(userGlobalId) || string.IsNullOrEmpty(preferredLanguageCode))

@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Principal.Telemedicine.Shared.Models;
 
@@ -67,4 +68,7 @@ public class SubjectContract
     /// Name of subject icon from available web icon set (e.g. Font Awesome)
     /// </summary>
     public string? IconName { get; set; }
+
+    [JsonPropertyName("parentSubjectObject")]
+    public virtual SubjectContract? ParentSubject { get; set; }
 }
