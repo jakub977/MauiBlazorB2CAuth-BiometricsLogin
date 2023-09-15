@@ -1,5 +1,6 @@
 ﻿using System.Runtime.Serialization;
 using System.Security;
+using System.Text.Json.Serialization;
 
 namespace Principal.Telemedicine.Shared.Models;
 
@@ -54,5 +55,6 @@ public class RolePermissionContract
     /// </summary>
     public int PermissionId { get; set; }
 
+    [JsonPropertyName("permissionObject")]
     public virtual PermissionContract? Permission { get; set; }
 }

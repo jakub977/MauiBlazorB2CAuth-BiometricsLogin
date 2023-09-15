@@ -60,4 +60,10 @@ public class EffectiveUserContract
     [JsonPropertyName("groups")]
     public virtual ICollection<GroupEffectiveMemberContract> GroupEffectiveMembers { get; set; } = new List<GroupEffectiveMemberContract>();
 
+    [JsonPropertyName("providerObject")]
+    public virtual ProviderContract? Provider { get; set; }
+
+    //[JsonPropertyName("userObject")]
+    //public virtual CompleteUserContract User { get; set; } = null!;
+
 }

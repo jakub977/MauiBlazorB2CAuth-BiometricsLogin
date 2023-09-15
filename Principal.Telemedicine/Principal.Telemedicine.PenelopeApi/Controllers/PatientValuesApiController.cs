@@ -2,13 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Principal.Telemedicine.DataConnectors.Contexts;
-using Principal.Telemedicine.PenelopeData.Models;
 using Principal.Telemedicine.Shared.Enums;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
 
 /// <summary>
-/// API metody týkající se ukládání a vracení dat pacienta v aplikaci Penelope
+/// API metody týkající se ukládání a vracení měřitelných dat (a s nimi souvisejících plánů aktivit) pacienta v aplikaci Penelope
 /// </summary>
 [Route("api/[controller]/[action]")]
 [ApiController]
@@ -40,13 +39,13 @@ public class PatientValuesApiController : ControllerBase
             return BadRequest();
         }
 
-        LanguageCodeEnum lce = Enum.Parse<LanguageCodeEnum>(preferredLanguageCode);
-        int languageId = (int)lce;
         try
         {
+            LanguageCodeEnum lce = Enum.Parse<LanguageCodeEnum>(preferredLanguageCode);
+            int languageId = (int)lce;
 
-           var peneCalendar = await _dbContext.PENECalendarWithMeasuredValuesDataModels.FromSql($"dbo.sp_GetUserPregnancyCalendarWithMeasuredValues @GlobalId = {userGlobalId}, @LanguageId = {languageId} ").AsNoTracking().ToListAsync();
-
+            var peneCalendar =  await _dbContext.CalendarWithMeasuredValuesDataModels.FromSql($"dbo.sp_GetUserPregnancyCalendarWithMeasuredValues @GlobalId = {userGlobalId}, @LanguageId = {languageId} ").AsNoTracking().ToListAsync();
+            
             if (!peneCalendar.Any())
             {
                 return NotFound();
@@ -78,18 +77,64 @@ public class PatientValuesApiController : ControllerBase
             return BadRequest();
         }
 
-        LanguageCodeEnum lce = Enum.Parse<LanguageCodeEnum>(preferredLanguageCode);
-        int languageId = (int)lce;
         try
         {
+            LanguageCodeEnum lce = Enum.Parse<LanguageCodeEnum>(preferredLanguageCode);
+            int languageId = (int)lce;
 
-            var peneCalendar = await _dbContext.ScheduledActivitiesDataModels.FromSql($"dbo.sp_GetUserPregnancyCalendarWithMeasuredValues @GlobalId = {userGlobalId}, @LanguageId = {languageId} ").AsNoTracking().ToListAsync();
+            DateTime dateFrom = DateTime.Today;
+            DateTime dateTo = DateTime.Today.AddDays(1).AddSeconds(-1);
 
-            if (!peneCalendar.Any())
+
+            var oneDayActivities = await _dbContext.ScheduledActivitiesDataModels.FromSql($"dbo.sp_GetScheduledActivities @GlobalId = {userGlobalId}, @DateFrom = {dateFrom}, @DateTo = {dateTo}, @LanguageId = {languageId} ").AsNoTracking().ToListAsync();
+
+            if (!oneDayActivities.Any())
             {
                 return NotFound();
             }
-            return Ok(peneCalendar);
+            return Ok(oneDayActivities);
+
+        }
+
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
+
+    /// <summary>
+    /// Vrátí seznam všech platných aktivit pro konkrétního pacienta.
+    /// </summary>
+    /// <param name="apiKey"></param>
+    /// <param name="userGlobalId"></param>
+    /// <returns></returns>
+    [AllowAnonymous]
+    [HttpGet(Name = "PENEGetAllScheduledActivities")]
+    public async Task<IActionResult> PENEGetAllScheduledActivities(string userGlobalId, string preferredLanguageCode)
+    {
+
+        if (string.IsNullOrEmpty(userGlobalId) || string.IsNullOrEmpty(preferredLanguageCode))
+        {
+            return BadRequest();
+        }
+
+
+        try
+        {
+            LanguageCodeEnum lce = Enum.Parse<LanguageCodeEnum>(preferredLanguageCode);
+            int languageId = (int)lce;
+
+            DateTime? dtStart = null;
+            DateTime? dtEnd = null;
+
+            var allActivities = await _dbContext.ScheduledActivitiesDataModels.FromSql($"dbo.sp_GetScheduledActivities @GlobalId = {userGlobalId}, @DateFrom = {dtStart}, @DateTo = {dtEnd}, @LanguageId = {languageId} ").AsNoTracking().ToListAsync();
+
+            if (!allActivities.Any())
+            {
+                return NotFound();
+            }
+            return Ok(allActivities);
 
         }
 

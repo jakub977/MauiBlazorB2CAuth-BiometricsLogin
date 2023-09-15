@@ -1,7 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 namespace Principal.Telemedicine.Shared.Models;
 
-public partial class ACalendarWithMeasuredValuesDataModel //toto udělat jako partial class, vytvořit projekt Principal.Telemedicine.PenelopeData / a  atyk VandaData (tam dávat data modely) - udělat referenci z těchto projektů do data connectors
+
+public partial class ACalendarWithMeasuredValuesDataModel
 {
     public string? DataType { get; set; }
     public string? MeasuredValue { get; set; }

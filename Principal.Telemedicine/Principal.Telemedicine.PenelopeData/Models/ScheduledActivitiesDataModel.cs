@@ -8,6 +8,6 @@ public class ScheduledActivitiesDataModel
     public string? ActivityCode { get; set; }
     public string? Notification { get; set; }
     public string? Icon { get; set; }
-    public bool IsCompleted { get; set; }
+    public int? IsCompleted { get; set; }
     public DateTime LastUpdatedDateUtc { get; set; }
 }
