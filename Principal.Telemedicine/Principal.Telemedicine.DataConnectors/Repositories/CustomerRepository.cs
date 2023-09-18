@@ -28,15 +28,13 @@ public class CustomerRepository : ICustomerRepository
         {
              var customer = await _dbContext.Customers
                  .Include(p => p.EffectiveUserUsers).ThenInclude(efus => efus.RoleMembers).DefaultIfEmpty()// efektivního uživatele mají jenom uživatelé, kteřé mají vyplněné ProviderId - do RoleMember vazba přes EffectiveUserId -- pacient, lékař atd.
-
-                // .Include(p => p.EffectiveUserUsers).ThenInclude(efus => efus.RoleMembers).ThenInclude(rm => rm.Role).ThenInclude(r => r.RolePermissions.Where(rp => rp.Deleted.Equals(false))).DefaultIfEmpty()
                  .Include (p => p.RoleMemberDirectUsers).DefaultIfEmpty() // uživatelé bez ProviderId mají vazbu do RoleMember přes DirectUserId -- administrativní role
                  .Include( p => p.UserPermissionUsers).DefaultIfEmpty() //DeniedPermissions
                  .Where(p => p.Id == id).FirstOrDefaultAsync();
 
              return customer;
         }
-
+    /// <inheritdoc/>
     public async Task<Customer?> GetCustomerByGlobalIdTaskAsync(string globalId)
     {
         var customer = await _dbContext.Customers
