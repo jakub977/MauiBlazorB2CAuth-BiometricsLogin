@@ -119,6 +119,5 @@ public class PictureContract
 
     public int? ThumbnailHeight { get; set; }
 
-    [JsonPropertyName("mediaStorageObject")]
     public virtual MediaStorageContract? MediaStorage { get; set; }
 }
