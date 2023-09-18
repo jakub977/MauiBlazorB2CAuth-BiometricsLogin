@@ -63,7 +63,4 @@ public class EffectiveUserContract
     [JsonPropertyName("providerObject")]
     public virtual ProviderContract? Provider { get; set; }
 
-    //[JsonPropertyName("userObject")]
-    //public virtual CompleteUserContract User { get; set; } = null!;
-
 }

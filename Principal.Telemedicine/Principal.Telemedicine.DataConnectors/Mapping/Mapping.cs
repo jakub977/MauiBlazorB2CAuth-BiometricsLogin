@@ -65,6 +65,7 @@ public class Mapping : Profile
         CreateMap<PasswordFormatType, PasswordFormatTypeContract>();
         CreateMap<ProfessionType, ProfessionTypeContract>();
         CreateMap<AddressCity, AddressCityContract>();
+        CreateMap<MediaStorage, MediaStorageContract>();
 
         CreateMap<Customer, CompleteUserContract>()
            .ForMember(x => x.AdminComment, opt => opt.Ignore())

@@ -134,6 +134,10 @@ public partial class Picture
 
     public int? ThumbnailHeight { get; set; }
 
+    [ForeignKey("MediaStorageId")]
+    [InverseProperty("Pictures")]
+    public virtual MediaStorage? MediaStorage { get; set; }
+
     [ForeignKey("CreatedByCustomerId")]
     [InverseProperty("PictureCreatedByCustomers")]
     public virtual Customer CreatedByCustomer { get; set; } = null!;

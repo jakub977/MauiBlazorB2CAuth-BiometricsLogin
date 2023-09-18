@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Principal.Telemedicine.Shared.Models;
 
@@ -117,4 +118,7 @@ public class PictureContract
     public int? ThumbnailWidth { get; set; }
 
     public int? ThumbnailHeight { get; set; }
+
+    [JsonPropertyName("mediaStorageObject")]
+    public virtual MediaStorageContract? MediaStorage { get; set; }
 }

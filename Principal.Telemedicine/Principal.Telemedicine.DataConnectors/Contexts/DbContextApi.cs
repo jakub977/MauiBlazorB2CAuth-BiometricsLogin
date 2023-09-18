@@ -100,6 +100,8 @@ public partial class DbContextApi : DbContext
 
     public virtual DbSet<UserPermission> UserPermissions { get; set; }
 
+    public virtual DbSet<MediaStorage> MediaStorages { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
@@ -512,7 +514,7 @@ public partial class DbContextApi : DbContext
             entity.Property(e => e.IsPublic).HasComment("Bit identifier if a picture is also public for another user");
             entity.Property(e => e.IsTransient).HasComment("Bit identifier if a picture is transient");
             entity.Property(e => e.MediaStorageId).HasComment("Link to dbo.MediaStorage as hex of a picture");
-            entity.Property(e => e.MimeType).HasComment("\nMime type of a picture");
+            entity.Property(e => e.MimeType).HasComment("Mime type of a picture");
             entity.Property(e => e.OriginalSizeInkB).HasComment("Size of original picture, in kB.");
             entity.Property(e => e.SeoFilename).HasComment("SEO file name of a picture");
             entity.Property(e => e.UpdatedByCustomerId).HasComment("Link to dbo.Customer as an user who updates a picture");
@@ -520,7 +522,9 @@ public partial class DbContextApi : DbContext
             entity.Property(e => e.UserId).HasComment("Link to dbo.Customer as an user to whom picture relates. Used when column CreatedByCustomerId is different to this column: e.g. a doctor imports a picture of a patient (CreatedByCustomerId = doctor, UserId = patient)");
             entity.Property(e => e.Width).HasComment("Width of a picture");
 
+            entity.HasOne(d => d.MediaStorage).WithMany(p => p.Pictures).HasConstraintName("FK_dbo.Picture_dbo.MediaStorage_MediaStorageId");
             entity.HasOne(d => d.CreatedByCustomer).WithMany(p => p.PictureCreatedByCustomers).OnDelete(DeleteBehavior.ClientSetNull);
+
         });
 
         modelBuilder.Entity<ProfessionType>(entity =>
@@ -880,6 +884,16 @@ public partial class DbContextApi : DbContext
             entity.HasOne(d => d.Provider).WithMany(p => p.UserPermissions).HasConstraintName("FK_UserPermission_Provider");
 
             entity.HasOne(d => d.User).WithMany(p => p.UserPermissionUsers).OnDelete(DeleteBehavior.ClientSetNull);
+        });
+
+        modelBuilder.Entity<MediaStorage>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_dbo.MediaStorage");
+
+            entity.ToTable("MediaStorage", tb => tb.HasComment("Table of binary data of multimedia"));
+
+            entity.Property(e => e.Id).HasComment("Primary identifier of a multimedia");
+            entity.Property(e => e.Data).HasComment("Binary data of a multimedia");
         });
 
         OnModelCreatingPartial(modelBuilder);
