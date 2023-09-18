@@ -1,5 +1,8 @@
 ﻿namespace Principal.Telemedicine.PenelopeData.Models;
 
+/// <summary>
+/// Data model of patients scheduled activities - specific for Penelope.
+/// </summary>
 public class ScheduledActivitiesDataModel
 {
     public Guid ActivityUniqueId { get; set; }

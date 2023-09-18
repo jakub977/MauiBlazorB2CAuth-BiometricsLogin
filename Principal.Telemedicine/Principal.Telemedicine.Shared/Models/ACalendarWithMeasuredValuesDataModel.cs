@@ -1,7 +1,9 @@
 ﻿using System.Text.Json.Serialization;
 namespace Principal.Telemedicine.Shared.Models;
 
-
+/// <summary>
+/// Data model of patients measured values in calendar.
+/// </summary>
 public partial class ACalendarWithMeasuredValuesDataModel
 {
     public string? DataType { get; set; }
