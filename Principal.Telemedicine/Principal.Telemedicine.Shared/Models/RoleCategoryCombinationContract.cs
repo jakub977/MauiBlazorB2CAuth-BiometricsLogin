@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Principal.Telemedicine.Shared.Models;
 
@@ -57,4 +58,7 @@ public class RoleCategoryCombinationContract
     /// Name of a combination
     /// </summary>
     public string? Name { get; set; }
+
+    [JsonPropertyName("roleCategoryObject")]
+    public virtual RoleCategoryContract RoleCategory { get; set; } = null!;
 }

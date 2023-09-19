@@ -76,16 +76,18 @@ public class UserApiController : ControllerBase
             var mappedUser = new CompleteUserContract();
             int id = userId.HasValue ? userId.Value : 0;
 
-            var user = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);
+            
 
             if (id <= 0)
             {
+                var user = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);
                 mappedUser = _mapper.Map<CompleteUserContract>(user);
             }
             else
             {
                 // todo: zjistit jestli má uživatel oprávnění read na jiného uživatele
                 // možno nastudovat v Vanda -> SmartMVC.Services -> Customers -> CustomerService.cs, metoda GetAllCustomers na ř. 161
+                var user = await _customerRepository.GetCustomerByIdTaskAsync(id);
                 mappedUser = _mapper.Map<CompleteUserContract>(user);
             }
 

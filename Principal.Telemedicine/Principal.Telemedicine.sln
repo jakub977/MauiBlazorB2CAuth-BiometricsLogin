@@ -47,9 +47,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Principal.Telemedicine.PenelopeApi", "Principal.Telemedicine.PenelopeApi\Principal.Telemedicine.PenelopeApi.csproj", "{C2EC0945-D503-43E3-8CFD-1493FF460592}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Principal.Telemedicine.PenelopeData", "Principal.Telemedicine.PenelopeData\Principal.Telemedicine.PenelopeData.csproj", "{6C754BD6-4D9A-4402-8495-143EF632AA66}"
-	ProjectSection(ProjectDependencies) = postProject
-		{3ECF516E-86C4-4790-962F-3B1CB58C559E} = {3ECF516E-86C4-4790-962F-3B1CB58C559E}
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
