@@ -72,15 +72,27 @@ public partial class Organization
     [Unicode(false)]
     public string PostalCode { get; set; } = null!;
 
+    /// <summary>
+    /// Inverse collection of Customers with organization
+    /// </summary>
     [InverseProperty("Organization")]
     public virtual ICollection<Customer> Customers { get; set; } = new List<Customer>();
 
+    /// <summary>
+    /// Inverse collection of Providers of organization
+    /// </summary>
     [InverseProperty("Organization")]
     public virtual ICollection<Provider> Providers { get; set; } = new List<Provider>();
 
+    /// <summary>
+    /// Inverse collection of Roles allowed to organization
+    /// </summary>
     [InverseProperty("Organization")]
     public virtual ICollection<Role> Roles { get; set; } = new List<Role>();
 
+    /// <summary>
+    /// Inverse collection of SubjectAllowedToOrganizations
+    /// </summary>
     [InverseProperty("Organization")]
     public virtual ICollection<SubjectAllowedToOrganization> SubjectAllowedToOrganizations { get; set; } = new List<SubjectAllowedToOrganization>();
 }

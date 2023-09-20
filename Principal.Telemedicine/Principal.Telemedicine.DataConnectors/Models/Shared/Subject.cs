@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
@@ -81,27 +79,48 @@ public partial class Subject
     [Unicode(false)]
     public string? IconName { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who creates a subject
+    /// </summary>
     [ForeignKey("CreatedByCustomerId")]
     [InverseProperty("SubjectCreatedByCustomers")]
     public virtual Customer CreatedByCustomer { get; set; } = null!;
 
+    /// <summary>
+    /// Inverse collection of Subject as a inverse parent subject
+    /// </summary>
     [InverseProperty("ParentSubject")]
     public virtual ICollection<Subject> InverseParentSubject { get; set; } = new List<Subject>();
 
+    /// <summary>
+    /// Link to dbo.Subject as a parent subject of subject, used for subject hierarchy
+    /// </summary>
     [ForeignKey("ParentSubjectId")]
     [InverseProperty("InverseParentSubject")]
     public virtual Subject? ParentSubject { get; set; }
 
+    /// <summary>
+    /// Inverse collection of Permissions to which is subject related
+    /// </summary>
     [InverseProperty("Subject")]
     public virtual ICollection<Permission> Permissions { get; set; } = new List<Permission>();
 
+    /// <summary>
+    /// Inverse collection of SubjectAllowedToOrganizations
+    /// </summary>
     [InverseProperty("Subject")]
     public virtual ICollection<SubjectAllowedToOrganization> SubjectAllowedToOrganizations { get; set; } = new List<SubjectAllowedToOrganization>();
 
+    /// <summary>
+    /// Link to dbo.SubjectType as a type of a subject
+    /// </summary>
     [ForeignKey("SubjectTypeId")]
     [InverseProperty("Subjects")]
     public virtual SubjectType SubjectType { get; set; } = null!;
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who updates a subject
+    /// </summary>
     [ForeignKey("UpdatedByCustomerId")]
     [InverseProperty("SubjectUpdatedByCustomers")]
     public virtual Customer? UpdatedByCustomer { get; set; }

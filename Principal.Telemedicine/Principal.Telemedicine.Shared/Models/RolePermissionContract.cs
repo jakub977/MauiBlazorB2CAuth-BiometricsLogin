@@ -55,6 +55,9 @@ public class RolePermissionContract
     /// </summary>
     public int PermissionId { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Permission as a permission which is assigned to role
+    /// </summary>
     [JsonPropertyName("permissionObject")]
     public virtual PermissionContract? Permission { get; set; }
 }

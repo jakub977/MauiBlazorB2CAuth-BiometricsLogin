@@ -2,6 +2,7 @@
 using System.Data;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
 using Principal.Telemedicine.PenelopeData.Models;
 using Principal.Telemedicine.Shared.Models;
@@ -10,6 +11,9 @@ using Principal.Telemedicine.Shared.Models;
 
 namespace Principal.Telemedicine.DataConnectors.Contexts;
 
+/// <summary>
+/// Db context VANDA_TEST
+/// </summary>
 public partial class DbContextApi : DbContext
 {
     public DbContextApi()
@@ -104,9 +108,13 @@ public partial class DbContextApi : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
+        var configuration = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json")
+            .Build();
+
         if (!optionsBuilder.IsConfigured)
         {
-           optionsBuilder.UseSqlServer("Data Source=tmworkstoresqlserver.database.windows.net;Initial Catalog=VANDA_TEST;Application Name=VANDA_TEST_AZURE;Integrated Security=False;User ID=TM_DB_dev;Password=Ap7M9$eWSj8TUQ734FcGdqnfHkqw$BHf;Persist Security Info=True;Enlist=False;Pooling=True;Min Pool Size=1;Max Pool Size=100;Connect Timeout=45;User Instance=False;MultipleActiveResultSets=True;");
+           optionsBuilder.UseSqlServer(configuration.GetConnectionString("VANDA_TEST"));
         }
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
 
@@ -36,11 +33,14 @@ public partial class GenderType
     public DateTime CreatedDateUtc { get; set; }
 
     /// <summary>
-    /// Nname of a gender type
+    /// Name of a gender type
     /// </summary>
     [StringLength(200)]
     public string Name { get; set; } = null!;
 
+    /// <summary>
+    /// Inverse collection of Customers with the same selected GenderType
+    /// </summary>
     [InverseProperty("GenderType")]
     public virtual ICollection<Customer> Customers { get; set; } = new List<Customer>();
 }

@@ -79,31 +79,55 @@ public partial class Group
     /// </summary>
     public bool IsRiskGroup { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who creates a group
+    /// </summary>
     [ForeignKey("CreatedByCustomerId")]
     [InverseProperty("GroupCreatedByCustomers")]
     public virtual Customer CreatedByCustomer { get; set; } = null!;
 
+    /// <summary>
+    /// Inverse colllection of GroupEffectiveMembers (effective users who are members of groups)
+    /// </summary>
     [InverseProperty("Group")]
     public virtual ICollection<GroupEffectiveMember> GroupEffectiveMembers { get; set; } = new List<GroupEffectiveMember>();
 
+    /// <summary>
+    /// Inverse collection of GroupPermissions
+    /// </summary>
     [InverseProperty("Group")]
     public virtual ICollection<GroupPermission> GroupPermissions { get; set; } = new List<GroupPermission>();
 
+    /// <summary>
+    /// Inverse collection of Group as a inverse parent group
+    /// </summary>
     [InverseProperty("ParentGroup")]
     public virtual ICollection<Group> InverseParentGroup { get; set; } = new List<Group>();
 
+    /// <summary>
+    /// Link to dbo.ParentGroupt as a parent group of group
+    /// </summary>
     [ForeignKey("ParentGroupId")]
     [InverseProperty("InverseParentGroup")]
     public virtual Group? ParentGroup { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Picture as a picture of group
+    /// </summary>
     [ForeignKey("PictureId")]
     [InverseProperty("Groups")]
     public virtual Picture? Picture { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Provider as a parent provider
+    /// </summary>
     [ForeignKey("ProviderId")]
     [InverseProperty("Groups")]
     public virtual Provider Provider { get; set; } = null!;
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who updates a group
+    /// </summary>
     [ForeignKey("UpdatedByCustomerId")]
     [InverseProperty("GroupUpdatedByCustomers")]
     public virtual Customer? UpdatedByCustomer { get; set; }

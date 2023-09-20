@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
@@ -90,39 +88,69 @@ public partial class Permission
     [StringLength(200)]
     public string? Description { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who creates a permission
+    /// </summary>
     [ForeignKey("CreatedByCustomerId")]
     [InverseProperty("PermissionCreatedByCustomers")]
     public virtual Customer CreatedByCustomer { get; set; } = null!;
 
+    /// <summary>
+    /// Inverse collection of GroupPermission as a permission which is assigned to group.
+    /// </summary>
     [InverseProperty("Permission")]
     public virtual ICollection<GroupPermission> GroupPermissions { get; set; } = new List<GroupPermission>();
 
+    /// <summary>
+    /// Inverse collection of Permission as a inverse parent permission, used for hierarchy of permissions
+    /// </summary>
     [InverseProperty("ParentPermission")]
     public virtual ICollection<Permission> InverseParentPermission { get; set; } = new List<Permission>();
 
+    /// <summary>
+    /// Link to dbo.Permission as a parent permission, used for hierarchy of permissions
+    /// </summary>
     [ForeignKey("ParentPermissionId")]
     [InverseProperty("InverseParentPermission")]
     public virtual Permission? ParentPermission { get; set; }
 
+    /// <summary>
+    /// Link to dbo.PermissionCategory as a category of permission
+    /// </summary>
     [ForeignKey("PermissionCategoryId")]
     [InverseProperty("Permissions")]
     public virtual PermissionCategory? PermissionCategory { get; set; }
 
+    /// <summary>
+    /// Link to dbo.PermissionType as a type of permission
+    /// </summary>
     [ForeignKey("PermissionTypeId")]
     [InverseProperty("Permissions")]
     public virtual PermissionType PermissionType { get; set; } = null!;
 
+    /// <summary>
+    /// Inverse collection of RolePermissions
+    /// </summary>
     [InverseProperty("Permission")]
     public virtual ICollection<RolePermission> RolePermissions { get; set; } = new List<RolePermission>();
 
+    /// <summary>
+    /// Link to dbo.Subject as a subject of the application
+    /// </summary>
     [ForeignKey("SubjectId")]
     [InverseProperty("Permissions")]
     public virtual Subject Subject { get; set; } = null!;
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who updates a permission
+    /// </summary>
     [ForeignKey("UpdatedByCustomerId")]
     [InverseProperty("PermissionUpdatedByCustomers")]
     public virtual Customer? UpdatedByCustomer { get; set; }
 
+    /// <summary>
+    /// InverseCollection of UserPermissions as a permission which is granted or denied to user
+    /// </summary>
     [InverseProperty("Permission")]
     public virtual ICollection<UserPermission> UserPermissions { get; set; } = new List<UserPermission>();
 }

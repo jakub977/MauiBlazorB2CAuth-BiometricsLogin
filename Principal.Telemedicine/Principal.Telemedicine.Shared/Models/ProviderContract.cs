@@ -78,7 +78,13 @@ public class ProviderContract
     /// </summary>
     public string? TaxIdentificationNumber { get; set; }
 
+    /// <summary>
+    /// Street related to address line of a provider
+    /// </summary>
     public string? Street { get; set; }
 
+    /// <summary>
+    /// Link to dbo.AddressCity as a city related to provider
+    /// </summary>
     public int? CityId { get; set; }
 }

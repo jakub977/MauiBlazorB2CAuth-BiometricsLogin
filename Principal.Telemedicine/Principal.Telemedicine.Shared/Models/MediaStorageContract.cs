@@ -18,6 +18,9 @@ public class MediaStorageContract
     /// </summary>
     public byte[] Data { get; set; } = null!;
 
+    /// <summary>
+    /// Binary thumbnail of a multimedia
+    /// </summary>
     public byte[]? Thumbnail { get; set; }
 
 }

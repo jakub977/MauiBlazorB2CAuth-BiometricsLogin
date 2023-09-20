@@ -33,5 +33,8 @@ public class PasswordFormatTypeContract
     /// </summary>
     public string Name { get; set; } = null!;
 
+    /// <summary>
+    /// Inverse collection of Customers
+    /// </summary>
     public virtual ICollection<UserContract> Customers { get; set; } = new List<UserContract>();
 }

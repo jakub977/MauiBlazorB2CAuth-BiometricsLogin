@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
 
@@ -73,18 +70,30 @@ public partial class SubjectAllowedToProvider
     [Column(TypeName = "datetime")]
     public DateTime? AllowedToDateUtc { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who creates a subject allowed to provider
+    /// </summary>
     [ForeignKey("CreatedByCustomerId")]
     [InverseProperty("SubjectAllowedToProviderCreatedByCustomers")]
     public virtual Customer CreatedByCustomer { get; set; } = null!;
 
+    /// <summary>
+    /// Link to dbo.Provider as an organization to which subjects are allowed
+    /// </summary>
     [ForeignKey("ProviderId")]
     [InverseProperty("SubjectAllowedToProviders")]
     public virtual Provider Provider { get; set; } = null!;
 
+    /// <summary>
+    /// Link to dbo.SubjectAllowedToOrganization as set of subjects (modules) which are allowed to organization and from which subjects (modules) can be allowed to specific provider
+    /// </summary>
     [ForeignKey("SubjectAllowedToOrganizationId")]
     [InverseProperty("SubjectAllowedToProviders")]
     public virtual SubjectAllowedToOrganization SubjectAllowedToOrganization { get; set; } = null!;
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who updates a subject allowed to provider
+    /// </summary>
     [ForeignKey("UpdatedByCustomerId")]
     [InverseProperty("SubjectAllowedToProviderUpdatedByCustomers")]
     public virtual Customer? UpdatedByCustomer { get; set; }

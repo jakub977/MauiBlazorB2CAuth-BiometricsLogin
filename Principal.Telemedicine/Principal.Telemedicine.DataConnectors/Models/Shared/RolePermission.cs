@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
 
@@ -61,18 +58,30 @@ public partial class RolePermission
     /// </summary>
     public int PermissionId { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who creates a role permission
+    /// </summary>
     [ForeignKey("CreatedByCustomerId")]
     [InverseProperty("RolePermissionCreatedByCustomers")]
     public virtual Customer CreatedByCustomer { get; set; } = null!;
 
+    /// <summary>
+    /// Link to dbo.Permission as a permission which is assigned to role
+    /// </summary>
     [ForeignKey("PermissionId")]
     [InverseProperty("RolePermissions")]
     public virtual Permission Permission { get; set; } = null!;
 
+    /// <summary>
+    /// Link to dbo.Role as a role to which permission is assigned
+    /// </summary>
     [ForeignKey("RoleId")]
     [InverseProperty("RolePermissions")]
     public virtual Role Role { get; set; } = null!;
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who creates a role permission
+    /// </summary>
     [ForeignKey("UpdatedByCustomerId")]
     [InverseProperty("RolePermissionUpdatedByCustomers")]
     public virtual Customer? UpdatedByCustomer { get; set; }

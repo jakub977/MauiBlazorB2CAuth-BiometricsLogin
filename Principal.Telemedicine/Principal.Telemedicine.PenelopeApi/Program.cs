@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
 using Principal.Telemedicine.DataConnectors.Contexts;
 
 var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 var builder = WebApplication.CreateBuilder(args);
+
 
 // Add services to the container.
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -17,7 +19,7 @@ builder.Services.AddSwaggerGen();
 
 
 builder.Services.AddDbContext<DbContextApi>(options => options.UseLazyLoadingProxies().
-UseSqlServer(builder.Configuration.GetConnectionString("PENELOPE_TEST"))); //todo: main db pøejmenovat
+UseSqlServer(builder.Configuration.GetConnectionString("MAIN_DB")));
 
 builder.Services.AddDbContext<DbContextGeneral>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("TMWorkstore")));

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
 
@@ -71,22 +68,37 @@ public partial class UserPermission
     /// </summary>
     public bool IsDeniedPermission { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who creates a user permission
+    /// </summary>
     [ForeignKey("CreatedByCustomerId")]
     [InverseProperty("UserPermissionCreatedByCustomers")]
     public virtual Customer CreatedByCustomer { get; set; } = null!;
 
+    /// <summary>
+    /// Link to dbo.Permission as a permission which is granted or denied to user
+    /// </summary>
     [ForeignKey("PermissionId")]
     [InverseProperty("UserPermissions")]
     public virtual Permission Permission { get; set; } = null!;
 
+    /// <summary>
+    /// Link to dbo.Provider as a provider for which exception is valid
+    /// </summary>
     [ForeignKey("ProviderId")]
     [InverseProperty("UserPermissions")]
     public virtual Provider? Provider { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who updates a user permission
+    /// </summary>
     [ForeignKey("UpdatedByCustomerId")]
     [InverseProperty("UserPermissionUpdatedByCustomers")]
     public virtual Customer? UpdatedByCustomer { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Customer as an user to whom permission is granted or denied
+    /// </summary>
     [ForeignKey("UserId")]
     [InverseProperty("UserPermissionUsers")]
     public virtual Customer User { get; set; } = null!;

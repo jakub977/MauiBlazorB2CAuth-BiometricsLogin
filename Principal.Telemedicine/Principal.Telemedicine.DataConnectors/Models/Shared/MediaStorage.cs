@@ -20,8 +20,14 @@ public partial class MediaStorage
     /// </summary>
     public byte[] Data { get; set; } = null!;
 
+    /// <summary>
+    /// Binary thumbnail of a multimedia
+    /// </summary>
     public byte[]? Thumbnail { get; set; }
 
+    /// <summary>
+    /// Inverse collection of Pictures
+    /// </summary>
     [InverseProperty("MediaStorage")]
     public virtual ICollection<Picture> Pictures { get; set; } = new List<Picture>();
 }

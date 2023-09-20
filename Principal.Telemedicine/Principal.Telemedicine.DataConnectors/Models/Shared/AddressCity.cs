@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
 
+/// <summary>
+/// Table of adress city of customer
+/// </summary>
 [Table("AddressCity")]
 public partial class AddressCity
 {

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
 
@@ -61,18 +58,30 @@ public partial class GroupPermission
     /// </summary>
     public int PermissionId { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who creates a group permission
+    /// </summary>
     [ForeignKey("CreatedByCustomerId")]
     [InverseProperty("GroupPermissionCreatedByCustomers")]
     public virtual Customer CreatedByCustomer { get; set; } = null!;
 
+    /// <summary>
+    /// Link to dbo.Group as a group to which permission is assigned
+    /// </summary>
     [ForeignKey("GroupId")]
     [InverseProperty("GroupPermissions")]
     public virtual Group Group { get; set; } = null!;
 
+    /// <summary>
+    /// Link to dbo.Permission as a permission which is assigned to group
+    /// </summary>
     [ForeignKey("PermissionId")]
     [InverseProperty("GroupPermissions")]
     public virtual Permission Permission { get; set; } = null!;
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who updates a group permission
+    /// </summary>
     [ForeignKey("UpdatedByCustomerId")]
     [InverseProperty("GroupPermissionUpdatedByCustomers")]
     public virtual Customer? UpdatedByCustomer { get; set; }

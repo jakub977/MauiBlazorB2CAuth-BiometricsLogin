@@ -7,5 +7,8 @@ namespace Principal.Telemedicine.Shared.Models;
 /// </summary>
 public partial class UserCalendarWithMeasuredValuesDataModel : ACalendarWithMeasuredValuesDataModel
 {
+    /// <summary>
+    /// A period of specific seven days of calendar year 
+    /// </summary>
     public int WeekOfYear { get; set; }
 }

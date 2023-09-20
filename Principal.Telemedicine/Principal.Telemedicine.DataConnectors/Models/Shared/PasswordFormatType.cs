@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
 
@@ -41,6 +38,9 @@ public partial class PasswordFormatType
     [StringLength(200)]
     public string Name { get; set; } = null!;
 
+    /// <summary>
+    /// Inverse collection of Customers
+    /// </summary>
     [InverseProperty("PasswordFormatType")]
     public virtual ICollection<Customer> Customers { get; set; } = new List<Customer>();
 }

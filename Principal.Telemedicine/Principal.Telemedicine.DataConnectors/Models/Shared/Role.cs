@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
 
@@ -88,35 +85,62 @@ public partial class Role
     /// </summary>
     public int RoleCategoryCombinationId { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who creates a role
+    /// </summary>
     [ForeignKey("CreatedByCustomerId")]
     [InverseProperty("RoleCreatedByCustomers")]
     public virtual Customer CreatedByCustomer { get; set; } = null!;
 
+    /// <summary>
+    /// Inverse collection of Role as a inverse parent role
+    /// </summary>
     [InverseProperty("ParentRole")]
     public virtual ICollection<Role> InverseParentRole { get; set; } = new List<Role>();
 
+    /// <summary>
+    /// Link to dbo.Organization as a parent organization
+    /// </summary>
     [ForeignKey("OrganizationId")]
     [InverseProperty("Roles")]
     public virtual Organization? Organization { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Role as a parent role, i.e. reference to original role
+    /// </summary>
     [ForeignKey("ParentRoleId")]
     [InverseProperty("InverseParentRole")]
     public virtual Role? ParentRole { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Provider as a provider to whom role relates
+    /// </summary>
     [ForeignKey("ProviderId")]
     [InverseProperty("Roles")]
     public virtual Provider? Provider { get; set; }
 
+    /// <summary>
+    /// Link to dbo.RoleCategoryCombination as a combination of role category and its subcategory
+    /// </summary>
     [ForeignKey("RoleCategoryCombinationId")]
     [InverseProperty("Roles")]
     public virtual RoleCategoryCombination RoleCategoryCombination { get; set; } = null!;
 
+    /// <summary>
+    /// Inverse collection of RoleMembers to whom is a role related"
+    /// </summary>
     [InverseProperty("Role")]
     public virtual ICollection<RoleMember> RoleMembers { get; set; } = new List<RoleMember>();
 
+    /// <summary>
+    /// Inverse collection of RolePermissions to which is a role related
+    /// </summary>
     [InverseProperty("Role")]
     public virtual ICollection<RolePermission> RolePermissions { get; set; } = new List<RolePermission>();
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who updates a role
+    /// </summary>
     [ForeignKey("UpdatedByCustomerId")]
     [InverseProperty("RoleUpdatedByCustomers")]
     public virtual Customer? UpdatedByCustomer { get; set; }

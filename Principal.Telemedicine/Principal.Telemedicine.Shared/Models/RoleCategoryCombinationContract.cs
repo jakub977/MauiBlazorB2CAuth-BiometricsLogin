@@ -59,6 +59,9 @@ public class RoleCategoryCombinationContract
     /// </summary>
     public string? Name { get; set; }
 
+    /// <summary>
+    /// Link to dbo.RoleCategory as a role category of combination
+    /// </summary>
     [JsonPropertyName("roleCategoryObject")]
     public virtual RoleCategoryContract RoleCategory { get; set; } = null!;
 }

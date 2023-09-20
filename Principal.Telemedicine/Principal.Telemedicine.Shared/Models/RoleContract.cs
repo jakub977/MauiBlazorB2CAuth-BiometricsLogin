@@ -79,11 +79,20 @@ public class RoleContract
     /// </summary>
     public int RoleCategoryCombinationId { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Provider as a provider to whom role relates
+    /// </summary>
     [JsonPropertyName("providerObject")]
     public virtual ProviderContract? Provider { get; set; }
 
+    /// <summary>
+    /// Link to dbo.RoleCategoryCombination as a combination of role category and its subcategory
+    /// </summary>
     [JsonPropertyName("roleCategoryCombinationObject")]
     public virtual RoleCategoryCombinationContract? RoleCategoryCombination { get; set; }
 
+    /// <summary>
+    /// Inverse collection of RolePermissions to which is a role related
+    /// </summary>
     public virtual ICollection<RolePermissionContract> RolePermissions { get; set; } = new List<RolePermissionContract>();
 }

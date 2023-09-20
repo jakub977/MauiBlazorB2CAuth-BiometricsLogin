@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
@@ -130,31 +128,58 @@ public partial class Picture
     [Column(TypeName = "decimal(10, 2)")]
     public decimal? ConvertedSizeInkB { get; set; }
 
+    /// <summary>
+    /// Width of thumbnail
+    /// </summary>
     public int? ThumbnailWidth { get; set; }
 
+    /// <summary>
+    /// Height of thumbnail
+    /// </summary>
     public int? ThumbnailHeight { get; set; }
 
+    /// <summary>
+    /// Link to dbo.MediaStorage as hex of a picture
+    /// </summary>
     [ForeignKey("MediaStorageId")]
     [InverseProperty("Pictures")]
     public virtual MediaStorage? MediaStorage { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who creates a picture
+    /// </summary>
     [ForeignKey("CreatedByCustomerId")]
     [InverseProperty("PictureCreatedByCustomers")]
     public virtual Customer CreatedByCustomer { get; set; } = null!;
 
+    /// <summary>
+    /// Inverse collection of Customers as an user to whom picture relates
+    /// </summary>
     [InverseProperty("Picture")]
     public virtual ICollection<Customer> Customers { get; set; } = new List<Customer>();
 
+    /// <summary>
+    /// Inverse collection of Groups as an group to whom picture relates
+    /// </summary>
     [InverseProperty("Picture")]
     public virtual ICollection<Group> Groups { get; set; } = new List<Group>();
 
+    /// <summary>
+    /// Inverse collection of Providers as an provider to whom picture relates
+    /// </summary>
     [InverseProperty("Picture")]
     public virtual ICollection<Provider> Providers { get; set; } = new List<Provider>();
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who updates a picture
+    /// </summary>
     [ForeignKey("UpdatedByCustomerId")]
     [InverseProperty("PictureUpdatedByCustomers")]
     public virtual Customer? UpdatedByCustomer { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Customer as an users picture
+    /// </summary>
     [ForeignKey("UserId")]
     [InverseProperty("PictureUsers")]
     public virtual Customer? User { get; set; }

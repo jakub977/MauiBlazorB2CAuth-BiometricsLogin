@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
 
@@ -63,13 +60,22 @@ public partial class ProfessionType
     [StringLength(200)]
     public string? Description { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who creates a profession type
+    /// </summary>
     [ForeignKey("CreatedByCustomerId")]
     [InverseProperty("ProfessionTypeCreatedByCustomers")]
     public virtual Customer CreatedByCustomer { get; set; } = null!;
 
+    /// <summary>
+    /// Inverse collection of Customers to whom profession type relates
+    /// </summary>
     [InverseProperty("ProfessionType")]
     public virtual ICollection<Customer> Customers { get; set; } = new List<Customer>();
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who updates a profession type
+    /// </summary>
     [ForeignKey("UpdatedByCustomerId")]
     [InverseProperty("ProfessionTypeUpdatedByCustomers")]
     public virtual Customer? UpdatedByCustomer { get; set; }

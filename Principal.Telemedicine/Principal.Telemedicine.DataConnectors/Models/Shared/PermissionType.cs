@@ -47,6 +47,9 @@ public partial class PermissionType
     [StringLength(200)]
     public string? Description { get; set; }
 
+    /// <summary>
+    /// Inverse collection of Permissions with specific PermissionType
+    /// </summary>
     [InverseProperty("PermissionType")]
     public virtual ICollection<Permission> Permissions { get; set; } = new List<Permission>();
 }

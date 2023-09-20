@@ -59,6 +59,9 @@ public class RoleMemberContract
     /// </summary>
     public int RoleId { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Role as a role which is grant to a (direct or effective) user
+    /// </summary>
     [JsonPropertyName("roleObject")]
     public virtual RoleContract? Role { get; set; }
 }

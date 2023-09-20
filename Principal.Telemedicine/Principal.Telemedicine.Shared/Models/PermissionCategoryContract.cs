@@ -53,9 +53,18 @@ public class PermissionCategoryContract
     /// </summary>
     public string? Description { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who creates a permission category
+    /// </summary>
     public virtual UserContract CreatedByCustomer { get; set; } = null!;
 
+    /// <summary>
+    /// Inverse collection of Permissions with the same permission category
+    /// </summary>
     public virtual ICollection<PermissionContract> Permissions { get; set; } = new List<PermissionContract>();
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who updates a permission category
+    /// </summary>
     public virtual UserContract? UpdatedByCustomer { get; set; }
 }

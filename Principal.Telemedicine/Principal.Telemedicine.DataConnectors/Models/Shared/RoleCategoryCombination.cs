@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
 
@@ -67,21 +64,36 @@ public partial class RoleCategoryCombination
     [StringLength(200)]
     public string? Name { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who creates a role category combination
+    /// </summary>
     [ForeignKey("CreatedByCustomerId")]
     [InverseProperty("RoleCategoryCombinationCreatedByCustomers")]
     public virtual Customer CreatedByCustomer { get; set; } = null!;
 
+    /// <summary>
+    /// Link to dbo.RoleCategory as a role category of combination
+    /// </summary>
     [ForeignKey("RoleCategoryId")]
     [InverseProperty("RoleCategoryCombinations")]
     public virtual RoleCategory RoleCategory { get; set; } = null!;
 
+    /// <summary>
+    /// Link to dbo.RoleSubCategory as a role subcategory of combination
+    /// </summary>
     [ForeignKey("RoleSubCategoryId")]
     [InverseProperty("RoleCategoryCombinations")]
     public virtual RoleSubCategory? RoleSubCategory { get; set; }
 
+    /// <summary>
+    /// Inverse collection of Roles to which role category comabination relates
+    /// </summary>
     [InverseProperty("RoleCategoryCombination")]
     public virtual ICollection<Role> Roles { get; set; } = new List<Role>();
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who updates a role category combination
+    /// </summary>
     [ForeignKey("UpdatedByCustomerId")]
     [InverseProperty("RoleCategoryCombinationUpdatedByCustomers")]
     public virtual Customer? UpdatedByCustomer { get; set; }

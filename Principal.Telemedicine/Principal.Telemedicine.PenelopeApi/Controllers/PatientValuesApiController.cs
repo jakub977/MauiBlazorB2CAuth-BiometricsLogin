@@ -36,6 +36,7 @@ public class PatientValuesApiController : ControllerBase
 
         if (string.IsNullOrEmpty(userGlobalId) || string.IsNullOrEmpty(preferredLanguageCode))
         {
+            _logger.Log(LogLevel.Error, "GlobalId and preferredLanguage are empty.");
             return BadRequest();
         }
 
@@ -48,6 +49,7 @@ public class PatientValuesApiController : ControllerBase
             
             if (!peneCalendar.Any())
             {
+                _logger.Log(LogLevel.Error, "No calendar with measured values was found");
                 return NotFound();
             }
             return Ok(peneCalendar);
@@ -74,6 +76,7 @@ public class PatientValuesApiController : ControllerBase
 
         if (string.IsNullOrEmpty(userGlobalId) || string.IsNullOrEmpty(preferredLanguageCode))
         {
+            _logger.Log(LogLevel.Error, "GlobalId and preferredLanguage are empty.");
             return BadRequest();
         }
 
@@ -90,6 +93,7 @@ public class PatientValuesApiController : ControllerBase
 
             if (!oneDayActivities.Any())
             {
+                _logger.Log(LogLevel.Error, "No scheduled activities were found");
                 return NotFound();
             }
             return Ok(oneDayActivities);
@@ -116,6 +120,7 @@ public class PatientValuesApiController : ControllerBase
 
         if (string.IsNullOrEmpty(userGlobalId) || string.IsNullOrEmpty(preferredLanguageCode))
         {
+            _logger.Log(LogLevel.Error, "GlobalId and preferredLanguage are empty.");
             return BadRequest();
         }
 
@@ -132,6 +137,7 @@ public class PatientValuesApiController : ControllerBase
 
             if (!allActivities.Any())
             {
+                _logger.Log(LogLevel.Error, "No scheduled activities were found");
                 return NotFound();
             }
             return Ok(allActivities);

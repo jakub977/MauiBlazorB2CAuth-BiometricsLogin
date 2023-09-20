@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
 
@@ -47,6 +44,9 @@ public partial class SubjectType
     [StringLength(200)]
     public string? Description { get; set; }
 
+    /// <summary>
+    /// Inverse collection of Subject to which is subject type related
+    /// </summary>
     [InverseProperty("SubjectType")]
     public virtual ICollection<Subject> Subjects { get; set; } = new List<Subject>();
 }

@@ -74,19 +74,43 @@ public class GroupContract
     /// </summary>
     public bool IsRiskGroup { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who creates a group
+    /// </summary>
     public virtual UserContract CreatedByCustomer { get; set; } = null!;
 
+    /// <summary>
+    /// Inverse colllection of GroupEffectiveMembers (effective users who are members of groups)
+    /// </summary>
     public virtual ICollection<GroupEffectiveMemberContract> GroupEffectiveMembers { get; set; } = new List<GroupEffectiveMemberContract>();
 
+    /// <summary>
+    /// Inverse collection of GroupPermissions
+    /// </summary
     public virtual ICollection<GroupPermissionContract> GroupPermissions { get; set; } = new List<GroupPermissionContract>();
 
+    /// <summary>
+    /// Inverse collection of Group as a inverse parent group
+    /// </summary>
     public virtual ICollection<GroupContract> InverseParentGroup { get; set; } = new List<GroupContract>();
 
+    /// <summary>
+    /// Link to dbo.ParentGroupt as a parent group of group
+    /// </summary>
     public virtual GroupContract? ParentGroup { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Picture as a picture of group
+    /// </summary>
     public virtual PictureContract? Picture { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Provider as a parent provider
+    /// </summary>
     public virtual ProviderContract Provider { get; set; } = null!;
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who updates a group
+    /// </summary>
     public virtual UserContract? UpdatedByCustomer { get; set; }
 }

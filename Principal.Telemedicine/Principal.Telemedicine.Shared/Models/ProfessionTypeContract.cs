@@ -50,9 +50,18 @@ public class ProfessionTypeContract
     /// </summary>
     public string? Description { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who creates a profession type
+    /// </summary>
     public virtual UserContract CreatedByCustomer { get; set; } = null!;
 
+    /// <summary>
+    /// Inverse collection of Customers to whom profession type relates
+    /// </summary>
     public virtual ICollection<UserContract> Customers { get; set; } = new List<UserContract>();
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who updates a profession type
+    /// </summary>
     public virtual UserContract? UpdatedByCustomer { get; set; }
 }

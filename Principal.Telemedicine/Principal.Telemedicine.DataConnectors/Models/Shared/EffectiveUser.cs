@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
 
@@ -61,24 +58,42 @@ public partial class EffectiveUser
     /// </summary>
     public int ProviderId { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who created effective user
+    /// </summary>
     [ForeignKey("CreatedByCustomerId")]
     [InverseProperty("EffectiveUserCreatedByCustomers")]
     public virtual Customer CreatedByCustomer { get; set; } = null!;
 
+    /// <summary>
+    /// Inverse collection of effective users GroupEffectiveMembers
+    /// </summary>
     [InverseProperty("EffectiveUser")]
     public virtual ICollection<GroupEffectiveMember> GroupEffectiveMembers { get; set; } = new List<GroupEffectiveMember>();
 
+    /// <summary>
+    /// Link to dbo.Provider as a provider of which user is member
+    /// </summary>
     [ForeignKey("ProviderId")]
     [InverseProperty("EffectiveUsers")]
     public virtual Provider Provider { get; set; } = null!;
 
+    /// <summary>
+    /// Inverse collection of effective users RoleMembers
+    /// </summary>
     [InverseProperty("EffectiveUser")]
     public virtual ICollection<RoleMember> RoleMembers { get; set; } = new List<RoleMember>();
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who updates effective user
+    /// </summary>
     [ForeignKey("UpdatedByCustomerId")]
     [InverseProperty("EffectiveUserUpdatedByCustomers")]
     public virtual Customer? UpdatedByCustomer { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Customer as an users EffectiveUser
+    /// </summary>
     [ForeignKey("UserId")]
     [InverseProperty("EffectiveUserUsers")]
     public virtual Customer User { get; set; } = null!;

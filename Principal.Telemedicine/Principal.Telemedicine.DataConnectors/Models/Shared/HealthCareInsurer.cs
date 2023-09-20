@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
@@ -75,13 +73,22 @@ public partial class HealthCareInsurer
     /// </summary>
     public int CountryId { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who creates a health care insurer
+    /// </summary>
     [ForeignKey("CreatedByCustomerId")]
     [InverseProperty("HealthCareInsurerCreatedByCustomers")]
     public virtual Customer CreatedByCustomer { get; set; } = null!;
 
+    /// <summary>
+    /// Inverse collection of Customers with health care insurer
+    /// </summary>
     [InverseProperty("HealthCareInsurer")]
     public virtual ICollection<Customer> Customers { get; set; } = new List<Customer>();
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who updates a health care insurer
+    /// </summary>
     [ForeignKey("UpdatedByCustomerId")]
     [InverseProperty("HealthCareInsurerUpdatedByCustomers")]
     public virtual Customer? UpdatedByCustomer { get; set; }

@@ -60,9 +60,18 @@ public class HealthCareInsurerContract
     /// </summary>
     public int CountryId { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who creates a health care insurer
+    /// </summary>
     public virtual UserContract CreatedByCustomer { get; set; } = null!;
 
+    /// <summary>
+    /// Inverse collection of Customers with health care insurer
+    /// </summary>
     public virtual ICollection<UserContract> Customers { get; set; } = new List<UserContract>();
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who updates a health care insurer
+    /// </summary>
     public virtual UserContract? UpdatedByCustomer { get; set; }
 }

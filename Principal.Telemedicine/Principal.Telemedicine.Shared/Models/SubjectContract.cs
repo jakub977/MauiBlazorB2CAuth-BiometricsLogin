@@ -69,6 +69,9 @@ public class SubjectContract
     /// </summary>
     public string? IconName { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Subject as a parent subject of subject, used for subject hierarchy
+    /// </summary>
     [JsonPropertyName("parentSubjectObject")]
     public virtual SubjectContract? ParentSubject { get; set; }
 }

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
 
@@ -66,22 +63,37 @@ public partial class RoleMember
     /// </summary>
     public int RoleId { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who creates a role member
+    /// </summary>
     [ForeignKey("CreatedByCustomerId")]
     [InverseProperty("RoleMemberCreatedByCustomers")]
     public virtual Customer CreatedByCustomer { get; set; } = null!;
 
+    /// <summary>
+    /// Link to dbo.Customer as an direct user (i.e. user who is member only of an organization and not of a directory) who is a member of a role
+    /// </summary>
     [ForeignKey("DirectUserId")]
     [InverseProperty("RoleMemberDirectUsers")]
     public virtual Customer? DirectUser { get; set; }
 
+    /// <summary>
+    /// Link to dbo.EffectiveUser as an effective user (i.e. user who is member of a directory and not only of an organization) who is a member of a role
+    /// </summary>
     [ForeignKey("EffectiveUserId")]
     [InverseProperty("RoleMembers")]
     public virtual EffectiveUser? EffectiveUser { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Role as a role which is grant to a (direct or effective) user
+    /// </summary>
     [ForeignKey("RoleId")]
     [InverseProperty("RoleMembers")]
     public virtual Role Role { get; set; } = null!;
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who updates a role member
+    /// </summary>
     [ForeignKey("UpdatedByCustomerId")]
     [InverseProperty("RoleMemberUpdatedByCustomers")]
     public virtual Customer? UpdatedByCustomer { get; set; }

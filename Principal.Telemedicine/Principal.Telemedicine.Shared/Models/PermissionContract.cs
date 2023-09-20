@@ -79,9 +79,15 @@ public class PermissionContract
     /// </summary>
     public string? Description { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Permission as a parent permission, used for hierarchy of permissions
+    /// </summary>
     [JsonPropertyName("subjectObject.ParentSubjectObject")]
     public virtual PermissionContract? ParentPermission { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Subject as a subject of the application
+    /// </summary>
     [JsonPropertyName("subjectObject")]
     public virtual SubjectContract Subject { get; set; } = null!;
 

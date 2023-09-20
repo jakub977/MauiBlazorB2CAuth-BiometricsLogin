@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
 
@@ -61,18 +58,30 @@ public partial class GroupEffectiveMember
     /// </summary>
     public int GroupId { get; set; }
 
+    /// <summary>
+    ///  Link to dbo.Customer as an user who creates a group effective member
+    /// </summary>
     [ForeignKey("CreatedByCustomerId")]
     [InverseProperty("GroupEffectiveMemberCreatedByCustomers")]
     public virtual Customer CreatedByCustomer { get; set; } = null!;
 
+    /// <summary>
+    /// Link to dbo.EffectiveUser as an effective user (i.e. user who is member of a directory and not only of an organization) who is a member of group"
+    /// </summary>
     [ForeignKey("EffectiveUserId")]
     [InverseProperty("GroupEffectiveMembers")]
     public virtual EffectiveUser EffectiveUser { get; set; } = null!;
 
+    /// <summary>
+    /// Link to dbo.Group as a group of which user is a member
+    /// </summary>
     [ForeignKey("GroupId")]
     [InverseProperty("GroupEffectiveMembers")]
     public virtual Group Group { get; set; } = null!;
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who updates a group effective member
+    /// </summary>
     [ForeignKey("UpdatedByCustomerId")]
     [InverseProperty("GroupEffectiveMemberUpdatedByCustomers")]
     public virtual Customer? UpdatedByCustomer { get; set; }

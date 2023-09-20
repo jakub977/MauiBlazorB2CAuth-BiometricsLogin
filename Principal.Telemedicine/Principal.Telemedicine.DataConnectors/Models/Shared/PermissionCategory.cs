@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
 
@@ -63,13 +60,22 @@ public partial class PermissionCategory
     [StringLength(200)]
     public string? Description { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who creates a permission category
+    /// </summary>
     [ForeignKey("CreatedByCustomerId")]
     [InverseProperty("PermissionCategoryCreatedByCustomers")]
     public virtual Customer CreatedByCustomer { get; set; } = null!;
 
+    /// <summary>
+    /// Inverse collection of Permissions with the same permission category
+    /// </summary>
     [InverseProperty("PermissionCategory")]
     public virtual ICollection<Permission> Permissions { get; set; } = new List<Permission>();
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who updates a permission category
+    /// </summary>
     [ForeignKey("UpdatedByCustomerId")]
     [InverseProperty("PermissionCategoryUpdatedByCustomers")]
     public virtual Customer? UpdatedByCustomer { get; set; }

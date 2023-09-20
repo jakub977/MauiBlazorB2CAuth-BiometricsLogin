@@ -115,9 +115,18 @@ public class PictureContract
     /// </summary>
     public decimal? ConvertedSizeInkB { get; set; }
 
+    /// <summary>
+    /// Width of thumbnail
+    /// </summary>
     public int? ThumbnailWidth { get; set; }
 
+    /// <summary>
+    /// Height of thumbnail
+    /// </summary>
     public int? ThumbnailHeight { get; set; }
 
+    /// <summary>
+    /// Link to dbo.MediaStorage as hex of a picture
+    /// </summary>
     public virtual MediaStorageContract? MediaStorage { get; set; }
 }

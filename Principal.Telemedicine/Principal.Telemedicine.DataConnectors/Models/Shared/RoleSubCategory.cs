@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
 
@@ -63,13 +60,22 @@ public partial class RoleSubCategory
     [StringLength(200)]
     public string? Description { get; set; }
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who creates a role sub category
+    /// </summary>
     [ForeignKey("CreatedByCustomerId")]
     [InverseProperty("RoleSubCategoryCreatedByCustomers")]
     public virtual Customer CreatedByCustomer { get; set; } = null!;
 
+    /// <summary>
+    /// Inverse collection of RoleCategoryCombinations to which role sub category is related
+    /// </summary>
     [InverseProperty("RoleSubCategory")]
     public virtual ICollection<RoleCategoryCombination> RoleCategoryCombinations { get; set; } = new List<RoleCategoryCombination>();
 
+    /// <summary>
+    /// Link to dbo.Customer as an user who updates a role sub category
+    /// </summary>
     [ForeignKey("UpdatedByCustomerId")]
     [InverseProperty("RoleSubCategoryUpdatedByCustomers")]
     public virtual Customer? UpdatedByCustomer { get; set; }
