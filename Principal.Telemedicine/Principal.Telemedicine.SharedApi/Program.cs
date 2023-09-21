@@ -5,6 +5,7 @@ using Principal.Telemedicine.DataConnectors.Mapping;
 using Principal.Telemedicine.Shared.Logging;
 using System.Text.Json.Serialization;
 using Principal.Telemedicine.DataConnectors.Contexts;
+using Principal.Telemedicine.DataConnectors.Models;
 using Principal.Telemedicine.DataConnectors.Repositories;
 using Principal.Telemedicine.Shared.Configuration;
 
@@ -26,8 +27,8 @@ builder.Services.AddAutoMapper(typeof(Mapping).Assembly);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<DbContextApi>(options => 
-    options.UseSqlServer(builder.Configuration.GetConnectionString("VANDA_TEST")));
+builder.Services.AddDbContext<DbContextApi>(options => options.UseLazyLoadingProxies().
+UseSqlServer(builder.Configuration.GetConnectionString("VANDA_TEST")));
 
 builder.Services.AddDbContext<DbContextGeneral>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("TMWorkstore")));

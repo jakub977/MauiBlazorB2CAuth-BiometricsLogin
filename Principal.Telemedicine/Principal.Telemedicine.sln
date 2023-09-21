@@ -44,6 +44,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Security", "Security", "{29
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Principal.Telemedicine.Shared.Infrastructure.Test", "Principal.Telemedicine.Shared.Infrastructure.Test\Principal.Telemedicine.Shared.Infrastructure.Test.csproj", "{61D9957C-C3CD-4A4D-B230-EA29DD427228}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Principal.Telemedicine.PenelopeApi", "Principal.Telemedicine.PenelopeApi\Principal.Telemedicine.PenelopeApi.csproj", "{C2EC0945-D503-43E3-8CFD-1493FF460592}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Principal.Telemedicine.PenelopeData", "Principal.Telemedicine.PenelopeData\Principal.Telemedicine.PenelopeData.csproj", "{6C754BD6-4D9A-4402-8495-143EF632AA66}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -102,6 +106,14 @@ Global
 		{61D9957C-C3CD-4A4D-B230-EA29DD427228}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61D9957C-C3CD-4A4D-B230-EA29DD427228}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61D9957C-C3CD-4A4D-B230-EA29DD427228}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2EC0945-D503-43E3-8CFD-1493FF460592}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2EC0945-D503-43E3-8CFD-1493FF460592}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2EC0945-D503-43E3-8CFD-1493FF460592}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2EC0945-D503-43E3-8CFD-1493FF460592}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C754BD6-4D9A-4402-8495-143EF632AA66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C754BD6-4D9A-4402-8495-143EF632AA66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C754BD6-4D9A-4402-8495-143EF632AA66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C754BD6-4D9A-4402-8495-143EF632AA66}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

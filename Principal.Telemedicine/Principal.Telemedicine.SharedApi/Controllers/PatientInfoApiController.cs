@@ -3,17 +3,19 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Principal.Telemedicine.DataConnectors.Contexts;
+using Principal.Telemedicine.DataConnectors.Models;
+using Principal.Telemedicine.Shared.Enums;
 using Principal.Telemedicine.Shared.Models;
 using System.Data;
 using System.Text;
-using Principal.Telemedicine.DataConnectors.Contexts;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
-    
-    /// <summary>
-    /// API metody vztažené k sekci Karta pacienta.
-    /// </summary>
-    [Route("api/[controller]/[action]")]
+
+/// <summary>
+/// API metody vztažené k sekci Karta pacienta.
+/// </summary>
+[Route("api/[controller]/[action]")]
     [ApiController] 
     public class PatientInfoApiController : ControllerBase
     {
@@ -259,5 +261,44 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
         }
     }
 
+
+    /// <summary>
+    /// Vrátí plánovač pacienta s naměřenými hodnotami.
+    /// </summary>
+    /// <param name="apiKey"></param>
+    /// <param name="userGlobalId"></param>
+    /// <returns></returns>
+    [AllowAnonymous]
+    [HttpGet(Name = "GeneralGetUserCalendarWithMeasuredValues")] //[FromHeader(Name = "x-api-key")] string apiKey,
+    public async Task<IActionResult> GeneralGetUserCalendarWithMeasuredValues(string userGlobalId, string preferredLanguageCode)
+    {
+
+        if (string.IsNullOrEmpty(userGlobalId) || string.IsNullOrEmpty(preferredLanguageCode))
+        {
+            return BadRequest();
+        }
+
+        LanguageCodeEnum lce = Enum.Parse<LanguageCodeEnum>(preferredLanguageCode);
+        int languageId = (int)lce;
+
+        try
+        {
+
+            var calendarWMeasuredValues = await _dbContext.UserCalendarWithMeasuredValuesDataModels.FromSql($"dbo.sp_GetUserCalendarWithMeasuredValues @GlobalId = {userGlobalId}, @LanguageId = {languageId} ").AsNoTracking().ToListAsync();
+
+            if (!calendarWMeasuredValues.Any())
+            {
+                return NotFound();
+            }
+            return Ok(calendarWMeasuredValues);
+
+        }
+
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
 } 
 

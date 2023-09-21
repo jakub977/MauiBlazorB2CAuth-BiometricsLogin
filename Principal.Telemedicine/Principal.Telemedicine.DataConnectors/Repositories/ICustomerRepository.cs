@@ -1,4 +1,5 @@
-﻿using Principal.Telemedicine.DataConnectors.Models.Shared;
+﻿using Principal.Telemedicine.DataConnectors.Models;
+using Principal.Telemedicine.DataConnectors.Models.Shared;
 
 namespace Principal.Telemedicine.DataConnectors.Repositories;
 
@@ -19,5 +20,12 @@ namespace Principal.Telemedicine.DataConnectors.Repositories;
         /// <param name="id"></param>
         /// <returns> Konkrétní uživatel </returns>
         Task<Customer?> GetCustomerByIdTaskAsync(int id);
-    }
+
+        /// <summary>
+        /// Metoda vrací konkrétního uživatele na základě id.
+        /// </summary>
+        /// <param name="globalId"></param>
+        /// <returns> Konkrétní uživatel </returns>
+        Task<Customer?> GetCustomerByGlobalIdTaskAsync(string globalId);
+}
 

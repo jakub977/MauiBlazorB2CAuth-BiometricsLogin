@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Principal.Telemedicine.DataConnectors.Models;
 using Principal.Telemedicine.Shared.Models;
 using Principal.Telemedicine.SharedApi.Controllers;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +8,7 @@ using Xunit;
 
 namespace Principal.Telemedicine.SharedApi.Test;
 
-    public class PatientInfoApiControllerTest
+public class PatientInfoApiControllerTest
     {
 
         [Fact(DisplayName = "Test api metody pro vrácení souhrnných informací uživatele ohledně naměřených hodnot, predikcí a podobně.")]
