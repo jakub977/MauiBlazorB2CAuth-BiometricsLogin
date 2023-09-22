@@ -21,7 +21,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DbContextApi>(options => options.UseLazyLoadingProxies().
 UseSqlServer(builder.Configuration.GetConnectionString("MAIN_DB")));
 
-builder.Services.AddDbContext<DbContextGeneral>(options =>
+builder.Services.AddDbContext<DbContextApi>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("TMWorkstore")));
 
 var app = builder.Build();

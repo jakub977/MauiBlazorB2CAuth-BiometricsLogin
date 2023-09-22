@@ -31,7 +31,7 @@ namespace Principal.Telemedicine.Shared.Logging.Tests
                        .UseTestServer()
                         .ConfigureServices(services =>
                         {
-                            services.AddDbContext<DbContextGeneral>(fn =>
+                            services.AddDbContext<DbContextApi>(fn =>
                             {
                                 fn.UseInMemoryDatabase(databaseName: "TestDatabaseMiddleware");
                                 fn.EnableSensitiveDataLogging(false);
@@ -92,13 +92,14 @@ namespace Principal.Telemedicine.Shared.Logging.Tests
             await middleware.Invoke(httpContext);
 
             // Assert
-            var dbContext = serviceProvider.GetService<DbContextGeneral>();
+            var dbContext = serviceProvider.GetService<DbContextApi>();
             var logs = dbContext.Logs.ToList(); // Získáme logy z databáze
 
             // Ověříme, zda se zapsaly očekávané logy
             Assert.True(logs.Count >= 2); // Očekáváme alespoň 2 logy (jeden pro požadavek a jeden pro odpověď)
-            Assert.Contains(logs, log => log.AdditionalInfo.Contains("=== Request Info ==="));
-            Assert.Contains(logs, log => log.AdditionalInfo.Contains("=== Response Info ==="));
+            Assert.Contains(logs, log => log.Logger.Contains("INPUT REQUEST"));
+            Assert.Contains(logs, log => log.HttpMethod.Contains("POST"));
+            Assert.Contains(logs, log => log.Logger.Contains("INPUT RESPONSE"));
         }
 
     }

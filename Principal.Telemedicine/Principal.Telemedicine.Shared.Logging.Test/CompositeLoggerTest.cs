@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Logging;
 using Moq;
-using Principal.Telemedicine.Shared.Logging;
 using Xunit;
 
 namespace Principal.Telemedicine.Shared.Logging.Tests;

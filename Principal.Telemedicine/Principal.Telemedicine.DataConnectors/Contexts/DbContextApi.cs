@@ -58,6 +58,7 @@ public partial class DbContextApi : DbContext
     [NotMapped]
     public virtual DbSet<PregnancyInfoDataModel> PregnancyInfoDataModels { get; set; }
 
+    public virtual DbSet<Log> Logs { get; set; }
 
     public virtual DbSet<AddressCity> AddressCities { get; set; }
 
@@ -912,6 +913,18 @@ public partial class DbContextApi : DbContext
             entity.Property(e => e.Id).HasComment("Primary identifier of a multimedia");
             entity.Property(e => e.Data).HasComment("Binary data of a multimedia");
         });
+        modelBuilder.Entity<Log>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_dbo.Log");
+            entity.Property(e => e.Id).HasComment("Primary identifier of logs");
+            entity.Property(e => e.CorrelationGuid).HasMaxLength(500);
+            entity.Property(e => e.CreatedOnUtc)
+                .HasDefaultValueSql("(getutcdate())")
+                .HasComment("\r\nDate of log creation, using coordinated universal time")
+                .HasColumnType("datetime");
+        });
+
+
 
         OnModelCreatingPartial(modelBuilder);
     }

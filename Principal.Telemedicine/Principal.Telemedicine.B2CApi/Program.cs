@@ -13,9 +13,6 @@ var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json")
 var secretFilePath = "Secured/secrets.json";
 
 
-builder.Services.AddDbContext<DbContextGeneral>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("TMWorkstore")));
-
 builder.Services.AddDbContext<DbContextApi>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("VANDA_TEST")));
 
