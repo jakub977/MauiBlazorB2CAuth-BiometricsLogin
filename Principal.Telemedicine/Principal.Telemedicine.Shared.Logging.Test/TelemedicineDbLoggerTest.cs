@@ -15,7 +15,7 @@ namespace Principal.Telemedicine.Shared.Logging.Tests
             var services = new ServiceCollection();
 
            
-            services.AddDbContext<DbContextGeneral>(options =>
+            services.AddDbContext<DbContextApi>(options =>
             {             
                 options.UseInMemoryDatabase( databaseName: "TestDatabaseDbTest");
             });
@@ -28,7 +28,7 @@ namespace Principal.Telemedicine.Shared.Logging.Tests
             telemedicineDbLogger.Log(LogLevel.Information, new EventId(), "Test message", null, (s, e) => s.ToString());
 
 
-            using (var context = _serviceProvider.GetRequiredService<DbContextGeneral>())
+            using (var context = _serviceProvider.GetRequiredService<DbContextApi>())
             {
 
                 // Assert

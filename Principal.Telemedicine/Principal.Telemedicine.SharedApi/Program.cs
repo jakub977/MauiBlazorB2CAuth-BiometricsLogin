@@ -30,8 +30,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DbContextApi>(options => options.UseLazyLoadingProxies().
 UseSqlServer(builder.Configuration.GetConnectionString("VANDA_TEST")));
 
-builder.Services.AddDbContext<DbContextGeneral>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("TMWorkstore")));
+
 
 builder.Services.AddLogging(configuration);
 

@@ -23,7 +23,7 @@ public class DiRegistrationTests
         var hostBuilder = new HostBuilder()
             .ConfigureServices((context, services) =>
             {
-                services.AddDbContext<DbContextGeneral>(fn =>
+                services.AddDbContext<DbContextApi>(fn =>
                 {
                     fn.UseInMemoryDatabase(databaseName: "TestDatabaseLogCustom");
                     fn.EnableSensitiveDataLogging(false);
@@ -49,12 +49,12 @@ public class DiRegistrationTests
         // Act
         var logger = serviceProvider.GetService<ILogger<DiRegistrationTests>>();
      
-        logger.LogCustom(Enumerators.CustomLogLevel.Audit, "TestTopic", "this test source", "short message from log", "full message from log", "aditionalInfo from log", "idCommunication");
+        logger.LogCustom(Enumerators.CustomLogLevel.Audit, "TestTopic", "this test source", "short message from log", "full message from log", "Trace INF");
         
-        using var _context = serviceProvider.GetService<DbContextGeneral>();
+        using var _context = serviceProvider.GetService<DbContextApi>();
         var entity = _context?.Logs.FirstOrDefault(m=> m.Id==1);
         Assert.NotNull(entity);
-        Assert.Equal("short message from log", entity?.ShortMessage);
+        Assert.Equal("short message from log", entity?.FullMessage);
        
 
 
