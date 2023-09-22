@@ -22,6 +22,7 @@ public static class CustomLoggerExtensions
     /// <param name="aditionalInfo"></param>
     /// <param name="traceInformation"></param>
     /// <param name="httpMethod"></param>
+    /// <param name="ipAddress"></param>
     public static void LogCustom<T>(this ILogger<T> logger, CustomLogLevel customLogLevel, string source, string shortMessage,  string fullMessage, string aditionalInfo, string traceInformation, string httpMethod = "" , string ipAddress = "" )
     {
         LogLevel logLevel = MapCustomLogLevelToLogLevel(customLogLevel);
@@ -29,19 +30,20 @@ public static class CustomLoggerExtensions
         
         string message = JsonSerializer.Serialize(logEntry);
         logger.Log(logLevel, message);
-    } 
+    }
 
     /// <summary>
-    /// Zaloguje simple log do databáze
+    ///  Zaloguje simple log do databáze
     /// </summary>
     /// <param name="logger"></param>
     /// <param name="customLogLevel"></param>
-    /// <param name="friendlyTopic"></param>
     /// <param name="source"></param>
     /// <param name="shortMessage"></param>
     /// <param name="fullMessage"></param>
     /// <param name="aditionalInfo"></param>
-    /// <param name="internalComunicationId"></param>
+    /// <param name="traceInformation"></param>
+    /// <param name="httpMethod"></param>
+    /// <param name="ipAddress"></param>
     public static void LogCustom(this ILogger logger, CustomLogLevel customLogLevel, string source, string shortMessage, string fullMessage, string aditionalInfo, string traceInformation, string httpMethod="", string ipAddress = "")
     {
         LogLevel logLevel = MapCustomLogLevelToLogLevel(customLogLevel);
