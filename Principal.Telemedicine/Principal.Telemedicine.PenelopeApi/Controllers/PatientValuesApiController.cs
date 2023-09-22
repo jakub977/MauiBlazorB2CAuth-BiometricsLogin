@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.Shared.Enums;
 using System.Data;
+using Principal.Telemedicine.PenelopeData.Models;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
 
@@ -159,6 +160,7 @@ public class PatientValuesApiController : ControllerBase
     /// <param name="userGlobalId"></param>
     /// <param name="preferredLanguageCode"></param>
     /// <returns></returns>
+    [AllowAnonymous]
     [HttpGet(Name = "PENEGetLastUserMeasuredValue")]
     public async Task<IActionResult> PENEGetLastUserMeasuredValue(string userGlobalId, string preferredLanguageCode)
     {
@@ -197,6 +199,7 @@ public class PatientValuesApiController : ControllerBase
     /// </summary>
     /// <param name="preferredLanguageCode"></param>
     /// <returns></returns>
+    [AllowAnonymous]
     [HttpGet(Name = "PENEGetClinicalSymptomQuestions")]
     public async Task<IActionResult> PENEGetClinicalSymptomQuestions(string preferredLanguageCode)
     {
@@ -235,6 +238,7 @@ public class PatientValuesApiController : ControllerBase
     /// </summary>
     /// <param name="userGlobalId"></param>
     /// <returns></returns>
+    [AllowAnonymous]
     [HttpGet(Name = "PENEGetExpectedBirthDate")]
     public async Task<IActionResult> PENEGetExpectedBirthDate(string userGlobalId)
     {
@@ -265,10 +269,14 @@ public class PatientValuesApiController : ControllerBase
         }
     }
 
+    [AllowAnonymous]
     [HttpPost(Name = "PENESaveMeasuredPhysiologicalDataFromMA")]
-    public async Task<IActionResult> PENESaveMeasuredPhysiologicalDataFromMA([FromBody] OrderInfo values)
+    public async Task<IActionResult> PENESaveMeasuredPhysiologicalDataFromMA([FromBody]PhysiologicalDataRoot physiologicalDataRoot)
     {
-        var dataJson = new SqlParameter();
+        if(physiologicalDataRoot == null)
+            return BadRequest();
+
+        var dataJson = new SqlParameter("dataJson", physiologicalDataRoot);
         dataJson.ParameterName = "@dataJson";
         dataJson.SqlDbType = SqlDbType.NVarChar;
         dataJson.Direction = ParameterDirection.Input;
