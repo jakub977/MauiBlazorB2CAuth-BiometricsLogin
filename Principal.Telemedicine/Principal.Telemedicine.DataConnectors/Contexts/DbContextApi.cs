@@ -49,6 +49,15 @@ public partial class DbContextApi : DbContext
     [NotMapped]
     public virtual DbSet<ScheduledActivitiesDataModel> ScheduledActivitiesDataModels { get; set; }
 
+    [NotMapped]
+    public virtual DbSet<UserMeasuredValuesDataModel> UserMeasuredValuesDataModels { get; set; }
+
+    [NotMapped]
+    public virtual DbSet<ClinicalSymptomQuestionDataModel> ClinicalSymptomQuestionDataModels { get; set; }
+
+    [NotMapped]
+    public virtual DbSet<PregnancyInfoDataModel> PregnancyInfoDataModels { get; set; }
+
 
     public virtual DbSet<AddressCity> AddressCities { get; set; }
 

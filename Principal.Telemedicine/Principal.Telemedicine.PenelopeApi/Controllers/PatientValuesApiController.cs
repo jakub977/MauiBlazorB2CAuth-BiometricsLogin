@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.Shared.Enums;
+using System.Data;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
 
@@ -149,6 +151,130 @@ public class PatientValuesApiController : ControllerBase
             _logger.LogError(ex.Message);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
+    }
+
+    /// <summary>
+    /// Vrácení posledních známých naměřených hodnot pro homepage - zde se nejedná o hodinové agregované hodnoty, ale hodnoty aktualizované po provedeném měření.
+    /// </summary>
+    /// <param name="userGlobalId"></param>
+    /// <param name="preferredLanguageCode"></param>
+    /// <returns></returns>
+    [HttpGet(Name = "PENEGetLastUserMeasuredValue")]
+    public async Task<IActionResult> PENEGetLastUserMeasuredValue(string userGlobalId, string preferredLanguageCode)
+    {
+
+        if (string.IsNullOrEmpty(userGlobalId) || string.IsNullOrEmpty(preferredLanguageCode))
+        {
+            _logger.Log(LogLevel.Error, "GlobalId and preferredLanguage are empty.");
+            return BadRequest();
+        }
+
+        try
+        {
+            LanguageCodeEnum lce = Enum.Parse<LanguageCodeEnum>(preferredLanguageCode);
+            int languageId = (int)lce;
+            
+            var userMeasuredValues = await _dbContext.UserMeasuredValuesDataModels.FromSql($"dbo.sp_GetLastUserMeasuredValue @GlobalId = {userGlobalId}, @LanguageId = {languageId} ").AsNoTracking().ToListAsync();
+
+            if (!userMeasuredValues.Any())
+            {
+                _logger.Log(LogLevel.Error, "No measured values of the user were found");
+                return NotFound();
+            }
+            return Ok(userMeasuredValues);
+
+        }
+
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
+
+    /// <summary>
+    /// Vrátí seznamu sledovaných symptomů a očekávaných odpovědí pro mobilní aplikaci. Zjednodušená struktura symptomů nabízí výčet symptomů bez zařazení do kategorií, s odpověďmi ve variantách true/false.
+    /// </summary>
+    /// <param name="preferredLanguageCode"></param>
+    /// <returns></returns>
+    [HttpGet(Name = "PENEGetClinicalSymptomQuestions")]
+    public async Task<IActionResult> PENEGetClinicalSymptomQuestions(string preferredLanguageCode)
+    {
+
+        if (string.IsNullOrEmpty(preferredLanguageCode))
+        {
+            _logger.Log(LogLevel.Error, "PreferredLanguage is empty.");
+            return BadRequest();
+        }
+
+        try
+        {
+            LanguageCodeEnum lce = Enum.Parse<LanguageCodeEnum>(preferredLanguageCode);
+            int languageId = (int)lce;
+
+            var clinicalSymptomQuestions = await _dbContext.ClinicalSymptomQuestionDataModels.FromSql($"dbo.sp_GetClinicalSymptomQuerySimpleRaw @LanguageId = {languageId} ").AsNoTracking().ToListAsync();
+
+            if (!clinicalSymptomQuestions.Any())
+            {
+                _logger.Log(LogLevel.Error, "No clinical symptom questions were found");
+                return NotFound();
+            }
+            return Ok(clinicalSymptomQuestions);
+
+        }
+
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
+
+    /// <summary>
+    /// Vrátí počet dní zbývajících do vypočteného termínu porodu, k zobrazení v mobilní aplikaci.
+    /// </summary>
+    /// <param name="userGlobalId"></param>
+    /// <returns></returns>
+    [HttpGet(Name = "PENEGetExpectedBirthDate")]
+    public async Task<IActionResult> PENEGetExpectedBirthDate(string userGlobalId)
+    {
+
+        if (string.IsNullOrEmpty(userGlobalId))
+        {
+            _logger.Log(LogLevel.Error, "GlobalId parameter is empty.");
+            return BadRequest();
+        }
+
+        try
+        {
+            var pregnancyInfo = _dbContext.PregnancyInfoDataModels.FromSql($"dbo.sp_GetExpectedBirthDate @GlobalId = {userGlobalId}");
+
+            if (pregnancyInfo == null)
+            {
+                _logger.Log(LogLevel.Error, "No pregnancy info was found");
+                return NotFound();
+            }
+            return Ok(pregnancyInfo);
+
+        }
+
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
+
+    [HttpPost(Name = "PENESaveMeasuredPhysiologicalDataFromMA")]
+    public async Task<IActionResult> PENESaveMeasuredPhysiologicalDataFromMA([FromBody] OrderInfo values)
+    {
+        var dataJson = new SqlParameter();
+        dataJson.ParameterName = "@dataJson";
+        dataJson.SqlDbType = SqlDbType.NVarChar;
+        dataJson.Direction = ParameterDirection.Input;
+
+        await _dbContext.Database.ExecuteSqlAsync($"dbo.sp_SaveMeasuredPhysiologicalDataFromMA @dataJson = {dataJson}");
+        return Ok();
     }
 }
 
