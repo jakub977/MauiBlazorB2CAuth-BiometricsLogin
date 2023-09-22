@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using Principal.Telemedicine.DataConnectors.Contexts;
-using Principal.Telemedicine.DataConnectors.Models.General;
+using Principal.Telemedicine.DataConnectors.Models.Shared;
 
 namespace Principal.Telemedicine.Shared.Logging;
 /// <summary>
@@ -84,13 +84,13 @@ public class TelemedicineDbLogger:ILogger
         }
         catch // Není JSON nebo je jiný než očekávaný
         {
-            logEntry = new() { FullMessage = message, ShortMessage = message.Substring(0,message.Length>4000?4000:message.Length), CreatedDateUtc = DateTime.UtcNow, Source = Environment.ProcessPath.Substring(0, Environment.ProcessPath.Length>99?99:Environment.ProcessPath.Length), FriendlyTopic = logLevel.ToString()  };
+            logEntry = new() { FullMessage = message, ShortMessage = message.Substring(0,message.Length>4000?4000:message.Length), CreatedOnUtc = DateTime.UtcNow, Logger = Environment.ProcessPath.Substring(0, Environment.ProcessPath.Length>99?99:Environment.ProcessPath.Length), LogLevelId = (int) logLevel };
         }
         try
         {
             using (var scope = _serviceProvider.CreateScope())
             {
-                var _dbContextGeneral = scope.ServiceProvider.GetRequiredService<DbContextGeneral>();
+                var _dbContextGeneral = scope.ServiceProvider.GetRequiredService<DbContextApi>();
 
                 if (_dbContextGeneral != null)
                 {
