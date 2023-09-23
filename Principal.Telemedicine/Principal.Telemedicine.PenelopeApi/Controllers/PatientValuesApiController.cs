@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.Shared.Enums;
 using System.Data;
+using Newtonsoft.Json;
 using Principal.Telemedicine.PenelopeData.Models;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
@@ -273,16 +274,99 @@ public class PatientValuesApiController : ControllerBase
     [HttpPost(Name = "PENESaveMeasuredPhysiologicalDataFromMA")]
     public async Task<IActionResult> PENESaveMeasuredPhysiologicalDataFromMA([FromBody]PhysiologicalDataRoot physiologicalDataRoot)
     {
-        if(physiologicalDataRoot == null)
+        if (physiologicalDataRoot == null)
             return BadRequest();
 
-        var dataJson = new SqlParameter("dataJson", physiologicalDataRoot);
-        dataJson.ParameterName = "@dataJson";
-        dataJson.SqlDbType = SqlDbType.NVarChar;
-        dataJson.Direction = ParameterDirection.Input;
+        try
+        {
+            string json = JsonConvert.SerializeObject(physiologicalDataRoot);
+            var dataJson = new SqlParameter("dataJson", json);
+            dataJson.ParameterName = "@dataJson";
+            dataJson.SqlDbType = SqlDbType.NVarChar;
+            //dataJson.Direction = ParameterDirection.Output;
 
-        await _dbContext.Database.ExecuteSqlAsync($"dbo.sp_SaveMeasuredPhysiologicalDataFromMA @dataJson = {dataJson}");
-        return Ok();
+            var resultState = await _dbContext.Database.ExecuteSqlRawAsync($"dbo.sp_SaveMeasuredPhysiologicalDataFromMA @dataJson = {dataJson}");
+            if (resultState != 1)
+            {
+                return NotFound();
+            }
+
+            return Ok();
+        }
+
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
+
+    [AllowAnonymous]
+    [HttpPost(Name = "PENESaveUserResponseToNotification")]
+    public async Task<IActionResult> PENESaveUserResponseToNotification([FromBody] ScheduledActivityDataModel scheduledActivity)
+    {
+        if (scheduledActivity == null)
+            return BadRequest();
+
+        try
+        {
+            var activityUniqueId = new SqlParameter("ActivityUniqueId", scheduledActivity.ActivityUniqueId);
+            activityUniqueId.ParameterName = "@ActivityUniqueId";
+            activityUniqueId.SqlDbType = SqlDbType.VarChar;
+
+            var isCompleted = new SqlParameter("IsCompleted", scheduledActivity.ActivityUniqueId);
+            isCompleted.ParameterName = "@IsCompleted";
+            isCompleted.SqlDbType = SqlDbType.Bit;
+
+            var dateOfCompletion = new SqlParameter("DateOfCompletion", scheduledActivity.ActivityUniqueId);
+            dateOfCompletion.ParameterName = "@DateOfCompletion";
+            dateOfCompletion.SqlDbType = SqlDbType.DateTime;
+
+            var resultState = await _dbContext.Database.ExecuteSqlRawAsync($"dbo.sp_SetActivityStatus @ActivityUniqueId = {activityUniqueId}, @IsCompleted = {isCompleted},  @DateOfCompletion = {dateOfCompletion}");
+            if (resultState != 1)
+            {
+                return NotFound();
+            }
+
+            return Ok();
+        }
+
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
+
+    [AllowAnonymous]
+    [HttpPost(Name = "PENESaveUserDiseaseSymptomSubjectiveAssessment")]
+    public async Task<IActionResult> PENESaveUserDiseaseSymptomSubjectiveAssessment([FromBody]List<ClinicalSymptomAnswerDataModel> clinicalSymptomAnswerDataModels)
+    {
+        if (!clinicalSymptomAnswerDataModels.Any())
+            return BadRequest();
+
+        try
+        {
+            string json = JsonConvert.SerializeObject(clinicalSymptomAnswerDataModels);
+            var dataJson = new SqlParameter("answerJson", json);
+            dataJson.ParameterName = "@answerJson";
+            dataJson.SqlDbType = SqlDbType.NVarChar;
+            //dataJson.Direction = ParameterDirection.Output;
+
+            var resultState = await _dbContext.Database.ExecuteSqlRawAsync($"dbo.sp_SaveUserDiseaseSymptomSubjectiveAssessmentSimple @answerJson = {dataJson}");
+            if (resultState != 1)
+            {
+                return NotFound();
+            }
+
+            return Ok();
+        }
+
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
     }
 }
 

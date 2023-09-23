@@ -138,7 +138,10 @@ public partial class DbContextApi : DbContext
         modelBuilder.Entity<AvailableDeviceListItemDataModel>().HasNoKey();
         modelBuilder.Entity<ScheduledActivitiesDataModel>().HasNoKey();
         modelBuilder.Entity<UserCalendarWithMeasuredValuesDataModel>().HasNoKey();
-        modelBuilder.Entity<CalendarWithMeasuredValuesDataModel>().HasNoKey(); 
+        modelBuilder.Entity<CalendarWithMeasuredValuesDataModel>().HasNoKey();
+        modelBuilder.Entity<UserMeasuredValuesDataModel>().HasNoKey();
+        modelBuilder.Entity<ClinicalSymptomQuestionDataModel>().HasNoKey();
+        modelBuilder.Entity<PregnancyInfoDataModel>().HasNoKey();
 
         modelBuilder.Entity<AddressCity>(entity =>
         {
