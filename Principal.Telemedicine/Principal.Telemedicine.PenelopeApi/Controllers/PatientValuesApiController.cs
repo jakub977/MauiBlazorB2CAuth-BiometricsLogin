@@ -196,7 +196,8 @@ public class PatientValuesApiController : ControllerBase
     }
 
     /// <summary>
-    /// Vrátí seznamu sledovaných symptomů a očekávaných odpovědí pro mobilní aplikaci. Zjednodušená struktura symptomů nabízí výčet symptomů bez zařazení do kategorií, s odpověďmi ve variantách true/false.
+    /// Vrátí seznamu sledovaných symptomů a očekávaných odpovědí pro mobilní aplikaci. Zjednodušená struktura symptomů nabízí výčet symptomů bez zařazení do kategorií, 
+    /// s odpověďmi ve variantách true/false.
     /// </summary>
     /// <param name="preferredLanguageCode"></param>
     /// <returns></returns>
@@ -270,6 +271,11 @@ public class PatientValuesApiController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Uloží pacientky sledované hodnoty, které byly získány koncovým monitorovacím zařízením nebo vznikly ručním zadáním pacientkou.
+    /// </summary>
+    /// <param name="physiologicalDataRoot"></param>
+    /// <returns></returns>
     [AllowAnonymous]
     [HttpPost(Name = "PENESaveMeasuredPhysiologicalDataFromMA")]
     public async Task<IActionResult> PENESaveMeasuredPhysiologicalDataFromMA([FromBody]PhysiologicalDataRoot physiologicalDataRoot)
@@ -283,7 +289,7 @@ public class PatientValuesApiController : ControllerBase
             var dataJson = new SqlParameter("dataJson", json);
             dataJson.ParameterName = "@dataJson";
             dataJson.SqlDbType = SqlDbType.NVarChar;
-            //dataJson.Direction = ParameterDirection.Output;
+            dataJson.Direction = ParameterDirection.Input;
 
             var resultState = await _dbContext.Database.ExecuteSqlRawAsync($"dbo.sp_SaveMeasuredPhysiologicalDataFromMA @dataJson = {dataJson}");
             if (resultState != 1)
@@ -313,16 +319,19 @@ public class PatientValuesApiController : ControllerBase
             var activityUniqueId = new SqlParameter("ActivityUniqueId", scheduledActivity.ActivityUniqueId);
             activityUniqueId.ParameterName = "@ActivityUniqueId";
             activityUniqueId.SqlDbType = SqlDbType.VarChar;
+            activityUniqueId.Direction = ParameterDirection.Input;
 
-            var isCompleted = new SqlParameter("IsCompleted", scheduledActivity.ActivityUniqueId);
+            var isCompleted = new SqlParameter("IsCompleted", scheduledActivity.IsCompleted);
             isCompleted.ParameterName = "@IsCompleted";
             isCompleted.SqlDbType = SqlDbType.Bit;
+            isCompleted.Direction = ParameterDirection.Input;
 
-            var dateOfCompletion = new SqlParameter("DateOfCompletion", scheduledActivity.ActivityUniqueId);
+            var dateOfCompletion = new SqlParameter("DateOfCompletion", scheduledActivity.DateOfCompletion);
             dateOfCompletion.ParameterName = "@DateOfCompletion";
             dateOfCompletion.SqlDbType = SqlDbType.DateTime;
+            dateOfCompletion.Direction = ParameterDirection.Input;
 
-            var resultState = await _dbContext.Database.ExecuteSqlRawAsync($"dbo.sp_SetActivityStatus @ActivityUniqueId = {activityUniqueId}, @IsCompleted = {isCompleted},  @DateOfCompletion = {dateOfCompletion}");
+            var resultState = await _dbContext.Database.ExecuteSqlAsync($"dbo.sp_SetActivityStatus @ActivityUniqueId = {activityUniqueId}, @IsCompleted = {isCompleted},  @DateOfCompletion = {dateOfCompletion}");
             if (resultState != 1)
             {
                 return NotFound();
@@ -338,6 +347,11 @@ public class PatientValuesApiController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Uloží pacientkou označené subjektivní symptomy ze sekce Diagnostické otázky.
+    /// </summary>
+    /// <param name="clinicalSymptomAnswerDataModels"></param>
+    /// <returns></returns>
     [AllowAnonymous]
     [HttpPost(Name = "PENESaveUserDiseaseSymptomSubjectiveAssessment")]
     public async Task<IActionResult> PENESaveUserDiseaseSymptomSubjectiveAssessment([FromBody]List<ClinicalSymptomAnswerDataModel> clinicalSymptomAnswerDataModels)
@@ -348,12 +362,13 @@ public class PatientValuesApiController : ControllerBase
         try
         {
             string json = JsonConvert.SerializeObject(clinicalSymptomAnswerDataModels);
-            var dataJson = new SqlParameter("answerJson", json);
-            dataJson.ParameterName = "@answerJson";
-            dataJson.SqlDbType = SqlDbType.NVarChar;
-            //dataJson.Direction = ParameterDirection.Output;
+            var answerJson = new SqlParameter("answerJson", json);
+            answerJson.ParameterName = "@answerJson";
+            answerJson.SqlDbType = SqlDbType.NVarChar;
+            answerJson.Direction = ParameterDirection.Input;
 
-            var resultState = await _dbContext.Database.ExecuteSqlRawAsync($"dbo.sp_SaveUserDiseaseSymptomSubjectiveAssessmentSimple @answerJson = {dataJson}");
+
+            var resultState = _dbContext.Database.ExecuteSql($"dbo.sp_SaveUserDiseaseSymptomSubjectiveAssessmentSimple @answerJson = {answerJson}");
             if (resultState != 1)
             {
                 return NotFound();
