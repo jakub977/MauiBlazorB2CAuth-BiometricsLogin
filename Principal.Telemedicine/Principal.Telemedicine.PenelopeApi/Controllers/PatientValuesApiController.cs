@@ -177,11 +177,11 @@ public class PatientValuesApiController : ControllerBase
             LanguageCodeEnum lce = Enum.Parse<LanguageCodeEnum>(preferredLanguageCode);
             int languageId = (int)lce;
             
-            var userMeasuredValues = await _dbContext.UserMeasuredValuesDataModels.FromSql($"dbo.sp_GetLastUserMeasuredValue @GlobalId = {userGlobalId}, @LanguageId = {languageId} ").AsNoTracking().ToListAsync();
+            var userMeasuredValues = await _dbContext.UserMeasuredValuesDataModels.FromSql($"dbo.sp_GetLastUserMeasuredValue @userGlobalId = {userGlobalId}, @LanguageId = {languageId} ").AsNoTracking().ToListAsync();
 
             if (!userMeasuredValues.Any())
             {
-                _logger.Log(LogLevel.Error, "No measured values of the user were found");
+                _logger.Log(LogLevel.Error, "No measured values of the user were found.");
                 return NotFound();
             }
             return Ok(userMeasuredValues);
@@ -221,7 +221,7 @@ public class PatientValuesApiController : ControllerBase
 
             if (!clinicalSymptomQuestions.Any())
             {
-                _logger.Log(LogLevel.Error, "No clinical symptom questions were found");
+                _logger.Log(LogLevel.Error, "No clinical symptom questions were found.");
                 return NotFound();
             }
             return Ok(clinicalSymptomQuestions);
@@ -253,11 +253,11 @@ public class PatientValuesApiController : ControllerBase
 
         try
         {
-            var pregnancyInfo = _dbContext.PregnancyInfoDataModels.FromSql($"dbo.sp_GetExpectedBirthDate @GlobalId = {userGlobalId}");
+            var pregnancyInfo = await _dbContext.PregnancyInfoDataModels.FromSql($"dbo.sp_GetExpectedBirthDate @GlobalId = {userGlobalId}").AsNoTracking().ToListAsync();
 
-            if (pregnancyInfo == null)
+            if (!pregnancyInfo.Any())
             {
-                _logger.Log(LogLevel.Error, "No pregnancy info was found");
+                _logger.Log(LogLevel.Error, "No pregnancy info was found.");
                 return NotFound();
             }
             return Ok(pregnancyInfo);
@@ -285,15 +285,19 @@ public class PatientValuesApiController : ControllerBase
 
         try
         {
+            object[] parameters = new object[1];
+
             string json = JsonConvert.SerializeObject(physiologicalDataRoot);
+
             var dataJson = new SqlParameter("dataJson", json);
-            dataJson.ParameterName = "@dataJson";
             dataJson.SqlDbType = SqlDbType.NVarChar;
             dataJson.Direction = ParameterDirection.Input;
-
-            var resultState = await _dbContext.Database.ExecuteSqlRawAsync($"dbo.sp_SaveMeasuredPhysiologicalDataFromMA @dataJson = {dataJson}");
-            if (resultState != 1)
+            parameters[0] = dataJson;
+            
+            int procedureResultState = await _dbContext.Database.ExecuteSqlRawAsync("dbo.sp_SaveMeasuredPhysiologicalDataFromMA @dataJson", parameters);
+            if (procedureResultState < 0)
             {
+                _logger.Log(LogLevel.Error, "Stored procedure dbo.sp_SaveMeasuredPhysiologicalDataFromMA has failed.");
                 return NotFound();
             }
 
@@ -307,6 +311,11 @@ public class PatientValuesApiController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Přijme informaci o reakci pacientky na konkrétní aktivitu plánovače a uloží stav splnění konkrétní aktivity do databáze.
+    /// </summary>
+    /// <param name="scheduledActivity"></param>
+    /// <returns></returns>
     [AllowAnonymous]
     [HttpPost(Name = "PENESaveUserResponseToNotification")]
     public async Task<IActionResult> PENESaveUserResponseToNotification([FromBody] ScheduledActivityDataModel scheduledActivity)
@@ -316,24 +325,27 @@ public class PatientValuesApiController : ControllerBase
 
         try
         {
+            object[] parameters = new object[3];
+
             var activityUniqueId = new SqlParameter("ActivityUniqueId", scheduledActivity.ActivityUniqueId);
-            activityUniqueId.ParameterName = "@ActivityUniqueId";
             activityUniqueId.SqlDbType = SqlDbType.VarChar;
             activityUniqueId.Direction = ParameterDirection.Input;
+            parameters[0] = activityUniqueId;
 
             var isCompleted = new SqlParameter("IsCompleted", scheduledActivity.IsCompleted);
-            isCompleted.ParameterName = "@IsCompleted";
             isCompleted.SqlDbType = SqlDbType.Bit;
             isCompleted.Direction = ParameterDirection.Input;
+            parameters[1] = isCompleted;
 
             var dateOfCompletion = new SqlParameter("DateOfCompletion", scheduledActivity.DateOfCompletion);
-            dateOfCompletion.ParameterName = "@DateOfCompletion";
             dateOfCompletion.SqlDbType = SqlDbType.DateTime;
             dateOfCompletion.Direction = ParameterDirection.Input;
+            parameters[2] = dateOfCompletion;
 
-            var resultState = await _dbContext.Database.ExecuteSqlAsync($"dbo.sp_SetActivityStatus @ActivityUniqueId = {activityUniqueId}, @IsCompleted = {isCompleted},  @DateOfCompletion = {dateOfCompletion}");
-            if (resultState != 1)
+            int procedureResultState = await _dbContext.Database.ExecuteSqlRawAsync("dbo.sp_SetActivityStatus @ActivityUniqueId, @IsCompleted,  @DateOfCompletion", parameters);
+            if (procedureResultState < 0)
             {
+                _logger.Log(LogLevel.Error, "Stored procedure dbo.sp_SetActivityStatus has failed.");
                 return NotFound();
             }
 
@@ -362,15 +374,16 @@ public class PatientValuesApiController : ControllerBase
         try
         {
             string json = JsonConvert.SerializeObject(clinicalSymptomAnswerDataModels);
+
             var answerJson = new SqlParameter("answerJson", json);
             answerJson.ParameterName = "@answerJson";
             answerJson.SqlDbType = SqlDbType.NVarChar;
             answerJson.Direction = ParameterDirection.Input;
 
-
-            var resultState = _dbContext.Database.ExecuteSql($"dbo.sp_SaveUserDiseaseSymptomSubjectiveAssessmentSimple @answerJson = {answerJson}");
-            if (resultState != 1)
+            int resultState = await _dbContext.Database.ExecuteSqlAsync($"dbo.sp_SaveUserDiseaseSymptomSubjectiveAssessmentSimple @answerJson = {answerJson}");
+            if (resultState < 0)
             {
+                _logger.Log(LogLevel.Error, "Stored procedure dbo.sp_SaveUserDiseaseSymptomSubjectiveAssessmentSimple has failed.");
                 return NotFound();
             }
 
