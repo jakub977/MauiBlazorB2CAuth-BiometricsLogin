@@ -49,6 +49,15 @@ public partial class DbContextApi : DbContext
     [NotMapped]
     public virtual DbSet<ScheduledActivitiesDataModel> ScheduledActivitiesDataModels { get; set; }
 
+    [NotMapped]
+    public virtual DbSet<UserMeasuredValuesDataModel> UserMeasuredValuesDataModels { get; set; }
+
+    [NotMapped]
+    public virtual DbSet<ClinicalSymptomQuestionDataModel> ClinicalSymptomQuestionDataModels { get; set; }
+
+    [NotMapped]
+    public virtual DbSet<PregnancyInfoDataModel> PregnancyInfoDataModels { get; set; }
+
     public virtual DbSet<Log> Logs { get; set; }
 
     public virtual DbSet<AddressCity> AddressCities { get; set; }
@@ -129,7 +138,10 @@ public partial class DbContextApi : DbContext
         modelBuilder.Entity<AvailableDeviceListItemDataModel>().HasNoKey();
         modelBuilder.Entity<ScheduledActivitiesDataModel>().HasNoKey();
         modelBuilder.Entity<UserCalendarWithMeasuredValuesDataModel>().HasNoKey();
-        modelBuilder.Entity<CalendarWithMeasuredValuesDataModel>().HasNoKey(); 
+        modelBuilder.Entity<CalendarWithMeasuredValuesDataModel>().HasNoKey();
+        modelBuilder.Entity<UserMeasuredValuesDataModel>().HasNoKey();
+        modelBuilder.Entity<ClinicalSymptomQuestionDataModel>().HasNoKey();
+        modelBuilder.Entity<PregnancyInfoDataModel>().HasNoKey();
 
         modelBuilder.Entity<AddressCity>(entity =>
         {

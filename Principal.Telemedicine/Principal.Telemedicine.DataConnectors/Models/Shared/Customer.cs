@@ -13,29 +13,29 @@ namespace Principal.Telemedicine.DataConnectors.Models.Shared;
 public partial class Customer
 {
     /// <summary>
-    /// Primary identifier of an user
+    /// Primary identifier of a user
     /// </summary>
     [Key]
     public int Id { get; set; }
 
     /// <summary>
-    /// Bit identifier if an user is active
+    /// Bit identifier if a user is active
     /// </summary>
     [Required]
     public bool? Active { get; set; }
 
     /// <summary>
-    /// Bit identifier if an user is deleted
+    /// Bit identifier if a user is deleted
     /// </summary>
     public bool Deleted { get; set; }
 
     /// <summary>
-    /// Link to dbo.Provider as a provider which creates an user and where user is registered
+    /// Link to dbo.Provider as a provider which creates a user and where user is registered
     /// </summary>
     public int? CreatedByProviderId { get; set; }
 
     /// <summary>
-    /// Link to dbo.Customer as an user who creates an user
+    /// Link to dbo.Customer as a user who creates an user
     /// </summary>
     public int? CreatedByCustomerId { get; set; }
 
@@ -46,7 +46,7 @@ public partial class Customer
     public DateTime CreatedDateUtc { get; set; }
 
     /// <summary>
-    /// Link to dbo.Customer as an user who updates an user
+    /// Link to dbo.Customer as a user who updates an user
     /// </summary>
     public int? UpdatedByCustomerId { get; set; }
 
@@ -62,24 +62,24 @@ public partial class Customer
     public int? OrganizationId { get; set; }
 
     /// <summary>
-    /// First name of an user
+    /// First name of a user
     /// </summary>
     [StringLength(50)]
     public string FirstName { get; set; } = null!;
 
     /// <summary>
-    /// Last name of an user
+    /// Last name of a user
     /// </summary>
     [StringLength(50)]
     public string LastName { get; set; } = null!;
 
     /// <summary>
-    /// Link to dbo.GenderType as a gender type of an user
+    /// Link to dbo.GenderType as a gender type of a user
     /// </summary>
     public int? GenderTypeId { get; set; }
 
     /// <summary>
-    /// Address line of an user (street, land registry number or house number, city)
+    /// Address line of a user (street, land registry number or house number, city)
     /// </summary>
     [StringLength(200)]
     public string? AddressLine { get; set; }
@@ -99,41 +99,41 @@ public partial class Customer
     public string Email { get; set; } = null!;
 
     /// <summary>
-    /// Telephone number of an user
+    /// Telephone number of a user
     /// </summary>
     [StringLength(20)]
     [Unicode(false)]
     public string? TelephoneNumber { get; set; }
 
     /// <summary>
-    /// Personal identification number of an user
+    /// Personal identification number of a user
     /// </summary>
     [StringLength(20)]
     [Unicode(false)]
     public string? PersonalIdentificationNumber { get; set; }
 
     /// <summary>
-    /// Birthdate of an user
+    /// Birthdate of a user
     /// </summary>
     [Column(TypeName = "date")]
     public DateTime? Birthdate { get; set; }
 
     /// <summary>
-    /// Code of health care insurer of an user
+    /// Code of health care insurer of a user
     /// </summary>
     [StringLength(20)]
     [Unicode(false)]
     public string? HealthCareInsurerCode { get; set; }
 
     /// <summary>
-    /// Public identifier of an user
+    /// Public identifier of a user
     /// </summary>
     [StringLength(50)]
     [Unicode(false)]
     public string? PublicIdentifier { get; set; }
 
     /// <summary>
-    /// Link to dbo.Picture as a photo of an user
+    /// Link to dbo.Picture as a photo of a user
     /// </summary>
     public int? PictureId { get; set; }
 
@@ -195,7 +195,7 @@ public partial class Customer
     public string? PasswordSalt { get; set; }
 
     /// <summary>
-    /// Last IP address related to an user
+    /// Last IP address related to a user
     /// </summary>
     [StringLength(100)]
     [Unicode(false)]
@@ -270,25 +270,25 @@ public partial class Customer
     public string? EmployerName { get; set; }
 
     /// <summary>
-    /// Note to an user
+    /// Note to a user
     /// </summary>
     [StringLength(500)]
     public string? Note { get; set; }
 
     /// <summary>
-    /// Second telephone number of an user
+    /// Second telephone number of a user
     /// </summary>
     [StringLength(20)]
     [Unicode(false)]
     public string? TelephoneNumber2 { get; set; }
 
     /// <summary>
-    /// Link to dbo.HealthCareInsurer as a health care insurer of an user
+    /// Link to dbo.HealthCareInsurer as a health care insurer of a user
     /// </summary>
     public int? HealthCareInsurerId { get; set; }
 
     /// <summary>
-    /// Birth identification number of an user
+    /// Birth identification number of a user
     /// </summary>
     [StringLength(20)]
     [Unicode(false)]
@@ -302,31 +302,31 @@ public partial class Customer
     public string? Street { get; set; }
 
     /// <summary>
-    /// Link to dbo.AddressCity as a adress of user
+    /// Link to dbo.AddressCity as a address of user
     /// </summary>
     public int? CityId { get; set; }
 
     /// <summary>
-    /// Bit identifier whether an user is at risk of any health issue
+    /// Bit identifier whether a user is at risk of any health issue
     /// </summary>
     public bool? IsRiskPatient { get; set; }
 
     /// <summary>
-    /// Link to dbo.AdressCity as a city where user lives
+    /// Link to dbo.AddressCity as a city where user lives
     /// </summary>
     [ForeignKey("CityId")]
     [InverseProperty("Customers")]
     public virtual AddressCity? City { get; set; }
 
     /// <summary>
-    /// Link to dbo.Customer as an user who creates an user
+    /// Link to dbo.Customer as a user who creates an user
     /// </summary>
     [ForeignKey("CreatedByCustomerId")]
     [InverseProperty("InverseCreatedByCustomer")]
     public virtual Customer? CreatedByCustomer { get; set; }
 
     /// <summary>
-    /// Link to dbo.Provider as an provider who creates an user
+    /// Link to dbo.Provider as a provider who creates a user
     /// </summary>
     [ForeignKey("CreatedByProviderId")]
     [InverseProperty("Customers")]
@@ -463,7 +463,7 @@ public partial class Customer
     public virtual ICollection<Permission> PermissionUpdatedByCustomers { get; set; } = new List<Permission>();
 
     /// <summary>
-    /// Link to dbo.Picture as a photo of an user
+    /// Link to dbo.Picture as a photo of a user
     /// </summary>
     [ForeignKey("PictureId")]
     [InverseProperty("Customers")]
