@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
+using Principal.Telemedicine.Shared.Configuration;
 using Principal.Telemedicine.DataConnectors.Contexts;
 
 var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
@@ -27,7 +28,7 @@ builder.Services.AddDbContext<DbContextApi>(options =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsLocalHosted())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
