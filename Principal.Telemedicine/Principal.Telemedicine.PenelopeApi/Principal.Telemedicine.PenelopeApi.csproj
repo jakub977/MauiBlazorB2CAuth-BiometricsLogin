@@ -1,16 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>aspnet-Principal.Telemedicine.PenelopeApi-d11a7faa-2874-4b38-b8dd-ac793d6fa2e7</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.9" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="7.0.9" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="7.0.10" />
     <PackageReference Include="Microsoft.Identity.Web" Version="1.16.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
