@@ -28,11 +28,11 @@ builder.Services.AddDbContext<DbContextApi>(options =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-//if (app.Environment.IsLocalHosted())
-//{
+if (app.Environment.IsLocalHosted())
+{
     app.UseSwagger();
     app.UseSwaggerUI();
-//}
+}
 
 app.UseHttpsRedirection();
 
