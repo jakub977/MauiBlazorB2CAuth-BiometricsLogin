@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.DataConnectors.Repositories;
 using Principal.Telemedicine.Shared.Models;
 using System.Collections.ObjectModel;
@@ -16,12 +18,14 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
 public class UserApiController : ControllerBase
 {
     private readonly ICustomerRepository _customerRepository;
+    private readonly DbContextApi _dbContext;
     private readonly ILogger _logger;
     private readonly IMapper _mapper;
 
-    public UserApiController(ICustomerRepository customerRepository, ILogger<UserApiController> logger, IMapper mapper)
+    public UserApiController(ICustomerRepository customerRepository, DbContextApi dbContext, ILogger<UserApiController> logger, IMapper mapper)
     {
         _customerRepository = customerRepository;
+        _dbContext = dbContext;
         _logger = logger;
         _mapper = mapper;
     }
@@ -92,6 +96,44 @@ public class UserApiController : ControllerBase
             }
 
             return Ok(mappedUser);
+        }
+
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
+
+    /// <summary>
+    /// Uloží žádost o smazání uživatelského účtu uživatele do dedikované databáze.
+    /// <param name="globalId"></param>
+    /// <returns></returns>
+    [HttpPost(Name = "SaveUserAccountDeletionDemand")]
+    public async Task<IActionResult> SaveUserAccountDeletionDemand(string globalId)
+    {
+
+        if (string.IsNullOrEmpty(globalId))
+        {
+            return BadRequest();
+        }
+
+        try
+        {
+            var user = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);
+            var mappedUser = new CompleteUserContract();
+            mappedUser = _mapper.Map<CompleteUserContract>(user);
+
+            int userId = mappedUser.Id;
+
+            var procedureResultState = _dbContext.Database.SqlQuery<int>($"dbo.sp_SaveUserAccountDeletionDemand @userId = {userId}").ToList();
+            if (!procedureResultState.Any())
+            {
+                _logger.Log(LogLevel.Error, "Stored procedure dbo.sp_SaveUserAccountDeletionDemand has failed.");
+                return NotFound();
+            }
+            
+            return Ok();
         }
 
         catch (Exception ex)
