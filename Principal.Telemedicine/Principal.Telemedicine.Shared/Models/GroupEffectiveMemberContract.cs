@@ -18,7 +18,7 @@ public class GroupEffectiveMemberContract
     /// <summary>
     /// Bit identifier if a group member is active
     /// </summary>
-    public bool? Active { get; set; }
+    public bool Active { get; set; }
 
     /// <summary>
     /// Bit identifier if a group member is deleted

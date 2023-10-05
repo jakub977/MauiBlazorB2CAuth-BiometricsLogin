@@ -19,7 +19,7 @@ public partial class EffectiveUser
     /// Bit identifier if effective user is active
     /// </summary>
     [Required]
-    public bool? Active { get; set; }
+    public bool Active { get; set; }
 
     /// <summary>
     /// Bit identifier if effective user is deleted

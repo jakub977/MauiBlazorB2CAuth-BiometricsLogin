@@ -19,7 +19,7 @@ public partial class GroupEffectiveMember
     /// Bit identifier if a group member is active
     /// </summary>
     [Required]
-    public bool? Active { get; set; }
+    public bool Active { get; set; }
 
     /// <summary>
     /// Bit identifier if a group member is deleted

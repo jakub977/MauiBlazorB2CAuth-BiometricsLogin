@@ -17,7 +17,7 @@ public class EffectiveUserContract
     /// <summary>
     /// Bit identifier if effective user is active
     /// </summary>
-    public bool? Active { get; set; }
+    public bool Active { get; set; }
 
     /// <summary>
     /// Bit identifier if effective user is deleted

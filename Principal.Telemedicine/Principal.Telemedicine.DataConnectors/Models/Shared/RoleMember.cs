@@ -19,7 +19,7 @@ public partial class RoleMember
     /// Bit identifier if a role member is active
     /// </summary>
     [Required]
-    public bool? Active { get; set; }
+    public bool Active { get; set; }
 
     /// <summary>
     /// Bit identifier if a role member is deleted
