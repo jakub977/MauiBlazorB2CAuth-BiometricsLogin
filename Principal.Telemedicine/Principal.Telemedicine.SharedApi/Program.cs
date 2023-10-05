@@ -22,12 +22,15 @@ builder.Services.AddControllers()
     .AddJsonOptions(options => options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull )
     .AddXmlDataContractSerializerFormatters();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<IProviderRepository, ProviderRepository>();
+builder.Services.AddScoped<IEffectiveUserRepository, EffectiveUserRepository>();
+builder.Services.AddScoped<IADB2CRepository, ADB2CRepository>();
 builder.Services.AddAutoMapper(typeof(Mapping).Assembly);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<DbContextApi>(options => options.UseLazyLoadingProxies().
+builder.Services.AddDbContext<DbContextApi>(options => options.UseLazyLoadingProxies().EnableSensitiveDataLogging().
 UseSqlServer(builder.Configuration.GetConnectionString("VANDA_TEST")));
 
 

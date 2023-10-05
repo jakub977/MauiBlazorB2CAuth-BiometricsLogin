@@ -87,5 +87,32 @@ public class Mapping : Profile
            .ForMember(x => x.GenderType, opt => opt.Ignore())
            .ForMember(x => x.PublicIdentifier, opt => opt.Ignore())
            .ForMember(x => x.PasswordFormatTypeId, opt => opt.Ignore());
+
+        CreateMap<EffectiveUserContract, EffectiveUser>();
+        CreateMap<UserPermissionContract, UserPermission>();
+        CreateMap<PictureContract, Picture>();
+        CreateMap<MediaStorageContract, MediaStorage>();
+        CreateMap<OrganizationContract, Organization>();
+        CreateMap<RoleContract, Role>();
+        CreateMap<ProviderContract, Provider>();
+        CreateMap<RoleMemberContract, RoleMember>();
+        CreateMap<RoleCategoryContract, RoleCategory>();
+        CreateMap<RoleCategoryCombinationContract, RoleCategoryCombination>();
+        CreateMap<RolePermissionContract, RolePermission>();
+        CreateMap<RoleSubCategoryContract, RoleSubCategory>();
+        CreateMap<GroupEffectiveMemberContract, GroupEffectiveMember>();
+        CreateMap<GroupContract, Group>();
+        CreateMap<GroupPermissionContract, GroupPermission>();
+        CreateMap<PermissionContract, Permission>();
+        CreateMap<PermissionCategoryContract, PermissionCategory>();
+        CreateMap<PermissionTypeContract, PermissionType>();
+        CreateMap<SubjectContract, Subject>();
+        CreateMap<SubjectAllowedToOrganizationContract, SubjectAllowedToOrganization>();
+        CreateMap<SubjectAllowedToProviderContract, SubjectAllowedToProvider>();
+        CreateMap<SubjectTypeContract, SubjectType>();
+        CreateMap<GenderTypeContract, GenderType>();
+        CreateMap<HealthCareInsurerContract, HealthCareInsurer>();
+        CreateMap<PasswordFormatTypeContract, PasswordFormatType>();
+        CreateMap<ProfessionTypeContract, ProfessionType>();
     }
 }
