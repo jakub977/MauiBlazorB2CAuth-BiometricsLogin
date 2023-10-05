@@ -17,7 +17,7 @@ public class RoleMemberContract
     /// <summary>
     /// Bit identifier if a role member is active
     /// </summary>
-    public bool? Active { get; set; }
+    public bool Active { get; set; }
 
     /// <summary>
     /// Bit identifier if a role member is deleted

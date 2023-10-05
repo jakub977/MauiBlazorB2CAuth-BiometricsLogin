@@ -19,7 +19,7 @@ public class CompleteUserContract
     /// <summary>
     /// Bit identifier if an user is active
     /// </summary>
-    public bool? Active { get; set; }
+    public bool Active { get; set; }
 
     /// <summary>
     /// Bit identifier if an user is deleted

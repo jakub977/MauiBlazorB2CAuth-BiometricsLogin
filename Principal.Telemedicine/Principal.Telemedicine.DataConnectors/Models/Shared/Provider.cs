@@ -20,7 +20,7 @@ public partial class Provider
     /// Bit identifier if a provider is active
     /// </summary>
     [Required]
-    public bool? Active { get; set; }
+    public bool Active { get; set; }
 
     /// <summary>
     /// Bit identifier if a provider is deleted
