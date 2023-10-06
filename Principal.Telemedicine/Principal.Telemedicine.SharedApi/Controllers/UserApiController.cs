@@ -2,6 +2,7 @@
 using Azure.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Graph;
+using Microsoft.Graph.Models;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
 using Principal.Telemedicine.DataConnectors.Repositories;
 using Principal.Telemedicine.Shared.Models;
@@ -27,7 +28,7 @@ public class UserApiController : ControllerBase
 
     private readonly string _logName = "UserApiController";
 
-    public UserApiController(ICustomerRepository customerRepository, IProviderRepository providerRepository, IEffectiveUserRepository effectiveUserRepository, 
+    public UserApiController(ICustomerRepository customerRepository, IProviderRepository providerRepository, IEffectiveUserRepository effectiveUserRepository,
         IConfiguration configuration, IADB2CRepository adb2cRepository, ILogger<UserApiController> logger, IMapper mapper)
     {
         _customerRepository = customerRepository;
@@ -42,11 +43,10 @@ public class UserApiController : ControllerBase
     /// <summary>
     /// Vrátí základní údaje uživatele.
     /// </summary>
-    /// <param name="apiKey"></param>
     /// <param name="userId"></param>
     /// <returns></returns>
     [HttpGet(Name = "GetUserInfo")]
-    public async Task<IActionResult> GetUserInfo([FromHeader(Name = "x-api-key")] string apiKey, int userId)
+    public async Task<IActionResult> GetUserInfo(int userId)
     {
 
         if (userId <= 0)
@@ -159,6 +159,7 @@ public class UserApiController : ControllerBase
                 //isRenew = true;
                 actualData.Deleted = false;
             }
+
             actualData.UpdateDateUtc = DateTime.UtcNow;
             actualData.UpdatedByCustomerId = currentUser.Id;
 
@@ -298,6 +299,7 @@ public class UserApiController : ControllerBase
                 {
                     existingEfUser.Deleted = false;
                 }
+
                 haveEFUser = true;
                 existingEfUser.Active = efUser.Active;
                 existingEfUser.UpdateDateUtc = DateTime.UtcNow;
@@ -684,5 +686,53 @@ public class UserApiController : ControllerBase
         }
     }
 
-}
+    /// <summary>
+    /// Uloží Firebase Cloud Messaging token uživatele
+    /// </summary>
+    /// <param name="globalId"></param>
+    /// <param name="appInstanceToken"></param>
+    /// <returns></returns>
+    [HttpGet(Name = "CreateOrUpdateAppInstanceToken")]
+    public async Task<IActionResult> CreateOrUpdateAppInstanceToken(string globalId, string appInstanceToken)
+    {
 
+        string logHeader = _logName + ".CreateOrUpdateAppInstanceToken:";
+
+        if (string.IsNullOrEmpty(globalId) || string.IsNullOrEmpty(appInstanceToken))
+        {
+            return BadRequest();
+        }
+
+        try
+        {
+            Customer? user = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);
+            if (user == null)
+            {
+                _logger.LogWarning($"{logHeader} Current User not found");
+                return BadRequest();
+            }
+
+            user.AppInstanceToken = appInstanceToken;
+
+            bool updated = await _customerRepository.UpdateCustomerTaskAsync(user, true);
+
+            if (updated)
+            {
+                _logger.LogInformation("AppInstanceToken has been updated successfully");
+                return Ok();
+            }
+            else
+            {
+                _logger.LogWarning("AppInstanceToken update has failed");
+                return BadRequest();
+            }
+            
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"{logHeader} {ex.Message}");
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
+
+}

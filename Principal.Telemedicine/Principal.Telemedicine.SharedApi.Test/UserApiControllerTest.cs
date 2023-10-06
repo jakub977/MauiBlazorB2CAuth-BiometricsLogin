@@ -3,10 +3,12 @@ using AutoMapper;
 using Principal.Telemedicine.SharedApi.Controllers;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Principal.Telemedicine.DataConnectors.Mapping;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
 using Principal.Telemedicine.DataConnectors.Repositories;
 using Xunit;
+using Microsoft.Graph.Models.ExternalConnectors;
 
 namespace Principal.Telemedicine.SharedApi.Test;
 
@@ -22,8 +24,10 @@ public class UserApiControllerTest
             Mock<ICustomerRepository> repositoryCustomer = new Mock<ICustomerRepository>();
             Mock<IEffectiveUserRepository> repositoryEF = new Mock<IEffectiveUserRepository>();
             Mock<IProviderRepository> repositoryProvider = new Mock<IProviderRepository>();
+            Mock<IADB2CRepository> repositoryADB2C = new Mock<IADB2CRepository>();
+            Mock<IConfiguration> configuration = new Mock<IConfiguration>();
 
-            var expected = new Customer()
+        var expected = new Customer()
             {
                 Active = true,
                 Id = 8,
@@ -50,7 +54,7 @@ public class UserApiControllerTest
                 CityId = 299
             };
 
-        repositoryCustomer.Setup(m => m.GetCustomerByIdTaskAsync(It.IsAny<int>())).ReturnsAsync(expected);
+            repositoryCustomer.Setup(m => m.GetCustomerByIdTaskAsync(It.IsAny<int>())).ReturnsAsync(expected);
 
             var mockMapper = new MapperConfiguration(cfg =>
             {
@@ -59,10 +63,10 @@ public class UserApiControllerTest
             var mapper = mockMapper.CreateMapper();
 
             // create the controller
-            var controller = new UserApiController(repositoryCustomer.Object, repositoryProvider.Object, repositoryEF.Object, logger, mapper);
+            var controller = new UserApiController(repositoryCustomer.Object, repositoryProvider.Object, repositoryEF.Object, configuration.Object, repositoryADB2C.Object, logger, mapper);
 
             // act
-            var result = await controller.GetUserInfo("api-key", 8);
+            var result = await controller.GetUserInfo(8);
             var okResult = result as OkObjectResult;
 
             // assert
@@ -79,6 +83,8 @@ public class UserApiControllerTest
         Mock<ICustomerRepository> repositoryCustomer = new Mock<ICustomerRepository>();
         Mock<IEffectiveUserRepository> repositoryEF = new Mock<IEffectiveUserRepository>();
         Mock<IProviderRepository> repositoryProvider = new Mock<IProviderRepository>();
+        Mock<IADB2CRepository> repositoryADB2C = new Mock<IADB2CRepository>();
+        Mock<IConfiguration> configuration = new Mock<IConfiguration>();
 
         var expected = new Customer()
         {
@@ -116,7 +122,7 @@ public class UserApiControllerTest
         var mapper = mockMapper.CreateMapper();
 
         // create the controller
-        var controller = new UserApiController(repositoryCustomer.Object, repositoryProvider.Object, repositoryEF.Object, logger, mapper);
+        var controller = new UserApiController(repositoryCustomer.Object, repositoryProvider.Object, repositoryEF.Object, configuration.Object, repositoryADB2C.Object, logger, mapper);
 
         // act
         var result = await controller.GetUser("EF041818-43BA-4F5D-89E7-60C16E55FD6B", 6);
