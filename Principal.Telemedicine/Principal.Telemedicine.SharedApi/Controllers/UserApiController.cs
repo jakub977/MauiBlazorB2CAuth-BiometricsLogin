@@ -10,6 +10,9 @@ using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.DataConnectors.Repositories;
 using Principal.Telemedicine.Shared.Models;
 using System.Diagnostics;
+using Microsoft.Graph.Models;
+using Microsoft.Data.SqlClient;
+using System.Data;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
 
@@ -33,8 +36,7 @@ public class UserApiController : ControllerBase
     private readonly string _logName = "UserApiController";
 
     public UserApiController(ICustomerRepository customerRepository, IProviderRepository providerRepository, IEffectiveUserRepository effectiveUserRepository, 
-        IConfiguration configuration, IADB2CRepository adb2cRepository, ILogger<UserApiController> logger, IMapper mapper)
-    public UserApiController(ICustomerRepository customerRepository, DbContextApi dbContext, ILogger<UserApiController> logger, IMapper mapper)
+        IConfiguration configuration, IADB2CRepository adb2cRepository, DbContextApi dbContext, ILogger<UserApiController> logger, IMapper mapper)
     {
         _customerRepository = customerRepository;
         _providerRepository = providerRepository;
@@ -693,8 +695,8 @@ public class UserApiController : ControllerBase
 
 
     /// <summary>
-    /// Uloží žádost o smazání uživatelského účtu uživatele do dedikované databáze.
-    /// <param name="globalId"></param>
+    /// Uloží žádost o smazání dat uživatele do dedikované databáze.
+    /// <param name="globalId">globalID uživatele co metodu volá</param>
     /// <returns></returns>
     [HttpPost(Name = "SaveUserAccountDeletionDemand")]
     public async Task<IActionResult> SaveUserAccountDeletionDemand(string globalId)
@@ -707,19 +709,40 @@ public class UserApiController : ControllerBase
 
         try
         {
+            //najdeme userId podle globalId
             var user = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);
             var mappedUser = new CompleteUserContract();
             mappedUser = _mapper.Map<CompleteUserContract>(user);
 
-            int userId = mappedUser.Id;
-
-            var procedureResultState = _dbContext.Database.SqlQuery<int>($"dbo.sp_SaveUserAccountDeletionDemand @userId = {userId}").ToList();
-            if (!procedureResultState.Any())
+            var userId = new SqlParameter
             {
-                _logger.Log(LogLevel.Error, "Stored procedure dbo.sp_SaveUserAccountDeletionDemand has failed.");
+                ParameterName = "@userId",
+                Value = mappedUser.Id,
+                SqlDbType = SqlDbType.VarChar,
+                Direction = ParameterDirection.Input
+            };
+
+            var returnValue = new SqlParameter 
+            { 
+                ParameterName = "@returnValue",
+                SqlDbType = SqlDbType.Int,
+                Direction = ParameterDirection.Output
+            };
+
+            object[] parameters = new object[2];
+            parameters[0] = userId;
+            parameters[1] = returnValue;
+
+
+          //zavoláme stored procedure v dedikované db a vezmeme si výstupní parametr
+           int affectedRaws = await _dbContext.Database.ExecuteSqlRawAsync($"dbo.sp_SaveUserDataDeletionDemand @userId, @returnValue OUTPUT", parameters);
+
+            if (returnValue.Value == null || returnValue.Value.ToString() != "1") 
+            {
+                _logger.Log(LogLevel.Error, "Stored procedure dbo.sp_SaveUserDataDeletionDemand has failed.");
                 return NotFound();
             }
-            
+
             return Ok();
         }
 
