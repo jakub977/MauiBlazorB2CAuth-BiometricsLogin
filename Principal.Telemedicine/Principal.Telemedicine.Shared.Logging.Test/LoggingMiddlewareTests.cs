@@ -97,9 +97,9 @@ namespace Principal.Telemedicine.Shared.Logging.Tests
 
             // Ověříme, zda se zapsaly očekávané logy
             Assert.True(logs.Count >= 2); // Očekáváme alespoň 2 logy (jeden pro požadavek a jeden pro odpověď)
-            Assert.Contains(logs, log => log.Logger.Contains("INPUT REQUEST"));
+            Assert.Contains(logs, log => log.Logger.Contains("INPUT CALL REQUEST"));
             Assert.Contains(logs, log => log.HttpMethod.Contains("POST"));
-            Assert.Contains(logs, log => log.Logger.Contains("INPUT RESPONSE"));
+            Assert.Contains(logs, log => log.Logger.Contains("INPUT CALL RESPONSE"));
         }
 
     }

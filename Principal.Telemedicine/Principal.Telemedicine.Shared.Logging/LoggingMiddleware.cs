@@ -39,7 +39,7 @@ public class LoggingMiddleware
         {
             context.Response.Body = responseBody;
             await _next.Invoke(context);
-
+            await context.Response.Body.CopyToAsync(responseBody);
             await LogResponse(context, responseBody, originalResponseBody);
         }
     }
@@ -65,7 +65,7 @@ public class LoggingMiddleware
         await responseBody.CopyToAsync(originalResponseBody);
         context.Response.Body = originalResponseBody;
 
-        _logger.LogCustom(Enumerators.CustomLogLevel.Audit, "INPUT RESPONSE", $"[{_traceMethod}] {_tracePath}", "INPUT CALL", _sessionTraceCall,  traceResponse, context.Response.HttpContext?.Connection?.RemoteIpAddress?.ToString());
+        _logger.LogCustom(Enumerators.CustomLogLevel.Audit, "<< INPUT CALL RESPONSE", $"[{_traceMethod}] {_tracePath}", responseContent.ToString(), _sessionTraceCall,  traceResponse,string.Empty, context.Response.HttpContext?.Connection?.RemoteIpAddress?.ToString(), _tracePath);
     }
 
     private async Task LogRequest(HttpContext context)
@@ -91,7 +91,7 @@ public class LoggingMiddleware
         var content = await requestReader.ReadToEndAsync();
         requestContent.AppendLine($"body = {content}");
 
-        _logger.LogCustom(Enumerators.CustomLogLevel.Audit, "INPUT REQUEST", $"[{_traceMethod}] {_tracePath}", requestContent.ToString(), _sessionTraceCall, traceRequest,  _traceMethod, context.Request.HttpContext?.Connection?.RemoteIpAddress?.ToString());
+        _logger.LogCustom(Enumerators.CustomLogLevel.Audit, ">> INPUT CALL REQUEST", $"[{_traceMethod}] {_tracePath}", requestContent.ToString(), _sessionTraceCall, traceRequest,  _traceMethod, context.Request.HttpContext?.Connection?.RemoteIpAddress?.ToString(), _tracePath);
         context.Request.Body.Position = 0;
     }
 }
