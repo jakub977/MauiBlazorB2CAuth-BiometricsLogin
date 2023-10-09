@@ -10,12 +10,14 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="7.0.10" />
     <PackageReference Include="Microsoft.Identity.Web" Version="1.16.0" />
-    <PackageReference Include="Principal.Telemedicine.Shared.Configuration" Version="1.2.0-CI-20231003-100531" />
+    <PackageReference Include="Principal.Telemedicine.Shared.Configuration" Version="1.2.0-CI-20231005-092320" />
+    <PackageReference Include="Principal.Telemedicine.Shared.Infrastructure" Version="1.2.0-CI-20231009-090455" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Principal.Telemedicine.DataConnectors\Principal.Telemedicine.DataConnectors.csproj" />
+    <ProjectReference Include="..\Principal.Telemedicine.Shared.Logging\Principal.Telemedicine.Shared.Logging.csproj" />
   </ItemGroup>
 
 </Project>
