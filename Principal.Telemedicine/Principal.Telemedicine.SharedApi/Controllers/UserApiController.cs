@@ -1,17 +1,10 @@
 ﻿using AutoMapper;
-using Azure.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Graph;
-using Microsoft.Graph.Models;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.DataConnectors.Repositories;
 using Principal.Telemedicine.Shared.Models;
-using System.Diagnostics;
-using Microsoft.Graph.Models;
 using Microsoft.Data.SqlClient;
 using System.Data;
 
@@ -145,7 +138,6 @@ public class UserApiController : ControllerBase
                 return BadRequest();
             }
 
-            //Customer? oldCustomerData = await _customerRepository.GetCustomerByIdTaskAsync(user.Id);
             Customer? actualData = await _customerRepository.GetCustomerByIdTaskAsync(user.Id);
             if (actualData == null)
             {
@@ -153,15 +145,7 @@ public class UserApiController : ControllerBase
                 return BadRequest();
             }
 
-            //CompleteUserContract actualData = _mapper.Map<CompleteUserContract>(oldCustomerData);
-
-
             bool haveEFUser = false;
-            //string oldFirstName = "";
-            //string oldLastName = "";
-            //bool azureEmailChange = true;
-            //bool azureUpdate = false;
-            //bool isRenew = false;
 
             if (actualData.Deleted)
             {
@@ -171,18 +155,8 @@ public class UserApiController : ControllerBase
 
             actualData.UpdateDateUtc = DateTime.UtcNow;
             actualData.UpdatedByCustomerId = currentUser.Id;
-
-            // došlo ke změně jméne / příjmení?
-            //if (actualData.FirstName != user.FirstName || actualData.LastName != user.LastName)
-            //{
-            //    oldFirstName = actualData.FirstName;
-            //    oldLastName = actualData.LastName;
-
-            //    //await LogSensitiveData(currentUser, customer, actualData);
-            //}
-
+        
             string oldEmail = actualData.Email;
-            //bool userInsertedToAzure = false;
 
             // pokud jde o editaci efektivního uživatele a exituje ještě jiný aktivní efektivní uživatel pro danou entitu Customer,
             // je potřeba ponechat záznam Customer v aktivním stavu 
@@ -249,17 +223,6 @@ public class UserApiController : ControllerBase
             actualData.IsOrganizationAdminAccount = user.IsOrganizationAdminAccount;
             actualData.IsSuperAdminAccount = user.IsSuperAdminAccount;
 
-            //// pokud je vyplněný kód pojišťovny postaru, doplním vazbu přes ID
-            //if (!actualData.HealthCareInsurerId.HasValue && !string.IsNullOrEmpty(actualData.HealthCareInsurerCode))
-            //{
-            //    var oldCode = _healthCareInsurerService.Value.GetHealthCareInsurerByCode(currentUser, actualData.HealthCareInsurerCode);
-            //    if (oldCode != null)
-            //    {
-            //        actualData.HealthCareInsurerId = oldCode.Id;
-            //        actualData.HealthCareInsurerCode = "";
-            //    }
-            //}
-
             // nový nebo stávající
             // vždy pracujeme jen s jedním EF uživatelem, protože jeden EF uživatel se vztahuje ke konkrétnímu Poskytovatli (ProviderId)
             // a uživatelé se aktualizují vždy pod konkrétním Poskytovatelem (pokud se jedná o EF uživatele).
@@ -313,10 +276,6 @@ public class UserApiController : ControllerBase
                 existingEfUser.Active = efUser.Active;
                 existingEfUser.UpdateDateUtc = DateTime.UtcNow;
                 existingEfUser.UpdatedByCustomerId = currentUser.Id;
-                //if (existingEfUser.Expertises.Count > 0)
-                //    existingEfUser.Expertises.Clear();
-                //if (efUser.Expertises.Count > 0)
-                //    existingEfUser.Expertises.AddRange(efUser.Expertises);
                 if (!actualData.CreatedByProviderId.HasValue)
                     actualData.CreatedByProviderId = existingEfUser.ProviderId;
 
@@ -482,7 +441,7 @@ public class UserApiController : ControllerBase
             #region Role spojené přímo s uživatelem
 
             // nemáme EF uživatele ale máme Role
-            if (actualData.EffectiveUserUsers.Where(w => !w.Deleted).Count() == 0 && (actualData.RoleMemberDirectUsers.Where(w => !w.Deleted).Count() > 0 || user.RoleMemberDirectUsers.Count() > 0))
+            if (!actualData.EffectiveUserUsers.Where(w => !w.Deleted).Any() && (actualData.RoleMemberDirectUsers.Where(w => !w.Deleted).Any() || user.RoleMemberDirectUsers.Any()))
             {
                 //nové a stávající role
                 foreach (var role in user.RoleMemberDirectUsers)
@@ -564,116 +523,6 @@ public class UserApiController : ControllerBase
 
             #endregion
 
-            /*
-            // nemáme GlobalId, zkusíme ho získat
-            if (string.IsNullOrEmpty(actualData.GlobalId))
-            {
-                if (useDBToAzure)
-                {
-                    if (!_biDirectionalQueueService.GetAzureCustomerGlobalId(currentUser, actualData)) // GlobalId jsme nezískali, uživatel asi neexistuje, založíme ho
-                    {
-                        userInsertedToAzure = _biDirectionalQueueService.InsertUpdateAzureCustomer(currentUser, actualData, true);
-                    }
-                }
-                else
-                {
-                    if (!azure.GetAzureCustomerGlobalId(currentUser, actualData)) // GlobalId jsme nezískali, uživatel asi neexistuje, založíme ho
-                    {
-                        userInsertedToAzure = azure.InsertUpdateAzureCustomer(currentUser, actualData, true);
-                    }
-                }
-            }
-            else
-            {
-                // obnova uživatele
-                if (!userInsertedToAzure && isRenew)
-                {
-                    // pokud došlo ke změně emailu, použijeme starý
-                    if (actualData.Email != oldEmail)
-                        actualData.Email = oldEmail;
-
-                    if (string.IsNullOrEmpty(oldFirstName))
-                    {
-                        if (useDBToAzure)
-                        {
-                            azureUpdate = _biDirectionalQueueService.InsertUpdateAzureCustomer(currentUser, actualData, false, false, true, "", "");
-                        }
-                        else
-                        {
-                            azureUpdate = azure.InsertUpdateAzureCustomer(currentUser, actualData, false, false, true, "", "");
-                        }
-                    }
-                    else
-                    {
-                        actualData.FirstName = oldFirstName;
-                        actualData.LastName = oldLastName;
-
-                        if (useDBToAzure)
-                        {
-                            azureUpdate = _biDirectionalQueueService.InsertUpdateAzureCustomer(currentUser, actualData, false, false, true, "", "");
-                        }
-                        else
-                        {
-                            azureUpdate = azure.InsertUpdateAzureCustomer(currentUser, actualData, false, false, true, "", "");
-                        }
-
-                        actualData.FirstName = user.FirstName;
-                        actualData.LastName = user.LastName;
-                    }
-                    // nastavíme případný nový email
-                    actualData.Email = user.Email;
-                }
-
-                // změna emailu
-                if (!userInsertedToAzure && actualData.Email != oldEmail)
-                {
-                    if (string.IsNullOrEmpty(oldFirstName))
-                    {
-                        if (useDBToAzure)
-                        {
-                            azureEmailChange = _biDirectionalQueueService.UpdateAzureCustomerEmail(currentUser, actualData, oldEmail);
-                        }
-                        else
-                        {
-                            azureEmailChange = azure.UpdateAzureCustomerEmail(currentUser, actualData, oldEmail);
-                        }
-                    }
-                    else
-                    {
-                        actualData.FirstName = oldFirstName;
-                        actualData.LastName = oldLastName;
-
-                        if (useDBToAzure)
-                        {
-                            azureEmailChange = _biDirectionalQueueService.UpdateAzureCustomerEmail(currentUser, actualData, oldEmail);
-                        }
-                        else
-                        {
-                            azureEmailChange = azure.UpdateAzureCustomerEmail(currentUser, actualData, oldEmail);
-                        }
-
-                        actualData.FirstName = user.FirstName;
-                        actualData.LastName = user.LastName;
-                    }
-                }
-
-                // update uživatele
-                if (useDBToAzure)
-                {
-                    azureUpdate = _biDirectionalQueueService.InsertUpdateAzureCustomer(currentUser, actualData, false, false, false, oldFirstName, oldLastName);
-                }
-                else
-                {
-                    azureUpdate = azure.InsertUpdateAzureCustomer(currentUser, actualData, false, false, false, oldFirstName, oldLastName);
-                }
-            }
-
-            if (!azureUpdate || !azureEmailChange)
-            {
-                Logger.WarnFormat("{0}: Azure update error, {1}", customerId: currentUser.Id, logMethod, logData);
-                return -20;
-            }
-            */
 
             bool ret = await _customerRepository.UpdateCustomerTaskAsync(actualData);
 
@@ -743,8 +592,6 @@ public class UserApiController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
-    }
-
 
     /// <summary>
     /// Uloží žádost o smazání dat uživatele do dedikované databáze.
@@ -804,6 +651,4 @@ public class UserApiController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
-}
-
 }
