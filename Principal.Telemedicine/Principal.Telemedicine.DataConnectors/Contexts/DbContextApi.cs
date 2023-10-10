@@ -176,6 +176,7 @@ public partial class DbContextApi : DbContext
                 .HasDefaultValueSql("((1))")
                 .HasComment("Bit identifier if login to API is enabled");
             entity.Property(e => e.ApiloginToken).HasComment("Login token issued when login to API");
+            entity.Property(e => e.AppInstanceToken).HasComment("Firebase Cloud Messaging token");
             entity.Property(e => e.BirthIdentificationNumber).HasComment("Birth identification number of an user");
             entity.Property(e => e.Birthdate).HasComment("Birthdate of an user");
             entity.Property(e => e.CreatedByCustomerId).HasComment("Link to dbo.Customer as an user who creates an user");

@@ -21,6 +21,8 @@ public class PatientValuesApiController : ControllerBase
     private readonly DbContextApi _dbContext;
     private readonly ILogger _logger;
 
+    private readonly string _logName = "PatientValuesApiController";
+
     public PatientValuesApiController(ILogger<PatientValuesApiController> logger, DbContextApi dbContext)
     {
         _dbContext = dbContext;
@@ -393,6 +395,64 @@ public class PatientValuesApiController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
+
+    /// <summary>
+    /// Vygeneruje plán aktivit pacientky při aktivaci MA
+    /// </summary>
+    /// <param name="userGlobalId"></param>
+    /// <returns></returns>
+    [HttpGet(Name = "CreateScheduledActivities")]
+    public async Task<IActionResult> CreateScheduledActivities(string userGlobalId)
+    {
+        string logHeader = _logName + ".CreateOrUpdateAppInstanceToken:";
+
+        if (string.IsNullOrEmpty(userGlobalId))
+        {
+            _logger.LogWarning($"{logHeader} GlobalId parameter is empty.");
+            return BadRequest();
+        }
+
+        try
+        {
+            object[] parameters = new object[1];
+
+            var globalId = new SqlParameter("GlobalId", userGlobalId);
+            globalId.SqlDbType = SqlDbType.VarChar;
+            globalId.Direction = ParameterDirection.Input;
+            parameters[0] = globalId;
+
+            int procedureResultState = await _dbContext.Database.ExecuteSqlRawAsync("dbo.sp_CreateScheduledActivities_BloodPressureMeasurement @GlobalId", parameters);
+            if (procedureResultState < 0)
+            {
+                _logger.LogWarning($"{logHeader} Stored procedure dbo.sp_CreateScheduledActivities_BloodPressureMeasurement has failed.");
+                return NotFound();
+            }
+
+            int procResultState = await _dbContext.Database.ExecuteSqlRawAsync("dbo.sp_CreateScheduledActivities_UrineProteinMeasurement @GlobalId", parameters);
+            if (procResultState < 0)
+            {
+                _logger.LogWarning($"{logHeader} Stored procedure dbo.sp_CreateScheduledActivities_UrineProteinMeasurement has failed.");
+                return NotFound();
+            }
+
+            int procedureResult = await _dbContext.Database.ExecuteSqlRawAsync("dbo.sp_CreateScheduledActivities_Medication @GlobalId", parameters);
+            if (procedureResult < 0)
+            {
+                _logger.LogWarning($"{logHeader} Stored procedure dbo.sp_CreateScheduledActivities_Medication has failed.");
+                return NotFound();
+            }
+
+            //TODO zde notifikace
+
+            return Ok();
+
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"{logHeader} {ex.Message}");
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
