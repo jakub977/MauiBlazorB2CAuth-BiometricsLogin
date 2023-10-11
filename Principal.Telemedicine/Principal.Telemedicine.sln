@@ -34,8 +34,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".azure", ".azure", "{8003CB
 		.azure\azure-pipelines-sharedApi.yml = .azure\azure-pipelines-sharedApi.yml
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Principal.Telemedicine.SharedApi.Test", "Principal.Telemedicine.SharedApi.Test\Principal.Telemedicine.SharedApi.Test.csproj", "{03485160-B08E-47E6-AC9C-13FC00E81414}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{FAC8AF6F-4AD3-44E5-B0B3-F6FA11588388}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Principal.Telemedicine.Shared.Infrastructure", "Principal.Telemedicine.Shared.Infrastructure\Principal.Telemedicine.Shared.Infrastructure.csproj", "{9C97FC9D-B512-4FFC-9232-336899BF5901}"
@@ -94,10 +92,6 @@ Global
 		{5C6F5A57-F938-4E1B-9BBC-F3F8CB4E0F1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5C6F5A57-F938-4E1B-9BBC-F3F8CB4E0F1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5C6F5A57-F938-4E1B-9BBC-F3F8CB4E0F1D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{03485160-B08E-47E6-AC9C-13FC00E81414}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{03485160-B08E-47E6-AC9C-13FC00E81414}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{03485160-B08E-47E6-AC9C-13FC00E81414}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{03485160-B08E-47E6-AC9C-13FC00E81414}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9C97FC9D-B512-4FFC-9232-336899BF5901}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9C97FC9D-B512-4FFC-9232-336899BF5901}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9C97FC9D-B512-4FFC-9232-336899BF5901}.Release|Any CPU.ActiveCfg = Release|Any CPU
