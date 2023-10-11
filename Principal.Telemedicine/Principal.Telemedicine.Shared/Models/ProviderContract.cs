@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Principal.Telemedicine.Shared.Models;
 
@@ -87,4 +88,35 @@ public class ProviderContract
     /// Link to dbo.AddressCity as a city related to provider
     /// </summary>
     public int? CityId { get; set; }
+
+    /// <summary>
+    /// Link to dbo.AddressCity as a city related to provider
+    /// </summary>
+    [JsonPropertyName("cityObject")]
+    public virtual AddressCityContract? City { get; set; }
+
+    /// <summary>
+    /// Count of EffectiveUsers related to provider
+    /// </summary>
+    [JsonPropertyName("adminUsers")]
+    public int? AdminUsers { get; set; }
+
+    /// <summary>
+    /// Link to dbo.Organization as a parent organization
+    /// </summary>
+    [JsonPropertyName("organizationObject")]
+    public virtual OrganizationContract? Organization { get; set; }
+
+    /// <summary>
+    /// Link to dbo.Picture as a photo of a provider
+    /// </summary>
+    [JsonPropertyName("pictureObject")]
+    public virtual PictureContract? Picture { get; set; }
+
+    /// <summary>
+    /// Inverse collection of SubjectAllowedToProvider
+    /// </summary>
+    [JsonPropertyName("allowedSubject")]
+    public virtual ICollection<SubjectAllowedToProviderContract> SubjectAllowedToProviders { get; set; } = new List<SubjectAllowedToProviderContract>();
+
 }

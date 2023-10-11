@@ -65,5 +65,14 @@ public class EffectiveUserRepository : IEffectiveUserRepository
 
         return ret;
     }
+
+    /// <inheritdoc/>
+    public async Task<IEnumerable<EffectiveUser>> GetEffectiveUsersByProviderIdTaskAsync(int providerId)
+    {
+        var data = await _dbContext.EffectiveUsers
+            .Where(p => p.ProviderId == providerId && !p.Deleted).OrderBy(p => p.Id).ToListAsync();
+
+        return data;
+    }
 }
 

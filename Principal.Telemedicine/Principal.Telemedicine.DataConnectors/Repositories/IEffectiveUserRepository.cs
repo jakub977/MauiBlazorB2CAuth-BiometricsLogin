@@ -41,5 +41,11 @@ public interface IEffectiveUserRepository
     /// <param name="user">EffectiveUser</param>
     /// <returns>true / false</returns>
     Task<bool> InsertEffectiveUserTaskAsync(EffectiveUser user);
+
+    /// <summary>
+    /// Metoda vrací seznam nesmazaných Efektivních uživatelů daného poskytovatele.
+    /// </summary>
+    /// <returns>Seznam EffectiveUser</returns>
+    Task<IEnumerable<EffectiveUser>> GetEffectiveUsersByProviderIdTaskAsync(int providerId);
 }
 
