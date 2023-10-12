@@ -104,6 +104,7 @@ public class CustomerRepository : ICustomerRepository
                     _logger.LogWarning("User '{0}', Email: '{1}', Id: {2} was not updated", user.FriendlyName, user.Email, user.Id);
                 }
             }
+
         }
         catch (Exception ex)
         {

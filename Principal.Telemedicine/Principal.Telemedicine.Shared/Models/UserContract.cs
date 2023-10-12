@@ -280,5 +280,10 @@ namespace Principal.Telemedicine.Shared.Models;
         /// </summary>
         public bool? IsRiskPatient { get; set; }
 
-    }
+        /// <summary>
+        /// Firebase Cloud Messaging token
+        /// </summary>
+        public string? AppInstanceToken { get; set; }
+
+}
 

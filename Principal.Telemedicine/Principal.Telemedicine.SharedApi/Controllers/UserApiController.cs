@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
+using Microsoft.EntityFrameworkCore;
+using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.DataConnectors.Repositories;
 using Principal.Telemedicine.Shared.Models;
 using Principal.Telemedicine.Shared.Utils;
@@ -23,6 +25,7 @@ public class UserApiController : ControllerBase
     private readonly IEffectiveUserRepository _effectiveUserRepository;
     private readonly DbContextApi _dbContext;
 
+    private readonly DbContextApi _dbContext;
     private readonly ILogger _logger;
     private readonly IMapper _mapper;
 
@@ -148,6 +151,7 @@ public class UserApiController : ControllerBase
             {
                 actualData.Deleted = false;
             }
+
             actualData.UpdateDateUtc = DateTime.UtcNow;
             actualData.UpdatedByCustomerId = currentUser.Id;
 
@@ -266,6 +270,7 @@ public class UserApiController : ControllerBase
                 {
                     existingEfUser.Deleted = false;
                 }
+
                 haveEFUser = true;
                 existingEfUser.Active = efUser.Active;
                 existingEfUser.UpdateDateUtc = DateTime.UtcNow;

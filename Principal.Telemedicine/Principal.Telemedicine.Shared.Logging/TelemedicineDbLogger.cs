@@ -90,7 +90,7 @@ public class TelemedicineDbLogger:ILogger
         {
             using (var scope = _serviceProvider.CreateScope())
             {
-                var _dbContextGeneral = scope.ServiceProvider.GetRequiredService<DbContextApi>();
+                var _dbContextGeneral = scope.ServiceProvider.GetService<DbContextApi>();
 
                 if (_dbContextGeneral != null)
                 {

@@ -23,10 +23,10 @@ public static class CustomLoggerExtensions
     /// <param name="traceInformation"></param>
     /// <param name="httpMethod"></param>
     /// <param name="ipAddress"></param>
-    public static void LogCustom<T>(this ILogger<T> logger, CustomLogLevel customLogLevel, string source, string shortMessage,  string fullMessage, string aditionalInfo, string traceInformation, string httpMethod = "" , string ipAddress = "" )
+    public static void LogCustom<T>(this ILogger<T> logger, CustomLogLevel customLogLevel, string source, string shortMessage,  string fullMessage, string aditionalInfo, string traceInformation, string httpMethod = "" , string ipAddress = "", string pageUrl = "" )
     {
         LogLevel logLevel = MapCustomLogLevelToLogLevel(customLogLevel);
-        Log logEntry = new() {Logger= $"{typeof(T).Name} : {source}", ReferrerUrl = aditionalInfo, LogLevelId = (int) customLogLevel, CreatedOnUtc =DateTime.UtcNow, HttpMethod = httpMethod, FullMessage = fullMessage, ShortMessage = shortMessage, CorrelationGuid=traceInformation, IpAddress = ipAddress  };
+        Log logEntry = new() {Logger= $"{typeof(T).Name} : {source}", ReferrerUrl = aditionalInfo, LogLevelId = (int) customLogLevel, CreatedOnUtc =DateTime.UtcNow, HttpMethod = httpMethod, FullMessage = fullMessage, ShortMessage = shortMessage, CorrelationGuid=traceInformation, IpAddress = ipAddress , PageUrl = pageUrl };
         
         string message = JsonSerializer.Serialize(logEntry);
         logger.Log(logLevel, message);
@@ -44,10 +44,10 @@ public static class CustomLoggerExtensions
     /// <param name="traceInformation"></param>
     /// <param name="httpMethod"></param>
     /// <param name="ipAddress"></param>
-    public static void LogCustom(this ILogger logger, CustomLogLevel customLogLevel, string source, string shortMessage, string fullMessage, string aditionalInfo, string traceInformation, string httpMethod="", string ipAddress = "")
+    public static void LogCustom(this ILogger logger, CustomLogLevel customLogLevel, string source, string shortMessage, string fullMessage, string aditionalInfo, string traceInformation, string httpMethod="", string ipAddress = "", string pageUrl = "")
     {
         LogLevel logLevel = MapCustomLogLevelToLogLevel(customLogLevel);
-        Log logEntry = new() { Logger = source, ReferrerUrl = aditionalInfo, LogLevelId = (int) customLogLevel, CreatedOnUtc = DateTime.UtcNow,  FullMessage = fullMessage, ShortMessage = shortMessage, CorrelationGuid = traceInformation, HttpMethod = httpMethod, IpAddress= ""  };
+        Log logEntry = new() { Logger = source, ReferrerUrl = aditionalInfo, LogLevelId = (int) customLogLevel, CreatedOnUtc = DateTime.UtcNow,  FullMessage = fullMessage, ShortMessage = shortMessage, CorrelationGuid = traceInformation, HttpMethod = httpMethod, IpAddress= "" , PageUrl=pageUrl };
 
         string message = JsonSerializer.Serialize(logEntry);
         logger.Log(logLevel, message);
