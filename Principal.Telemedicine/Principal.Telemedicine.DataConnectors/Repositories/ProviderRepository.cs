@@ -44,5 +44,18 @@ public class ProviderRepository : IProviderRepository
 
         return ret;
     }
+
+    /// <inheritdoc/>
+    public async Task<bool> InsertProviderTaskAsync(Provider provider)
+    {
+        bool ret = false;
+
+        _dbContext.Providers.Add(provider);
+        int result = await _dbContext.SaveChangesAsync();
+        if (result != 0)
+            ret = true;
+
+        return ret;
+    }
 }
 

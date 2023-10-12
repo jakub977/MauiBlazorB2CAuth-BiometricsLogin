@@ -27,5 +27,12 @@ public interface IProviderRepository
     /// <param name="provider">Poskytovatel</param>
     /// <returns>true / false</returns>
     Task<bool> UpdateProviderTaskAsync(Provider provider);
+
+    /// <summary>
+    /// Metoda vytvoří poskytovatele
+    /// </summary>
+    /// <param name="provider">Poskytovatel</param>
+    /// <returns>true / false</returns>
+    Task<bool> InsertProviderTaskAsync(Provider provider);
 }
 
