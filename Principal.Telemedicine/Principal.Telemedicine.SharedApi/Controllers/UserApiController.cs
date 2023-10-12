@@ -6,8 +6,6 @@ using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.DataConnectors.Repositories;
 using Principal.Telemedicine.Shared.Models;
 using Principal.Telemedicine.Shared.Utils;
-using Microsoft.EntityFrameworkCore;
-using Principal.Telemedicine.DataConnectors.Contexts;
 using Microsoft.Data.SqlClient;
 using System.Data;
 
@@ -23,8 +21,6 @@ public class UserApiController : ControllerBase
     private readonly ICustomerRepository _customerRepository;
     private readonly IProviderRepository _providerRepository;
     private readonly IEffectiveUserRepository _effectiveUserRepository;
-    private readonly DbContextApi _dbContext;
-
     private readonly DbContextApi _dbContext;
     private readonly ILogger _logger;
     private readonly IMapper _mapper;
