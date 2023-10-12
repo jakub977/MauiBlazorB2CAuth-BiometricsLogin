@@ -112,5 +112,21 @@ public class Mapping : Profile
         CreateMap<HealthCareInsurerContract, HealthCareInsurer>();
         CreateMap<PasswordFormatTypeContract, PasswordFormatType>();
         CreateMap<ProfessionTypeContract, ProfessionType>();
+
+        CreateMap<CompleteUserContract, Customer>()
+           .ForMember(x => x.AdminComment, opt => opt.Ignore())
+           .ForMember(x => x.PasswordSalt, opt => opt.Ignore())
+           .ForMember(x => x.LastIpAddress, opt => opt.Ignore())
+           .ForMember(x => x.LastLoginDateUtc, opt => opt.Ignore())
+           .ForMember(x => x.LastActivityDateUtc, opt => opt.Ignore())
+           .ForMember(x => x.InvalidLoginsCount, opt => opt.Ignore())
+           .ForMember(x => x.ApiloginToken, opt => opt.Ignore())
+           .ForMember(x => x.LastApiloginDateTime, opt => opt.Ignore())
+           .ForMember(x => x.ApiloginEnabled, opt => opt.Ignore())
+           .ForMember(x => x.ProfessionName, opt => opt.Ignore())
+           .ForMember(x => x.ProfessionTypeId, opt => opt.Ignore())
+           .ForMember(x => x.Note, opt => opt.Ignore())
+           .ForMember(x => x.IsRiskPatient, opt => opt.Ignore())
+           .ForMember(x => x.PasswordFormatTypeId, opt => opt.Ignore());
     }
 }

@@ -34,5 +34,12 @@ public interface ICustomerRepository
     /// <param name="user">Customer</param>
     /// <returns>true / false</returns>
     Task<bool> UpdateCustomerTaskAsync(Customer user);
+
+    /// <summary>
+    /// Metoda založí nového Customera včetně založení v ADB2C
+    /// </summary>
+    /// <param name="user">Customer</param>
+    /// <returns>true / false</returns>
+    Task<bool> InsertCustomerTaskAsync(Customer user);
 }
 

@@ -8,12 +8,17 @@ namespace Principal.Telemedicine.DataConnectors.Repositories;
 public interface IADB2CRepository
 {
     /// <summary>
-    /// Metoda aktualizuje položku Customer. 
+    /// Metoda aktualizuje existujícího uživatele 
     /// </summary>
     /// <param name="customer">Customer</param>
     /// <returns>Výsledek uložení true / false</returns>
     Task<bool> UpdateUserAsyncTask(Customer customer);
 
-
+    /// <summary>
+    /// Metoda založí nového uživatele 
+    /// </summary>
+    /// <param name="customer">Customer</param>
+    /// <returns>Výsledek uložení true / false</returns>
+    Task<bool> InsertUserAsyncTask(Customer customer);
 }
 

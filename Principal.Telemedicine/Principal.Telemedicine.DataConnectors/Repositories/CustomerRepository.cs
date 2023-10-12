@@ -12,8 +12,9 @@ public class CustomerRepository : ICustomerRepository
     private readonly DbContextApi _dbContext;
     private readonly IADB2CRepository _adb2cRepository;
     private readonly ILogger _logger;
+    private readonly string _logName = "ADB2CRepository";
 
-    public CustomerRepository(DbContextApi dbContext, IADB2CRepository adb2cRepository, ILogger<ADB2CRepository> logger)
+    public CustomerRepository(DbContextApi dbContext, IADB2CRepository adb2cRepository, ILogger<CustomerRepository> logger)
     {
         _dbContext = dbContext;
         _adb2cRepository = adb2cRepository;
@@ -91,5 +92,48 @@ public class CustomerRepository : ICustomerRepository
 
         return ret;
     }
+
+    /// <inheritdoc/>
+    public async Task<bool> InsertCustomerTaskAsync(Customer user)
+    {
+        bool ret = false;
+        string logHeader = _logName + ".InsertCustomerTaskAsync:";
+        using var tran = await _dbContext.Database.BeginTransactionAsync();
+
+        try
+        {
+            user.CreatedDateUtc = DateTime.UtcNow;
+
+            _dbContext.Customers.Update(user);
+
+            int result = await _dbContext.SaveChangesAsync();
+            if (result != 0)
+                ret = await _adb2cRepository.InsertUserAsyncTask(user);
+
+            if (ret)
+            {
+                tran.Commit();
+                _logger.LogDebug("{0} User '{1}', Email: '{2}', Id: {3} created succesfully", logHeader, user.FriendlyName, user.Email, user.Id);
+            }
+            else
+            {
+                tran.Rollback();
+                _logger.LogWarning("{0} User '{1}', Email: '{2}', Id: {3} was not created", logHeader, user.FriendlyName, user.Email, user.Id);
+            }
+        }
+        catch (Exception ex)
+        {
+            tran.Rollback();
+            string errMessage = ex.Message;
+            if (ex.InnerException != null)
+            {
+                errMessage += " " + ex.InnerException.Message;
+            }
+            _logger.LogError("{0} User '{1}', Email: '{2}', Id: {3} was not created, Error: {4}", logHeader, user.FriendlyName, user.Email, user.Id, errMessage);
+        }
+
+        return ret;
+    }
+
 }
 

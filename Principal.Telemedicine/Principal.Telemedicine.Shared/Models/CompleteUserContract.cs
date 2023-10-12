@@ -9,6 +9,7 @@ namespace Principal.Telemedicine.Shared.Models;
 [DataContract]
 public class CompleteUserContract
 {
+    private string _friendlyName;
 
     /// <summary>
     /// Primary identifier of an user
@@ -230,8 +231,30 @@ public class CompleteUserContract
     /// <summary>
     /// Friendly name, i.e. full name of an user
     /// </summary>
-    [DataMember]
-    public string FriendlyName { get; set; } = null!;
+    
+    public string FriendlyName
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(_friendlyName))
+            {
+                _friendlyName = FirstName;
+                if (string.IsNullOrEmpty(_friendlyName))
+                    _friendlyName = LastName;
+                else
+                {
+                    if (!string.IsNullOrEmpty(LastName))
+                    {
+                        _friendlyName += " " + LastName;
+                    }
+                }
+            }
+
+            return _friendlyName;
+        }
+        set
+        { _friendlyName = value; }
+    }
 
     /// <summary>
     /// Global identifier of user, used for synchronization between dedicated DBs and central Azure DB

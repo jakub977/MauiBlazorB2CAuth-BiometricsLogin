@@ -1,10 +1,15 @@
 ﻿using AutoMapper;
 using Azure.Identity;
+using Castle.Core.Resource;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
+using Microsoft.Graph.Models.TermStore;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
 using Principal.Telemedicine.DataConnectors.Repositories;
 using Principal.Telemedicine.Shared.Models;
+using Principal.Telemedicine.Shared.Utils;
 using System.Diagnostics;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
@@ -27,7 +32,7 @@ public class UserApiController : ControllerBase
 
     private readonly string _logName = "UserApiController";
 
-    public UserApiController(ICustomerRepository customerRepository, IProviderRepository providerRepository, IEffectiveUserRepository effectiveUserRepository, 
+    public UserApiController(ICustomerRepository customerRepository, IProviderRepository providerRepository, IEffectiveUserRepository effectiveUserRepository,
         IConfiguration configuration, IADB2CRepository adb2cRepository, ILogger<UserApiController> logger, IMapper mapper)
     {
         _customerRepository = customerRepository;
@@ -136,7 +141,6 @@ public class UserApiController : ControllerBase
                 return BadRequest();
             }
 
-            //Customer? oldCustomerData = await _customerRepository.GetCustomerByIdTaskAsync(user.Id);
             Customer? actualData = await _customerRepository.GetCustomerByIdTaskAsync(user.Id);
             if (actualData == null)
             {
@@ -144,15 +148,7 @@ public class UserApiController : ControllerBase
                 return BadRequest();
             }
 
-            //CompleteUserContract actualData = _mapper.Map<CompleteUserContract>(oldCustomerData);
-
-
             bool haveEFUser = false;
-            //string oldFirstName = "";
-            //string oldLastName = "";
-            //bool azureEmailChange = true;
-            //bool azureUpdate = false;
-            //bool isRenew = false;
 
             if (actualData.Deleted)
             {
@@ -161,15 +157,6 @@ public class UserApiController : ControllerBase
             }
             actualData.UpdateDateUtc = DateTime.UtcNow;
             actualData.UpdatedByCustomerId = currentUser.Id;
-
-            // došlo ke změně jméne / příjmení?
-            //if (actualData.FirstName != user.FirstName || actualData.LastName != user.LastName)
-            //{
-            //    oldFirstName = actualData.FirstName;
-            //    oldLastName = actualData.LastName;
-
-            //    //await LogSensitiveData(currentUser, customer, actualData);
-            //}
 
             string oldEmail = actualData.Email;
             //bool userInsertedToAzure = false;
@@ -238,17 +225,6 @@ public class UserApiController : ControllerBase
             actualData.IsProviderAdminAccount = user.IsProviderAdminAccount;
             actualData.IsOrganizationAdminAccount = user.IsOrganizationAdminAccount;
             actualData.IsSuperAdminAccount = user.IsSuperAdminAccount;
-
-            //// pokud je vyplněný kód pojišťovny postaru, doplním vazbu přes ID
-            //if (!actualData.HealthCareInsurerId.HasValue && !string.IsNullOrEmpty(actualData.HealthCareInsurerCode))
-            //{
-            //    var oldCode = _healthCareInsurerService.Value.GetHealthCareInsurerByCode(currentUser, actualData.HealthCareInsurerCode);
-            //    if (oldCode != null)
-            //    {
-            //        actualData.HealthCareInsurerId = oldCode.Id;
-            //        actualData.HealthCareInsurerCode = "";
-            //    }
-            //}
 
             // nový nebo stávající
             // vždy pracujeme jen s jedním EF uživatelem, protože jeden EF uživatel se vztahuje ke konkrétnímu Poskytovatli (ProviderId)
@@ -553,117 +529,6 @@ public class UserApiController : ControllerBase
 
             #endregion
 
-            /*
-            // nemáme GlobalId, zkusíme ho získat
-            if (string.IsNullOrEmpty(actualData.GlobalId))
-            {
-                if (useDBToAzure)
-                {
-                    if (!_biDirectionalQueueService.GetAzureCustomerGlobalId(currentUser, actualData)) // GlobalId jsme nezískali, uživatel asi neexistuje, založíme ho
-                    {
-                        userInsertedToAzure = _biDirectionalQueueService.InsertUpdateAzureCustomer(currentUser, actualData, true);
-                    }
-                }
-                else
-                {
-                    if (!azure.GetAzureCustomerGlobalId(currentUser, actualData)) // GlobalId jsme nezískali, uživatel asi neexistuje, založíme ho
-                    {
-                        userInsertedToAzure = azure.InsertUpdateAzureCustomer(currentUser, actualData, true);
-                    }
-                }
-            }
-            else
-            {
-                // obnova uživatele
-                if (!userInsertedToAzure && isRenew)
-                {
-                    // pokud došlo ke změně emailu, použijeme starý
-                    if (actualData.Email != oldEmail)
-                        actualData.Email = oldEmail;
-
-                    if (string.IsNullOrEmpty(oldFirstName))
-                    {
-                        if (useDBToAzure)
-                        {
-                            azureUpdate = _biDirectionalQueueService.InsertUpdateAzureCustomer(currentUser, actualData, false, false, true, "", "");
-                        }
-                        else
-                        {
-                            azureUpdate = azure.InsertUpdateAzureCustomer(currentUser, actualData, false, false, true, "", "");
-                        }
-                    }
-                    else
-                    {
-                        actualData.FirstName = oldFirstName;
-                        actualData.LastName = oldLastName;
-
-                        if (useDBToAzure)
-                        {
-                            azureUpdate = _biDirectionalQueueService.InsertUpdateAzureCustomer(currentUser, actualData, false, false, true, "", "");
-                        }
-                        else
-                        {
-                            azureUpdate = azure.InsertUpdateAzureCustomer(currentUser, actualData, false, false, true, "", "");
-                        }
-
-                        actualData.FirstName = user.FirstName;
-                        actualData.LastName = user.LastName;
-                    }
-                    // nastavíme případný nový email
-                    actualData.Email = user.Email;
-                }
-
-                // změna emailu
-                if (!userInsertedToAzure && actualData.Email != oldEmail)
-                {
-                    if (string.IsNullOrEmpty(oldFirstName))
-                    {
-                        if (useDBToAzure)
-                        {
-                            azureEmailChange = _biDirectionalQueueService.UpdateAzureCustomerEmail(currentUser, actualData, oldEmail);
-                        }
-                        else
-                        {
-                            azureEmailChange = azure.UpdateAzureCustomerEmail(currentUser, actualData, oldEmail);
-                        }
-                    }
-                    else
-                    {
-                        actualData.FirstName = oldFirstName;
-                        actualData.LastName = oldLastName;
-
-                        if (useDBToAzure)
-                        {
-                            azureEmailChange = _biDirectionalQueueService.UpdateAzureCustomerEmail(currentUser, actualData, oldEmail);
-                        }
-                        else
-                        {
-                            azureEmailChange = azure.UpdateAzureCustomerEmail(currentUser, actualData, oldEmail);
-                        }
-
-                        actualData.FirstName = user.FirstName;
-                        actualData.LastName = user.LastName;
-                    }
-                }
-
-                // update uživatele
-                if (useDBToAzure)
-                {
-                    azureUpdate = _biDirectionalQueueService.InsertUpdateAzureCustomer(currentUser, actualData, false, false, false, oldFirstName, oldLastName);
-                }
-                else
-                {
-                    azureUpdate = azure.InsertUpdateAzureCustomer(currentUser, actualData, false, false, false, oldFirstName, oldLastName);
-                }
-            }
-
-            if (!azureUpdate || !azureEmailChange)
-            {
-                Logger.WarnFormat("{0}: Azure update error, {1}", customerId: currentUser.Id, logMethod, logData);
-                return -20;
-            }
-            */
-
             bool ret = await _customerRepository.UpdateCustomerTaskAsync(actualData);
 
             if (ret)
@@ -684,5 +549,152 @@ public class UserApiController : ControllerBase
         }
     }
 
-}
+    /// <summary>
+    /// Uloží nového uživatele
+    /// </summary>
+    /// <param name="globalId">GlobalID uživatele co metodu volá</param>
+    /// <param name="user">Objekt nového uživatele</param>
+    /// <returns>Objekt uživatele nebo chybu:
+    /// -1 = obecná chyba
+    /// -2 = neplatné UserId
+    /// -3 = chybí GlobalId
+    /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
+    /// -5 = uživatele se nepodařilo založit v DB nebo ADB2C
+    /// </returns>
+    [HttpPost(Name = "InsertUser")]
+    public async Task<IActionResult> InsertUser([FromHeader(Name = "x-api-g")] string globalId, CompleteUserContract user, bool isProviderAdmin = false)
+    {
+        string logHeader = _logName + ".InsertUser:";
+        bool ret = false;
 
+        try
+        {
+            // kontrola na vstupní data
+            if (user.Id > 0 || string.IsNullOrEmpty(globalId))
+            {
+                _logger.LogWarning("{0} Invalid UserId: {1} or GlobalId: {2}", logHeader, user.Id, globalId);
+                if (user.Id > 0)
+                    return BadRequest(APIErrorResponseModel.APIErrorResponse(-2, "Invalid UserId", "UserId vali is not '0'."));
+                else
+                    return BadRequest(APIErrorResponseModel.APIErrorResponse(-3, "GlobalId is empty", "GlobalId must be set."));
+            }
+
+            // dotáhneme si aktuálního uživatele
+            Customer? currentUser = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);
+            if (currentUser == null)
+            {
+                _logger.LogWarning("{0} Current User not found", logHeader);
+                return BadRequest(APIErrorResponseModel.APIErrorResponse(-4, "Current user not found", "User not found by GlobalId."));
+            }
+
+            Customer? actualData = _mapper.Map<Customer>(user);
+
+            actualData.CreatedByCustomerId = currentUser.Id;
+            actualData.CreatedDateUtc = DateTime.UtcNow;
+            actualData.PasswordFormatTypeId = 1;
+
+            if (actualData.HealthCareInsurerId.HasValue && actualData.HealthCareInsurerId == 0)
+                actualData.HealthCareInsurerId = null;
+
+            if (actualData.Picture != null)
+            {
+                actualData.Picture.CreatedDateUtc = DateTime.UtcNow;
+                actualData.Picture.CreatedByCustomerId = currentUser.Id;
+            }
+
+            // efektivní uživatel
+            foreach (var item in actualData.EffectiveUserUsers)
+            {
+                item.Deleted = false;
+                item.CreatedByCustomerId = currentUser.Id;
+                item.CreatedDateUtc = DateTime.UtcNow;
+                actualData.CreatedByProviderId = item.ProviderId;
+
+                // skupiny
+                foreach (var group in item.GroupEffectiveMembers)
+                {
+                    group.Active = true;
+                    group.Deleted = false;
+                    group.CreatedByCustomerId = currentUser.Id;
+                    group.CreatedDateUtc = DateTime.UtcNow;
+                }
+
+                // role
+                foreach (var role in item.RoleMembers)
+                {
+                    role.Active = true;
+                    role.Deleted = false;
+                    role.CreatedByCustomerId = currentUser.Id;
+                    role.CreatedDateUtc = DateTime.UtcNow;
+                }
+            }
+
+            // ukládání Spráce Poskytovatele
+            if (isProviderAdmin)
+            {
+                List<int> providers = new List<int>();
+                providers.AddRange(actualData.EffectiveUserUsers.Select(s => s.ProviderId).ToList());
+
+                // kontrola na zaktivnění neaktivních Poskytovatelů
+                var setProviders = await _providerRepository.GetProvidersTaskAsyncTask();
+                setProviders = setProviders.Where(w => providers.Contains(w.Id) && !w.Active).ToList();
+                if (setProviders.Count() > 0)
+                    foreach (var provider in setProviders)
+                    {
+                        if (!provider.Active)
+                        {
+                            provider.Active = true;
+                            provider.UpdateDateUtc = DateTime.UtcNow;
+                            provider.UpdatedByCustomerId = currentUser.Id;
+                            await _providerRepository.UpdateProviderTaskAsync(provider);
+                        }
+                    }
+            }
+
+            // role spojené přímo s uživatelem
+            foreach (var role in actualData.RoleMemberDirectUsers)
+            {
+                role.Active = true;
+                role.Deleted = false;
+                role.CreatedByCustomerId = currentUser.Id;
+                role.CreatedDateUtc = DateTime.UtcNow;
+            }
+
+            // zakázané oprávnění pro položky Rolí
+            foreach (var permission in actualData.UserPermissionUsers)
+            {
+                // nový záznam
+                permission.CreatedByCustomerId = currentUser.Id;
+                permission.CreatedDateUtc = DateTime.UtcNow;
+                permission.Deleted = false;
+                permission.Active = true;
+                permission.IsDeniedPermission = true;
+            }
+
+            actualData.GlobalId = actualData.Email;
+
+            // pokud nemáme heslo, tak ho vygenerujeme
+            if (string.IsNullOrEmpty(actualData.Password))
+                actualData.Password = PasswordGenerator.GetNewPassword();
+
+            ret = await _customerRepository.InsertCustomerTaskAsync(actualData);
+
+            if (ret)
+            {
+                user = _mapper.Map<CompleteUserContract>(actualData);
+                _logger.LogInformation("{0} User '{1}', Email: '{2}', Id: {3} created succesfully", logHeader, actualData.FriendlyName, actualData.Email, actualData.Id);
+                return Ok(user);
+            }
+            else
+            {
+                _logger.LogWarning("{0} User was not created, Name: {1} ID: {2} Email: {3}", logHeader, user.FriendlyName, user.Id, user.Email);
+                return BadRequest(APIErrorResponseModel.APIErrorResponse(-5, "User was not created", "Error when inserting new user into DB or ADB2C."));
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("{0} {1}", logHeader, ex.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
+}
