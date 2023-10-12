@@ -21,8 +21,6 @@ public class UserApiController : ControllerBase
     private readonly ICustomerRepository _customerRepository;
     private readonly IProviderRepository _providerRepository;
     private readonly IEffectiveUserRepository _effectiveUserRepository;
-    private readonly IConfiguration _configuration;
-    private readonly IADB2CRepository _adb2cRepository;
     private readonly DbContextApi _dbContext;
 
     private readonly ILogger _logger;
@@ -31,13 +29,11 @@ public class UserApiController : ControllerBase
     private readonly string _logName = "UserApiController";
 
     public UserApiController(ICustomerRepository customerRepository, IProviderRepository providerRepository, IEffectiveUserRepository effectiveUserRepository,
-        IConfiguration configuration, IADB2CRepository adb2cRepository, DbContextApi dbContext, ILogger<UserApiController> logger, IMapper mapper)
+        DbContextApi dbContext, ILogger<UserApiController> logger, IMapper mapper)
     {
         _customerRepository = customerRepository;
         _providerRepository = providerRepository;
         _effectiveUserRepository = effectiveUserRepository;
-        _configuration = configuration;
-        _adb2cRepository = adb2cRepository;
         _dbContext = dbContext;
         _logger = logger;
         _mapper = mapper;
@@ -150,14 +146,12 @@ public class UserApiController : ControllerBase
 
             if (actualData.Deleted)
             {
-                //isRenew = true;
                 actualData.Deleted = false;
             }
             actualData.UpdateDateUtc = DateTime.UtcNow;
             actualData.UpdatedByCustomerId = currentUser.Id;
 
             string oldEmail = actualData.Email;
-            //bool userInsertedToAzure = false;
 
             // pokud jde o editaci efektivního uživatele a exituje ještě jiný aktivní efektivní uživatel pro danou entitu Customer,
             // je potřeba ponechat záznam Customer v aktivním stavu 
@@ -276,10 +270,7 @@ public class UserApiController : ControllerBase
                 existingEfUser.Active = efUser.Active;
                 existingEfUser.UpdateDateUtc = DateTime.UtcNow;
                 existingEfUser.UpdatedByCustomerId = currentUser.Id;
-                //if (existingEfUser.Expertises.Count > 0)
-                //    existingEfUser.Expertises.Clear();
-                //if (efUser.Expertises.Count > 0)
-                //    existingEfUser.Expertises.AddRange(efUser.Expertises);
+
                 if (!actualData.CreatedByProviderId.HasValue)
                     actualData.CreatedByProviderId = existingEfUser.ProviderId;
 
@@ -445,7 +436,7 @@ public class UserApiController : ControllerBase
             #region Role spojené přímo s uživatelem
 
             // nemáme EF uživatele ale máme Role
-            if (actualData.EffectiveUserUsers.Where(w => !w.Deleted).Any() && (actualData.RoleMemberDirectUsers.Where(w => !w.Deleted).Any() || user.RoleMemberDirectUsers.Any()))
+            if (!actualData.EffectiveUserUsers.Where(w => !w.Deleted).Any() && (actualData.RoleMemberDirectUsers.Where(w => !w.Deleted).Any() || user.RoleMemberDirectUsers.Any()))
             {
                 //nové a stávající role
                 foreach (var role in user.RoleMemberDirectUsers)
