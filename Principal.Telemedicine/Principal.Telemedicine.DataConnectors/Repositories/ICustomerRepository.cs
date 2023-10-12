@@ -32,8 +32,9 @@ public interface ICustomerRepository
     /// Metoda aktualizuje Customera včetně aktualizace v ADB2C
     /// </summary>
     /// <param name="user">Customer</param>
+    /// <param name="ignoreADB2C"></param>
     /// <returns>true / false</returns>
-    Task<bool> UpdateCustomerTaskAsync(Customer user);
+    Task<bool> UpdateCustomerTaskAsync(Customer user, bool? ignoreADB2C = false);
 
     /// <summary>
     /// Metoda založí nového Customera včetně založení v ADB2C

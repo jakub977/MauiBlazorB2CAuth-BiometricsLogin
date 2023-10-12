@@ -1,16 +1,13 @@
 ﻿using AutoMapper;
-using Azure.Identity;
-using Castle.Core.Resource;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.Extensions.Logging;
-using Microsoft.Graph;
-using Microsoft.Graph.Models.TermStore;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
 using Principal.Telemedicine.DataConnectors.Repositories;
 using Principal.Telemedicine.Shared.Models;
 using Principal.Telemedicine.Shared.Utils;
-using System.Diagnostics;
+using Microsoft.EntityFrameworkCore;
+using Principal.Telemedicine.DataConnectors.Contexts;
+using Microsoft.Data.SqlClient;
+using System.Data;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
 
@@ -26,6 +23,7 @@ public class UserApiController : ControllerBase
     private readonly IEffectiveUserRepository _effectiveUserRepository;
     private readonly IConfiguration _configuration;
     private readonly IADB2CRepository _adb2cRepository;
+    private readonly DbContextApi _dbContext;
 
     private readonly ILogger _logger;
     private readonly IMapper _mapper;
@@ -33,13 +31,14 @@ public class UserApiController : ControllerBase
     private readonly string _logName = "UserApiController";
 
     public UserApiController(ICustomerRepository customerRepository, IProviderRepository providerRepository, IEffectiveUserRepository effectiveUserRepository,
-        IConfiguration configuration, IADB2CRepository adb2cRepository, ILogger<UserApiController> logger, IMapper mapper)
+        IConfiguration configuration, IADB2CRepository adb2cRepository, DbContextApi dbContext, ILogger<UserApiController> logger, IMapper mapper)
     {
         _customerRepository = customerRepository;
         _providerRepository = providerRepository;
         _effectiveUserRepository = effectiveUserRepository;
         _configuration = configuration;
         _adb2cRepository = adb2cRepository;
+        _dbContext = dbContext;
         _logger = logger;
         _mapper = mapper;
     }
@@ -47,11 +46,10 @@ public class UserApiController : ControllerBase
     /// <summary>
     /// Vrátí základní údaje uživatele.
     /// </summary>
-    /// <param name="apiKey"></param>
     /// <param name="userId"></param>
     /// <returns></returns>
     [HttpGet(Name = "GetUserInfo")]
-    public async Task<IActionResult> GetUserInfo([FromHeader(Name = "x-api-key")] string apiKey, int userId)
+    public async Task<IActionResult> GetUserInfo(int userId)
     {
 
         if (userId <= 0)
@@ -447,7 +445,7 @@ public class UserApiController : ControllerBase
             #region Role spojené přímo s uživatelem
 
             // nemáme EF uživatele ale máme Role
-            if (actualData.EffectiveUserUsers.Where(w => !w.Deleted).Count() == 0 && (actualData.RoleMemberDirectUsers.Where(w => !w.Deleted).Count() > 0 || user.RoleMemberDirectUsers.Count() > 0))
+            if (actualData.EffectiveUserUsers.Where(w => !w.Deleted).Any() && (actualData.RoleMemberDirectUsers.Where(w => !w.Deleted).Any() || user.RoleMemberDirectUsers.Any()))
             {
                 //nové a stávající role
                 foreach (var role in user.RoleMemberDirectUsers)
@@ -697,4 +695,114 @@ public class UserApiController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
+
+    /// <summary>
+    /// Uloží Firebase Cloud Messaging token uživatele
+    /// </summary>
+    /// <param name="globalId"></param>
+    /// <param name="appInstanceToken"></param>
+    /// <returns></returns>
+    [HttpGet(Name = "CreateOrUpdateAppInstanceToken")]
+    public async Task<IActionResult> CreateOrUpdateAppInstanceToken(string globalId, string appInstanceToken)
+    {
+
+        string logHeader = _logName + ".CreateOrUpdateAppInstanceToken:";
+
+        if (string.IsNullOrEmpty(globalId) || string.IsNullOrEmpty(appInstanceToken))
+        {
+            return BadRequest();
+        }
+
+        try
+        {
+            Customer? user = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);
+            if (user == null)
+            {
+                _logger.LogWarning($"{logHeader} Current User not found");
+                return BadRequest();
+            }
+
+            user.AppInstanceToken = appInstanceToken;
+
+            bool updated = await _customerRepository.UpdateCustomerTaskAsync(user, true);
+
+            if (updated)
+            {
+                _logger.LogInformation("AppInstanceToken has been updated successfully");
+                return Ok();
+            }
+            else
+            {
+                _logger.LogWarning("AppInstanceToken update has failed");
+                return BadRequest();
+            }
+
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"{logHeader} {ex.Message}");
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
+
+    /// <summary>
+    /// Uloží žádost o smazání dat uživatele do dedikované databáze.
+    /// <param name="globalId">globalID uživatele co metodu volá</param>
+    /// <returns></returns>
+    [HttpPost(Name = "SaveUserAccountDeletionDemand")]
+    public async Task<IActionResult> SaveUserAccountDeletionDemand(string globalId)
+    {
+
+        if (string.IsNullOrEmpty(globalId))
+        {
+            return BadRequest();
+        }
+
+        try
+        {
+            //najdeme userId podle globalId
+            var user = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);
+            var mappedUser = new CompleteUserContract();
+            mappedUser = _mapper.Map<CompleteUserContract>(user);
+
+            var userId = new SqlParameter
+            {
+                ParameterName = "@userId",
+                Value = mappedUser.Id,
+                SqlDbType = SqlDbType.VarChar,
+                Direction = ParameterDirection.Input
+            };
+
+            var returnValue = new SqlParameter
+            {
+                ParameterName = "@returnValue",
+                SqlDbType = SqlDbType.Int,
+                Direction = ParameterDirection.Output
+            };
+
+            object[] parameters = new object[2];
+            parameters[0] = userId;
+            parameters[1] = returnValue;
+
+
+            //zavoláme stored procedure v dedikované db a vezmeme si výstupní parametr
+            int affectedRaws = await _dbContext.Database.ExecuteSqlRawAsync($"dbo.sp_SaveUserDataDeletionDemand @userId, @returnValue OUTPUT", parameters);
+
+            if (returnValue.Value == null || returnValue.Value.ToString() != "1")
+            {
+                _logger.Log(LogLevel.Error, "Stored procedure dbo.sp_SaveUserDataDeletionDemand has failed.");
+                return NotFound();
+            }
+
+            return Ok();
+        }
+
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
 }
+
+

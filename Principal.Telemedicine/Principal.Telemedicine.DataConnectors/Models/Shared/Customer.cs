@@ -313,6 +313,13 @@ public partial class Customer
     public bool? IsRiskPatient { get; set; }
 
     /// <summary>
+    /// Firebase Cloud Messaging token
+    /// </summary>
+    [StringLength(200)]
+    [Unicode(false)]
+    public string? AppInstanceToken { get; set; }
+
+    /// <summary>
     /// Link to dbo.AddressCity as a city where user lives
     /// </summary>
     [ForeignKey("CityId")]

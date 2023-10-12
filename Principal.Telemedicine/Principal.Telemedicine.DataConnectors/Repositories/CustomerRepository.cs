@@ -54,7 +54,7 @@ public class CustomerRepository : ICustomerRepository
     }
 
     /// <inheritdoc/>
-    public async Task<bool> UpdateCustomerTaskAsync(Customer user)
+    public async Task<bool> UpdateCustomerTaskAsync(Customer user, bool? ignoreADB2C = false)
     {
         bool ret = false;
         using var tran = await _dbContext.Database.BeginTransactionAsync();
@@ -70,18 +70,39 @@ public class CustomerRepository : ICustomerRepository
             }
 
             int result = await _dbContext.SaveChangesAsync();
-            if (result != 0)
-                ret = await _adb2cRepository.UpdateUserAsyncTask(user);
 
-            if (ret)
+            if (ignoreADB2C == true)
             {
-                tran.Commit();
-                _logger.LogDebug("User '{0}', Email: '{1}', Id: {2} updated succesfully", user.FriendlyName, user.Email, user.Id);
+                if (result != 0)
+                {
+                    tran.Commit();
+                    _logger.LogDebug("User '{0}', Email: '{1}', Id: {2} updated succesfully", user.FriendlyName, user.Email, user.Id);
+                    return true;
+
+                }
+                else
+                {
+                    tran.Rollback();
+                    _logger.LogWarning("User '{0}', Email: '{1}', Id: {2} was not updated", user.FriendlyName, user.Email, user.Id);
+                    return false;
+                }
+
             }
             else
-            { 
-                tran.Rollback();
-                _logger.LogWarning("User '{0}', Email: '{1}', Id: {2} was not updated", user.FriendlyName, user.Email, user.Id);
+            {
+                if (result != 0)
+                    ret = await _adb2cRepository.UpdateUserAsyncTask(user);
+
+                if (ret)
+                {
+                    tran.Commit();
+                    _logger.LogDebug("User '{0}', Email: '{1}', Id: {2} updated succesfully", user.FriendlyName, user.Email, user.Id);
+                }
+                else
+                {
+                    tran.Rollback();
+                    _logger.LogWarning("User '{0}', Email: '{1}', Id: {2} was not updated", user.FriendlyName, user.Email, user.Id);
+                }
             }
         }
         catch (Exception ex)
