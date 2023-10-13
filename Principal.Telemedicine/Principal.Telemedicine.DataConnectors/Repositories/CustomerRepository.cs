@@ -12,7 +12,7 @@ public class CustomerRepository : ICustomerRepository
     private readonly DbContextApi _dbContext;
     private readonly IADB2CRepository _adb2cRepository;
     private readonly ILogger _logger;
-    private readonly string _logName = "ADB2CRepository";
+    private readonly string _logName = "CustomerRepository";
 
     public CustomerRepository(DbContextApi dbContext, IADB2CRepository adb2cRepository, ILogger<CustomerRepository> logger)
     {
@@ -54,14 +54,16 @@ public class CustomerRepository : ICustomerRepository
     }
 
     /// <inheritdoc/>
-    public async Task<bool> UpdateCustomerTaskAsync(Customer user, bool? ignoreADB2C = false)
+    public async Task<bool> UpdateCustomerTaskAsync(Customer currentUser, Customer user, bool? ignoreADB2C = false)
     {
         bool ret = false;
+        string logHeader = _logName + ".InsertCustomerTaskAsync:";
         using var tran = await _dbContext.Database.BeginTransactionAsync();
 
         try
         {
             user.UpdateDateUtc = DateTime.UtcNow;
+            user.UpdatedByCustomerId = currentUser.Id;
 
             bool tracking = _dbContext.ChangeTracker.Entries<Customer>().Any(x => x.Entity.Id == user.Id);
             if (!tracking)
@@ -76,17 +78,15 @@ public class CustomerRepository : ICustomerRepository
                 if (result != 0)
                 {
                     tran.Commit();
-                    _logger.LogDebug("User '{0}', Email: '{1}', Id: {2} updated succesfully", user.FriendlyName, user.Email, user.Id);
+                    _logger.LogDebug("{0} User '{1}', Email: '{2}', Id: {3} updated succesfully", logHeader, user.FriendlyName, user.Email, user.Id);
                     return true;
-
                 }
                 else
                 {
                     tran.Rollback();
-                    _logger.LogWarning("User '{0}', Email: '{1}', Id: {2} was not updated", user.FriendlyName, user.Email, user.Id);
+                    _logger.LogWarning("{0} User '{1}', Email: '{2}', Id: {3} was not updated", logHeader, user.FriendlyName, user.Email, user.Id);
                     return false;
                 }
-
             }
             else
             {
@@ -96,12 +96,12 @@ public class CustomerRepository : ICustomerRepository
                 if (ret)
                 {
                     tran.Commit();
-                    _logger.LogDebug("User '{0}', Email: '{1}', Id: {2} updated succesfully", user.FriendlyName, user.Email, user.Id);
+                    _logger.LogDebug("{0} User '{1}', Email: '{2}', Id: {3} updated succesfully", logHeader, user.FriendlyName, user.Email, user.Id);
                 }
                 else
                 {
                     tran.Rollback();
-                    _logger.LogWarning("User '{0}', Email: '{1}', Id: {2} was not updated", user.FriendlyName, user.Email, user.Id);
+                    _logger.LogWarning("{0} User '{1}', Email: '{2}', Id: {3} was not updated", logHeader, user.FriendlyName, user.Email, user.Id);
                 }
             }
 
@@ -109,14 +109,19 @@ public class CustomerRepository : ICustomerRepository
         catch (Exception ex)
         {
             tran.Rollback();
-            _logger.LogError("User '{0}', Email: '{1}', Id: {2} was not updated, Error: {3}", user.FriendlyName, user.Email, user.Id, ex.Message);
+            string errMessage = ex.Message;
+            if (ex.InnerException != null)
+            {
+                errMessage += " " + ex.InnerException.Message;
+            }
+            _logger.LogError("{0} User '{1}', Email: '{2}', Id: {3} was not updated, Error: {4}", logHeader, user.FriendlyName, user.Email, user.Id, errMessage);
         }
 
         return ret;
     }
 
     /// <inheritdoc/>
-    public async Task<bool> InsertCustomerTaskAsync(Customer user)
+    public async Task<bool> InsertCustomerTaskAsync(Customer currentUser, Customer user)
     {
         bool ret = false;
         string logHeader = _logName + ".InsertCustomerTaskAsync:";
@@ -125,6 +130,7 @@ public class CustomerRepository : ICustomerRepository
         try
         {
             user.CreatedDateUtc = DateTime.UtcNow;
+            user.CreatedByCustomerId = currentUser.Id;
 
             _dbContext.Customers.Update(user);
 
@@ -157,5 +163,71 @@ public class CustomerRepository : ICustomerRepository
         return ret;
     }
 
+    /// <inheritdoc/>
+    public async Task<bool> DeleteCustomerTaskAsync(Customer currentUser, Customer user, bool? ignoreADB2C = false)
+    {
+        bool ret = false;
+        using var tran = await _dbContext.Database.BeginTransactionAsync();
+        string logHeader = _logName + ".DeleteCustomerTaskAsync:";
+
+        try
+        {
+            user.UpdateDateUtc = DateTime.UtcNow;
+            user.UpdatedByCustomerId = currentUser.Id;
+            user.Deleted = true;
+
+            bool tracking = _dbContext.ChangeTracker.Entries<Customer>().Any(x => x.Entity.Id == user.Id);
+            if (!tracking)
+            {
+                _dbContext.Customers.Update(user);
+            }
+
+            int result = await _dbContext.SaveChangesAsync();
+
+            if (ignoreADB2C == true)
+            {
+                if (result != 0)
+                {
+                    tran.Commit();
+                    _logger.LogDebug("{0} User '{1}', Email: '{2}', Id: {3} deleted succesfully", logHeader, user.FriendlyName, user.Email, user.Id);
+                    ret = true;
+                }
+                else
+                {
+                    tran.Rollback();
+                    _logger.LogWarning("{0} User '{1}', Email: '{2}', Id: {3} was not deleted", logHeader, user.FriendlyName, user.Email, user.Id);
+                }
+            }
+            else
+            {
+                if (result != 0)
+                    ret = await _adb2cRepository.UpdateUserAsyncTask(user);
+
+                if (ret)
+                {
+                    tran.Commit();
+                    _logger.LogDebug("{0} User '{1}', Email: '{2}', Id: {3} deleted succesfully from ADB2C", logHeader, user.FriendlyName, user.Email, user.Id);
+                }
+                else
+                {
+                    tran.Rollback();
+                    _logger.LogWarning("{0} User '{1}', Email: '{2}', Id: {3} was not deleted from ADB2C", logHeader, user.FriendlyName, user.Email, user.Id);
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            tran.Rollback();
+            string errMessage = ex.Message;
+            if (ex.InnerException != null)
+            {
+                errMessage += " " + ex.InnerException.Message;
+            }
+            _logger.LogError("{0} User '{1}', Email: '{2}', Id: {3} was not deleted, Error: {4}", logHeader, user.FriendlyName, user.Email, user.Id, errMessage);
+        }
+
+        return ret;
+    }
 }
 

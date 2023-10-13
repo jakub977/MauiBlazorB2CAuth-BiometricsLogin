@@ -20,5 +20,12 @@ public interface IADB2CRepository
     /// <param name="customer">Customer</param>
     /// <returns>Výsledek uložení true / false</returns>
     Task<bool> InsertUserAsyncTask(Customer customer);
+
+    /// <summary>
+    /// Metoda smaže uživatele
+    /// </summary>
+    /// <param name="customer">Customer</param>
+    /// <returns>Výsledek smazání true / false</returns>
+    Task<bool> DeleteUserAsyncTask(Customer customer);
 }
 

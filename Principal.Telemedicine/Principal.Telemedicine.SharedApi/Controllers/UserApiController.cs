@@ -8,6 +8,8 @@ using Principal.Telemedicine.Shared.Models;
 using Principal.Telemedicine.Shared.Utils;
 using Microsoft.Data.SqlClient;
 using System.Data;
+using Castle.Core.Resource;
+using Microsoft.Graph.Models;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
 
@@ -115,30 +117,41 @@ public class UserApiController : ControllerBase
     /// </summary>
     /// <param name="globalId">globalID uživatele co metodu volá</param>
     /// <param name="user">Objekt uživatele</param>
-    /// <returns>Objekt uživatele</returns>
+    /// <returns>Objekt uživatele nebo chybu:
+    /// -1 = obecná chyba
+    /// -2 = neplatné UserId
+    /// -3 = chybí GlobalId
+    /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
+    /// -5 = uživatele se nepodařilo dohledat podle ID
+    /// </returns>
     [HttpPost(Name = "UpdateUser")]
     public async Task<IActionResult> UpdateUser([FromHeader(Name = "x-api-g")] string globalId, CompleteUserContract user, int? providerId = null, bool isProviderAdmin = false)
     {
         string logHeader = _logName + ".UpdateUser:";
         try
         {
+            // kontrola na vstupní data
             if (user.Id <= 0 || string.IsNullOrEmpty(globalId))
             {
-                return BadRequest();
+                _logger.LogWarning("{0} Invalid UserId: {1} or GlobalId: {2}", logHeader, user.Id, globalId);
+                if (user.Id > 0)
+                    return BadRequest(APIErrorResponseModel.APIErrorResponse(-2, "Invalid UserId", "UserId vali is not '0'."));
+                else
+                    return BadRequest(APIErrorResponseModel.APIErrorResponse(-3, "GlobalId is empty", "GlobalId must be set."));
             }
 
             Customer? currentUser = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);
             if (currentUser == null)
             {
                 _logger.LogWarning("{0} Current User not found", logHeader);
-                return BadRequest();
+                return BadRequest(APIErrorResponseModel.APIErrorResponse(-4, "Current user not found", "User not found by GlobalId."));
             }
 
             Customer? actualData = await _customerRepository.GetCustomerByIdTaskAsync(user.Id);
             if (actualData == null)
             {
-                _logger.LogWarning("{0} User not found, Name: {1} ID: {2} Email: {3}", logHeader, user.FriendlyName, user.Id, user.Email);
-                return BadRequest();
+                _logger.LogWarning("{0} User not found, Name: {1}, ID: {2}, Email: {3}", logHeader, user.FriendlyName, user.Id, user.Email);
+                return BadRequest(APIErrorResponseModel.APIErrorResponse(-5, "User not found", "User not found by Id."));
             }
 
             bool haveEFUser = false;
@@ -158,7 +171,7 @@ public class UserApiController : ControllerBase
             if (user.EffectiveUserUsers.Any() && providerId.HasValue)
             {
                 var editedEfUser = user.EffectiveUserUsers.First(u => !u.Deleted && u.ProviderId == providerId.Value);
-                var existingEfUsers = await _effectiveUserRepository.GetEffectiveUsersTaskAsyncTask(user.Id);
+                var existingEfUsers = await _effectiveUserRepository.GetEffectiveUsersTaskAsync(user.Id);
                 existingEfUsers = existingEfUsers.Where(x => x.Id != editedEfUser.Id).ToList();
 
                 if (!user.Active && existingEfUsers.Any(x => x.Active))
@@ -255,7 +268,7 @@ public class UserApiController : ControllerBase
 
                     var efUserToSave = _mapper.Map<EffectiveUser>(existingEfUser);
 
-                    await _effectiveUserRepository.InsertEffectiveUserTaskAsync(efUserToSave);
+                    await _effectiveUserRepository.InsertEffectiveUserTaskAsync(currentUser, efUserToSave);
                     haveEFUser = true;
                     continue;
                 }
@@ -519,7 +532,7 @@ public class UserApiController : ControllerBase
 
             #endregion
 
-            bool ret = await _customerRepository.UpdateCustomerTaskAsync(actualData);
+            bool ret = await _customerRepository.UpdateCustomerTaskAsync(currentUser, actualData);
 
             if (ret)
             {
@@ -528,8 +541,8 @@ public class UserApiController : ControllerBase
             }
             else
             {
-                _logger.LogWarning("{0} User was not updated, Name: {1} ID: {2} Email: {3}", logHeader, user.FriendlyName, user.Id, user.Email);
-                return BadRequest();
+                _logger.LogWarning("{0} User was not updated, Name: {1}, ID: {2}, Email: {3}", logHeader, user.FriendlyName, user.Id, user.Email);
+                return BadRequest(APIErrorResponseModel.APIErrorResponse(-1, "User was not updated", "Error when updating user."));
             }
         }
         catch (Exception ex)
@@ -672,7 +685,7 @@ public class UserApiController : ControllerBase
             if (string.IsNullOrEmpty(actualData.Password))
                 actualData.Password = PasswordGenerator.GetNewPassword();
 
-            ret = await _customerRepository.InsertCustomerTaskAsync(actualData);
+            ret = await _customerRepository.InsertCustomerTaskAsync(currentUser, actualData);
 
             if (ret)
             {
@@ -692,6 +705,110 @@ public class UserApiController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
+
+    /// <summary>
+    /// Označí existujícího uživatelejako smazaného a smaže ho z ADB2C
+    /// </summary>
+    /// <param name="globalId">GlobalID uživatele co metodu volá</param>
+    /// <param name="userID">ID uživatele</param>
+    /// <param name="providerId">ID Poskytovatele pod kterým uživatele mažeme</param>
+    /// <returns>HTTP 200 nebo HTTP 500 nebo HTTP 400 a chybu:
+    /// -1 = neplatné UserId
+    /// -2 = chybí GlobalId
+    /// -3 = uživatel volající metodu (podle GlobalID) nenalezen
+    /// -4 = mazaný uživatel nebyl nalezen
+    /// -5 = uživatele se nepodařilo smazat v DB nebo ADB2C
+    /// -6 = uživatel je System account a toho nelze smazat
+    /// -7 = uživatel nemůže smazat sebe
+    /// </returns>
+    [HttpPost(Name = "DeleteUser")]
+    public async Task<IActionResult> DeleteUser([FromHeader(Name = "x-api-g")] string globalId, int userId, int? providerId = null)
+    {
+        string logHeader = _logName + ".DeleteUser:";
+        bool ret = false;
+
+        try
+        {
+            // kontrola na vstupní data
+            if (userId <= 0 || string.IsNullOrEmpty(globalId))
+            {
+                _logger.LogWarning("{0} Invalid UserId: {1} or GlobalId: {2}", logHeader, userId, globalId);
+                if (userId <= 0)
+                    return BadRequest(APIErrorResponseModel.APIErrorResponse(-1, "Invalid UserId", "UserId value must be greater then '0'."));
+                else
+                    return BadRequest(APIErrorResponseModel.APIErrorResponse(-2, "GlobalId is empty", "GlobalId must be set."));
+            }
+
+                        // dotáhneme si aktuálního uživatele
+            Customer? currentUser = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);
+            if (currentUser == null)
+            {
+                _logger.LogWarning("{0} Current User not found", logHeader);
+                return BadRequest(APIErrorResponseModel.APIErrorResponse(-3, "Current user not found", "Current user not found by GlobalId."));
+            }
+
+            // dotáhneme si uživatele
+            Customer? customer = await _customerRepository.GetCustomerByIdTaskAsync(userId);
+            if (customer == null)
+            {
+                _logger.LogWarning("{0} User not found, Id: {1}", logHeader, userId);
+                return BadRequest(APIErrorResponseModel.APIErrorResponse(-4, "User not found", "User not found by Id."));
+            }
+
+            if (customer.IsSystemAccount)
+            {
+                _logger.LogWarning("{0} User is System account, Name: {1}, ID: {2}, Email: {3}", logHeader, customer.FriendlyName, userId, customer.Email);
+                return BadRequest(APIErrorResponseModel.APIErrorResponse(-6, "User is System account", "Can not delete user with System account."));
+            }
+
+            if (currentUser.Id == customer.Id)
+            {
+                _logger.LogWarning("{0} User cannot delete himself, Name: {1}, ID: {2}, Email: {3}", logHeader, customer.FriendlyName, userId, customer.Email);
+                return BadRequest(APIErrorResponseModel.APIErrorResponse(-7, "User cannot delete himself", "User cannot delete himself."));
+            }
+
+            // pokud jde pouze o smazání efektivního uživatele a existuje ještě jiný aktivní efektivní uživatel pro danou entitu Customer,
+            // je potřeba ponechat záznam Customer nesmazaný
+            if (customer.EffectiveUserUsers.Any() && providerId.HasValue)
+            {
+                var existingEfUsers = await _effectiveUserRepository.GetEffectiveUsersTaskAsync(customer.Id);
+
+                var editedEfUser = customer.EffectiveUserUsers.FirstOrDefault(u => !u.Deleted && u.ProviderId == providerId.Value);
+
+                if (editedEfUser != null)
+                {
+                    var existingEfUser = existingEfUsers.First(x => x.Id == editedEfUser.Id);
+                    await _effectiveUserRepository.DeleteEffectiveUserTaskAsync(currentUser, existingEfUser);
+                }
+
+                if (editedEfUser != null && !existingEfUsers.Any(x => x.Id != editedEfUser.Id && x.Active))
+                {
+                    ret = await _customerRepository.DeleteCustomerTaskAsync(currentUser,customer);
+                }
+            }
+            else
+            {
+                ret = await _customerRepository.DeleteCustomerTaskAsync(currentUser, customer);
+            }
+
+            if (ret)
+            {
+                _logger.LogInformation("{0} User '{1}', Email: '{2}', Id: {3} deleted succesfully", logHeader, customer.FriendlyName, customer.Email, customer.Id);
+                return Ok();
+            }
+            else
+            {
+                _logger.LogWarning("{0} User was not deleted, Name: {1}, ID: {2}, Email: {3}", logHeader, customer.FriendlyName, customer.Id, customer.Email);
+                return BadRequest(APIErrorResponseModel.APIErrorResponse(-5, "User was not deleted", "Error when deleting user."));
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("{0} {1}", logHeader, ex.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
+
 
     /// <summary>
     /// Uloží Firebase Cloud Messaging token uživatele
@@ -715,22 +832,22 @@ public class UserApiController : ControllerBase
             Customer? user = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);
             if (user == null)
             {
-                _logger.LogWarning($"{logHeader} Current User not found");
+                _logger.LogWarning($"{logHeader} Current User not found, globalID: {globalId}");
                 return BadRequest();
             }
 
             user.AppInstanceToken = appInstanceToken;
 
-            bool updated = await _customerRepository.UpdateCustomerTaskAsync(user, true);
+            bool updated = await _customerRepository.UpdateCustomerTaskAsync(user, user, true);
 
             if (updated)
             {
-                _logger.LogInformation("AppInstanceToken has been updated successfully");
+                _logger.LogInformation($"{logHeader} AppInstanceToken has been updated successfully for UserId: {user.Id}");
                 return Ok();
             }
             else
             {
-                _logger.LogWarning("AppInstanceToken update has failed");
+                _logger.LogWarning($"{logHeader} AppInstanceToken update has failed for UserId: {user.Id}");
                 return BadRequest();
             }
 

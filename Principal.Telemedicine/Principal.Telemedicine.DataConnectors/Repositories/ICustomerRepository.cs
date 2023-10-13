@@ -31,16 +31,27 @@ public interface ICustomerRepository
     /// <summary>
     /// Metoda aktualizuje Customera včetně aktualizace v ADB2C
     /// </summary>
+    /// <param name="currentUser">Aktuální uživatel</param>
     /// <param name="user">Customer</param>
     /// <param name="ignoreADB2C"></param>
     /// <returns>true / false</returns>
-    Task<bool> UpdateCustomerTaskAsync(Customer user, bool? ignoreADB2C = false);
+    Task<bool> UpdateCustomerTaskAsync(Customer currentUser, Customer user, bool? ignoreADB2C = false);
 
     /// <summary>
     /// Metoda založí nového Customera včetně založení v ADB2C
     /// </summary>
+    /// <param name="currentUser">Aktuální uživatel</param>
     /// <param name="user">Customer</param>
     /// <returns>true / false</returns>
-    Task<bool> InsertCustomerTaskAsync(Customer user);
+    Task<bool> InsertCustomerTaskAsync(Customer currentUser, Customer user);
+
+    /// <summary>
+    /// Označí užvatele za smazaného a smaže ho z ADB2C
+    /// </summary>
+    /// <param name="currentUser">Aktuální uživatel</param>
+    /// <param name="user">Customer</param>
+    /// <param name="ignoreADB2C">Nemezat v ADB2C?</param>
+    /// <returns>true / false</returns>
+    Task<bool> DeleteCustomerTaskAsync(Customer currentUser, Customer user, bool? ignoreADB2C = false);
 }
 
