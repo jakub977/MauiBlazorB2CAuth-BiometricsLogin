@@ -552,10 +552,11 @@ public class UserApiController : ControllerBase
     /// -5 = uživatele se nepodařilo založit v DB nebo ADB2C
     /// </returns>
     [HttpPost(Name = "InsertUser")]
-    public async Task<IActionResult> InsertUser([FromHeader(Name = "x-api-g")] string globalId, CompleteUserContract user, bool isProviderAdmin = false)
+    public async Task<IActionResult> InsertUser([FromHeader(Name = "x-api-g")] string globalId, CompleteUserContract user)
     {
         string logHeader = _logName + ".InsertUser:";
         bool ret = false;
+        bool isProviderAdmin = false;
 
         try
         {
@@ -616,6 +617,10 @@ public class UserApiController : ControllerBase
                     role.Deleted = false;
                     role.CreatedByCustomerId = currentUser.Id;
                     role.CreatedDateUtc = DateTime.UtcNow;
+                    // přiřazená role je role Správce Poskytovatele?
+                    // Role Správce Poskytovatele má v DB ID 3
+                    if (!isProviderAdmin && ((role.RoleId == 3) || (role.Role != null && role.Role.ParentRoleId == 3)))
+                        isProviderAdmin = true;
                 }
             }
 
