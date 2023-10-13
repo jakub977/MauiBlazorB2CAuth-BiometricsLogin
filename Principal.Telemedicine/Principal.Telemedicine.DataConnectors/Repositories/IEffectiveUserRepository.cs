@@ -1,5 +1,4 @@
-﻿using Principal.Telemedicine.DataConnectors.Models;
-using Principal.Telemedicine.DataConnectors.Models.Shared;
+﻿using Principal.Telemedicine.DataConnectors.Models.Shared;
 
 namespace Principal.Telemedicine.DataConnectors.Repositories;
 
@@ -47,5 +46,17 @@ public interface IEffectiveUserRepository
     /// </summary>
     /// <returns>Seznam EffectiveUser</returns>
     Task<IEnumerable<EffectiveUser>> GetEffectiveUsersByProviderIdTaskAsync(int providerId);
+
+    /// <summary>
+    /// Metoda vrací nesmazané Efektivní uživatele daného poskytovatele.
+    /// </summary>
+    /// <returns>Seznam EffectiveUser</returns>
+    IQueryable<EffectiveUser> GetEffectiveUsersByProviderId(int providerId);
+
+    /// <summary>
+    /// Metoda vrací nesmazané Efektivní uživatele dané organizace.
+    /// </summary>
+    /// <returns>Seznam EffectiveUser</returns>
+    IQueryable<EffectiveUser> GetEffectiveUsersByOrganizationId(int organizationId);
 }
 

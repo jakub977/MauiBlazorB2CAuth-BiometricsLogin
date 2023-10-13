@@ -74,5 +74,22 @@ public class EffectiveUserRepository : IEffectiveUserRepository
 
         return data;
     }
+    /// <inheritdoc/>
+    public IQueryable<EffectiveUser> GetEffectiveUsersByProviderId(int providerId)
+    {
+        var query =  _dbContext.EffectiveUsers.Include(p => p.Provider).Include(p => p.RoleMembers).Include(p => p.GroupEffectiveMembers)
+            .Where(p => p.ProviderId == providerId && !p.Deleted).OrderBy(p => p.Id).ToList();
+
+        return (IQueryable<EffectiveUser>)query;
+    }
+
+    /// <inheritdoc/>
+    public IQueryable<EffectiveUser> GetEffectiveUsersByOrganizationId(int organizationId)
+    {
+        var query = _dbContext.EffectiveUsers.Include(p => p.Provider).Include(p => p.RoleMembers).Include(p => p.GroupEffectiveMembers)
+            .Where(p => p.Provider.OrganizationId == organizationId && !p.Deleted).OrderBy(p => p.Id).ToList();
+
+        return (IQueryable<EffectiveUser>)query;
+    }
 }
 
