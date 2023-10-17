@@ -229,5 +229,73 @@ public class CustomerRepository : ICustomerRepository
 
         return ret;
     }
+
+    /// <summary>
+    /// Zkontroluje, zda uživatel (nesmazaný) již existuje v dedikované DB podel Emailu, tel. čísla 1 a tel. čísla 2, GlobalId nebo PersonalIdentificationNumber
+    /// </summary>
+    /// <param name="currentUser">Aktuální uživatel</param>
+    /// <param name="user">Uživatel ke kontrole</param>
+    /// <returns>0 jako že se shodný uživatel nenalezl nebo:
+    /// -10 = uživatel se stejným emailem existuje
+    /// -11 = uživatel se stejným tel. číslem existuje
+    /// -12 = uživatel se stejným PersonalIdentificationNumber existuje
+    /// -13 = uživatel se stejným GlobalID existuje
+    /// </returns>
+    public async Task<int> CheckIfUserExists(Customer currentUser, Customer user)
+    {
+        string logHeader = _logName + ".CheckIfUserExists:";
+        string logData = string.Format("Customer: ({0}) {1}, Email: {2}, CurrentUser: ({3}) {4}", user.Id, user.FriendlyName, user.Email, currentUser.Id, currentUser.FriendlyName);
+
+        // KONTROLY
+        // seznam exitujících uživatelů, kteří mají stejné klíčové hodnoty
+        List<Customer> checkedUsers = await _dbContext.Customers.Where(w => w.Id != user.Id && (
+        w.Email == user.Email || w.TelephoneNumber == user.TelephoneNumber || w.TelephoneNumber2 == user.TelephoneNumber || (!string.IsNullOrEmpty(user.GlobalId) && user.GlobalId == w.GlobalId)
+        || (!string.IsNullOrEmpty(user.TelephoneNumber2) && user.TelephoneNumber2 == w.TelephoneNumber))
+        ).ToListAsync();
+
+        foreach (Customer item in checkedUsers)
+        {
+            if (!item.Deleted)
+            {
+                if (item.Email == user.Email)
+                {
+                    _logger.LogWarning("{0} Customer with same Email exists -> existing Customer: ({2}) {3}, {1}", logHeader, logData, item.Id, item.FriendlyName);
+                    return -10;
+                }
+
+                if (item.TelephoneNumber == user.TelephoneNumber)
+                {
+                    _logger.LogWarning("{0} Customer with same TelephoneNumber {4} exists -> existing Customer: ({2}) {3}, {1}", logHeader, logData, item.Id, item.FriendlyName, item.TelephoneNumber);
+                    return -11;
+                }
+
+                if (item.TelephoneNumber2 == user.TelephoneNumber)
+                {
+                    _logger.LogWarning("{0} Customer with same TelephoneNumber (in TelephoneNumber2) {4} exists -> existing Customer: ({2}) {3}, {1}", logHeader, logData, item.Id, item.FriendlyName, item.TelephoneNumber);
+                    return -11;
+                }
+
+                if (!string.IsNullOrEmpty(user.TelephoneNumber2) && item.TelephoneNumber == user.TelephoneNumber2)
+                {
+                    _logger.LogWarning("{0} Customer with same TelephoneNumber2 (in TelephoneNumber) {4} exists -> existing Customer: ({2}) {3}, {1}", logHeader, logData, item.Id, item.FriendlyName, item.TelephoneNumber2);
+                    return -11;
+                }
+
+                if (item.PersonalIdentificationNumber == user.PersonalIdentificationNumber)
+                {
+                    _logger.LogWarning("{0} Customer with same PersonalIdentificationNumber exists -> existing Customer: ({2}) {3}, {1}", logHeader, logData, item.Id, item.FriendlyName);
+                    return -12;
+                }
+
+                if (!string.IsNullOrEmpty(user.GlobalId) && user.GlobalId == item.GlobalId)
+                {
+                    _logger.LogWarning("{0} Customer with same GlobalId {4} exists -> existing Customer: ({2}) {3}, {1}", logHeader, logData, item.Id, item.FriendlyName, item.GlobalId);
+                    return -13;
+                }
+            }
+        }
+
+        return 0;
+    }
 }
 

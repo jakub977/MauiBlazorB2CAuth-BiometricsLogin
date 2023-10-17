@@ -10,6 +10,8 @@ using Microsoft.Data.SqlClient;
 using System.Data;
 using Castle.Core.Resource;
 using Microsoft.Graph.Models;
+using Microsoft.Kiota.Abstractions;
+using Principal.Telemedicine.Shared.Enums;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
 
@@ -123,6 +125,10 @@ public class UserApiController : ControllerBase
     /// -3 = chybí GlobalId
     /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
     /// -5 = uživatele se nepodařilo dohledat podle ID
+    /// -11 = uživatel se stejným emailem existuje
+    /// -12 = uživatel se stejným tel. číslem existuje
+    /// -13 = uživatel se stejným PersonalIdentificationNumber existuje
+    /// -14 = uživatel se stejným GlobalID existuje
     /// </returns>
     [HttpPost(Name = "UpdateUser")]
     public async Task<IActionResult> UpdateUser([FromHeader(Name = "x-api-g")] string globalId, CompleteUserContract user, int? providerId = null, bool isProviderAdmin = false)
@@ -152,6 +158,13 @@ public class UserApiController : ControllerBase
             {
                 _logger.LogWarning("{0} User not found, Name: {1}, ID: {2}, Email: {3}", logHeader, user.FriendlyName, user.Id, user.Email);
                 return BadRequest(APIErrorResponseModel.APIErrorResponse(-5, "User not found", "User not found by Id."));
+            }
+
+            int checkRet = await _customerRepository.CheckIfUserExists(currentUser, actualData);
+            if (checkRet < 0)
+            {
+                _logger.LogWarning("{0} User already exists", logHeader);
+                return BadRequest(APIErrorResponseModel.APIErrorResponse(checkRet, "User already exists", "User with same data already exists in DB."));
             }
 
             bool haveEFUser = false;
@@ -562,7 +575,12 @@ public class UserApiController : ControllerBase
     /// -2 = neplatné UserId
     /// -3 = chybí GlobalId
     /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
-    /// -5 = uživatele se nepodařilo založit v DB nebo ADB2C
+    /// -6 = uživatele se nepodařilo založit v DB nebo ADB2C
+    /// -7 = chyby při konverzi dat uživatele
+    /// -11 = uživatel se stejným emailem existuje
+    /// -12 = uživatel se stejným tel. číslem existuje
+    /// -13 = uživatel se stejným PersonalIdentificationNumber existuje
+    /// -14 = uživatel se stejným GlobalID existuje
     /// </returns>
     [HttpPost(Name = "InsertUser")]
     public async Task<IActionResult> InsertUser([FromHeader(Name = "x-api-g")] string globalId, CompleteUserContract user)
@@ -592,6 +610,19 @@ public class UserApiController : ControllerBase
             }
 
             Customer? actualData = _mapper.Map<Customer>(user);
+
+            if (actualData == null)
+            {
+                _logger.LogWarning("{0} Cannot convert CompleteUserContract to Customer", logHeader);
+                return BadRequest(APIErrorResponseModel.APIErrorResponse(-7, "Invalid user data", "User data cannot be converted to DB model."));
+            }
+
+            int checkRet = await _customerRepository.CheckIfUserExists(currentUser, actualData);
+            if (checkRet < 0)
+            {
+                _logger.LogWarning("{0} User already exists", logHeader);
+                return BadRequest(APIErrorResponseModel.APIErrorResponse(checkRet, "User already exists", "User with same data already exists in DB."));
+            }
 
             actualData.CreatedByCustomerId = currentUser.Id;
             actualData.CreatedDateUtc = DateTime.UtcNow;
@@ -631,8 +662,7 @@ public class UserApiController : ControllerBase
                     role.CreatedByCustomerId = currentUser.Id;
                     role.CreatedDateUtc = DateTime.UtcNow;
                     // přiřazená role je role Správce Poskytovatele?
-                    // Role Správce Poskytovatele má v DB ID 3
-                    if (!isProviderAdmin && ((role.RoleId == 3) || (role.Role != null && role.Role.ParentRoleId == 3)))
+                    if (!isProviderAdmin && ((role.RoleId == (int)RoleMainEnum.ProviderAdmin) || (role.Role != null && role.Role.ParentRoleId == (int)RoleMainEnum.ProviderAdmin)))
                         isProviderAdmin = true;
                 }
             }
@@ -696,7 +726,7 @@ public class UserApiController : ControllerBase
             else
             {
                 _logger.LogWarning("{0} User was not created, Name: {1} ID: {2} Email: {3}", logHeader, user.FriendlyName, user.Id, user.Email);
-                return BadRequest(APIErrorResponseModel.APIErrorResponse(-5, "User was not created", "Error when inserting new user into DB or ADB2C."));
+                return BadRequest(APIErrorResponseModel.APIErrorResponse(-6, "User was not created", "Error when inserting new user into DB or ADB2C."));
             }
         }
         catch (Exception ex)
@@ -721,7 +751,7 @@ public class UserApiController : ControllerBase
     /// -6 = uživatel je System account a toho nelze smazat
     /// -7 = uživatel nemůže smazat sebe
     /// </returns>
-    [HttpPost(Name = "DeleteUser")]
+    [HttpGet(Name = "DeleteUser")]
     public async Task<IActionResult> DeleteUser([FromHeader(Name = "x-api-g")] string globalId, int userId, int? providerId = null)
     {
         string logHeader = _logName + ".DeleteUser:";
@@ -739,7 +769,7 @@ public class UserApiController : ControllerBase
                     return BadRequest(APIErrorResponseModel.APIErrorResponse(-2, "GlobalId is empty", "GlobalId must be set."));
             }
 
-                        // dotáhneme si aktuálního uživatele
+            // dotáhneme si aktuálního uživatele
             Customer? currentUser = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);
             if (currentUser == null)
             {
@@ -765,6 +795,36 @@ public class UserApiController : ControllerBase
             {
                 _logger.LogWarning("{0} User cannot delete himself, Name: {1}, ID: {2}, Email: {3}", logHeader, customer.FriendlyName, userId, customer.Email);
                 return BadRequest(APIErrorResponseModel.APIErrorResponse(-7, "User cannot delete himself", "User cannot delete himself."));
+            }
+
+
+            // kontrola odebrání posledního Správce Poskytovatele
+            if (customer.IsProviderAdminAccount)
+            {
+                // musíme projít všechny nesmazené EF uživatele v roli Správce posyktovatele = všechny Poskytovatele, které má přiřazené
+                List<int> providers = customer.EffectiveUserUsers.Where(w => !w.Deleted && w.RoleMembers.Any(r => r.RoleId == (int)RoleMainEnum.ProviderAdmin && r.Active && !r.Deleted)).Select(s => s.ProviderId).ToList();
+
+                foreach (int i in providers)
+                {
+                    // kontrolujeme každého poskytovatele
+                    var provider = _providerService.GetProviderById(_workContext.CurrentCustomer, i);
+                    var otherAdminsCount = provider.AdminUsers.Count(w => w.UserId != id
+                                                                          && !w.Deleted
+                                                                          && w.Active
+                                                                          && w.Roles.Any(r => r.RoleId == (int)RoleMainEnum.ProviderAdmin && r.Active && !r.Deleted));
+                    // odebral bych posledního Správce Poskytovatele
+                    if (otherAdminsCount == 0)
+                    {
+                        NotifyError(string.Format(T("Web.UserManagement.Provider.Administrators.RemoveModalText2"), provider.Name, customer.GetFullName()), durable: false);
+
+                        if (fromList)
+                        {
+                            return RedirectToAction("Index");
+                        }
+
+                        return View("EditUser", model);
+                    }
+                }
             }
 
             // pokud jde pouze o smazání efektivního uživatele a existuje ještě jiný aktivní efektivní uživatel pro danou entitu Customer,
