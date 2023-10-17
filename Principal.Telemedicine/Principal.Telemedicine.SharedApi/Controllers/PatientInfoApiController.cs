@@ -39,7 +39,7 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
     /// <param name="userId"></param>
     /// <returns> StatusCodes </returns>
     [HttpGet(Name = "GetAggregatedUserSymptomProgressionDataModel")]
-    public async Task<IActionResult> GetAggregatedUserSymptomProgressionDataModel([FromHeader(Name = "x-api-key")] string apiKey, int userId)
+    public async Task<IActionResult> GetAggregatedUserSymptomProgressionDataModel( int userId)
     {
 
         if (userId <= 0)
@@ -80,7 +80,7 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
     /// <param name="userId"></param>
     /// <returns> StatusCodes </returns>
     [HttpGet(Name = "GetDiseaseDetectionResultFromMLItems")]
-    public async Task<IActionResult> GetDiseaseDetectionResultFromMLItems([FromHeader(Name = "x-api-key")] string apiKey, int userId)
+    public async Task<IActionResult> GetDiseaseDetectionResultFromMLItems( int userId)
     {
 
         if (userId <= 0)
@@ -120,7 +120,7 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
     /// <param name="userId"></param>
     /// <returns> StatusCodes </returns>
     [HttpGet(Name = "GetDiseaseOriginDetectionResultFromMLItems")]
-    public async Task<IActionResult> GetDiseaseOriginDetectionResultFromMLItems([FromHeader(Name = "x-api-key")] string apiKey, int userId)
+    public async Task<IActionResult> GetDiseaseOriginDetectionResultFromMLItems( int userId)
     {
 
         if (userId <= 0)
@@ -160,7 +160,7 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
     /// <param name="userId"></param>
     /// <returns> StatusCodes </returns>
     [HttpGet(Name = "GetDiseaseDetectionKeyInputsToMLItems")]
-    public async Task<IActionResult> GetDiseaseDetectionKeyInputsToMLItems([FromHeader(Name = "x-api-key")] string apiKey, int userId)
+    public async Task<IActionResult> GetDiseaseDetectionKeyInputsToMLItems( int userId)
     {
 
         if (userId <= 0)
@@ -196,7 +196,7 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
     /// <param name="userId"></param>
     /// <returns> StatusCodes </returns>
     [HttpGet(Name = "GetVirtualSurgeryBasicOverview")]
-    public async Task<IActionResult> GetVirtualSurgeryBasicOverview([FromHeader(Name = "x-api-key")] string apiKey, int userId)
+    public async Task<IActionResult> GetVirtualSurgeryBasicOverview( int userId)
     {
 
         if (userId <= 0)
@@ -233,7 +233,7 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
     /// <returns></returns>
     [AllowAnonymous]
     [HttpGet(Name = "GetAvailableDeviceListItems")]
-    public async Task<IActionResult> GetAvailableDeviceListItems([FromHeader(Name = "x-api-key")] string apiKey, string userGlobalId)
+    public async Task<IActionResult> GetAvailableDeviceListItems( string userGlobalId)
     {
 
         if (string.IsNullOrEmpty(userGlobalId))

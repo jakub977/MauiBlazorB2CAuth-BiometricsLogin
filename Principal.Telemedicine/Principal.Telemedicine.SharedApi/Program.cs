@@ -31,7 +31,11 @@ builder.Services.AddScoped<IADB2CRepository, ADB2CRepository>();
 builder.Services.AddAutoMapper(typeof(Mapping).Assembly);
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(config =>
+{
+    config.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Shared API", Version = "V1" });
+    config.OperationFilter<RequiredHeaderParameter>();
+});
 
 builder.Services.AddDbContext<DbContextApi>(options => options.UseLazyLoadingProxies().EnableSensitiveDataLogging().
 UseSqlServer(builder.Configuration.GetConnectionString("MAIN_DB")));
