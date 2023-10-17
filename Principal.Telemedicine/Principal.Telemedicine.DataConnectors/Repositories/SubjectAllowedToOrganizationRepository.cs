@@ -26,4 +26,13 @@ public class SubjectAllowedToOrganizationRepository : ISubjectAllowedToOrganizat
 
         return data;
     }
+
+    /// <inheritdoc/>
+    public async Task<SubjectAllowedToOrganization?> GetSubjectAllowedToOrganizationsBySubjectAndOrganizationIdAsyncTask(int subjectId, int organizationId)
+    {
+        var data = await _dbContext.SubjectAllowedToOrganizations.Where(p => p.SubjectId == subjectId
+                                  && p.OrganizationId == organizationId).FirstOrDefaultAsync();
+
+        return data;
+    }
 }

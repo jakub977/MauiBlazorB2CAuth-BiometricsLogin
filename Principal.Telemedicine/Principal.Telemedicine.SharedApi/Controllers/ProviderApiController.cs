@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Graph.Models;
 using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
 using Principal.Telemedicine.DataConnectors.Repositories;
@@ -81,7 +82,16 @@ public class ProviderApiController : ControllerBase
         }
     }
 
-    public async Task<IActionResult> InsertProvider(string globalId, Provider provider, List<Permission> permissions)
+
+    /// <summary>
+    /// Uloží poskytovatele
+    /// </summary>
+    /// <param name="globalId"> GUID uživatele</param>
+    /// <param name="provider"> objekt Providera</param>
+    /// <param name="permissions"> seznam objektů Permission</param>
+    /// <returns></returns>
+    [HttpPost(Name = "InsertProvider")]
+    public async Task<IActionResult> InsertProvider(string globalId, [FromBody] Provider provider, [FromRoute] List<DataConnectors.Models.Shared.Permission> permissions)
     {
         Customer? currentUser = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);
         if (currentUser == null)
@@ -101,13 +111,10 @@ public class ProviderApiController : ControllerBase
         }
 
        // povolené moduly
-        foreach (Permission permission in permissions)
+        foreach (DataConnectors.Models.Shared.Permission permission in permissions)
         {
-            var subjectAllowedToOrganization = await _subjectAllowedToOrganizationRepository.GetSubjectsAllowedToOrganizationsAsyncTask();
-            subjectAllowedToOrganization = subjectAllowedToOrganization.Where(x => x.SubjectId == permission.SubjectId && x.OrganizationId == currentUser.OrganizationId);
-            //.Get(x => x.SubjectId == permission.SubjectId
-            //          && x.OrganizationId == currentUser.OrganizationId)
-            //.FirstOrDefault();
+            int organizationId = currentUser.OrganizationId == null ? default(int) : currentUser.OrganizationId.Value;
+            var subjectAllowedToOrganization = await _subjectAllowedToOrganizationRepository.GetSubjectAllowedToOrganizationsBySubjectAndOrganizationIdAsyncTask(permission.SubjectId, organizationId);
 
             if (subjectAllowedToOrganization != null)
             {
