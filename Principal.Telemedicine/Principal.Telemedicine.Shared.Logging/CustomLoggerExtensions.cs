@@ -64,6 +64,8 @@ public static class CustomLoggerExtensions
                 return LogLevel.Warning;
             case CustomLogLevel.Error:
                 return LogLevel.Error;
+            case CustomLogLevel.Debug:
+                return LogLevel.Debug;
             case CustomLogLevel.Audit:
                 return LogLevel.None; 
             default:
