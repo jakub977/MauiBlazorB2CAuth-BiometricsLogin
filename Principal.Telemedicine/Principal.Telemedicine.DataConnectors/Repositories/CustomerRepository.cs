@@ -33,8 +33,8 @@ public class CustomerRepository : ICustomerRepository
     public async Task<Customer?> GetCustomerByIdTaskAsync(int id)
     {
         var customer = await _dbContext.Customers
-            .Include(p => p.EffectiveUserUsers).ThenInclude(efus => efus.RoleMembers).DefaultIfEmpty()// efektivního uživatele mají jenom uživatelé, kteřé mají vyplněné ProviderId - do RoleMember vazba přes EffectiveUserId -- pacient, lékař atd.
-            .Include(p => p.RoleMemberDirectUsers).DefaultIfEmpty() // uživatelé bez ProviderId mají vazbu do RoleMember přes DirectUserId -- administrativní role
+            .Include(p => p.EffectiveUserUsers).ThenInclude(efus => efus.RoleMembers).ThenInclude(efus => efus.Role).DefaultIfEmpty()// efektivního uživatele mají jenom uživatelé, kteřé mají vyplněné ProviderId - do RoleMember vazba přes EffectiveUserId -- pacient, lékař atd.
+            .Include(p => p.RoleMemberDirectUsers).ThenInclude(efus => efus.Role).DefaultIfEmpty() // uživatelé bez ProviderId mají vazbu do RoleMember přes DirectUserId -- administrativní role
             .Include(p => p.UserPermissionUsers).DefaultIfEmpty() //DeniedPermissions
             .Where(p => p.Id == id).FirstOrDefaultAsync();
 
@@ -45,8 +45,8 @@ public class CustomerRepository : ICustomerRepository
     public async Task<Customer?> GetCustomerByGlobalIdTaskAsync(string globalId)
     {
         var customer = await _dbContext.Customers
-            .Include(p => p.EffectiveUserUsers).ThenInclude(efus => efus.RoleMembers).DefaultIfEmpty()// efektivního uživatele mají jenom uživatelé, kteřé mají vyplněné ProviderId - do RoleMember vazba přes EffectiveUserId -- pacient, lékař atd.
-            .Include(p => p.RoleMemberDirectUsers).DefaultIfEmpty() // uživatelé bez ProviderId mají vazbu do RoleMember přes DirectUserId -- administrativní role
+            .Include(p => p.EffectiveUserUsers).ThenInclude(efus => efus.RoleMembers).ThenInclude(efus => efus.Role).DefaultIfEmpty()// efektivního uživatele mají jenom uživatelé, kteřé mají vyplněné ProviderId - do RoleMember vazba přes EffectiveUserId -- pacient, lékař atd.
+            .Include(p => p.RoleMemberDirectUsers).ThenInclude(efus => efus.Role).DefaultIfEmpty() // uživatelé bez ProviderId mají vazbu do RoleMember přes DirectUserId -- administrativní role
             .Include(p => p.UserPermissionUsers).DefaultIfEmpty() //DeniedPermissions
             .Where(p => p.GlobalId == globalId).FirstOrDefaultAsync();
 
@@ -125,6 +125,8 @@ public class CustomerRepository : ICustomerRepository
     {
         bool ret = false;
         string logHeader = _logName + ".InsertCustomerTaskAsync:";
+        DateTime startTime = DateTime.Now;
+
         using var tran = await _dbContext.Database.BeginTransactionAsync();
 
         try
@@ -135,18 +137,22 @@ public class CustomerRepository : ICustomerRepository
             _dbContext.Customers.Update(user);
 
             int result = await _dbContext.SaveChangesAsync();
+            TimeSpan end1 = DateTime.Now - startTime;
+            _logger.LogInformation("{0} Saved to DB: {1}", logHeader, end1);
             if (result != 0)
                 ret = await _adb2cRepository.InsertUserAsyncTask(user);
+
+            TimeSpan timeEnd = DateTime.Now - startTime;
 
             if (ret)
             {
                 tran.Commit();
-                _logger.LogDebug("{0} User '{1}', Email: '{2}', Id: {3} created succesfully", logHeader, user.FriendlyName, user.Email, user.Id);
+                _logger.LogInformation("{0} User '{1}', Email: '{2}', Id: {3} created succesfully, duration: {4}", logHeader, user.FriendlyName, user.Email, user.Id, timeEnd);
             }
             else
             {
                 tran.Rollback();
-                _logger.LogWarning("{0} User '{1}', Email: '{2}', Id: {3} was not created", logHeader, user.FriendlyName, user.Email, user.Id);
+                _logger.LogWarning("{0} User '{1}', Email: '{2}', Id: {3} was not created, duration: {4}", logHeader, user.FriendlyName, user.Email, user.Id, timeEnd);
             }
         }
         catch (Exception ex)
@@ -167,8 +173,9 @@ public class CustomerRepository : ICustomerRepository
     public async Task<bool> DeleteCustomerTaskAsync(Customer currentUser, Customer user, bool? ignoreADB2C = false)
     {
         bool ret = false;
-        using var tran = await _dbContext.Database.BeginTransactionAsync();
         string logHeader = _logName + ".DeleteCustomerTaskAsync:";
+        DateTime startTime = DateTime.Now;
+        using var tran = await _dbContext.Database.BeginTransactionAsync();
 
         try
         {
@@ -186,35 +193,37 @@ public class CustomerRepository : ICustomerRepository
 
             if (ignoreADB2C == true)
             {
+                TimeSpan timeEnd = DateTime.Now - startTime;
                 if (result != 0)
                 {
                     tran.Commit();
-                    _logger.LogDebug("{0} User '{1}', Email: '{2}', Id: {3} deleted succesfully", logHeader, user.FriendlyName, user.Email, user.Id);
+                    _logger.LogDebug("{0} User '{1}', Email: '{2}', Id: {3} deleted succesfully, duration: {4}", logHeader, user.FriendlyName, user.Email, user.Id, timeEnd);
                     ret = true;
                 }
                 else
                 {
                     tran.Rollback();
-                    _logger.LogWarning("{0} User '{1}', Email: '{2}', Id: {3} was not deleted", logHeader, user.FriendlyName, user.Email, user.Id);
+                    _logger.LogWarning("{0} User '{1}', Email: '{2}', Id: {3} was not deleted, duration: {4}", logHeader, user.FriendlyName, user.Email, user.Id, timeEnd);
                 }
             }
             else
             {
-                if (result != 0)
-                    ret = await _adb2cRepository.UpdateUserAsyncTask(user);
 
+                if (result != 0)
+                    ret = await _adb2cRepository.DeleteUserAsyncTask(user);
+
+                TimeSpan timeEnd = DateTime.Now - startTime;
                 if (ret)
                 {
                     tran.Commit();
-                    _logger.LogDebug("{0} User '{1}', Email: '{2}', Id: {3} deleted succesfully from ADB2C", logHeader, user.FriendlyName, user.Email, user.Id);
+                    _logger.LogDebug("{0} User '{1}', Email: '{2}', Id: {3} deleted succesfully from ADB2C, duration: {4}", logHeader, user.FriendlyName, user.Email, user.Id, timeEnd);
                 }
                 else
                 {
                     tran.Rollback();
-                    _logger.LogWarning("{0} User '{1}', Email: '{2}', Id: {3} was not deleted from ADB2C", logHeader, user.FriendlyName, user.Email, user.Id);
+                    _logger.LogWarning("{0} User '{1}', Email: '{2}', Id: {3} was not deleted from ADB2C, duration: {4}", logHeader, user.FriendlyName, user.Email, user.Id, timeEnd);
                 }
             }
-
         }
         catch (Exception ex)
         {

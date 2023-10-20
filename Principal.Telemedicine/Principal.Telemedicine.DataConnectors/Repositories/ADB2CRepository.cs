@@ -99,11 +99,11 @@ public class ADB2CRepository : IADB2CRepository
     {
         bool ret = false;
         string logHeader = _logName + ".InsertUserAsyncTask:";
-
+        
         try
         {
             // UPN ukládáme jako email převedený na Base64 + aplikační doména
-            string searchedUPN = Base64Encode(customer.Email) + "@" + _applicationDomain;
+            string searchedUPN = CreateUPN(customer.Email);
 
             // kontrola na existující účet
             var result = await GetClient().Users.GetAsync(requestConfiguration =>
@@ -167,7 +167,7 @@ public class ADB2CRepository : IADB2CRepository
         try
         {
             // UPN ukládáme jako email převedený na Base64 + aplikační doména
-            string searchedUPN = Base64Encode(customer.Email) + "@" + _applicationDomain;
+            string searchedUPN = CreateUPN(customer.Email);
 
             // kontrola na existující účet
             var result = await GetClient().Users.GetAsync(requestConfiguration =>
@@ -238,6 +238,28 @@ public class ADB2CRepository : IADB2CRepository
     {
         var base64Bytes = System.Convert.FromBase64String(base64);
         return System.Text.Encoding.UTF8.GetString(base64Bytes);
+    }
+
+    /// <summary>
+    /// Vytvoří UPN z emailu. UPN je tvořeno emailem kódovaným jako Base64 a přidáním "@aplikační doména".
+    /// V Base64 řetězci je pak nahrazen znak "=" znakem "_", jinak by nešlo UPN uložit v ADB2C
+    /// </summary>
+    /// <param name="email">email</param>
+    /// <returns>UPN</returns>
+    private string CreateUPN(string email)
+    {
+        return Base64Encode(email).Replace("=", "_") + "@" + _applicationDomain;
+    }
+
+    /// <summary>
+    /// Vrátí email zakódovaný v UPN
+    /// </summary>
+    /// <param name="upn">UPN</param>
+    /// <returns>email</returns>
+    private string GetEmailFromUPN(string upn)
+    {
+        string temp = upn.Replace("\"@\" + _applicationDomain", "").Replace("_","=");
+        return Base64Decode(temp);
     }
 
     #endregion

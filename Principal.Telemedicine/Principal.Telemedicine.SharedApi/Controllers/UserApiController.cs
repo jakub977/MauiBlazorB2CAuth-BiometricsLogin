@@ -10,8 +10,9 @@ using Microsoft.Data.SqlClient;
 using System.Data;
 using Castle.Core.Resource;
 using Microsoft.Graph.Models;
-using Microsoft.Kiota.Abstractions;
+using Principal.Telemedicine.DataConnectors.Extensions;
 using Principal.Telemedicine.Shared.Enums;
+using System.Text.Json.Serialization;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
 
@@ -406,7 +407,7 @@ public class UserApiController : ControllerBase
                 }
 
                 // kontrola na zaktivnění neaktivních Poskytovatelů
-                var setProviders = await _providerRepository.GetProvidersTaskAsyncTask();
+                var setProviders = await _providerRepository.GetProvidersTaskAsync();
                 setProviders = setProviders.Where(w => providers.Contains(w.Id) && !w.Active).ToList();
                 if (setProviders.Count() > 0)
                     foreach (var provider in setProviders)
@@ -588,9 +589,11 @@ public class UserApiController : ControllerBase
         string logHeader = _logName + ".InsertUser:";
         bool ret = false;
         bool isProviderAdmin = false;
-
+        DateTime startTime = DateTime.Now;
         try
         {
+            _logger.LogDebug("{0} START", logHeader);
+
             // kontrola na vstupní data
             if (user.Id > 0 || string.IsNullOrEmpty(globalId))
             {
@@ -623,6 +626,9 @@ public class UserApiController : ControllerBase
                 _logger.LogWarning("{0} User already exists", logHeader);
                 return BadRequest(APIErrorResponseModel.APIErrorResponse(checkRet, "User already exists", "User with same data already exists in DB."));
             }
+
+            TimeSpan time1 = DateTime.Now - startTime;
+            _logger.LogInformation("{0} checkRet: {1}", logHeader, time1);
 
             actualData.CreatedByCustomerId = currentUser.Id;
             actualData.CreatedDateUtc = DateTime.UtcNow;
@@ -674,7 +680,7 @@ public class UserApiController : ControllerBase
                 providers.AddRange(actualData.EffectiveUserUsers.Select(s => s.ProviderId).ToList());
 
                 // kontrola na zaktivnění neaktivních Poskytovatelů
-                var setProviders = await _providerRepository.GetProvidersTaskAsyncTask();
+                var setProviders = await _providerRepository.GetProvidersTaskAsync();
                 setProviders = setProviders.Where(w => providers.Contains(w.Id) && !w.Active).ToList();
                 if (setProviders.Count() > 0)
                     foreach (var provider in setProviders)
@@ -687,6 +693,9 @@ public class UserApiController : ControllerBase
                             await _providerRepository.UpdateProviderTaskAsync(provider);
                         }
                     }
+
+                TimeSpan time2 = DateTime.Now - startTime;
+                _logger.LogInformation("{0} isProviderAdmin: {1}", logHeader, time2);
             }
 
             // role spojené přímo s uživatelem
@@ -717,15 +726,16 @@ public class UserApiController : ControllerBase
 
             ret = await _customerRepository.InsertCustomerTaskAsync(currentUser, actualData);
 
+            TimeSpan timeEnd = DateTime.Now - startTime;
             if (ret)
             {
                 user = _mapper.Map<CompleteUserContract>(actualData);
-                _logger.LogInformation("{0} User '{1}', Email: '{2}', Id: {3} created succesfully", logHeader, actualData.FriendlyName, actualData.Email, actualData.Id);
+                _logger.LogInformation("{0} User '{1}', Email: '{2}', Id: {3} created succesfully, duration: {4}", logHeader, actualData.FriendlyName, actualData.Email, actualData.Id, timeEnd);
                 return Ok(user);
             }
             else
             {
-                _logger.LogWarning("{0} User was not created, Name: {1} ID: {2} Email: {3}", logHeader, user.FriendlyName, user.Id, user.Email);
+                _logger.LogWarning("{0} User was not created, Name: {1} ID: {2} Email: {3}, duration: {4}", logHeader, user.FriendlyName, user.Id, user.Email, timeEnd);
                 return BadRequest(APIErrorResponseModel.APIErrorResponse(-6, "User was not created", "Error when inserting new user into DB or ADB2C."));
             }
         }
@@ -743,30 +753,34 @@ public class UserApiController : ControllerBase
     /// <param name="userID">ID uživatele</param>
     /// <param name="providerId">ID Poskytovatele pod kterým uživatele mažeme</param>
     /// <returns>HTTP 200 nebo HTTP 500 nebo HTTP 400 a chybu:
-    /// -1 = neplatné UserId
-    /// -2 = chybí GlobalId
-    /// -3 = uživatel volající metodu (podle GlobalID) nenalezen
-    /// -4 = mazaný uživatel nebyl nalezen
-    /// -5 = uživatele se nepodařilo smazat v DB nebo ADB2C
-    /// -6 = uživatel je System account a toho nelze smazat
-    /// -7 = uživatel nemůže smazat sebe
+    /// -2 = neplatné UserId
+    /// -3 = chybí GlobalId
+    /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
+    /// -5 = mazaný uživatel nebyl nalezen
+    /// -8 = uživatele se nepodařilo smazat v DB nebo ADB2C
+    /// -20 = uživatel je System account a toho nelze smazat
+    /// -21 = uživatel nemůže smazat sebe
+    /// -22 = nemůžeme smazat posledního uživatele v roli Správce Poskytovatele (u Poskytovatele)
     /// </returns>
     [HttpGet(Name = "DeleteUser")]
-    public async Task<IActionResult> DeleteUser([FromHeader(Name = "x-api-g")] string globalId, int userId, int? providerId = null)
+    public async Task<IActionResult> DeleteUser([FromHeader(Name = "x-api-g")] string globalId, int userId, int? providerId)
     {
         string logHeader = _logName + ".DeleteUser:";
         bool ret = false;
-
+        bool deleteCustomer = false;
+        DateTime startTime = DateTime.Now;
         try
         {
+            _logger.LogDebug("{0} START", logHeader);
+
             // kontrola na vstupní data
             if (userId <= 0 || string.IsNullOrEmpty(globalId))
             {
                 _logger.LogWarning("{0} Invalid UserId: {1} or GlobalId: {2}", logHeader, userId, globalId);
                 if (userId <= 0)
-                    return BadRequest(APIErrorResponseModel.APIErrorResponse(-1, "Invalid UserId", "UserId value must be greater then '0'."));
+                    return BadRequest(APIErrorResponseModel.APIErrorResponse(-2, "Invalid UserId", "UserId value must be greater then '0'."));
                 else
-                    return BadRequest(APIErrorResponseModel.APIErrorResponse(-2, "GlobalId is empty", "GlobalId must be set."));
+                    return BadRequest(APIErrorResponseModel.APIErrorResponse(-3, "GlobalId is empty", "GlobalId must be set."));
             }
 
             // dotáhneme si aktuálního uživatele
@@ -774,7 +788,7 @@ public class UserApiController : ControllerBase
             if (currentUser == null)
             {
                 _logger.LogWarning("{0} Current User not found", logHeader);
-                return BadRequest(APIErrorResponseModel.APIErrorResponse(-3, "Current user not found", "Current user not found by GlobalId."));
+                return BadRequest(APIErrorResponseModel.APIErrorResponse(-4, "Current user not found", "Current user not found by GlobalId."));
             }
 
             // dotáhneme si uživatele
@@ -782,84 +796,117 @@ public class UserApiController : ControllerBase
             if (customer == null)
             {
                 _logger.LogWarning("{0} User not found, Id: {1}", logHeader, userId);
-                return BadRequest(APIErrorResponseModel.APIErrorResponse(-4, "User not found", "User not found by Id."));
+                return BadRequest(APIErrorResponseModel.APIErrorResponse(-5, "User not found", "User not found by Id."));
             }
 
             if (customer.IsSystemAccount)
             {
                 _logger.LogWarning("{0} User is System account, Name: {1}, ID: {2}, Email: {3}", logHeader, customer.FriendlyName, userId, customer.Email);
-                return BadRequest(APIErrorResponseModel.APIErrorResponse(-6, "User is System account", "Can not delete user with System account."));
+                return BadRequest(APIErrorResponseModel.APIErrorResponse(-20, "User is System account", "Can not delete user with System account."));
             }
 
             if (currentUser.Id == customer.Id)
             {
                 _logger.LogWarning("{0} User cannot delete himself, Name: {1}, ID: {2}, Email: {3}", logHeader, customer.FriendlyName, userId, customer.Email);
-                return BadRequest(APIErrorResponseModel.APIErrorResponse(-7, "User cannot delete himself", "User cannot delete himself."));
+                return BadRequest(APIErrorResponseModel.APIErrorResponse(-21, "User cannot delete himself", "User cannot delete himself."));
             }
 
+            // maže Správce Organizace Správce Poskytovatele?
+            if (currentUser.IsOrganizationAdmin() && customer.IsProviderAdmin())
+                providerId = null;
 
             // kontrola odebrání posledního Správce Poskytovatele
-            if (customer.IsProviderAdminAccount)
+            if (customer.IsProviderAdmin())
             {
+                DateTime prStart = DateTime.Now;
                 // musíme projít všechny nesmazené EF uživatele v roli Správce posyktovatele = všechny Poskytovatele, které má přiřazené
                 List<int> providers = customer.EffectiveUserUsers.Where(w => !w.Deleted && w.RoleMembers.Any(r => r.RoleId == (int)RoleMainEnum.ProviderAdmin && r.Active && !r.Deleted)).Select(s => s.ProviderId).ToList();
+
+                TimeSpan prEnd = DateTime.Now - prStart;
+                _logger.LogInformation("{0} providers: {1}", logHeader, prEnd);
 
                 foreach (int i in providers)
                 {
                     // kontrolujeme každého poskytovatele
-                    var provider = _providerService.GetProviderById(_workContext.CurrentCustomer, i);
-                    var otherAdminsCount = provider.AdminUsers.Count(w => w.UserId != id
-                                                                          && !w.Deleted
-                                                                          && w.Active
-                                                                          && w.Roles.Any(r => r.RoleId == (int)RoleMainEnum.ProviderAdmin && r.Active && !r.Deleted));
-                    // odebral bych posledního Správce Poskytovatele
-                    if (otherAdminsCount == 0)
+                    Provider? provider = await _providerRepository.GetProviderByIdTaskAsync(i);
+
+                    prEnd = DateTime.Now - prStart;
+                    _logger.LogInformation("{0} provider {2}: {1}", logHeader, prEnd, i);
+
+                    if (provider != null)
                     {
-                        NotifyError(string.Format(T("Web.UserManagement.Provider.Administrators.RemoveModalText2"), provider.Name, customer.GetFullName()), durable: false);
+                        int otherAdminsCount = provider.EffectiveUsers.Count(w => w.UserId != customer.Id
+                                                                              && !w.Deleted
+                                                                              && w.Active
+                                                                              && w.RoleMembers.Any(r => r.RoleId == (int)RoleMainEnum.ProviderAdmin && r.Active && !r.Deleted));
 
-                        if (fromList)
+                        prEnd = DateTime.Now - prStart;
+                        _logger.LogInformation("{0} otherAdminsCount {2}: {1}", logHeader, prEnd, i);
+
+                        // odebral bych posledního Správce Poskytovatele
+                        if (otherAdminsCount == 0)
                         {
-                            return RedirectToAction("Index");
+                            _logger.LogWarning("{0} Cannot delete last Provider Admin, Name: {1}, ID: {2}, Email: {3}", logHeader, customer.FriendlyName, userId, customer.Email);
+                            return BadRequest(APIErrorResponseModel.APIErrorResponse(-22, "Cannot delete last Provider Admin", "Cannot delete last Provider Admin user in Provider."));
                         }
-
-                        return View("EditUser", model);
                     }
                 }
             }
+
+            TimeSpan time3 = DateTime.Now - startTime;
+            _logger.LogInformation("{0} IsProviderAdmin: {1}", logHeader, time3);
 
             // pokud jde pouze o smazání efektivního uživatele a existuje ještě jiný aktivní efektivní uživatel pro danou entitu Customer,
             // je potřeba ponechat záznam Customer nesmazaný
             if (customer.EffectiveUserUsers.Any() && providerId.HasValue)
             {
+                // všichni EF daného Customera
                 var existingEfUsers = await _effectiveUserRepository.GetEffectiveUsersTaskAsync(customer.Id);
 
+                // nesmazaný EF aktuálního Poskytovatele
                 var editedEfUser = customer.EffectiveUserUsers.FirstOrDefault(u => !u.Deleted && u.ProviderId == providerId.Value);
 
                 if (editedEfUser != null)
                 {
+                    // mažeme EF uživatele
                     var existingEfUser = existingEfUsers.First(x => x.Id == editedEfUser.Id);
                     await _effectiveUserRepository.DeleteEffectiveUserTaskAsync(currentUser, existingEfUser);
+                    // pokud Customer nemá další EF uživatele u tohoto Poskytovatele, smažu ho
+                    if (!existingEfUsers.Any(x => x.Id != editedEfUser.Id && x.Active))
+                    {
+                        deleteCustomer = true;
+                    }
                 }
-
-                if (editedEfUser != null && !existingEfUsers.Any(x => x.Id != editedEfUser.Id && x.Active))
+                else
                 {
-                    ret = await _customerRepository.DeleteCustomerTaskAsync(currentUser,customer);
+                    // aktuální EF je smazaný
+                    editedEfUser = customer.EffectiveUserUsers.FirstOrDefault(u => u.ProviderId == providerId.Value);
+                    // aktuální EF Poskytovatele je smazaný a neexistují jiní aktivní EF uživatelé Poskytovatele
+                    if (editedEfUser != null && !existingEfUsers.Any(x => x.Id != editedEfUser.Id && x.Active))
+                    {
+                        deleteCustomer = true;
+                    }
                 }
             }
             else
             {
-                ret = await _customerRepository.DeleteCustomerTaskAsync(currentUser, customer);
+                deleteCustomer = true;
             }
+
+            if (deleteCustomer)
+                ret = await _customerRepository.DeleteCustomerTaskAsync(currentUser, customer);
+
+            TimeSpan timeEnd = DateTime.Now - startTime;
 
             if (ret)
             {
-                _logger.LogInformation("{0} User '{1}', Email: '{2}', Id: {3} deleted succesfully", logHeader, customer.FriendlyName, customer.Email, customer.Id);
+                _logger.LogInformation("{0} User '{1}', Email: '{2}', Id: {3} deleted succesfully, duration: {4}", logHeader, customer.FriendlyName, customer.Email, customer.Id, timeEnd);
                 return Ok();
             }
             else
             {
-                _logger.LogWarning("{0} User was not deleted, Name: {1}, ID: {2}, Email: {3}", logHeader, customer.FriendlyName, customer.Id, customer.Email);
-                return BadRequest(APIErrorResponseModel.APIErrorResponse(-5, "User was not deleted", "Error when deleting user."));
+                _logger.LogWarning("{0} User was not deleted, Name: {1}, ID: {2}, Email: {3}, duration: {4}", logHeader, customer.FriendlyName, customer.Id, customer.Email, timeEnd);
+                return BadRequest(APIErrorResponseModel.APIErrorResponse(-8, "User was not deleted", "Error when deleting user."));
             }
         }
         catch (Exception ex)
@@ -977,6 +1024,7 @@ public class UserApiController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
+
 }
 
 

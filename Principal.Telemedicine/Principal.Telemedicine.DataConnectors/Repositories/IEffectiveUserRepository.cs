@@ -21,6 +21,8 @@ public interface IEffectiveUserRepository
     /// <returns>Seznam EffectiveUser</returns>
     Task<IEnumerable<EffectiveUser>> GetEffectiveUsersTaskAsync(int userId);
 
+    Task<IEnumerable<EffectiveUser>> GetEffectiveUsersByProviderIdTaskAsync(int providerId);
+
     /// <summary>
     /// Metoda vrací konkrétního EffectiveUser na základě id.
     /// </summary>
