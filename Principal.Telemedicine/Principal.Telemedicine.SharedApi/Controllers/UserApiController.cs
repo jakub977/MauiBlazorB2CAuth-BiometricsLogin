@@ -13,6 +13,7 @@ using Microsoft.Graph.Models;
 using Principal.Telemedicine.DataConnectors.Extensions;
 using Principal.Telemedicine.Shared.Enums;
 using System.Text.Json.Serialization;
+using Principal.Telemedicine.Shared.Api;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
 
@@ -47,14 +48,19 @@ public class UserApiController : ControllerBase
     /// Vrátí základní údaje uživatele.
     /// </summary>
     /// <param name="userId"></param>
-    /// <returns></returns>
+    /// <returns>GenericResponse s parametrem "success" TRUE a objektem "UserContract" nebo FALSE a případně chybu</returns>
     [HttpGet(Name = "GetUserInfo")]
-    public async Task<IActionResult> GetUserInfo(int userId)
+    public async Task<IGenericResponse> GetUserInfo([FromHeader(Name = "x-api-g")] string globalId, int userId)
     {
-
-        if (userId <= 0)
+        string logHeader = _logName + ".GetUserInfo:";
+        // kontrola na vstupní data
+        if (userId <= 0 || string.IsNullOrEmpty(globalId))
         {
-            return BadRequest();
+            _logger.LogWarning("{0} Invalid UserId: {1} or GlobalId: {2}", logHeader, userId, globalId);
+            if (userId > 0)
+                return new GenericResponse<UserContract>(null, false, -2, "Invalid UserId", "UserId vali is not '0'.");
+            else
+                return new GenericResponse<UserContract>(null, false, -3, "GlobalId is empty", "GlobalId must be set.");
         }
 
         try
@@ -62,13 +68,13 @@ public class UserApiController : ControllerBase
             var user = await _customerRepository.GetCustomerByIdTaskAsync(userId);
             var mappedUser = _mapper.Map<UserContract>(user);
 
-            return Ok(mappedUser);
+            return new GenericResponse<UserContract>(mappedUser, true, 0);
 
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.Message);
-            return StatusCode(StatusCodes.Status500InternalServerError);
+            _logger.LogError("{0} {1}", logHeader, ex.Message);
+            return new GenericResponse<UserContract>(null, false, -1, ex.Message);
         }
     }
 
@@ -77,14 +83,19 @@ public class UserApiController : ControllerBase
     /// Vrátí údaje uživatele včetně rolí, efektivních uživatelů a oprávnění.
     /// </summary>
     /// <param name="userId"></param>
-    /// <returns></returns>
+    /// <returns>GenericResponse s parametrem "success" TRUE a objektem "CompleteUserContract" nebo FALSE a případně chybu</returns>
     [HttpGet(Name = "GetUser")]
-    public async Task<IActionResult> GetUser([FromHeader(Name = "x-api-g")] string globalId, int? userId)
+    public async Task<IGenericResponse> GetUser([FromHeader(Name = "x-api-g")] string globalId, int? userId)
     {
-
+        string logHeader = _logName + ".GetUser:";
+        // kontrola na vstupní data
         if (userId <= 0 || string.IsNullOrEmpty(globalId))
         {
-            return BadRequest();
+            _logger.LogWarning("{0} Invalid UserId: {1} or GlobalId: {2}", logHeader, userId, globalId);
+            if (userId > 0)
+                return new GenericResponse<CompleteUserContract>(null, false, -2, "Invalid UserId", "UserId vali is not '0'.");
+            else
+                return new GenericResponse<CompleteUserContract>(null, false, -3, "GlobalId is empty", "GlobalId must be set.");
         }
 
         try
@@ -105,13 +116,13 @@ public class UserApiController : ControllerBase
                 mappedUser = _mapper.Map<CompleteUserContract>(user);
             }
 
-            return Ok(mappedUser);
+            return new GenericResponse<CompleteUserContract>(mappedUser, true,0);
         }
 
         catch (Exception ex)
         {
-            _logger.LogError(ex.Message);
-            return StatusCode(StatusCodes.Status500InternalServerError);
+            _logger.LogError("{0} {1}", logHeader, ex.Message);
+            return new GenericResponse<CompleteUserContract>(null, false, -1, ex.Message);
         }
     }
 
@@ -120,7 +131,7 @@ public class UserApiController : ControllerBase
     /// </summary>
     /// <param name="globalId">globalID uživatele co metodu volá</param>
     /// <param name="user">Objekt uživatele</param>
-    /// <returns>Objekt uživatele nebo chybu:
+    /// <returns>GenericResponse s parametrem "success" TRUE nebo FALSE a případně chybu:
     /// -1 = obecná chyba
     /// -2 = neplatné UserId
     /// -3 = chybí GlobalId
@@ -132,7 +143,7 @@ public class UserApiController : ControllerBase
     /// -14 = uživatel se stejným GlobalID existuje
     /// </returns>
     [HttpPost(Name = "UpdateUser")]
-    public async Task<IActionResult> UpdateUser([FromHeader(Name = "x-api-g")] string globalId, CompleteUserContract user, int? providerId = null, bool isProviderAdmin = false)
+    public async Task<IGenericResponse> UpdateUser([FromHeader(Name = "x-api-g")] string globalId, CompleteUserContract user, int? providerId = null, bool isProviderAdmin = false)
     {
         string logHeader = _logName + ".UpdateUser:";
         try
@@ -142,30 +153,30 @@ public class UserApiController : ControllerBase
             {
                 _logger.LogWarning("{0} Invalid UserId: {1} or GlobalId: {2}", logHeader, user.Id, globalId);
                 if (user.Id > 0)
-                    return BadRequest(APIErrorResponseModel.APIErrorResponse(-2, "Invalid UserId", "UserId vali is not '0'."));
+                    return new GenericResponse<bool>(false, false,-2, "Invalid UserId", "UserId vali is not '0'.");
                 else
-                    return BadRequest(APIErrorResponseModel.APIErrorResponse(-3, "GlobalId is empty", "GlobalId must be set."));
+                    return new GenericResponse<bool>(false, false,-3, "GlobalId is empty", "GlobalId must be set.");
             }
 
             Customer? currentUser = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);
             if (currentUser == null)
             {
                 _logger.LogWarning("{0} Current User not found", logHeader);
-                return BadRequest(APIErrorResponseModel.APIErrorResponse(-4, "Current user not found", "User not found by GlobalId."));
+                return new GenericResponse<bool>(false, false, -4, "Current user not found", "User not found by GlobalId.");
             }
 
             Customer? actualData = await _customerRepository.GetCustomerByIdTaskAsync(user.Id);
             if (actualData == null)
             {
                 _logger.LogWarning("{0} User not found, Name: {1}, ID: {2}, Email: {3}", logHeader, user.FriendlyName, user.Id, user.Email);
-                return BadRequest(APIErrorResponseModel.APIErrorResponse(-5, "User not found", "User not found by Id."));
+                return new GenericResponse<bool>(false, false, -5, "User not found", "User not found by Id.");
             }
 
             int checkRet = await _customerRepository.CheckIfUserExists(currentUser, actualData);
             if (checkRet < 0)
             {
                 _logger.LogWarning("{0} User already exists", logHeader);
-                return BadRequest(APIErrorResponseModel.APIErrorResponse(checkRet, "User already exists", "User with same data already exists in DB."));
+                return new GenericResponse<bool>(false, false, checkRet, "User already exists", "User with same data already exists in DB.");
             }
 
             bool haveEFUser = false;
@@ -551,18 +562,18 @@ public class UserApiController : ControllerBase
             if (ret)
             {
                 _logger.LogInformation("{0} User '{1}', Email: '{2}', Id: {3} updated succesfully", logHeader, actualData.FriendlyName, actualData.Email, actualData.Id);
-                return Ok(user);
+                return new GenericResponse<bool>(true, ret, 0);
             }
             else
             {
                 _logger.LogWarning("{0} User was not updated, Name: {1}, ID: {2}, Email: {3}", logHeader, user.FriendlyName, user.Id, user.Email);
-                return BadRequest(APIErrorResponseModel.APIErrorResponse(-1, "User was not updated", "Error when updating user."));
+                return new GenericResponse<bool>(false, false, -1, "User was not updated", "Error when updating user.");
             }
         }
         catch (Exception ex)
         {
             _logger.LogError("{0} {1}", logHeader, ex.Message);
-            return StatusCode(StatusCodes.Status500InternalServerError);
+            return new GenericResponse<bool>(false, false, -1, ex.Message);
         }
     }
 
@@ -571,7 +582,7 @@ public class UserApiController : ControllerBase
     /// </summary>
     /// <param name="globalId">GlobalID uživatele co metodu volá</param>
     /// <param name="user">Objekt nového uživatele</param>
-    /// <returns>Objekt uživatele nebo chybu:
+    /// <returns>GenericResponse s parametrem "success" TRUE a objektem "CompleteUserContract" nebo FALSE a případně chybu:
     /// -1 = obecná chyba
     /// -2 = neplatné UserId
     /// -3 = chybí GlobalId
@@ -584,12 +595,13 @@ public class UserApiController : ControllerBase
     /// -14 = uživatel se stejným GlobalID existuje
     /// </returns>
     [HttpPost(Name = "InsertUser")]
-    public async Task<IActionResult> InsertUser([FromHeader(Name = "x-api-g")] string globalId, CompleteUserContract user)
+    public async Task<IGenericResponse> InsertUser([FromHeader(Name = "x-api-g")] string globalId, CompleteUserContract user)
     {
         string logHeader = _logName + ".InsertUser:";
         bool ret = false;
         bool isProviderAdmin = false;
         DateTime startTime = DateTime.Now;
+
         try
         {
             _logger.LogDebug("{0} START", logHeader);
@@ -599,9 +611,9 @@ public class UserApiController : ControllerBase
             {
                 _logger.LogWarning("{0} Invalid UserId: {1} or GlobalId: {2}", logHeader, user.Id, globalId);
                 if (user.Id > 0)
-                    return BadRequest(APIErrorResponseModel.APIErrorResponse(-2, "Invalid UserId", "UserId vali is not '0'."));
+                    return new GenericResponse<CompleteUserContract>(null, false,-2, "Invalid UserId", "UserId vali is not '0'.");
                 else
-                    return BadRequest(APIErrorResponseModel.APIErrorResponse(-3, "GlobalId is empty", "GlobalId must be set."));
+                    return new GenericResponse<CompleteUserContract>(null, false,-3, "GlobalId is empty", "GlobalId must be set.");
             }
 
             // dotáhneme si aktuálního uživatele
@@ -609,7 +621,7 @@ public class UserApiController : ControllerBase
             if (currentUser == null)
             {
                 _logger.LogWarning("{0} Current User not found", logHeader);
-                return BadRequest(APIErrorResponseModel.APIErrorResponse(-4, "Current user not found", "User not found by GlobalId."));
+                return new GenericResponse<CompleteUserContract>(null, false,-4, "Current user not found", "User not found by GlobalId.");
             }
 
             Customer? actualData = _mapper.Map<Customer>(user);
@@ -617,14 +629,14 @@ public class UserApiController : ControllerBase
             if (actualData == null)
             {
                 _logger.LogWarning("{0} Cannot convert CompleteUserContract to Customer", logHeader);
-                return BadRequest(APIErrorResponseModel.APIErrorResponse(-7, "Invalid user data", "User data cannot be converted to DB model."));
+                return new GenericResponse<CompleteUserContract>(null, false,-7, "Invalid user data", "User data cannot be converted to DB model.");
             }
 
             int checkRet = await _customerRepository.CheckIfUserExists(currentUser, actualData);
             if (checkRet < 0)
             {
                 _logger.LogWarning("{0} User already exists", logHeader);
-                return BadRequest(APIErrorResponseModel.APIErrorResponse(checkRet, "User already exists", "User with same data already exists in DB."));
+                return new GenericResponse<CompleteUserContract>(null, false,checkRet, "User already exists", "User with same data already exists in DB.");
             }
 
             TimeSpan time1 = DateTime.Now - startTime;
@@ -731,18 +743,18 @@ public class UserApiController : ControllerBase
             {
                 user = _mapper.Map<CompleteUserContract>(actualData);
                 _logger.LogInformation("{0} User '{1}', Email: '{2}', Id: {3} created succesfully, duration: {4}", logHeader, actualData.FriendlyName, actualData.Email, actualData.Id, timeEnd);
-                return Ok(user);
+                return new GenericResponse<CompleteUserContract>(user, true, user.Id);
             }
             else
             {
                 _logger.LogWarning("{0} User was not created, Name: {1} ID: {2} Email: {3}, duration: {4}", logHeader, user.FriendlyName, user.Id, user.Email, timeEnd);
-                return BadRequest(APIErrorResponseModel.APIErrorResponse(-6, "User was not created", "Error when inserting new user into DB or ADB2C."));
+                return new GenericResponse<CompleteUserContract>(null, false,-6, "User was not created", "Error when inserting new user into DB or ADB2C.");
             }
         }
         catch (Exception ex)
         {
             _logger.LogError("{0} {1}", logHeader, ex.Message);
-            return StatusCode(StatusCodes.Status500InternalServerError);
+            return new GenericResponse<CompleteUserContract>(null, false, -1, ex.Message);
         }
     }
 
@@ -752,7 +764,7 @@ public class UserApiController : ControllerBase
     /// <param name="globalId">GlobalID uživatele co metodu volá</param>
     /// <param name="userID">ID uživatele</param>
     /// <param name="providerId">ID Poskytovatele pod kterým uživatele mažeme</param>
-    /// <returns>HTTP 200 nebo HTTP 500 nebo HTTP 400 a chybu:
+    /// <returns>GenericResponse s parametrem "success" TRUE nebo FALSE a případně chybu:
     /// -2 = neplatné UserId
     /// -3 = chybí GlobalId
     /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
@@ -763,7 +775,7 @@ public class UserApiController : ControllerBase
     /// -22 = nemůžeme smazat posledního uživatele v roli Správce Poskytovatele (u Poskytovatele)
     /// </returns>
     [HttpGet(Name = "DeleteUser")]
-    public async Task<IActionResult> DeleteUser([FromHeader(Name = "x-api-g")] string globalId, int userId, int? providerId)
+    public async Task<IGenericResponse> DeleteUser([FromHeader(Name = "x-api-g")] string globalId, int userId, int? providerId)
     {
         string logHeader = _logName + ".DeleteUser:";
         bool ret = false;
@@ -771,16 +783,14 @@ public class UserApiController : ControllerBase
         DateTime startTime = DateTime.Now;
         try
         {
-            _logger.LogDebug("{0} START", logHeader);
-
             // kontrola na vstupní data
             if (userId <= 0 || string.IsNullOrEmpty(globalId))
             {
                 _logger.LogWarning("{0} Invalid UserId: {1} or GlobalId: {2}", logHeader, userId, globalId);
                 if (userId <= 0)
-                    return BadRequest(APIErrorResponseModel.APIErrorResponse(-2, "Invalid UserId", "UserId value must be greater then '0'."));
+                    return new GenericResponse<bool>(ret, false,-2, "Invalid UserId", "UserId value must be greater then '0'.");
                 else
-                    return BadRequest(APIErrorResponseModel.APIErrorResponse(-3, "GlobalId is empty", "GlobalId must be set."));
+                    return new GenericResponse<bool>(ret, false,-3, "GlobalId is empty", "GlobalId must be set.");
             }
 
             // dotáhneme si aktuálního uživatele
@@ -788,7 +798,7 @@ public class UserApiController : ControllerBase
             if (currentUser == null)
             {
                 _logger.LogWarning("{0} Current User not found", logHeader);
-                return BadRequest(APIErrorResponseModel.APIErrorResponse(-4, "Current user not found", "Current user not found by GlobalId."));
+                return new GenericResponse<bool>(ret, false,-4, "Current user not found", "Current user not found by GlobalId.");
             }
 
             // dotáhneme si uživatele
@@ -796,19 +806,19 @@ public class UserApiController : ControllerBase
             if (customer == null)
             {
                 _logger.LogWarning("{0} User not found, Id: {1}", logHeader, userId);
-                return BadRequest(APIErrorResponseModel.APIErrorResponse(-5, "User not found", "User not found by Id."));
+                return new GenericResponse<bool>(ret, false,-5, "User not found", "User not found by Id.");
             }
 
             if (customer.IsSystemAccount)
             {
                 _logger.LogWarning("{0} User is System account, Name: {1}, ID: {2}, Email: {3}", logHeader, customer.FriendlyName, userId, customer.Email);
-                return BadRequest(APIErrorResponseModel.APIErrorResponse(-20, "User is System account", "Can not delete user with System account."));
+                return new GenericResponse<bool>(ret, false,-20, "User is System account", "Can not delete user with System account.");
             }
 
             if (currentUser.Id == customer.Id)
             {
                 _logger.LogWarning("{0} User cannot delete himself, Name: {1}, ID: {2}, Email: {3}", logHeader, customer.FriendlyName, userId, customer.Email);
-                return BadRequest(APIErrorResponseModel.APIErrorResponse(-21, "User cannot delete himself", "User cannot delete himself."));
+                return new GenericResponse<bool>(ret, false,-21, "User cannot delete himself", "User cannot delete himself.");
             }
 
             // maže Správce Organizace Správce Poskytovatele?
@@ -822,16 +832,10 @@ public class UserApiController : ControllerBase
                 // musíme projít všechny nesmazené EF uživatele v roli Správce posyktovatele = všechny Poskytovatele, které má přiřazené
                 List<int> providers = customer.EffectiveUserUsers.Where(w => !w.Deleted && w.RoleMembers.Any(r => r.RoleId == (int)RoleMainEnum.ProviderAdmin && r.Active && !r.Deleted)).Select(s => s.ProviderId).ToList();
 
-                TimeSpan prEnd = DateTime.Now - prStart;
-                _logger.LogInformation("{0} providers: {1}", logHeader, prEnd);
-
                 foreach (int i in providers)
                 {
                     // kontrolujeme každého poskytovatele
                     Provider? provider = await _providerRepository.GetProviderByIdTaskAsync(i);
-
-                    prEnd = DateTime.Now - prStart;
-                    _logger.LogInformation("{0} provider {2}: {1}", logHeader, prEnd, i);
 
                     if (provider != null)
                     {
@@ -840,21 +844,15 @@ public class UserApiController : ControllerBase
                                                                               && w.Active
                                                                               && w.RoleMembers.Any(r => r.RoleId == (int)RoleMainEnum.ProviderAdmin && r.Active && !r.Deleted));
 
-                        prEnd = DateTime.Now - prStart;
-                        _logger.LogInformation("{0} otherAdminsCount {2}: {1}", logHeader, prEnd, i);
-
                         // odebral bych posledního Správce Poskytovatele
                         if (otherAdminsCount == 0)
                         {
                             _logger.LogWarning("{0} Cannot delete last Provider Admin, Name: {1}, ID: {2}, Email: {3}", logHeader, customer.FriendlyName, userId, customer.Email);
-                            return BadRequest(APIErrorResponseModel.APIErrorResponse(-22, "Cannot delete last Provider Admin", "Cannot delete last Provider Admin user in Provider."));
+                            return new GenericResponse<bool>(ret, false,-22, "Cannot delete last Provider Admin", "Cannot delete last Provider Admin user in Provider.");
                         }
                     }
                 }
             }
-
-            TimeSpan time3 = DateTime.Now - startTime;
-            _logger.LogInformation("{0} IsProviderAdmin: {1}", logHeader, time3);
 
             // pokud jde pouze o smazání efektivního uživatele a existuje ještě jiný aktivní efektivní uživatel pro danou entitu Customer,
             // je potřeba ponechat záznam Customer nesmazaný
@@ -901,18 +899,18 @@ public class UserApiController : ControllerBase
             if (ret)
             {
                 _logger.LogInformation("{0} User '{1}', Email: '{2}', Id: {3} deleted succesfully, duration: {4}", logHeader, customer.FriendlyName, customer.Email, customer.Id, timeEnd);
-                return Ok();
+                return new GenericResponse<bool>(ret, true, 0);
             }
             else
             {
                 _logger.LogWarning("{0} User was not deleted, Name: {1}, ID: {2}, Email: {3}, duration: {4}", logHeader, customer.FriendlyName, customer.Id, customer.Email, timeEnd);
-                return BadRequest(APIErrorResponseModel.APIErrorResponse(-8, "User was not deleted", "Error when deleting user."));
+                return new GenericResponse<bool>(ret, false,-8, "User was not deleted", "Error when deleting user.");
             }
         }
         catch (Exception ex)
         {
             _logger.LogError("{0} {1}", logHeader, ex.Message);
-            return StatusCode(StatusCodes.Status500InternalServerError);
+            return new GenericResponse<bool>(false, false, -1, ex.Message);
         }
     }
 
