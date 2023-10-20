@@ -49,7 +49,7 @@ public class UserApiController : ControllerBase
     /// <param name="userId"></param>
     /// <returns></returns>
     [HttpGet(Name = "GetUserInfo")]
-    public async Task<IActionResult> GetUserInfo(int userId)
+    public async Task<IGenericResponse<UserContract>> GetUserInfo([FromHeader(Name = "x-api-g")] string globalId, int userId)
     {
 
         if (userId <= 0)
@@ -79,7 +79,7 @@ public class UserApiController : ControllerBase
     /// <param name="userId"></param>
     /// <returns></returns>
     [HttpGet(Name = "GetUser")]
-    public async Task<IActionResult> GetUser([FromHeader(Name = "x-api-g")] string globalId, int? userId)
+    public async Task<IGenericResponse<CompleteUserContract>> GetUser([FromHeader(Name = "x-api-g")] string globalId, int? userId)
     {
 
         if (userId <= 0 || string.IsNullOrEmpty(globalId))
@@ -174,7 +174,7 @@ public class UserApiController : ControllerBase
     /// -14 = uživatel se stejným GlobalID existuje
     /// </returns>
     [HttpPost(Name = "UpdateUser")]
-    public async Task<IActionResult> UpdateUser([FromHeader(Name = "x-api-g")] string globalId, CompleteUserContract user, int? providerId = null, bool isProviderAdmin = false)
+    public async Task<IGenericResponse<bool>> UpdateUser([FromHeader(Name = "x-api-g")] string globalId, CompleteUserContract user, int? providerId = null, bool isProviderAdmin = false)
     {
         string logHeader = _logName + ".UpdateUser:";
         try
@@ -626,7 +626,7 @@ public class UserApiController : ControllerBase
     /// -14 = uživatel se stejným GlobalID existuje
     /// </returns>
     [HttpPost(Name = "InsertUser")]
-    public async Task<IActionResult> InsertUser([FromHeader(Name = "x-api-g")] string globalId, CompleteUserContract user)
+    public async Task<IGenericResponse<CompleteUserContract>> InsertUser([FromHeader(Name = "x-api-g")] string globalId, CompleteUserContract user)
     {
         string logHeader = _logName + ".InsertUser:";
         bool ret = false;
@@ -799,7 +799,7 @@ public class UserApiController : ControllerBase
     /// -22 = nemůžeme smazat posledního uživatele v roli Správce Poskytovatele (u Poskytovatele)
     /// </returns>
     [HttpGet(Name = "DeleteUser")]
-    public async Task<IActionResult> DeleteUser([FromHeader(Name = "x-api-g")] string globalId, int userId, int? providerId)
+    public async Task<IGenericResponse<bool>> DeleteUser([FromHeader(Name = "x-api-g")] string globalId, int userId, int? providerId)
     {
         string logHeader = _logName + ".DeleteUser:";
         bool ret = false;
