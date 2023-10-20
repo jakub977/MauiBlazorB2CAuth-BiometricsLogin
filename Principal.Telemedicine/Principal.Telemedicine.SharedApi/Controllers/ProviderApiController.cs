@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Graph.Models;
+using Newtonsoft.Json.Linq;
 using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
 using Principal.Telemedicine.DataConnectors.Repositories;
@@ -64,12 +66,13 @@ public class ProviderApiController : ControllerBase
             var mappedProvider = new ProviderContract();
 
             var provider = await _providerRepository.GetProviderByIdTaskAsync(providerId);
-            mappedProvider = _mapper.Map<ProviderContract>(provider);
 
             var effectiveUsers = await _effectiveUserRepository.GetEffectiveUsersByProviderIdTaskAsync(providerId);
-            int countOfEU = effectiveUsers.Count();
+            provider.EffectiveUsers = effectiveUsers;
 
-            mappedProvider.AdminUsers = countOfEU;
+            mappedProvider = _mapper.Map<ProviderContract>(provider);
+
+            // mappedProvider.AdminUsers = countOfEU;
 
             return Ok(mappedProvider);
 
@@ -90,9 +93,69 @@ public class ProviderApiController : ControllerBase
     /// <param name="provider"> objekt Providera</param>
     /// <param name="permissions"> seznam objektů Permission</param>
     /// <returns></returns>
-    [HttpPost(Name = "InsertProvider")]
-    public async Task<IActionResult> InsertProvider(string globalId, [FromBody] Provider provider, [FromRoute] List<DataConnectors.Models.Shared.Permission> permissions)
+    [HttpPost(Name = "InsertProvider")]             ///[FromBody]JObject data
+    public async Task<IActionResult> InsertProvider(string globalId, [FromBody] ProviderContract? providerContract)
     {
+        var mappedProvider = new Provider();
+        mappedProvider = _mapper.Map<Provider>(providerContract);
+
+        Customer? currentUser = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);//providerRequest.globalId
+        if (currentUser == null)
+        {
+            _logger.LogWarning("Current User not found");
+            return BadRequest();
+        }
+
+        mappedProvider.CreatedByCustomerId = currentUser.Id;
+        mappedProvider.CreatedDateUtc = DateTime.UtcNow;
+
+        if (mappedProvider.Picture != null && mappedProvider.Picture.IsNew)
+        {
+            mappedProvider.Picture.CreatedDateUtc = DateTime.UtcNow;
+            mappedProvider.Picture.CreatedByCustomerId = currentUser.Id;
+            mappedProvider.Picture.Active = true;
+        }
+
+        //povolené moduly
+        foreach (var permission in providerContract.Permission)
+        {
+            int organizationId = currentUser.OrganizationId == null ? default(int) : currentUser.OrganizationId.Value;
+            var subjectAllowedToOrganization = await _subjectAllowedToOrganizationRepository.GetSubjectAllowedToOrganizationsBySubjectAndOrganizationIdAsyncTask(permission.SubjectId, organizationId);
+
+            if (subjectAllowedToOrganization != null)
+            {
+                SubjectAllowedToProviderContract subjectAllowedToProvider = new SubjectAllowedToProviderContract
+                {
+                    CreatedByCustomerId = currentUser.Id,
+                    CreatedDateUtc = DateTime.UtcNow,
+                    Active = true,
+                    SubjectAllowedToOrganizationId = subjectAllowedToOrganization.Id,
+                    ProviderId = mappedProvider.Id,
+                };
+
+                var mappedSubjects = new SubjectAllowedToProvider();
+                mappedSubjects = _mapper.Map<SubjectAllowedToProvider>(subjectAllowedToProvider);
+                mappedProvider.SubjectAllowedToProviders.Add(mappedSubjects);
+            }
+        }
+
+        await _providerRepository.InsertProviderTaskAsync(mappedProvider);
+        return Ok();
+    }
+
+    /// <summary>
+    /// Updatuje poskytovatele
+    /// </summary>
+    /// <param name="globalId"> GUID uživatele</param>
+    /// <param name="provider"> objekt Providera</param>
+    /// <param name="permissions"> seznam objektů Permission</param>
+    /// <returns></returns>
+    [HttpPost(Name = "UpdateProvider")]            
+    public async Task<IActionResult> UpdateProvider(string globalId, [FromBody] ProviderContract? providerContract)
+    {
+        var mappedProvider = new Provider();
+        mappedProvider = _mapper.Map<Provider>(providerContract);
+
         Customer? currentUser = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);
         if (currentUser == null)
         {
@@ -100,57 +163,127 @@ public class ProviderApiController : ControllerBase
             return BadRequest();
         }
 
-        provider.CreatedByCustomerId = currentUser.Id;
-        provider.CreatedDateUtc = DateTime.UtcNow;
-
-        if (provider.Picture != null && provider.Picture.IsNew)
+        var dbProvider = _providerRepository.GetProviderById(mappedProvider.Id);
+        if (dbProvider == null)
         {
-            provider.Picture.CreatedDateUtc = DateTime.UtcNow;
-            provider.Picture.CreatedByCustomerId = currentUser.Id;
-            provider.Picture.Active = true;
+            _logger.LogWarning("Provider not found");
+            return BadRequest();;
         }
 
-       // povolené moduly
-        foreach (DataConnectors.Models.Shared.Permission permission in permissions)
-        {
-            int organizationId = currentUser.OrganizationId == null ? default(int) : currentUser.OrganizationId.Value;
-            var subjectAllowedToOrganization = await _subjectAllowedToOrganizationRepository.GetSubjectAllowedToOrganizationsBySubjectAndOrganizationIdAsyncTask(permission.SubjectId, organizationId);
+        if (_providerRepository.ListOfAllProviders().Any(i => i.Id == mappedProvider.Id))
+        { 
+                dbProvider.Active = mappedProvider.Active;
+                dbProvider.Deleted = false;
+                dbProvider.Name = mappedProvider.Name;
+                dbProvider.AddressLine = mappedProvider.AddressLine;
+                dbProvider.PostalCode = mappedProvider.PostalCode;
+                dbProvider.CityId = mappedProvider.CityId;
+                dbProvider.IdentificationNumber = mappedProvider.IdentificationNumber;
+                dbProvider.TaxIdentificationNumber = mappedProvider.TaxIdentificationNumber;
+                dbProvider.UpdatedByCustomerId = currentUser.Id;
+                dbProvider.UpdateDateUtc = DateTime.UtcNow;
 
-            if (subjectAllowedToOrganization != null)
-            {
-                SubjectAllowedToProvider subjectAllowedToProvider = new SubjectAllowedToProvider
+                if (mappedProvider.Picture != null && mappedProvider.Picture.MediaStorage != null)
                 {
-                    CreatedByCustomerId = currentUser.Id,
-                    CreatedDateUtc = DateTime.UtcNow,
-                    Active = true,
-                    SubjectAllowedToOrganizationId = subjectAllowedToOrganization.Id,
-                    ProviderId = provider.Id
-                };
+                    // aktualizace obsahu
+                    if (dbProvider.Picture != null && dbProvider.Picture.Id > 0 && dbProvider.Picture.Id == mappedProvider.Picture.Id)
+                    {
+                        if (mappedProvider.Picture.IsNew)
+                        {
+                            dbProvider.Picture.MediaStorage.Data = mappedProvider.Picture.MediaStorage.Data;
+                            dbProvider.Picture.UpdatedByCustomerId = currentUser.Id;
+                            dbProvider.Picture.UpdatedOnUtc = DateTime.UtcNow;
+                            dbProvider.Picture.Active = true;
+                        }
+                    }
+                    else
+                    {
+                        dbProvider.Picture = mappedProvider.Picture;
+                        dbProvider.Picture.CreatedByCustomerId = currentUser.Id;
+                        dbProvider.Picture.CreatedDateUtc = DateTime.UtcNow;
+                        dbProvider.Picture.Active = true;
+                    }
+                }
+                else
+                    dbProvider.Picture = null;
 
-                provider.SubjectAllowedToProviders.Add(subjectAllowedToProvider);
-            }
+
+                List<int> existingSubjectIds = new List<int>();
+                List<int> selectedSubjectIds = providerContract.Permission.GroupBy(x => x.SubjectId)
+                    .Select(grp => grp.Key).ToList();
+
+                foreach (var selectedSubjectId in selectedSubjectIds)
+                {
+                    int organizationId = currentUser.OrganizationId == null ? default(int) : currentUser.OrganizationId.Value;
+
+                    var subjectAllowedToOrganization = await _subjectAllowedToOrganizationRepository.GetSubjectAllowedToOrganizationsBySubjectAndOrganizationIdAsyncTask(selectedSubjectId, organizationId);
+                    
+                    // TODO dočasný kód - založení subjektů pro organizaci
+                    if (subjectAllowedToOrganization == null)
+                    {
+                        _logger.LogWarning("SubjectAllowedToOrganization not found");
+                        return BadRequest(); 
+                    }
+
+                    // kontrola na existenci přiřazeného modulu/subjektu
+                    var dbSubjectAllowedToProvider = dbProvider.SubjectAllowedToProviders
+                        .FirstOrDefault(w => w.SubjectAllowedToOrganizationId == subjectAllowedToOrganization.Id
+                                             && w.ProviderId == mappedProvider.Id);
+                    // modul existuje, aktualizuji si Id pro pozdější mazání a pokračuji dál
+                    if (dbSubjectAllowedToProvider != null)
+                    {
+                        existingSubjectIds.Add(dbSubjectAllowedToProvider.Id);
+                        // dříve smazané právo, obnovuji ho
+                        if (dbSubjectAllowedToProvider.Deleted)
+                        {
+                            dbSubjectAllowedToProvider.Deleted = false;
+                            dbSubjectAllowedToProvider.Active = true;
+                            dbSubjectAllowedToProvider.UpdateDateUtc = DateTime.UtcNow;
+                            dbSubjectAllowedToProvider.UpdatedByCustomerId = currentUser.Id;
+                        }
+
+                        continue;
+                    }
+
+                    // nový záznam
+                    var subjectAllowedToProvider = new SubjectAllowedToProvider
+                    {
+                        CreatedByCustomerId = currentUser.Id,
+                        CreatedDateUtc = DateTime.UtcNow,
+                        Active = true,
+                        SubjectAllowedToOrganizationId = subjectAllowedToOrganization.Id,
+                        ProviderId = mappedProvider.Id
+                    };
+                    dbProvider.SubjectAllowedToProviders.Add(subjectAllowedToProvider);
+                }
+
+                // promažeme odebraná práva
+                var allowedSubjectsToDelete = dbProvider.SubjectAllowedToProviders
+                    .Where(w => !existingSubjectIds.Contains(w.Id) && !w.Deleted && w.Id > 0)
+                    .ToList();
+
+                // projdeme existující nesmazané a smažeme je
+                foreach (var allowedSubjectToDelete in allowedSubjectsToDelete)
+                {
+                    allowedSubjectToDelete.Deleted = true;
+                    allowedSubjectToDelete.UpdateDateUtc = DateTime.UtcNow;
+                    allowedSubjectToDelete.UpdatedByCustomerId = currentUser.Id;
+                }
+
+                // uložení administrátorů
+                SetProviderAdminUsers(currentUser.Id, mappedProvider);
         }
 
-        var adminUsers = provider.EffectiveUsers;
-        provider.EffectiveUsers = new List<EffectiveUser>();
-
-        // uložení administrátorů
-        provider.EffectiveUsers = adminUsers;
-        SetProviderAdminUsers(currentUser.Id, provider);
-
-        await _providerRepository.InsertProviderTaskAsync(provider);
+        await _providerRepository.UpdateProviderTaskAsync(dbProvider);
         return Ok();
     }
 
-    private void SetProviderAdminUsers(int userId, Provider provider)
-    {
-        var providerAdminsOfProvider = _effectiveUserRepository.GetEffectiveUsersByProviderId(provider.Id);
-        //.ToList()
-        providerAdminsOfProvider = providerAdminsOfProvider.Where(u => u.RoleMembers.Any(r => r.RoleId == (int)RoleEnum.ProviderAdmin && !r.Deleted));
+    private void SetProviderAdminUsers(int userId, Provider? provider)
+    {      
+        var providerAdminsOfProvider = _effectiveUserRepository.GetAdminUsersByProviderId(provider.Id, (int)RoleEnum.ProviderAdmin).ToList();
 
         // všichni SP za danou organizaci
-        var providerAdminsOfOrganization = _effectiveUserRepository.GetEffectiveUsersByOrganizationId(provider.OrganizationId);
-        providerAdminsOfOrganization = providerAdminsOfOrganization.Where(u => u.RoleMembers.Any(r => r.RoleId == (int)RoleEnum.ProviderAdmin && !r.Deleted && r.Active));
+        var providerAdminsOfOrganization = _effectiveUserRepository.GetAdminUsersByOrganizationId(provider.OrganizationId, (int)RoleEnum.ProviderAdmin).ToList();
 
         foreach (var effectiveAdminUser in provider.EffectiveUsers)
         {
@@ -167,7 +300,7 @@ public class ProviderApiController : ControllerBase
                 if (existingEffectiveAdminUser != null)
                 {
                     // zkusíme, jestli máme EF uživatele pro daného Poskytovatele
-                    EffectiveUser existingEffectiveProviderUser = _effectiveUserRepository.GetEffectiveUsersByProviderId( provider.Id).Where(w => w.UserId == effectiveAdminUser.UserId).FirstOrDefault();
+                    EffectiveUser existingEffectiveProviderUser = _effectiveUserRepository.GetEffectiveUsersByProviderId(provider.Id).Where(w => w.UserId == effectiveAdminUser.UserId).FirstOrDefault();
 
                     if (existingEffectiveProviderUser == null)
                     {

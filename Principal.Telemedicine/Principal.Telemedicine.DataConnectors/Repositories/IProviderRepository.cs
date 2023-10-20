@@ -1,5 +1,6 @@
 ﻿using Principal.Telemedicine.DataConnectors.Models;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
+using Principal.Telemedicine.Shared.Models;
 
 namespace Principal.Telemedicine.DataConnectors.Repositories;
 
@@ -34,5 +35,18 @@ public interface IProviderRepository
     /// <param name="provider">Poskytovatel</param>
     /// <returns>true / false</returns>
     Task<bool> InsertProviderTaskAsync(Provider provider);
+
+    /// <summary>
+    /// Metoda vrací všechny poskytovatele
+    /// </summary>
+    /// <returns>Query poskytovatelů</returns>
+    public IQueryable<Provider> ListOfAllProviders();
+
+    /// <summary>
+    /// Metoda vrací konkrétního poskytovatele na základě id.
+    /// </summary>
+    /// <param name="id">ID poskytovatele</param>
+    /// <returns>Konkrétní poskytovatel</returns>
+    public Provider GetProviderById(int providerId);
 }
 

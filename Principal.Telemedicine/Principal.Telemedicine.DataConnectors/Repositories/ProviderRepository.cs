@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
+using Principal.Telemedicine.Shared.Models;
 
 namespace Principal.Telemedicine.DataConnectors.Repositories;
 
@@ -23,11 +24,24 @@ public class ProviderRepository : IProviderRepository
         return data;
     }
 
+
+    public Provider GetProviderById(int providerId)
+    {
+        if (providerId < 1)
+            return null;
+        return _dbContext.Providers.Include(c => c.CreatedByCustomer)
+            .Include(c => c.UpdatedByCustomer)
+            .Include(c => c.Organization)
+            .Include(c => c.Picture).DefaultIfEmpty()
+            .Include(c => c.City).DefaultIfEmpty()
+            .FirstOrDefault(d => d.Id == providerId);
+    }
+
     /// <inheritdoc/>
     public async Task<Provider?> GetProviderByIdTaskAsync(int id)
     {
         var data = await _dbContext.Providers
-            .Where(p => p.Id == id).FirstOrDefaultAsync();
+            .Where(p => p.Id == id).FirstOrDefaultAsync(); //Include(i => i.EffectiveUsers)
 
         return data;
     }
@@ -56,6 +70,16 @@ public class ProviderRepository : IProviderRepository
             ret = true;
 
         return ret;
+    }
+
+    public IQueryable<Provider> ListOfAllProviders()
+    {
+
+        return _dbContext.Providers.Include(c => c.CreatedByCustomer)
+            .Include(c => c.UpdatedByCustomer)
+            .Include(c => c.Organization)
+            .Include(c => c.Picture).DefaultIfEmpty()
+            .Include(c => c.City).DefaultIfEmpty();
     }
 }
 

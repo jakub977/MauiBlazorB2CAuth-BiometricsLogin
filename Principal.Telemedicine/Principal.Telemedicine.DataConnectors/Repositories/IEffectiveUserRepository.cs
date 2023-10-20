@@ -45,7 +45,7 @@ public interface IEffectiveUserRepository
     /// Metoda vrací seznam nesmazaných Efektivních uživatelů daného poskytovatele.
     /// </summary>
     /// <returns>Seznam EffectiveUser</returns>
-    Task<IEnumerable<EffectiveUser>> GetEffectiveUsersByProviderIdTaskAsync(int providerId);
+    Task<ICollection<EffectiveUser>> GetEffectiveUsersByProviderIdTaskAsync(int providerId);
 
     /// <summary>
     /// Metoda vrací nesmazané Efektivní uživatele daného poskytovatele.
@@ -58,5 +58,17 @@ public interface IEffectiveUserRepository
     /// </summary>
     /// <returns>Seznam EffectiveUser</returns>
     IQueryable<EffectiveUser> GetEffectiveUsersByOrganizationId(int organizationId);
+
+    /// <summary>
+    /// Metoda vrací aktivní Administrátory daného poskytovatele.
+    /// </summary>
+    /// <returns>Seznam EffectiveUser</returns>
+    IQueryable<EffectiveUser> GetAdminUsersByProviderId(int providerId, int role);
+
+    /// <summary>
+    /// Metoda vrací aktivní Administrátory dané organizace.
+    /// </summary>
+    /// <returns>Seznam EffectiveUser</returns>
+    IQueryable<EffectiveUser> GetAdminUsersByOrganizationId(int organizationId, int role);
 }
 

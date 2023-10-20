@@ -99,12 +99,12 @@ public class ProviderContract
     /// Count of EffectiveUsers related to provider
     /// </summary>
     [JsonPropertyName("adminUsers")]
-    public int? AdminUsers { get; set; }
+    public virtual ICollection<EffectiveUserContract> EffectiveUsers { get; set; } = new List<EffectiveUserContract>();
 
-    /// <summary>
-    /// Link to dbo.Organization as a parent organization
-    /// </summary>
-    [JsonPropertyName("organizationObject")]
+     /// <summary>
+     /// Link to dbo.Organization as a parent organization
+     /// </summary>
+     [JsonPropertyName("organizationObject")]
     public virtual OrganizationContract? Organization { get; set; }
 
     /// <summary>
@@ -118,5 +118,11 @@ public class ProviderContract
     /// </summary>
     [JsonPropertyName("allowedSubject")]
     public virtual ICollection<SubjectAllowedToProviderContract> SubjectAllowedToProviders { get; set; } = new List<SubjectAllowedToProviderContract>();
+
+    /// <summary>
+    /// Inverse collection of Permission
+    /// </summary>
+    [JsonPropertyName("permissionObject")]
+    public virtual ICollection<PermissionContract> Permission { get; set; } = new List<PermissionContract>();
 
 }

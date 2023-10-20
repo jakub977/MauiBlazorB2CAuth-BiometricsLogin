@@ -1,11 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Principal.Telemedicine.DataConnectors.Repositories;
 

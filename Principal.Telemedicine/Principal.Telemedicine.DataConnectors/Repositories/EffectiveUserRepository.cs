@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Graph.Models;
 using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
+using Principal.Telemedicine.Shared.Enums;
 
 namespace Principal.Telemedicine.DataConnectors.Repositories;
 
@@ -67,7 +69,7 @@ public class EffectiveUserRepository : IEffectiveUserRepository
     }
 
     /// <inheritdoc/>
-    public async Task<IEnumerable<EffectiveUser>> GetEffectiveUsersByProviderIdTaskAsync(int providerId)
+    public async Task<ICollection<EffectiveUser>> GetEffectiveUsersByProviderIdTaskAsync(int providerId)
     {
         var data = await _dbContext.EffectiveUsers
             .Where(p => p.ProviderId == providerId && !p.Deleted).OrderBy(p => p.Id).ToListAsync();
@@ -78,18 +80,34 @@ public class EffectiveUserRepository : IEffectiveUserRepository
     public IQueryable<EffectiveUser> GetEffectiveUsersByProviderId(int providerId)
     {
         var query =  _dbContext.EffectiveUsers.Include(p => p.Provider).Include(p => p.RoleMembers).Include(p => p.GroupEffectiveMembers)
-            .Where(p => p.ProviderId == providerId && !p.Deleted).OrderBy(p => p.Id).ToList();
+            .Where(p => p.ProviderId == providerId && !p.Deleted).OrderBy(p => p.Id);
 
-        return (IQueryable<EffectiveUser>)query;
+        return query;
+    }
+
+    public IQueryable<EffectiveUser> GetAdminUsersByProviderId(int providerId, int role)
+    {
+        var query = _dbContext.EffectiveUsers.Include(p => p.Provider).Include(p => p.RoleMembers).Include(p => p.GroupEffectiveMembers)
+            .Where(p => p.ProviderId == providerId && !p.Deleted && p.RoleMembers.Any(r => r.RoleId == role && !r.Deleted)).OrderBy(p => p.Id);
+
+        return query;
     }
 
     /// <inheritdoc/>
     public IQueryable<EffectiveUser> GetEffectiveUsersByOrganizationId(int organizationId)
     {
         var query = _dbContext.EffectiveUsers.Include(p => p.Provider).Include(p => p.RoleMembers).Include(p => p.GroupEffectiveMembers)
-            .Where(p => p.Provider.OrganizationId == organizationId && !p.Deleted).OrderBy(p => p.Id).ToList();
+            .Where(p => p.Provider.OrganizationId == organizationId && !p.Deleted).OrderBy(p => p.Id);
 
-        return (IQueryable<EffectiveUser>)query;
+        return query;
+    }
+
+    public IQueryable<EffectiveUser> GetAdminUsersByOrganizationId(int organizationId, int role)
+    {
+        var query = _dbContext.EffectiveUsers.Include(p => p.Provider).Include(p => p.RoleMembers).Include(p => p.GroupEffectiveMembers)
+            .Where(p => p.Provider.OrganizationId == organizationId && !p.Deleted && p.Active && p.RoleMembers.Any(r => r.RoleId == role && !r.Deleted)).OrderBy(p => p.Id);
+
+        return query;
     }
 }
 
