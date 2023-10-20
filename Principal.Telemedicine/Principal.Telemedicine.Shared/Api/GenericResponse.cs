@@ -2,9 +2,9 @@
 
 namespace Principal.Telemedicine.Shared.Api
 {
-    public class GenericResponse<T> : IGenericResponse
+    public class GenericResponse<TResult> : IGenericResponse<TResult>
     {
-        private T? _data;
+        private TResult? _data;
         private bool _success = false;
         private string? _message;
         private string? _detail;
@@ -39,13 +39,13 @@ namespace Principal.Telemedicine.Shared.Api
         }
 
         [DataMember()]
-        public T? Data
+        public TResult? Data
         {
             get { return _data; }
             set { _data = value; }
         }
 
-        public GenericResponse(T? data, bool? success = null, int ?code = null, string? message = null, string? detail = null)
+        public GenericResponse(TResult? data, bool? success = null, int ?code = null, string? message = null, string? detail = null)
         {
             if (data != null)
                 _data = data;
