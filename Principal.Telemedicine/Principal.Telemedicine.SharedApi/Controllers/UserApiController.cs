@@ -163,7 +163,7 @@ public class UserApiController : ControllerBase
             if (user.EffectiveUserUsers.Any() && providerId.HasValue)
             {
                 var editedEfUser = user.EffectiveUserUsers.First(u => !u.Deleted && u.ProviderId == providerId.Value);
-                var existingEfUsers = await _effectiveUserRepository.GetEffectiveUsersTaskAsyncTask(user.Id);
+                var existingEfUsers = await _effectiveUserRepository.GetEffectiveUsersTaskAsync(user.Id);
                 existingEfUsers = existingEfUsers.Where(x => x.Id != editedEfUser.Id).ToList();
 
                 if (!user.Active && existingEfUsers.Any(x => x.Active))
@@ -260,7 +260,7 @@ public class UserApiController : ControllerBase
 
                     var efUserToSave = _mapper.Map<EffectiveUser>(existingEfUser);
 
-                    await _effectiveUserRepository.InsertEffectiveUserTaskAsync(efUserToSave);
+                    await _effectiveUserRepository.InsertEffectiveUserTaskAsync(actualData, efUserToSave);
                     haveEFUser = true;
                     continue;
                 }
@@ -384,7 +384,7 @@ public class UserApiController : ControllerBase
                 }
 
                 // kontrola na zaktivnění neaktivních Poskytovatelů
-                var setProviders = await _providerRepository.GetProvidersTaskAsyncTask();
+                var setProviders = await _providerRepository.GetProvidersTaskAsync();
                 setProviders = setProviders.Where(w => providers.Contains(w.Id) && !w.Active).ToList();
                 if (setProviders.Count() > 0)
                     foreach (var provider in setProviders)

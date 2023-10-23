@@ -116,7 +116,7 @@ public class ProviderContract
     /// <summary>
     /// Inverse collection of SubjectAllowedToProvider
     /// </summary>
-    [JsonPropertyName("allowedSubject")]
+    [JsonPropertyName("allowedSubjects")]
     public virtual ICollection<SubjectAllowedToProviderContract> SubjectAllowedToProviders { get; set; } = new List<SubjectAllowedToProviderContract>();
 
     /// <summary>
@@ -124,5 +124,12 @@ public class ProviderContract
     /// </summary>
     [JsonPropertyName("permissionObject")]
     public virtual ICollection<PermissionContract> Permission { get; set; } = new List<PermissionContract>();
+
+    /// <summary>
+    /// Collection of providers EffectiveUsers
+    /// </summary>
+    [DataMember]
+    [JsonPropertyName("EffectiveUsers")]
+    public ICollection<EffectiveUserProviderContract> EffectiveUserProviderUsers { get; set; } = new List<EffectiveUserProviderContract>();
 
 }

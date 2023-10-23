@@ -68,11 +68,8 @@ public class ProviderApiController : ControllerBase
             var provider = await _providerRepository.GetProviderByIdTaskAsync(providerId);
 
             var effectiveUsers = await _effectiveUserRepository.GetEffectiveUsersByProviderIdTaskAsync(providerId);
-            provider.EffectiveUsers = effectiveUsers;
 
             mappedProvider = _mapper.Map<ProviderContract>(provider);
-
-            // mappedProvider.AdminUsers = countOfEU;
 
             return Ok(mappedProvider);
 
@@ -96,51 +93,61 @@ public class ProviderApiController : ControllerBase
     [HttpPost(Name = "InsertProvider")]             ///[FromBody]JObject data
     public async Task<IActionResult> InsertProvider(string globalId, [FromBody] ProviderContract? providerContract)
     {
-        var mappedProvider = new Provider();
-        mappedProvider = _mapper.Map<Provider>(providerContract);
-
-        Customer? currentUser = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);//providerRequest.globalId
-        if (currentUser == null)
+        try
         {
-            _logger.LogWarning("Current User not found");
-            return BadRequest();
-        }
+            var mappedProvider = new Provider();
+            mappedProvider = _mapper.Map<Provider>(providerContract);
 
-        mappedProvider.CreatedByCustomerId = currentUser.Id;
-        mappedProvider.CreatedDateUtc = DateTime.UtcNow;
-
-        if (mappedProvider.Picture != null && mappedProvider.Picture.IsNew)
-        {
-            mappedProvider.Picture.CreatedDateUtc = DateTime.UtcNow;
-            mappedProvider.Picture.CreatedByCustomerId = currentUser.Id;
-            mappedProvider.Picture.Active = true;
-        }
-
-        //povolené moduly
-        foreach (var permission in providerContract.Permission)
-        {
-            int organizationId = currentUser.OrganizationId == null ? default(int) : currentUser.OrganizationId.Value;
-            var subjectAllowedToOrganization = await _subjectAllowedToOrganizationRepository.GetSubjectAllowedToOrganizationsBySubjectAndOrganizationIdAsyncTask(permission.SubjectId, organizationId);
-
-            if (subjectAllowedToOrganization != null)
+            Customer? currentUser = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);//providerRequest.globalId
+            if (currentUser == null)
             {
-                SubjectAllowedToProviderContract subjectAllowedToProvider = new SubjectAllowedToProviderContract
-                {
-                    CreatedByCustomerId = currentUser.Id,
-                    CreatedDateUtc = DateTime.UtcNow,
-                    Active = true,
-                    SubjectAllowedToOrganizationId = subjectAllowedToOrganization.Id,
-                    ProviderId = mappedProvider.Id,
-                };
-
-                var mappedSubjects = new SubjectAllowedToProvider();
-                mappedSubjects = _mapper.Map<SubjectAllowedToProvider>(subjectAllowedToProvider);
-                mappedProvider.SubjectAllowedToProviders.Add(mappedSubjects);
+                _logger.LogWarning("Current User not found");
+                return BadRequest();
             }
+
+            mappedProvider.CreatedByCustomerId = currentUser.Id;
+            mappedProvider.CreatedDateUtc = DateTime.UtcNow;
+
+            if (mappedProvider.Picture != null && mappedProvider.Picture.IsNew)
+            {
+                mappedProvider.Picture.CreatedDateUtc = DateTime.UtcNow;
+                mappedProvider.Picture.CreatedByCustomerId = currentUser.Id;
+                mappedProvider.Picture.Active = true;
+            }
+
+            //povolené moduly
+            foreach (var permission in providerContract.Permission)
+            {
+                int organizationId = currentUser.OrganizationId == null ? default(int) : currentUser.OrganizationId.Value;
+                var subjectAllowedToOrganization = await _subjectAllowedToOrganizationRepository.GetSubjectAllowedToOrganizationsBySubjectAndOrganizationIdAsyncTask(permission.SubjectId, organizationId);
+
+                if (subjectAllowedToOrganization != null)
+                {
+                    SubjectAllowedToProviderContract subjectAllowedToProvider = new SubjectAllowedToProviderContract
+                    {
+                        CreatedByCustomerId = currentUser.Id,
+                        CreatedDateUtc = DateTime.UtcNow,
+                        Active = true,
+                        SubjectAllowedToOrganizationId = subjectAllowedToOrganization.Id,
+                        ProviderId = mappedProvider.Id,
+                    };
+
+                    var mappedSubjects = new SubjectAllowedToProvider();
+                    mappedSubjects = _mapper.Map<SubjectAllowedToProvider>(subjectAllowedToProvider);
+                    mappedProvider.SubjectAllowedToProviders.Add(mappedSubjects);
+                }
+            }
+
+            await _providerRepository.InsertProviderTaskAsync(mappedProvider);
+            return Ok();
         }
 
-        await _providerRepository.InsertProviderTaskAsync(mappedProvider);
-        return Ok();
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+        
     }
 
     /// <summary>
@@ -153,25 +160,27 @@ public class ProviderApiController : ControllerBase
     [HttpPost(Name = "UpdateProvider")]            
     public async Task<IActionResult> UpdateProvider(string globalId, [FromBody] ProviderContract? providerContract)
     {
-        var mappedProvider = new Provider();
-        mappedProvider = _mapper.Map<Provider>(providerContract);
-
-        Customer? currentUser = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);
-        if (currentUser == null)
+        try
         {
-            _logger.LogWarning("Current User not found");
-            return BadRequest();
-        }
+            var mappedProvider = new Provider();
+            mappedProvider = _mapper.Map<Provider>(providerContract);
 
-        var dbProvider = _providerRepository.GetProviderById(mappedProvider.Id);
-        if (dbProvider == null)
-        {
-            _logger.LogWarning("Provider not found");
-            return BadRequest();;
-        }
+            Customer? currentUser = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);
+            if (currentUser == null)
+            {
+                _logger.LogWarning("Current User not found");
+                return BadRequest();
+            }
 
-        if (_providerRepository.ListOfAllProviders().Any(i => i.Id == mappedProvider.Id))
-        { 
+            var dbProvider = _providerRepository.GetProviderById(mappedProvider.Id);
+            if (dbProvider == null)
+            {
+                _logger.LogWarning("Provider not found");
+                return BadRequest(); ;
+            }
+
+            if (_providerRepository.ListOfAllProviders().Any(i => i.Id == mappedProvider.Id))
+            {
                 dbProvider.Active = mappedProvider.Active;
                 dbProvider.Deleted = false;
                 dbProvider.Name = mappedProvider.Name;
@@ -217,12 +226,12 @@ public class ProviderApiController : ControllerBase
                     int organizationId = currentUser.OrganizationId == null ? default(int) : currentUser.OrganizationId.Value;
 
                     var subjectAllowedToOrganization = await _subjectAllowedToOrganizationRepository.GetSubjectAllowedToOrganizationsBySubjectAndOrganizationIdAsyncTask(selectedSubjectId, organizationId);
-                    
+
                     // TODO dočasný kód - založení subjektů pro organizaci
                     if (subjectAllowedToOrganization == null)
                     {
                         _logger.LogWarning("SubjectAllowedToOrganization not found");
-                        return BadRequest(); 
+                        return BadRequest();
                     }
 
                     // kontrola na existenci přiřazeného modulu/subjektu
@@ -271,14 +280,21 @@ public class ProviderApiController : ControllerBase
                 }
 
                 // uložení administrátorů
-                SetProviderAdminUsers(currentUser.Id, mappedProvider);
-        }
+                SetProviderAdminUsers(currentUser, mappedProvider);
+            }
 
-        await _providerRepository.UpdateProviderTaskAsync(dbProvider);
-        return Ok();
+            await _providerRepository.UpdateProviderTaskAsync(dbProvider); //padáááááá!
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+        
     }
 
-    private void SetProviderAdminUsers(int userId, Provider? provider)
+    private void SetProviderAdminUsers(Customer customer, Provider? provider)
     {      
         var providerAdminsOfProvider = _effectiveUserRepository.GetAdminUsersByProviderId(provider.Id, (int)RoleEnum.ProviderAdmin).ToList();
 
@@ -308,14 +324,14 @@ public class ProviderApiController : ControllerBase
                         existingEffectiveProviderUser = new EffectiveUser()
                         {
                             Active = true,
-                            CreatedByCustomerId = userId,
+                            CreatedByCustomerId = customer.Id,
                             CreatedDateUtc = DateTime.UtcNow,
                             Deleted = false,
                             UserId = existingEffectiveAdminUser.UserId,
                             ProviderId = provider.Id,
                         };
                         // přidání EF
-                        _effectiveUserRepository.InsertEffectiveUserTaskAsync(existingEffectiveProviderUser);
+                        _effectiveUserRepository.InsertEffectiveUserTaskAsync(customer, existingEffectiveProviderUser);
                     }
                     else
                     {
@@ -323,9 +339,9 @@ public class ProviderApiController : ControllerBase
                         if (!existingEffectiveProviderUser.Active)
                         {
                             existingEffectiveProviderUser.Active = true;
-                            existingEffectiveProviderUser.UpdatedByCustomerId = userId;
+                            existingEffectiveProviderUser.UpdatedByCustomerId = customer.Id;
                             existingEffectiveProviderUser.UpdateDateUtc = DateTime.UtcNow;
-                            _effectiveUserRepository.UpdateEffectiveUserTaskAsync(existingEffectiveProviderUser);
+                            _effectiveUserRepository.UpdateEffectiveUserTaskAsync(customer, existingEffectiveProviderUser);
                         }
                     }
 
@@ -333,7 +349,7 @@ public class ProviderApiController : ControllerBase
                     _roleMemberRepository.InsertRoleMemberTaskAsync(new RoleMember
                     {
                         Active = true,
-                        CreatedByCustomerId = userId,
+                        CreatedByCustomerId = customer.Id,
                         CreatedDateUtc = DateTime.UtcNow,
                         Deleted = false,
                         EffectiveUserId = existingEffectiveProviderUser.Id,
@@ -351,7 +367,7 @@ public class ProviderApiController : ControllerBase
                 if (roleMember != null)
                 {
                     roleMember.UpdateDateUtc = DateTime.UtcNow;
-                    roleMember.UpdatedByCustomerId = userId;
+                    roleMember.UpdatedByCustomerId = customer.Id;
                 }
             }
         }
@@ -380,9 +396,9 @@ public class ProviderApiController : ControllerBase
             if (!roleMembers.Any(a => a.RoleId != (int)RoleEnum.ProviderAdmin))
             {
                 effectiveAdminUserToDelete.Active = false;
-                effectiveAdminUserToDelete.UpdatedByCustomerId = userId;
+                effectiveAdminUserToDelete.UpdatedByCustomerId = customer.Id;
                 effectiveAdminUserToDelete.UpdateDateUtc = DateTime.UtcNow;
-                _effectiveUserRepository.UpdateEffectiveUserTaskAsync(effectiveAdminUserToDelete);
+                _effectiveUserRepository.UpdateEffectiveUserTaskAsync(customer, effectiveAdminUserToDelete);
             }
         }
     }

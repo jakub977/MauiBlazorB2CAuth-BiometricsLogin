@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Principal.Telemedicine.Shared.Models;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
@@ -97,4 +98,28 @@ public partial class EffectiveUser
     [ForeignKey("UserId")]
     [InverseProperty("EffectiveUserUsers")]
     public virtual Customer User { get; set; } = null!;
+
+    /// <summary>
+    /// Převede EffectiveUser na EffectiveUserProviderContract který se využívá pro sekci Poskytovatelů.
+    /// Skupiny ve kterých je EffectiveUser nás u Poskytovatelů nezajímají, pouze Role
+    /// </summary>
+    /// <param name="roles">Seznam RoleMemberProviderContract</param>
+    /// <returns>EffectiveUserProviderContract</returns>
+    public EffectiveUserProviderContract ConvertToEffectiveUserProviderContract(ICollection<RoleMemberProviderContract>? roles = null)
+    {
+        EffectiveUserProviderContract data = new EffectiveUserProviderContract();
+        data.UserId = this.UserId;
+        data.ProviderId = this.ProviderId;
+        data.Active = this.Active;
+        data.Id = this.Id;
+        data.CreatedByCustomerId = this.CreatedByCustomerId;
+        data.CreatedDateUtc = this.CreatedDateUtc;
+        data.Deleted = this.Deleted;
+        data.UpdateDateUtc = this.UpdateDateUtc;
+        data.UpdatedByCustomerId = this.UpdatedByCustomerId;
+        if (roles != null)
+            data.RoleMembers = roles;
+
+        return data;
+    }
 }

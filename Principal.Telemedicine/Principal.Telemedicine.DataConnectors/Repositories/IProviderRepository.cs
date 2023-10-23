@@ -13,7 +13,7 @@ public interface IProviderRepository
     /// Metoda vrací všechny poskytovatele.
     /// </summary>
     /// <returns>Seznam poskytovatelů</returns>
-    Task<IEnumerable<Provider>> GetProvidersTaskAsyncTask();
+    Task<IEnumerable<Provider>> GetProvidersTaskAsync();
 
     /// <summary>
     /// Metoda vrací konkrétního poskytovatele na základě id.
