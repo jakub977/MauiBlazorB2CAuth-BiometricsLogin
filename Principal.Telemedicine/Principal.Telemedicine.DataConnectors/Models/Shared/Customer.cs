@@ -243,6 +243,7 @@ public partial class Customer
     /// Friendly name, i.e. full name of an user
     /// </summary>
     [StringLength(101)]
+    [JsonIgnore]
     public string FriendlyName { get; set; } = null!;
 
     /// <summary>

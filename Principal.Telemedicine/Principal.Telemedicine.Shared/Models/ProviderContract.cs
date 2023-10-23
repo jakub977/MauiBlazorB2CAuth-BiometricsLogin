@@ -1,4 +1,6 @@
-﻿using System.Runtime.Serialization;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Principal.Telemedicine.Shared.Models;
 
@@ -68,6 +70,10 @@ public class ProviderContract
     /// </summary>
     public int? PictureId { get; set; }
 
+    [DataMember]
+    [JsonPropertyName("pictureObject")]
+    public virtual PictureContract? Picture { get; set; }
+
     /// <summary>
     /// Identification number of an organization
     /// </summary>
@@ -87,4 +93,12 @@ public class ProviderContract
     /// Link to dbo.AddressCity as a city related to provider
     /// </summary>
     public int? CityId { get; set; }
+
+    [DataMember]
+    [JsonPropertyName("cityObject")]
+    public virtual AddressCityContract? City { get; set; }
+
+    [DataMember]
+    [JsonPropertyName("EffectiveUsers")]
+    public ICollection<EffectiveUserProviderContract> EffectiveUserProviderUsers { get; set; } = new List<EffectiveUserProviderContract>();
 }

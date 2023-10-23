@@ -43,11 +43,13 @@ public class Mapping : Profile
 
         CreateMap<Provider, ProviderContract>();
         CreateMap<Role, RoleContract>();
+        CreateMap<Role, RoleProviderContract>();
         CreateMap<RoleCategory, RoleCategoryContract>();
         CreateMap<RoleCategoryCombination, RoleCategoryCombinationContract>();
         CreateMap<RolePermission, RolePermissionContract>();
         CreateMap<RoleSubCategory, RoleSubCategoryContract>();
         CreateMap<RoleMember, RoleMemberContract>();
+        CreateMap<RoleMember, RoleMemberProviderContract>();
         CreateMap<GroupEffectiveMember, GroupEffectiveMemberContract>();
         CreateMap<Group, GroupContract>();
         CreateMap<GroupPermission, GroupPermissionContract>();
@@ -62,6 +64,7 @@ public class Mapping : Profile
         CreateMap<SubjectType, SubjectTypeContract>();
         CreateMap<UserPermission, UserPermissionContract>();
         CreateMap<EffectiveUser, EffectiveUserContract>();
+        CreateMap<EffectiveUser, EffectiveUserProviderContract>();
         CreateMap<GenderType, GenderTypeContract>();
         CreateMap<HealthCareInsurer, HealthCareInsurerContract>();
         CreateMap<PasswordFormatType, PasswordFormatTypeContract>();
@@ -114,5 +117,21 @@ public class Mapping : Profile
         CreateMap<HealthCareInsurerContract, HealthCareInsurer>();
         CreateMap<PasswordFormatTypeContract, PasswordFormatType>();
         CreateMap<ProfessionTypeContract, ProfessionType>();
+
+        CreateMap<CompleteUserContract, Customer>()
+           .ForMember(x => x.AdminComment, opt => opt.Ignore())
+           .ForMember(x => x.PasswordSalt, opt => opt.Ignore())
+           .ForMember(x => x.LastIpAddress, opt => opt.Ignore())
+           .ForMember(x => x.LastLoginDateUtc, opt => opt.Ignore())
+           .ForMember(x => x.LastActivityDateUtc, opt => opt.Ignore())
+           .ForMember(x => x.InvalidLoginsCount, opt => opt.Ignore())
+           .ForMember(x => x.ApiloginToken, opt => opt.Ignore())
+           .ForMember(x => x.LastApiloginDateTime, opt => opt.Ignore())
+           .ForMember(x => x.ApiloginEnabled, opt => opt.Ignore())
+           .ForMember(x => x.ProfessionName, opt => opt.Ignore())
+           .ForMember(x => x.ProfessionTypeId, opt => opt.Ignore())
+           .ForMember(x => x.Note, opt => opt.Ignore())
+           .ForMember(x => x.IsRiskPatient, opt => opt.Ignore())
+           .ForMember(x => x.PasswordFormatTypeId, opt => opt.Ignore());
     }
 }
