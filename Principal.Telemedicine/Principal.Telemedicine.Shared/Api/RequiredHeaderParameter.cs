@@ -14,6 +14,7 @@ public class RequiredHeaderParameter : IOperationFilter
         operation.Parameters.Add(new OpenApiParameter
         {
             Name = "Authorization",
+            AllowEmptyValue = true,
             In =  ParameterLocation.Header,  
             Required = false
         });
