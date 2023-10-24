@@ -12,14 +12,16 @@ public interface IEffectiveUserRepository
     /// Metoda vrací všechny EffectiveUser.
     /// </summary>
     /// <returns>Seznam EffectiveUser</returns>
-    Task<IEnumerable<EffectiveUser>> GetEffectiveUsersTaskAsyncTask();
+    Task<IEnumerable<EffectiveUser>> GetEffectiveUsersTaskAsync();
 
     /// <summary>
     /// Vrátí seznam Efektivních uživatelů danného uživatele
     /// </summary>
     /// <param name="userId">ID uživatele</param>
     /// <returns>Seznam EffectiveUser</returns>
-    Task<IEnumerable<EffectiveUser>> GetEffectiveUsersTaskAsyncTask(int userId);
+    Task<IEnumerable<EffectiveUser>> GetEffectiveUsersTaskAsync(int userId);
+
+    Task<IEnumerable<EffectiveUser>> GetEffectiveUsersByProviderIdTaskAsync(int providerId);
 
     /// <summary>
     /// Metoda vrací konkrétního EffectiveUser na základě id.
@@ -31,15 +33,25 @@ public interface IEffectiveUserRepository
     /// <summary>
     /// Metoda aktualizuje EffectiveUser
     /// </summary>
+    /// <param name="currentUser">Aktuální uživatel</param>
     /// <param name="user">EffectiveUser</param>
     /// <returns>true / false</returns>
-    Task<bool> UpdateEffectiveUserTaskAsync(EffectiveUser user);
+    Task<bool> UpdateEffectiveUserTaskAsync(Customer currentUser, EffectiveUser user);
 
     /// <summary>
     /// Metoda zakládá nového EffectiveUser
     /// </summary>
+    /// <param name="currentUser">Aktuální uživatel</param>
     /// <param name="user">EffectiveUser</param>
     /// <returns>true / false</returns>
-    Task<bool> InsertEffectiveUserTaskAsync(EffectiveUser user);
+    Task<bool> InsertEffectiveUserTaskAsync(Customer currentUser, EffectiveUser user);
+
+    /// <summary>
+    /// Metoda označí EffectiveUser za smazaeného
+    /// </summary>
+    /// <param name="currentUser">Aktuální uživatel</param>
+    /// <param name="user">EffectiveUser</param>
+    /// <returns>true / false</returns>
+    Task<bool> DeleteEffectiveUserTaskAsync(Customer currentUser, EffectiveUser user);
 }
 

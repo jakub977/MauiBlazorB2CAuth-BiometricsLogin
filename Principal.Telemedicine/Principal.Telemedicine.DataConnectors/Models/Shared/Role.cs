@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Principal.Telemedicine.Shared.Models;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
@@ -144,4 +145,31 @@ public partial class Role
     [ForeignKey("UpdatedByCustomerId")]
     [InverseProperty("RoleUpdatedByCustomers")]
     public virtual Customer? UpdatedByCustomer { get; set; }
+
+    /// <summary>
+    /// Převede Role na RoleProviderContract pro správu Poskytovatelů
+    /// </summary>
+    /// <param name="parent">RoleProviderContract rodiče</param>
+    /// <returns>RoleProviderContract</returns>
+    public RoleProviderContract ConvertToRoleProviderContract(RoleProviderContract? parent = null)
+    {
+        RoleProviderContract data = new RoleProviderContract();
+        data.IsGlobal = this.IsGlobal;
+        data.Active = this.Active;
+        data.Id = this.Id;
+        data.CreatedByCustomerId = this.CreatedByCustomerId;
+        data.CreatedDateUtc = this.CreatedDateUtc;
+        data.Deleted = this.Deleted;
+        data.UpdateDateUtc = this.UpdateDateUtc;
+        data.UpdatedByCustomerId = this.UpdatedByCustomerId;
+        data.OrganizationId = this.OrganizationId;
+        data.ParentRoleId = this.ParentRoleId;
+        data.Name = this.Name;
+        data.Description = this.Description;
+       
+        if (parent != null)
+            data.ParentRoleContract = parent;
+
+        return data;
+    }
 }

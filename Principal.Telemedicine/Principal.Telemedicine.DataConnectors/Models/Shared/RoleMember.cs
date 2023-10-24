@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Principal.Telemedicine.Shared.Models;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
@@ -97,4 +98,27 @@ public partial class RoleMember
     [ForeignKey("UpdatedByCustomerId")]
     [InverseProperty("RoleMemberUpdatedByCustomers")]
     public virtual Customer? UpdatedByCustomer { get; set; }
+
+    /// <summary>
+    /// Převede RoleMember na RoleMemberProviderContract využívaný pro správu Poskytovatelů
+    /// </summary>
+    /// <param name="role">Role RoleProviderContract</param>
+    /// <returns>RoleMemberProviderContract</returns>
+    public RoleMemberProviderContract ConvertToRoleMemberProviderContract(RoleProviderContract? role = null)
+    {
+        RoleMemberProviderContract data = new RoleMemberProviderContract();
+        data.Id = this.Id;
+        data.Active = this.Active;
+        data.Deleted = this.Deleted;
+        data.CreatedByCustomerId = this.CreatedByCustomerId;
+        data.CreatedDateUtc = this.CreatedDateUtc;
+        data.UpdateDateUtc = this.UpdateDateUtc;
+        data.UpdatedByCustomerId = this.UpdatedByCustomerId;
+        data.DirectUserId = this.DirectUserId;
+        data.EffectiveUserId = this.EffectiveUserId;
+        data.RoleId = this.RoleId;
+        data.Role = role;
+
+        return data;
+    }
 }
