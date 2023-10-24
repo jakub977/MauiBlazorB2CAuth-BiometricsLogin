@@ -11,5 +11,5 @@ namespace Principal.Telemedicine.Shared.Cache;
 /// </summary>
 public  class DistributedCacheOptions
 {
-    public CacheEntryOptions DefaultCacheOption { get; set; }
+    public CacheEntryOptions DefaultCacheEntryOption { get; set; }
 }

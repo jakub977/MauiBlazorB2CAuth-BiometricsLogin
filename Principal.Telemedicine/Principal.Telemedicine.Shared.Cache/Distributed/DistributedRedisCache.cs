@@ -21,7 +21,7 @@ public class DistributedRedisCache : IDistributedCache
     private readonly ILogger logger;
     private readonly DistributedCacheOptions _options;
 
-    public DistributedRedisCache(ILogger<DistributedRedisCache> logger, IOptions<DistributedCacheOptions> options, ME.IDistributedCache cache)
+    public DistributedRedisCache(ILogger<DistributedRedisCache> logger, IOptions<DistributedRedisCacheOptions> options, ME.IDistributedCache cache)
     {
         _logger = logger;
         _options = options.Value;
@@ -31,7 +31,7 @@ public class DistributedRedisCache : IDistributedCache
     /// <inheritdoc />
     public IBaseCacheEntryOptions Add<T>(string key, T value, IBaseCacheEntryOptions? options = null)
     {
-        var opt = (CacheEntryOptions)options ?? _options.DefaultCacheOption;
+        var opt = (CacheEntryOptions)options ?? _options.DefaultCacheEntryOption;
         var val = JsonSerializer.Serialize(value, typeof(T));
         var valbyte = Encoding.UTF8.GetBytes(val);
         _cache.Set(key, valbyte, opt);
@@ -41,12 +41,12 @@ public class DistributedRedisCache : IDistributedCache
     /// <inheritdoc />
     public async Task<IBaseCacheEntryOptions> AddAsync<T>(string key, T value, CancellationToken cancellationToken = default, IBaseCacheEntryOptions? options = null)
     {
-        var opt = (CacheEntryOptions)options ?? _options.DefaultCacheOption;
+        var opt = (CacheEntryOptions)options ?? _options.DefaultCacheEntryOption;
         var val = JsonSerializer.Serialize(value, typeof(T));
         var valbyte = Encoding.UTF8.GetBytes(val);
         await _cache.SetAsync(key, valbyte, opt, cancellationToken);
 
-        return options ?? _options.DefaultCacheOption;
+        return options ?? _options.DefaultCacheEntryOption;
     }
 
     /// <inheritdoc />

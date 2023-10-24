@@ -20,7 +20,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .EnableTokenAcquisitionToCallDownstreamApi()
     .AddInMemoryTokenCaches();
 
-builder.Services.AddMemoryCache(configuration);
+builder.Services.AddTmMemoryCache(configuration);
 
 builder.Services.AddControllers()
     .AddJsonOptions(options => options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull )
@@ -45,7 +45,7 @@ UseSqlServer(builder.Configuration.GetConnectionString("MAIN_DB")));
 
 builder.Services.AddLogging(configuration);
 builder.Services.AddTmInfrastructure(configuration);
-builder.Services.AddDistributedCache(configuration, builder.Environment.IsLocalHosted());
+builder.Services.AddTmDistributedCache(configuration, builder.Environment.IsLocalHosted());
 var app = builder.Build();
  
 if (app.Environment.IsLocalHosted())

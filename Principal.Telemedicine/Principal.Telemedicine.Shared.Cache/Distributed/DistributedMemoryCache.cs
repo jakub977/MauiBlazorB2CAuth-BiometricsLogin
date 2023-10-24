@@ -30,7 +30,7 @@ public class DistributedMemoryCache : IDistributedCache
     /// <inheritdoc />
     public IBaseCacheEntryOptions Add<T>(string key, T value, IBaseCacheEntryOptions? options = null)
     {
-        var opt = (CacheEntryOptions)options ?? _options.DefaultCacheOption;
+        var opt = (CacheEntryOptions)options ?? _options.DefaultCacheEntryOption;
         var entry = _cache.Set(key, value, (MemoryCacheEntryOptions)opt);
         return opt;
     }
@@ -38,7 +38,7 @@ public class DistributedMemoryCache : IDistributedCache
     /// <inheritdoc />
     public async Task<IBaseCacheEntryOptions> AddAsync<T>(string key, T value, CancellationToken cancellationToken = default, IBaseCacheEntryOptions? options = null)
     {
-        var opt = (CacheEntryOptions)options ?? _options.DefaultCacheOption;
+        var opt = (CacheEntryOptions)options ?? _options.DefaultCacheEntryOption;
         var entry = _cache.Set(key, value, (MemoryCacheEntryOptions)opt);
         return await Task.FromResult(opt);
     }

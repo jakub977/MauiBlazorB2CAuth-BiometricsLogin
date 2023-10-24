@@ -32,7 +32,7 @@ public class MemoryCache : Interfaces.IMemoryCache
     /// <inheritdoc />
     public IBaseCacheEntryOptions Add<T>(string key, T value, IBaseCacheEntryOptions? options = null)
     {
-        CacheEntryOptions opt = (CacheEntryOptions)options ?? _options.DefaultCacheEntryOptions;
+        CacheEntryOptions opt = (CacheEntryOptions)options ?? _options.DefaultCacheEntryOption;
         var cachedItem = _cache.GetOrCreate<T>(
             key,
             cacheEntry =>
@@ -48,7 +48,7 @@ public class MemoryCache : Interfaces.IMemoryCache
     /// <inheritdoc />
     public async Task<IBaseCacheEntryOptions> AddAsync<T>(string key, T value, CancellationToken cancellationToken = default, IBaseCacheEntryOptions? options = null) //HOTOVO
     {
-        CacheEntryOptions opt = (CacheEntryOptions)options ?? _options.DefaultCacheEntryOptions;
+        CacheEntryOptions opt = (CacheEntryOptions)options ?? _options.DefaultCacheEntryOption;
         await _cache.GetOrCreateAsync<T>(
             key,
             cacheEntry =>

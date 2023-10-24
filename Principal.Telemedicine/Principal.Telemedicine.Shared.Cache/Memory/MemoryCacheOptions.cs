@@ -15,6 +15,6 @@ public class MemoryCacheOptions
     /// <summary>
     /// Defaultní parametry pro zápis položky do keše.
     /// </summary>
-    public CacheEntryOptions DefaultCacheEntryOptions { get; set; }
+    public CacheEntryOptions DefaultCacheEntryOption { get; set; }
 }
 
