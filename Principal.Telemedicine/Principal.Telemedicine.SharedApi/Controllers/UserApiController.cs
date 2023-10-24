@@ -13,6 +13,7 @@ using Microsoft.Graph.Models;
 using Principal.Telemedicine.DataConnectors.Extensions;
 using Principal.Telemedicine.Shared.Enums;
 using System.Text.Json.Serialization;
+using Principal.Telemedicine.Shared.Api;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
 
