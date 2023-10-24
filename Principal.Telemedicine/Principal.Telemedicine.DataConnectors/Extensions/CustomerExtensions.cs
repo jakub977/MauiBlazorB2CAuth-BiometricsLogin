@@ -3,7 +3,6 @@ using Principal.Telemedicine.Shared.Enums;
 
 namespace Principal.Telemedicine.DataConnectors.Extensions;
 
-
 /// <summary>
 /// Pomocná třída Customer
 /// </summary>
@@ -17,11 +16,11 @@ public static class CustomerExtensions
     public static bool IsProviderAdmin(this Customer customer)
     {
         bool ret = false;
-        if (customer.RoleMemberDirectUsers.Any(a => a.Active && !a.Deleted && (a.RoleId == (int)RoleMainEnum.ProviderAdmin || (a.Role.ParentRoleId.HasValue && a.Role.ParentRoleId.Value == (int)RoleMainEnum.ProviderAdmin))))
+        if (customer.RoleMemberDirectUsers.Any(a => a.Active.GetValueOrDefault() && !a.Deleted && (a.RoleId == (int)RoleMainEnum.ProviderAdmin || (a.Role.ParentRoleId.HasValue && a.Role.ParentRoleId.Value == (int)RoleMainEnum.ProviderAdmin))))
             ret = true;
 
         if (!ret)
-            if (customer.EffectiveUserUsers.Any(a => a.Active && !a.Deleted && a.RoleMembers.Any(w => w.Active && !w.Deleted && (w.RoleId == (int)RoleMainEnum.ProviderAdmin || (w.Role.ParentRoleId.HasValue && w.Role.ParentRoleId.Value == (int)RoleMainEnum.ProviderAdmin)))))
+            if (customer.EffectiveUserUsers.Any(a => a.Active.GetValueOrDefault() && !a.Deleted && a.RoleMembers.Any(w => w.Active.GetValueOrDefault() && !w.Deleted && (w.RoleId == (int)RoleMainEnum.ProviderAdmin || (w.Role.ParentRoleId.HasValue && w.Role.ParentRoleId.Value == (int)RoleMainEnum.ProviderAdmin)))))
                 ret = true;
         return ret;
     }
@@ -34,11 +33,11 @@ public static class CustomerExtensions
     public static bool IsOrganizationAdmin(this Customer customer)
     {
         bool ret = false;
-        if (customer.RoleMemberDirectUsers.Any(a => a.Active && !a.Deleted && (a.RoleId == (int)RoleMainEnum.OrganizationAdmin || (a.Role.ParentRoleId.HasValue && a.Role.ParentRoleId.Value == (int)RoleMainEnum.OrganizationAdmin))))
+        if (customer.RoleMemberDirectUsers.Any(a => a.Active.GetValueOrDefault() && !a.Deleted && (a.RoleId == (int)RoleMainEnum.OrganizationAdmin || (a.Role.ParentRoleId.HasValue && a.Role.ParentRoleId.Value == (int)RoleMainEnum.OrganizationAdmin))))
             ret = true;
 
         if (!ret)
-            if (customer.EffectiveUserUsers.Any(a => a.Active && !a.Deleted && a.RoleMembers.Any(w => w.Active && !w.Deleted && (w.RoleId == (int)RoleMainEnum.OrganizationAdmin || (w.Role.ParentRoleId.HasValue && w.Role.ParentRoleId.Value == (int)RoleMainEnum.OrganizationAdmin)))))
+            if (customer.EffectiveUserUsers.Any(a => a.Active.GetValueOrDefault() && !a.Deleted && a.RoleMembers.Any(w => w.Active.GetValueOrDefault() && !w.Deleted && (w.RoleId == (int)RoleMainEnum.OrganizationAdmin || (w.Role.ParentRoleId.HasValue && w.Role.ParentRoleId.Value == (int)RoleMainEnum.OrganizationAdmin)))))
                 ret = true;
         return ret;
     }
@@ -51,11 +50,11 @@ public static class CustomerExtensions
     public static bool IsGlobalAdmin(this Customer customer)
     {
         bool ret = false;
-        if (customer.RoleMemberDirectUsers.Any(a => a.Active && !a.Deleted && (a.RoleId == (int)RoleMainEnum.SuperAdmin || (a.Role.ParentRoleId.HasValue && a.Role.ParentRoleId.Value == (int)RoleMainEnum.SuperAdmin))))
+        if (customer.RoleMemberDirectUsers.Any(a => a.Active.GetValueOrDefault() && !a.Deleted && (a.RoleId == (int)RoleMainEnum.SuperAdmin || (a.Role.ParentRoleId.HasValue && a.Role.ParentRoleId.Value == (int)RoleMainEnum.SuperAdmin))))
             ret = true;
 
         if (!ret)
-            if (customer.EffectiveUserUsers.Any(a => a.Active && !a.Deleted && a.RoleMembers.Any(w => w.Active && !w.Deleted && (w.RoleId == (int)RoleMainEnum.SuperAdmin || (w.Role.ParentRoleId.HasValue && w.Role.ParentRoleId.Value == (int)RoleMainEnum.SuperAdmin)))))
+            if (customer.EffectiveUserUsers.Any(a => a.Active.GetValueOrDefault() && !a.Deleted && a.RoleMembers.Any(w => w.Active.GetValueOrDefault() && !w.Deleted && (w.RoleId == (int)RoleMainEnum.SuperAdmin || (w.Role.ParentRoleId.HasValue && w.Role.ParentRoleId.Value == (int)RoleMainEnum.SuperAdmin)))))
                 ret = true;
         return ret;
     }

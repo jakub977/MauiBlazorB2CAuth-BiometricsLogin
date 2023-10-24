@@ -20,7 +20,7 @@ public partial class EffectiveUser
     /// Bit identifier if effective user is active
     /// </summary>
     [Required]
-    public bool Active { get; set; }
+    public bool? Active { get; set; }
 
     /// <summary>
     /// Bit identifier if effective user is deleted
@@ -110,7 +110,7 @@ public partial class EffectiveUser
         EffectiveUserProviderContract data = new EffectiveUserProviderContract();
         data.UserId = this.UserId;
         data.ProviderId = this.ProviderId;
-        data.Active = this.Active;
+        data.Active = this.Active.GetValueOrDefault();
         data.Id = this.Id;
         data.CreatedByCustomerId = this.CreatedByCustomerId;
         data.CreatedDateUtc = this.CreatedDateUtc;

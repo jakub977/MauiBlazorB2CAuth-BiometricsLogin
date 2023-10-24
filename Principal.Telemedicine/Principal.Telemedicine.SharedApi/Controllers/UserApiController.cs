@@ -116,6 +116,48 @@ public class UserApiController : ControllerBase
     }
 
     /// <summary>
+    /// Vrátí seznam uživatelů.
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    [HttpGet(Name = "GetUsers")]
+    public async Task<IActionResult> GetUsers([FromHeader(Name = "x-api-g")] string globalId, int? userId)
+    {
+
+        if (userId <= 0 || string.IsNullOrEmpty(globalId))
+        {
+            return BadRequest();
+        }
+
+        try
+        {
+            var mappedUser = new CompleteUserContract();
+            int id = userId.HasValue ? userId.Value : 0;
+
+            if (id <= 0)
+            {
+                var user = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);
+                mappedUser = _mapper.Map<CompleteUserContract>(user);
+            }
+            else
+            {
+                // todo: zjistit jestli má uživatel oprávnění read na jiného uživatele
+                // možno nastudovat v Vanda -> SmartMVC.Services -> Customers -> CustomerService.cs, metoda GetAllCustomers na ř. 161
+                var user = await _customerRepository.GetCustomerByIdTaskAsync(id);
+                mappedUser = _mapper.Map<CompleteUserContract>(user);
+            }
+
+            return Ok(mappedUser);
+        }
+
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
+
+    /// <summary>
     /// Uloží změny uživatele
     /// </summary>
     /// <param name="globalId">globalID uživatele co metodu volá</param>
@@ -188,7 +230,7 @@ public class UserApiController : ControllerBase
                 var existingEfUsers = await _effectiveUserRepository.GetEffectiveUsersTaskAsync(user.Id);
                 existingEfUsers = existingEfUsers.Where(x => x.Id != editedEfUser.Id).ToList();
 
-                if (!user.Active && existingEfUsers.Any(x => x.Active))
+                if (!user.Active && existingEfUsers.Any(x => x.Active.GetValueOrDefault()))
                     user.Active = true;
 
             }
@@ -319,7 +361,7 @@ public class UserApiController : ControllerBase
                         continue;
                     }
 
-                    if (!existingItem.Active || existingItem.Deleted)
+                    if (!existingItem.Active.GetValueOrDefault() || existingItem.Deleted)
                     {
                         existingItem.Active = true;
                         existingItem.Deleted = false;
@@ -361,7 +403,7 @@ public class UserApiController : ControllerBase
                         continue;
                     }
 
-                    if (!existingItem.Active || existingItem.Deleted)
+                    if (!existingItem.Active.GetValueOrDefault() || existingItem.Deleted)
                     {
                         existingItem.Active = true;
                         existingItem.Deleted = false;
@@ -408,11 +450,11 @@ public class UserApiController : ControllerBase
 
                 // kontrola na zaktivnění neaktivních Poskytovatelů
                 var setProviders = await _providerRepository.GetProvidersTaskAsync();
-                setProviders = setProviders.Where(w => providers.Contains(w.Id) && !w.Active).ToList();
+                setProviders = setProviders.Where(w => providers.Contains(w.Id) && !w.Active.GetValueOrDefault()).ToList();
                 if (setProviders.Count() > 0)
                     foreach (var provider in setProviders)
                     {
-                        if (!provider.Active)
+                        if (!provider.Active.GetValueOrDefault())
                         {
                             provider.Active = true;
                             provider.UpdateDateUtc = DateTime.UtcNow;
@@ -481,7 +523,7 @@ public class UserApiController : ControllerBase
                         continue;
                     }
 
-                    if (!existingItem.Active || existingItem.Deleted)
+                    if (!existingItem.Active.GetValueOrDefault() || existingItem.Deleted)
                     {
                         existingItem.Active = true;
                         existingItem.Deleted = false;
@@ -627,9 +669,6 @@ public class UserApiController : ControllerBase
                 return BadRequest(APIErrorResponseModel.APIErrorResponse(checkRet, "User already exists", "User with same data already exists in DB."));
             }
 
-            TimeSpan time1 = DateTime.Now - startTime;
-            _logger.LogInformation("{0} checkRet: {1}", logHeader, time1);
-
             actualData.CreatedByCustomerId = currentUser.Id;
             actualData.CreatedDateUtc = DateTime.UtcNow;
             actualData.PasswordFormatTypeId = 1;
@@ -681,11 +720,11 @@ public class UserApiController : ControllerBase
 
                 // kontrola na zaktivnění neaktivních Poskytovatelů
                 var setProviders = await _providerRepository.GetProvidersTaskAsync();
-                setProviders = setProviders.Where(w => providers.Contains(w.Id) && !w.Active).ToList();
+                setProviders = setProviders.Where(w => providers.Contains(w.Id) && !w.Active.GetValueOrDefault()).ToList();
                 if (setProviders.Count() > 0)
                     foreach (var provider in setProviders)
                     {
-                        if (!provider.Active)
+                        if (!provider.Active.GetValueOrDefault())
                         {
                             provider.Active = true;
                             provider.UpdateDateUtc = DateTime.UtcNow;
@@ -693,9 +732,6 @@ public class UserApiController : ControllerBase
                             await _providerRepository.UpdateProviderTaskAsync(provider);
                         }
                     }
-
-                TimeSpan time2 = DateTime.Now - startTime;
-                _logger.LogInformation("{0} isProviderAdmin: {1}", logHeader, time2);
             }
 
             // role spojené přímo s uživatelem
@@ -820,28 +856,19 @@ public class UserApiController : ControllerBase
             {
                 DateTime prStart = DateTime.Now;
                 // musíme projít všechny nesmazené EF uživatele v roli Správce posyktovatele = všechny Poskytovatele, které má přiřazené
-                List<int> providers = customer.EffectiveUserUsers.Where(w => !w.Deleted && w.RoleMembers.Any(r => r.RoleId == (int)RoleMainEnum.ProviderAdmin && r.Active && !r.Deleted)).Select(s => s.ProviderId).ToList();
-
-                TimeSpan prEnd = DateTime.Now - prStart;
-                _logger.LogInformation("{0} providers: {1}", logHeader, prEnd);
+                List<int> providers = customer.EffectiveUserUsers.Where(w => !w.Deleted && w.RoleMembers.Any(r => r.RoleId == (int)RoleMainEnum.ProviderAdmin && r.Active.GetValueOrDefault() && !r.Deleted)).Select(s => s.ProviderId).ToList();
 
                 foreach (int i in providers)
                 {
                     // kontrolujeme každého poskytovatele
                     Provider? provider = await _providerRepository.GetProviderByIdTaskAsync(i);
 
-                    prEnd = DateTime.Now - prStart;
-                    _logger.LogInformation("{0} provider {2}: {1}", logHeader, prEnd, i);
-
                     if (provider != null)
                     {
                         int otherAdminsCount = provider.EffectiveUsers.Count(w => w.UserId != customer.Id
                                                                               && !w.Deleted
-                                                                              && w.Active
-                                                                              && w.RoleMembers.Any(r => r.RoleId == (int)RoleMainEnum.ProviderAdmin && r.Active && !r.Deleted));
-
-                        prEnd = DateTime.Now - prStart;
-                        _logger.LogInformation("{0} otherAdminsCount {2}: {1}", logHeader, prEnd, i);
+                                                                              && w.Active.GetValueOrDefault()
+                                                                              && w.RoleMembers.Any(r => r.RoleId == (int)RoleMainEnum.ProviderAdmin && r.Active.GetValueOrDefault() && !r.Deleted));
 
                         // odebral bych posledního Správce Poskytovatele
                         if (otherAdminsCount == 0)
@@ -852,9 +879,6 @@ public class UserApiController : ControllerBase
                     }
                 }
             }
-
-            TimeSpan time3 = DateTime.Now - startTime;
-            _logger.LogInformation("{0} IsProviderAdmin: {1}", logHeader, time3);
 
             // pokud jde pouze o smazání efektivního uživatele a existuje ještě jiný aktivní efektivní uživatel pro danou entitu Customer,
             // je potřeba ponechat záznam Customer nesmazaný
@@ -872,7 +896,7 @@ public class UserApiController : ControllerBase
                     var existingEfUser = existingEfUsers.First(x => x.Id == editedEfUser.Id);
                     await _effectiveUserRepository.DeleteEffectiveUserTaskAsync(currentUser, existingEfUser);
                     // pokud Customer nemá další EF uživatele u tohoto Poskytovatele, smažu ho
-                    if (!existingEfUsers.Any(x => x.Id != editedEfUser.Id && x.Active))
+                    if (!existingEfUsers.Any(x => x.Id != editedEfUser.Id && x.Active.GetValueOrDefault()))
                     {
                         deleteCustomer = true;
                     }
@@ -882,7 +906,7 @@ public class UserApiController : ControllerBase
                     // aktuální EF je smazaný
                     editedEfUser = customer.EffectiveUserUsers.FirstOrDefault(u => u.ProviderId == providerId.Value);
                     // aktuální EF Poskytovatele je smazaný a neexistují jiní aktivní EF uživatelé Poskytovatele
-                    if (editedEfUser != null && !existingEfUsers.Any(x => x.Id != editedEfUser.Id && x.Active))
+                    if (editedEfUser != null && !existingEfUsers.Any(x => x.Id != editedEfUser.Id && x.Active.GetValueOrDefault()))
                     {
                         deleteCustomer = true;
                     }

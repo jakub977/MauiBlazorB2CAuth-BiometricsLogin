@@ -20,7 +20,7 @@ public partial class RoleMember
     /// Bit identifier if a role member is active
     /// </summary>
     [Required]
-    public bool Active { get; set; }
+    public bool? Active { get; set; }
 
     /// <summary>
     /// Bit identifier if a role member is deleted
@@ -108,7 +108,7 @@ public partial class RoleMember
     {
         RoleMemberProviderContract data = new RoleMemberProviderContract();
         data.Id = this.Id;
-        data.Active = this.Active;
+        data.Active = this.Active.GetValueOrDefault();
         data.Deleted = this.Deleted;
         data.CreatedByCustomerId = this.CreatedByCustomerId;
         data.CreatedDateUtc = this.CreatedDateUtc;
