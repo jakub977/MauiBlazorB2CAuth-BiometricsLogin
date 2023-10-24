@@ -3,15 +3,12 @@
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Principal.Telemedicine.Shared.Cache;
 using Principal.Telemedicine.Shared.Interfaces;
 using ME = Microsoft.Extensions.Caching.Memory;
 
 namespace Principal.Telemedicine.Shared.Cache;
 
-/// <summary>
-/// 
-/// </summary>
+/// <inheritdoc/>
 public class DistributedMemoryCache : IDistributedCache
 {
     private readonly ILogger _logger;

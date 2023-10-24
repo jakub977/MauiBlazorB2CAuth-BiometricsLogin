@@ -45,6 +45,7 @@ UseSqlServer(builder.Configuration.GetConnectionString("MAIN_DB")));
 
 builder.Services.AddLogging(configuration);
 builder.Services.AddTmInfrastructure(configuration);
+builder.Services.AddSecretConfiguration<DistributedRedisCacheOptions>(configuration, "secrets/secrets.json");
 builder.Services.AddTmDistributedCache(configuration, builder.Environment.IsLocalHosted());
 var app = builder.Build();
  

@@ -1,16 +1,13 @@
 ﻿
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Configuration;
-using Principal.Telemedicine.Shared.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using ME = Microsoft.Extensions.Caching.Distributed;
-using Principal.Telemedicine.Shared.Interfaces;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Principal.Telemedicine.Shared.Interfaces;
 
 namespace Principal.Telemedicine.Shared.Cache;
+/// <summary>
+/// Registrace do DI
+/// </summary>
 public static class DiRegistrationRedis
 {
     public static IServiceCollection AddTmDistributedCache(this IServiceCollection services,IConfiguration configuration, bool isLocal)

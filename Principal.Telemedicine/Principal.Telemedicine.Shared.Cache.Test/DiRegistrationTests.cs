@@ -3,6 +3,7 @@ using Microsoft.Extensions.Hosting;
 using Principal.Telemedicine.Shared.Cache.Test.Helpers;
 using Principal.Telemedicine.Shared.Cache;
 using Principal.Telemedicine.Shared.Interfaces;
+using Principal.Telemedicine.Shared.Configuration;
 
 namespace Principal.Telemedicine.Shared.Cache.Test;
 
@@ -21,6 +22,7 @@ public class DiRegistrationTests
         var hostBuilder = new HostBuilder()
             .ConfigureServices((context, services) =>
             {
+                services.AddSecretConfiguration<DistributedRedisCacheOptions>(configuration, "secrets/secrets.json");
                 services.AddTmDistributedCache(configuration, true);
                 services.AddTmMemoryCache(configuration);
             });

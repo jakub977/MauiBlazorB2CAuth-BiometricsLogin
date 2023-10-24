@@ -1,19 +1,13 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Principal.Telemedicine.Shared.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Text.Json;
 using ME = Microsoft.Extensions.Caching.Distributed;
-using System.Threading.Tasks;
 
 namespace Principal.Telemedicine.Shared.Cache;
 
-/// <summary>
-/// 
-/// </summary>
+/// <inheritdoc/>
 public class DistributedRedisCache : IDistributedCache
 {
     private readonly ILogger _logger;

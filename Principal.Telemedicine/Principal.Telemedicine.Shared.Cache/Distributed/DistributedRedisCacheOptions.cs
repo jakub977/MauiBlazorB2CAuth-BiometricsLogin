@@ -1,11 +1,7 @@
 ﻿using Principal.Telemedicine.Shared.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Principal.Telemedicine.Shared.Cache;
+/// <inheritdoc />
 public class DistributedRedisCacheOptions : DistributedCacheOptions
 {
     /// <summary>
