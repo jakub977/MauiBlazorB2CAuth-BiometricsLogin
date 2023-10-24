@@ -1,4 +1,6 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using Microsoft.OpenApi.Any;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 /// <summary>
@@ -10,13 +12,17 @@ public class RequiredHeaderParameter : IOperationFilter
     {
         if (operation.Parameters == null)
             operation.Parameters = new List<OpenApiParameter>();
-
-        operation.Parameters.Add(new OpenApiParameter
+       
+        operation.Parameters.Add(new OpenApiParameter()
         {
-            Name = "Authorization",
-            AllowEmptyValue = true,
+             
+            Name = "Auth",
+            AllowEmptyValue = false,
+           
+            Schema = new OpenApiSchema() { Type = "string" },
             In =  ParameterLocation.Header,  
-            Required = false
+            Required = true,
+            Example = new OpenApiString("Bearer ....")
         });
     }
 }
