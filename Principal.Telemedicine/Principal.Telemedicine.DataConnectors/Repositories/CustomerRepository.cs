@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
@@ -30,6 +31,12 @@ public class CustomerRepository : ICustomerRepository
     }
 
     /// <inheritdoc/>
+    public IQueryable<Customer> ListOfAllCustomers()
+    {
+      return _dbContext.Customers.OrderBy(c => c.Id);
+    }
+
+    /// <inheritdoc/>
     public async Task<Customer?> GetCustomerByIdTaskAsync(int id)
     {
         var customer = await _dbContext.Customers
@@ -54,11 +61,13 @@ public class CustomerRepository : ICustomerRepository
     }
 
     /// <inheritdoc/>
-    public async Task<bool> UpdateCustomerTaskAsync(Customer currentUser, Customer user, bool? ignoreADB2C = false)
+    public async Task<bool> UpdateCustomerTaskAsync(Customer currentUser, Customer user, bool? ignoreADB2C = false, IDbContextTransaction? tran = null, bool dontManageTran = false)
     {
         bool ret = false;
         string logHeader = _logName + ".InsertCustomerTaskAsync:";
-        using var tran = await _dbContext.Database.BeginTransactionAsync();
+
+        if (tran == null && !dontManageTran)
+            tran = await _dbContext.Database.BeginTransactionAsync();
 
         try
         {
@@ -77,13 +86,15 @@ public class CustomerRepository : ICustomerRepository
             {
                 if (result != 0)
                 {
-                    tran.Commit();
+                    if (!dontManageTran)
+                        tran.Commit();
                     _logger.LogDebug("{0} User '{1}', Email: '{2}', Id: {3} updated succesfully", logHeader, user.FriendlyName, user.Email, user.Id);
                     return true;
                 }
                 else
                 {
-                    tran.Rollback();
+                    if (!dontManageTran)
+                        tran.Rollback();
                     _logger.LogWarning("{0} User '{1}', Email: '{2}', Id: {3} was not updated", logHeader, user.FriendlyName, user.Email, user.Id);
                     return false;
                 }
@@ -95,12 +106,14 @@ public class CustomerRepository : ICustomerRepository
 
                 if (ret)
                 {
-                    tran.Commit();
+                    if (!dontManageTran)
+                        tran.Commit();
                     _logger.LogDebug("{0} User '{1}', Email: '{2}', Id: {3} updated succesfully", logHeader, user.FriendlyName, user.Email, user.Id);
                 }
                 else
                 {
-                    tran.Rollback();
+                    if (!dontManageTran)
+                        tran.Rollback();
                     _logger.LogWarning("{0} User '{1}', Email: '{2}', Id: {3} was not updated", logHeader, user.FriendlyName, user.Email, user.Id);
                 }
             }
@@ -108,7 +121,9 @@ public class CustomerRepository : ICustomerRepository
         }
         catch (Exception ex)
         {
-            tran.Rollback();
+            if (!dontManageTran)
+                tran.Rollback();
+
             string errMessage = ex.Message;
             if (ex.InnerException != null)
             {
@@ -116,6 +131,9 @@ public class CustomerRepository : ICustomerRepository
             }
             _logger.LogError("{0} User '{1}', Email: '{2}', Id: {3} was not updated, Error: {4}", logHeader, user.FriendlyName, user.Email, user.Id, errMessage);
         }
+
+        if (!dontManageTran)
+            tran.Dispose();
 
         return ret;
     }

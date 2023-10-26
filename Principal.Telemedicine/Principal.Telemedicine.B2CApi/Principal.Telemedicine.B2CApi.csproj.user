@@ -2,6 +2,6 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ActiveDebugProfile>https</ActiveDebugProfile>
-    <NameOfLastUsedPublishProfile>C:\DEV23\Refactoring\Principal.Telemedicine\Principal.Telemedicine.B2CApi\Properties\PublishProfiles\WetNOW-B2CApi - Web Deploy.pubxml</NameOfLastUsedPublishProfile>
+    <NameOfLastUsedPublishProfile>C:\DEV23\Refact\Principal.Telemedicine\Principal.Telemedicine.B2CApi\Properties\PublishProfiles\WetNOW-B2CApi - Web Deploy.pubxml</NameOfLastUsedPublishProfile>
   </PropertyGroup>
 </Project>

@@ -56,21 +56,7 @@ public interface IEffectiveUserRepository
     /// <param name="currentUser">Aktuální uživatel</param>
     /// <param name="user">EffectiveUser</param>
     /// <returns>true / false</returns>
-    Task<bool> InsertEffectiveUserTaskAsync(Customer currentUser, EffectiveUser user);
-
-    /// <summary>
-    /// Metoda označí EffectiveUser za smazaeného
-    /// </summary>
-    /// <param name="currentUser">Aktuální uživatel</param>
-    /// <param name="user">EffectiveUser</param>
-    /// <returns>true / false</returns>
     Task<bool> DeleteEffectiveUserTaskAsync(Customer currentUser, EffectiveUser user);
-
-    /// <summary>
-    /// Metoda vrací nesmazané Efektivní uživatele daného poskytovatele.
-    /// </summary>
-    /// <returns>Seznam EffectiveUser</returns>
-    IQueryable<EffectiveUser> GetEffectiveUsersByProviderId(int providerId);
 
     /// <summary>
     /// Metoda vrací nesmazané Efektivní uživatele dané organizace.
@@ -78,16 +64,6 @@ public interface IEffectiveUserRepository
     /// <returns>Seznam EffectiveUser</returns>
     IQueryable<EffectiveUser> GetEffectiveUsersByOrganizationId(int organizationId);
 
-    /// <summary>
-    /// Metoda vrací aktivní Administrátory daného poskytovatele.
-    /// </summary>
-    /// <returns>Seznam EffectiveUser</returns>
-    IQueryable<EffectiveUser> GetAdminUsersByProviderId(int providerId, int role);
 
-    /// <summary>
-    /// Metoda vrací aktivní Administrátory dané organizace.
-    /// </summary>
-    /// <returns>Seznam EffectiveUser</returns>
-    IQueryable<EffectiveUser> GetAdminUsersByOrganizationId(int organizationId, int role);
 }
 

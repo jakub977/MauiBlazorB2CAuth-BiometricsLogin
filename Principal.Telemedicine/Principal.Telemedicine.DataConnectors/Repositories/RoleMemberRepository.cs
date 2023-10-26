@@ -24,9 +24,9 @@ public class RoleMemberRepository : IRoleMemberRepository
     /// <inheritdoc/>
     public IQueryable<RoleMember> GetAllRoleMembers()
     {
-        var data = _dbContext.RoleMembers.Include(c => c.EffectiveUser).Include(c => c.DirectUser).Include(c => c.Role).Where(a => !a.Deleted).OrderBy(p => p.Id).ToListAsync();
+        var data = _dbContext.RoleMembers.Include(c => c.EffectiveUser).Include(c => c.DirectUser).Include(c => c.Role).Where(a => !a.Deleted).OrderBy(p => p.Id);
 
-        return (IQueryable<RoleMember>) data;
+        return data;
     }
 
     /// <inheritdoc/>

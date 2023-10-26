@@ -19,4 +19,9 @@ public class ExtendedPropertiesDataModel
     /// Identifikátor organizace, pod níž je uživatel založen.
     /// </summary>
     public int OrganizationIDs { get; set; }
+
+    ///// <summary>
+    ///// Příznak zda jde o uživatele mobilní aplikace.
+    ///// </summary>
+    //public bool? MAUser { get; set; }
 }

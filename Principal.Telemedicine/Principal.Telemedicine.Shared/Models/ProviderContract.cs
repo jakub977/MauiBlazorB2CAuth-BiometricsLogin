@@ -113,12 +113,6 @@ public class ProviderContract
     public virtual OrganizationContract? Organization { get; set; }
 
     /// <summary>
-    /// Link to dbo.Picture as a photo of a provider
-    /// </summary>
-    [JsonPropertyName("pictureObject")]
-    public virtual PictureContract? Picture { get; set; }
-
-    /// <summary>
     /// Inverse collection of SubjectAllowedToProvider
     /// </summary>
     [JsonPropertyName("allowedSubjects")]
