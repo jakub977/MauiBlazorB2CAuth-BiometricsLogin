@@ -33,6 +33,13 @@ public class EffectiveUserRepository : IEffectiveUserRepository
         return data;
     }
 
+    public async Task<IEnumerable<EffectiveUser>> GetEffectiveUsersByProviderIdTaskAsync(int providerId)
+    {
+        var data = await _dbContext.EffectiveUsers.Include(i => i.RoleMembers).Include(i => i.GroupEffectiveMembers).Where(w => w.ProviderId == providerId && !w.Deleted).OrderBy(p => p.Id).ToListAsync();
+
+        return data;
+    }
+
     /// <inheritdoc/>
     public async Task<IEnumerable<EffectiveUser>> GetEffectiveUsersByProviderIdTaskAsync(int providerId)
     {

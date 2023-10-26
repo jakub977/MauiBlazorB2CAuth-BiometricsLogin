@@ -29,8 +29,8 @@ public class ProviderRepository : IProviderRepository
     /// <inheritdoc/>
     public async Task<Provider?> GetProviderByIdTaskAsync(int id)
     {
-        var data = await _dbContext.Providers.Include(i => i.EffectiveUsers)
-            .Where(p => p.Id == id).FirstOrDefaultAsync(); 
+        var data = await _dbContext.Providers.Include(i => i.EffectiveUsers).ThenInclude(t => t.RoleMembers)
+            .Where(p => p.Id == id).FirstOrDefaultAsync();
 
         return data;
     }
@@ -112,6 +112,19 @@ public class ProviderRepository : IProviderRepository
             .Include(c => c.Organization)
             .Include(c => c.Picture).DefaultIfEmpty()
             .Include(c => c.City).DefaultIfEmpty();
+    }
+
+    /// <inheritdoc/>
+    public async Task<bool> InsertProviderTaskAsync(Provider provider)
+    {
+        bool ret = false;
+
+        _dbContext.Providers.Add(provider);
+        int result = await _dbContext.SaveChangesAsync();
+        if (result != 0)
+            ret = true;
+
+        return ret;
     }
 }
 

@@ -114,7 +114,7 @@ public partial class EffectiveUser
         data.Id = this.Id;
         data.CreatedByCustomerId = this.CreatedByCustomerId;
         data.CreatedDateUtc = this.CreatedDateUtc;
-        data.Deleted = this.Deleted;
+        data.Deleted = this.Deleted;   
         data.UpdateDateUtc = this.UpdateDateUtc;
         data.UpdatedByCustomerId = this.UpdatedByCustomerId;
         if (roles != null)

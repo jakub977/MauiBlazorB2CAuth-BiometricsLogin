@@ -166,7 +166,7 @@ public partial class Role
         data.ParentRoleId = this.ParentRoleId;
         data.Name = this.Name;
         data.Description = this.Description;
-
+       
         if (parent != null)
             data.ParentRoleContract = parent;
 

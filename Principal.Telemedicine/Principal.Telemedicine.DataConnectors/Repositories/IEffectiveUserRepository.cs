@@ -37,6 +37,7 @@ public interface IEffectiveUserRepository
     /// <summary>
     /// Metoda aktualizuje EffectiveUser
     /// </summary>
+    /// <param name="currentUser">Aktuální uživatel</param>
     /// <param name="user">EffectiveUser</param>
     /// <returns>true / false</returns>
     Task<bool> UpdateEffectiveUserTaskAsync(Customer currentUser, EffectiveUser user);
@@ -44,6 +45,15 @@ public interface IEffectiveUserRepository
     /// <summary>
     /// Metoda zakládá nového EffectiveUser
     /// </summary>
+    /// <param name="currentUser">Aktuální uživatel</param>
+    /// <param name="user">EffectiveUser</param>
+    /// <returns>true / false</returns>
+    Task<bool> InsertEffectiveUserTaskAsync(Customer currentUser, EffectiveUser user);
+
+    /// <summary>
+    /// Metoda označí EffectiveUser za smazaeného
+    /// </summary>
+    /// <param name="currentUser">Aktuální uživatel</param>
     /// <param name="user">EffectiveUser</param>
     /// <returns>true / false</returns>
     Task<bool> InsertEffectiveUserTaskAsync(Customer currentUser, EffectiveUser user);

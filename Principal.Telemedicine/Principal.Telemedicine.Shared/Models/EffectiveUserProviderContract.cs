@@ -62,4 +62,5 @@ public class EffectiveUserProviderContract
 
     [JsonPropertyName("providerObject")]
     public virtual ProviderContract? Provider { get; set; }
+
 }

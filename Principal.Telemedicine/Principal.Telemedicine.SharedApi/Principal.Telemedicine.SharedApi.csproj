@@ -23,7 +23,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Principal.Telemedicine.Shared.Configuration" Version="1.2.0-CI-20231011-090407" />
     <PackageReference Include="Principal.Telemedicine.Shared.Infrastructure" Version="1.2.0-CI-20231011-090834" />
-    <PackageReference Include="Principal.Telemedicine.Shared.Logging" Version="2.1.0-CI-20231011-090008" />
+    <PackageReference Include="Principal.Telemedicine.Shared.Logging" Version="2.2.0-CI-20231019-092430" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 

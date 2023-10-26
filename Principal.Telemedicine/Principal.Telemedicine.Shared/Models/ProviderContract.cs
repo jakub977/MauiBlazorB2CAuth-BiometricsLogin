@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 namespace Principal.Telemedicine.Shared.Models;
@@ -68,6 +69,10 @@ public class ProviderContract
     /// Link to dbo.Picture as a photo of a provider
     /// </summary>
     public int? PictureId { get; set; }
+
+    [DataMember]
+    [JsonPropertyName("pictureObject")]
+    public virtual PictureContract? Picture { get; set; }
 
     /// <summary>
     /// Identification number of an organization
