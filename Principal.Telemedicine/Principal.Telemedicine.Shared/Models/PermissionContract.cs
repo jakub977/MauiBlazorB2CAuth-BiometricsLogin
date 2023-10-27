@@ -67,12 +67,12 @@ public class PermissionContract
     /// <summary>
     /// Name of a permission
     /// </summary>
-    public string Name { get; set; } = null!;
+    public string? Name { get; set; }
 
     /// <summary>
     /// System name of a permission
     /// </summary>
-    public string SystemName { get; set; } = null!;
+    public string? SystemName { get; set; }
 
     /// <summary>
     /// Detailed description of a permission
@@ -89,6 +89,6 @@ public class PermissionContract
     /// Link to dbo.Subject as a subject of the application
     /// </summary>
     [JsonPropertyName("subjectObject")]
-    public virtual SubjectContract Subject { get; set; } = null!;
+    public virtual SubjectContract? Subject { get; set; }
 
 }

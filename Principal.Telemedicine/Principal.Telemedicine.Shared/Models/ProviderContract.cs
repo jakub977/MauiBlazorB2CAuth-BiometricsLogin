@@ -94,11 +94,41 @@ public class ProviderContract
     /// </summary>
     public int? CityId { get; set; }
 
-    [DataMember]
+    /// <summary>
+    /// Link to dbo.AddressCity as a city related to provider
+    /// </summary>
     [JsonPropertyName("cityObject")]
     public virtual AddressCityContract? City { get; set; }
 
+    /// <summary>
+    /// Count of EffectiveUsers related to provider
+    /// </summary>
+    [JsonPropertyName("adminUsers")]
+    public virtual ICollection<EffectiveUserContract> EffectiveUsers { get; set; } = new List<EffectiveUserContract>();
+
+     /// <summary>
+     /// Link to dbo.Organization as a parent organization
+     /// </summary>
+     [JsonPropertyName("organizationObject")]
+    public virtual OrganizationContract? Organization { get; set; }
+
+    /// <summary>
+    /// Inverse collection of SubjectAllowedToProvider
+    /// </summary>
+    [JsonPropertyName("allowedSubjects")]
+    public virtual ICollection<SubjectAllowedToProviderContract> SubjectAllowedToProviders { get; set; } = new List<SubjectAllowedToProviderContract>();
+
+    /// <summary>
+    /// Inverse collection of Permission
+    /// </summary>
+    [JsonPropertyName("permissionObject")]
+    public virtual ICollection<PermissionContract> Permission { get; set; } = new List<PermissionContract>();
+
+    /// <summary>
+    /// Collection of providers EffectiveUsers
+    /// </summary>
     [DataMember]
     [JsonPropertyName("EffectiveUsers")]
     public ICollection<EffectiveUserProviderContract> EffectiveUserProviderUsers { get; set; } = new List<EffectiveUserProviderContract>();
+
 }
