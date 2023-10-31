@@ -3,8 +3,10 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Principal.Telemedicine.B2CApi.Models;
 using Principal.Telemedicine.DataConnectors.Contexts;
+using Principal.Telemedicine.DataConnectors.Repositories;
 using Principal.Telemedicine.Shared.Configuration;
 using System.Text;
+using Microsoft.Graph.Models;
 
 namespace Principal.Telemedicine.B2CApi.Controllers;
 
@@ -19,13 +21,15 @@ public class ExtendedPropertiesController : ControllerBase
     private readonly DbContextApi _context;
     private readonly AuthorizationSettings _authsettings;
     private readonly HostBuilderContext _extension;
+    private readonly IADB2CRepository _adb2cRepository;
 
-    public ExtendedPropertiesController(ILogger<ExtendedPropertiesController> logger, DbContextApi context, IOptions<AuthorizationSettings> authsettings, HostBuilderContext extension)
+    public ExtendedPropertiesController(ILogger<ExtendedPropertiesController> logger, DbContextApi context, IOptions<AuthorizationSettings> authsettings, HostBuilderContext extension, IADB2CRepository adb2cRepository)
     {
         _logger = logger;
         _context = context;
         _authsettings = authsettings?.Value;
         _extension = extension;
+        _adb2cRepository = adb2cRepository;
     }
 
     /// <summary>
@@ -34,24 +38,24 @@ public class ExtendedPropertiesController : ControllerBase
     /// <returns></returns>
     [HttpPost]
     [Route("AddExtendedProperties")]
-    public async Task<IActionResult> AddExtendedProperties()
+    public async Task<IActionResult> AddExtendedProperties(string requestBody)
     {
         try
         {
             bool isLocal = _extension.HostingEnvironment.IsLocalHosted();
 
-            var req = Request;
+           // var req = Request;
 
             // check HTTP basic authorization
-            if (!Authorize(req, _logger, isLocal, _authsettings))
-            {
-                _logger.Log(LogLevel.Error, "HTTP basic authentication validation failed.");
-                return new UnauthorizedObjectResult("|API_ERROR_1|Authentication validation failed|");
-            }
+            //if (!Authorize(req, _logger, isLocal, _authsettings))
+            //{
+            //    _logger.Log(LogLevel.Error, "HTTP basic authentication validation failed.");
+            //    return new UnauthorizedObjectResult("|API_ERROR_1|Authentication validation failed|");
+            //}
 
            // get the request body
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            _logger.Log(LogLevel.Error, $"Request body: '{requestBody}' ");
+            //string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            //_logger.Log(LogLevel.Error, $"Request body: '{requestBody}' ");
 
             if (string.IsNullOrEmpty(requestBody))
             {
@@ -67,13 +71,22 @@ public class ExtendedPropertiesController : ControllerBase
                 return new BadRequestObjectResult(new ResponseContent("|API_ERROR_2|General error|"));
             }
 
+            string email = string.Empty;
+
             if (data.email == null)
             {
-                _logger.Log(LogLevel.Error, "Email is mandatory and is empty.");
-                return new BadRequestObjectResult(new ResponseContent("|API_ERROR_3|Email is empty|"));
-            }
+                string objectId = Convert.ToString(data.objectId);
+                var user = _adb2cRepository.GetUserByObjectIdAsyncTask(objectId);
+                if (user == null)
+                {
+                    //_logger.Log(LogLevel.Error, "Email is mandatory and is empty.");
+                    _logger.Log(LogLevel.Error, "Email was not found by objectId.");
+                    return new BadRequestObjectResult(new ResponseContent("|API_ERROR_3|Email is empty|"));
+                }
 
-            string email = Convert.ToString(data.email);
+              //  email = user.Mail;
+            }
+            else email = Convert.ToString(data.email);
 
             List<ExtendedPropertiesDataModel> dbResult = new List<ExtendedPropertiesDataModel>();
 

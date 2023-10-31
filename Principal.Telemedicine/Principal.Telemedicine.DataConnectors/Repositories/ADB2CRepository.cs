@@ -205,6 +205,51 @@ public class ADB2CRepository : IADB2CRepository
         return ret;
     }
 
+    /// <inheritdoc/>
+    public async Task<Customer?> GetUserByObjectIdAsyncTask(string objectId)
+    {
+        string logHeader = _logName + ".GetUserByObjectIdAsyncTask:";
+        Customer cus = new Customer();
+        try
+        {
+            // UPN ukládáme jako email převedený na Base64 + aplikační doména
+           // string searchedUPN = CreateUPN(customer.Email);
+
+            // kontrola na existující účet
+            var result = await GetClient().Users.GetAsync(requestConfiguration =>
+            {
+                requestConfiguration.QueryParameters.Select = new string[] { "id", "createdDateTime", "displayName" };
+                requestConfiguration.QueryParameters.Filter = $"objectId eq '{objectId}'";
+            });
+
+            if (result == null || result.Value == null || result?.Value?.Count != 1)
+            {
+                _logger.LogWarning($"{logHeader} ADB2C returned: User with object id '{objectId}' not found");
+                return null;
+            }
+
+            string? userId = result?.Value[0].Id;
+
+            if (userId != null)
+            {
+                return cus;
+            }
+
+           // _logger.LogDebug("{0} ADB2C returned: OK, user '{0}', Email: '{1}', Id: {2} deleted succesfully", logHeader, customer.FriendlyName, customer.Email, customer.Id);
+        }
+        catch (Exception ex)
+        {
+            string errMessage = ex.Message;
+            if (ex.InnerException != null)
+            {
+                errMessage += " " + ex.InnerException.Message;
+            }
+            _logger.LogError("{0} ADB2C returned: User: '{0}', Error: {1}", logHeader, cus.Email, errMessage);
+        }
+
+        return cus;
+    }
+
     #region Private methods
 
     /// <summary>

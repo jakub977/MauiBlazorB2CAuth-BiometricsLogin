@@ -27,5 +27,13 @@ public interface IADB2CRepository
     /// <param name="customer">Customer</param>
     /// <returns>Výsledek smazání true / false</returns>
     Task<bool> DeleteUserAsyncTask(Customer customer);
+
+
+    /// <summary>
+    /// Metoda vrací konkrétního uživatele na základě objectId.
+    /// </summary>
+    /// <param name="id">ID objektu</param>
+    /// <returns>Konkrétní uživatel</returns>
+    Task<Customer?> GetUserByObjectIdAsyncTask(string objectId);
 }
 
