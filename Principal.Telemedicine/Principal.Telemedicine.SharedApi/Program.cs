@@ -14,15 +14,16 @@ using Microsoft.Extensions.Configuration;
 using Principal.Telemedicine.Shared.Security;
 using Microsoft.OpenApi.Models;
 
-var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").AddJsonFile("appsettings.Development.json").Build();
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddTmMemoryCache(configuration);
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAdB2C"))
-    .EnableTokenAcquisitionToCallDownstreamApi()
+    .EnableTokenAcquisitionToCallDownstreamApi().AddDownstreamWebApi("VandaTEST", opt => opt.Scopes = "VandaTESTSharedApi")
     .AddInMemoryTokenCaches();
 
-builder.Services.AddTmMemoryCache(configuration);
+
+
 
 builder.Services.AddControllers()
     .AddJsonOptions(options => options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull )
