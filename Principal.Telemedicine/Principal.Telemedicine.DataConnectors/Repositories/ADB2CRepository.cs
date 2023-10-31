@@ -213,15 +213,16 @@ public class ADB2CRepository : IADB2CRepository
         try
         {
             // UPN ukládáme jako email převedený na Base64 + aplikační doména
-           // string searchedUPN = CreateUPN(customer.Email);
+            // string searchedUPN = CreateUPN(customer.Email);
 
             // kontrola na existující účet
             var result = await GetClient().Users.GetAsync(requestConfiguration =>
             {
-                requestConfiguration.QueryParameters.Select = new string[] { "id", "createdDateTime", "displayName" };
-                requestConfiguration.QueryParameters.Filter = $"objectId eq '{objectId}'";
+                requestConfiguration.QueryParameters.Select = new string[] { "displayName", "mail" };
+                requestConfiguration.QueryParameters.Filter = $"id eq '{objectId}'";
             });
 
+            //userPrincipalName - z toho by to šlo? nebo identity, otherMail
             if (result == null || result.Value == null || result?.Value?.Count != 1)
             {
                 _logger.LogWarning($"{logHeader} ADB2C returned: User with object id '{objectId}' not found");
