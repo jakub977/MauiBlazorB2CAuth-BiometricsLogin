@@ -41,8 +41,6 @@ public class LoggingMiddleware
             try
             {
                 await _next.Invoke(context).ConfigureAwait(true);
-              
-                context.Response.Body.Seek(0, SeekOrigin.Begin);
             }
             catch(Exception ex) {
                
@@ -56,16 +54,16 @@ public class LoggingMiddleware
                 throw;
                
             }
-          finally { 
-                  context.Response.Body.Seek(0, SeekOrigin.Begin);
-                await context.Response.Body.CopyToAsync(responseBody);
+          finally {                  
+                  await context.Response.Body.CopyToAsync(responseBody);
                   await LogResponse(context, responseBody);
                 if (!isError)
-                {   
-                    responseBody.Position = 0;
+                {
+                    //responseBody.Position = 0;
+                    await originalResponseBody.FlushAsync();
                     await responseBody.CopyToAsync(originalResponseBody);
                 }
-                await responseBody.FlushAsync();
+                 await responseBody.FlushAsync();
                 context.Response.Body = originalResponseBody;
             }
           
