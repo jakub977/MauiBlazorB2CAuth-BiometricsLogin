@@ -59,7 +59,7 @@ public class LoggingMiddleware
                   await LogResponse(context, responseBody);
                 if (!isError)
                 {
-                    //responseBody.Position = 0;
+                   
                     await originalResponseBody.FlushAsync();
                     await responseBody.CopyToAsync(originalResponseBody);
                 }
