@@ -2,6 +2,10 @@
 
 namespace Principal.Telemedicine.Shared.Api
 {
+    /// <summary>
+    /// Třída pro návratové hodnoty API
+    /// </summary>
+    /// <typeparam name="TResult"></typeparam>
     public class GenericResponse<TResult> : IGenericResponse<TResult>
     {
         private TResult? _data;
@@ -9,6 +13,7 @@ namespace Principal.Telemedicine.Shared.Api
         private string? _message;
         private string? _detail;
         private int _code = -1;
+        private int _records = 0;
 
         [DataMember()]
         public bool Success
@@ -39,13 +44,20 @@ namespace Principal.Telemedicine.Shared.Api
         }
 
         [DataMember()]
+        public int Records
+        {
+            get { return _records; }
+            set { _records = value; }
+        }
+
+        [DataMember()]
         public TResult? Data
         {
             get { return _data; }
             set { _data = value; }
         }
 
-        public GenericResponse(TResult? data, bool? success = null, int ?code = null, string? message = null, string? detail = null)
+        public GenericResponse(TResult? data, bool? success = null, int ?code = null, string? message = null, string? detail = null, int? records = null)
         {
             if (data != null)
                 _data = data;
@@ -57,6 +69,8 @@ namespace Principal.Telemedicine.Shared.Api
                 _message = message;
             if (detail != null)
                 _detail = detail;
+            if (records != null)
+                _records = records.Value;
         }
     }
 }

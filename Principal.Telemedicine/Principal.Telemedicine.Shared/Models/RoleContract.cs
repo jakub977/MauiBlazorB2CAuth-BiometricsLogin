@@ -74,6 +74,9 @@ public class RoleContract
     /// </summary>
     public int? ParentRoleId { get; set; }
 
+    [JsonPropertyName("parentRoleObject")]
+    public virtual RoleContract? ParentRole { get; set; }
+
     /// <summary>
     /// Link to dbo.RoleCategoryCombination as a combination of role category and its subcategory
     /// </summary>

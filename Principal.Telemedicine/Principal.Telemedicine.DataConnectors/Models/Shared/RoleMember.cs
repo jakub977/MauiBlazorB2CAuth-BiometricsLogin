@@ -121,4 +121,35 @@ public partial class RoleMember
 
         return data;
     }
+
+    /// <summary>
+    /// Vrátí RoleMemberContract z RoleMember
+    /// </summary>
+    /// <param name="withRole">Příznak, zda chceme vrátit i data Role (default TRUE)</param>
+    /// <param name="withProviderInRole">Příznak, zda chceme vrátit s Rolí i data Poskytovatele (default TRUE)</param>
+    /// <param name="withRolePermissions">Příznak, zda chceme vrátit s Rolí i data Permissions (default TRUE)</param>
+    /// <param name="withPermissionSubject">Příznak, zda chceme vrátit s Rolí i data Subjektu v Permissions (default TRUE)</param>
+    /// <param name="withRolesAndGroupsDetail">Příznak, zda chceme vrátit i podrobnější data jako kategorie nebo typ Role / Skupiny (default FALSE)</param>
+    /// <returns>RoleMemberContract</returns>
+    public RoleMemberContract ConvertToRoleMemberContract(bool withRole = true, bool withProviderInRole = true, bool withRolePermissions = true, bool withPermissionSubject = true, bool withRolesAndGroupsDetail = false)
+    {
+        RoleMemberContract data = new RoleMemberContract();
+
+        data.Active = Active.GetValueOrDefault();
+        data.CreatedByCustomerId = CreatedByCustomerId;
+        data.CreatedDateUtc = CreatedDateUtc;
+        data.Deleted = Deleted;
+        data.DirectUserId = DirectUserId;
+        data.EffectiveUserId = EffectiveUserId;
+        data.Id = Id;
+        data.RoleId = RoleId;
+
+        if (withRole && Role != null)
+            data.Role = Role.ConvertToRoleContract(withProviderInRole, withRolePermissions, withPermissionSubject, withRolesAndGroupsDetail);
+
+        data.UpdateDateUtc = UpdateDateUtc;
+        data.UpdatedByCustomerId = UpdatedByCustomerId;
+
+        return data;
+    }
 }

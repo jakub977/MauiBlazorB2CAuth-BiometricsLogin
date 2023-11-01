@@ -26,6 +26,23 @@ public static class CustomerExtensions
     }
 
     /// <summary>
+    /// Jedná se o uživatele Výzkum?
+    /// </summary>
+    /// <param name="customer">Uživatel</param>
+    /// <returns>true / false</returns>
+    public static bool IsResearch(this Customer customer)
+    {
+        bool ret = false;
+        if (customer.RoleMemberDirectUsers.Any(a => a.Active.GetValueOrDefault() && !a.Deleted && (a.RoleId == (int)RoleMainEnum.Research || (a.Role.ParentRoleId.HasValue && a.Role.ParentRoleId.Value == (int)RoleMainEnum.Research))))
+            ret = true;
+
+        if (!ret)
+            if (customer.EffectiveUserUsers.Any(a => a.Active.GetValueOrDefault() && !a.Deleted && a.RoleMembers.Any(w => w.Active.GetValueOrDefault() && !w.Deleted && (w.RoleId == (int)RoleMainEnum.Research || (w.Role.ParentRoleId.HasValue && w.Role.ParentRoleId.Value == (int)RoleMainEnum.Research)))))
+                ret = true;
+        return ret;
+    }
+
+    /// <summary>
     /// Je uživatel Správcem organizace?
     /// </summary>
     /// <param name="customer">Uživatel</param>

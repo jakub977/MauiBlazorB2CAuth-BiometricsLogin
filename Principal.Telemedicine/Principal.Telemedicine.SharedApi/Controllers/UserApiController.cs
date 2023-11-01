@@ -14,6 +14,7 @@ using Principal.Telemedicine.DataConnectors.Extensions;
 using Principal.Telemedicine.Shared.Enums;
 using System.Text.Json.Serialization;
 using Principal.Telemedicine.Shared.Api;
+using Principal.Telemedicine.DataConnectors.Utils;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
 
@@ -27,6 +28,7 @@ public class UserApiController : ControllerBase
     private readonly ICustomerRepository _customerRepository;
     private readonly IProviderRepository _providerRepository;
     private readonly IEffectiveUserRepository _effectiveUserRepository;
+    private readonly IADB2CRepository _adb2cRepository;
     private readonly DbContextApi _dbContext;
     private readonly ILogger _logger;
     private readonly IMapper _mapper;
@@ -34,11 +36,12 @@ public class UserApiController : ControllerBase
     private readonly string _logName = "UserApiController";
 
     public UserApiController(ICustomerRepository customerRepository, IProviderRepository providerRepository, IEffectiveUserRepository effectiveUserRepository,
-        DbContextApi dbContext, ILogger<UserApiController> logger, IMapper mapper)
+        IADB2CRepository adb2cRepository, DbContextApi dbContext, ILogger<UserApiController> logger, IMapper mapper)
     {
         _customerRepository = customerRepository;
         _providerRepository = providerRepository;
         _effectiveUserRepository = effectiveUserRepository;
+        _adb2cRepository = adb2cRepository;
         _dbContext = dbContext;
         _logger = logger;
         _mapper = mapper;
@@ -65,7 +68,7 @@ public class UserApiController : ControllerBase
 
         try
         {
-            var user = await _customerRepository.GetCustomerByIdTaskAsync(userId);
+            var user = await _customerRepository.GetCustomerInfoByIdTaskAsync(userId);
             var mappedUser = _mapper.Map<UserContract>(user);
 
             return new GenericResponse<UserContract>(mappedUser, true, 0);
@@ -87,6 +90,7 @@ public class UserApiController : ControllerBase
     [HttpGet(Name = "GetUser")]
     public async Task<IGenericResponse<CompleteUserContract>> GetUser([FromHeader(Name = "x-api-g")] string globalId, int? userId)
     {
+        DateTime startTime = DateTime.Now;
         string logHeader = _logName + ".GetUser:";
         // kontrola na vstupní data
         if (userId <= 0 || string.IsNullOrEmpty(globalId))
@@ -102,19 +106,29 @@ public class UserApiController : ControllerBase
         {
             var mappedUser = new CompleteUserContract();
             int id = userId.HasValue ? userId.Value : 0;
-
+            TimeSpan middleTime = DateTime.Now - startTime;
             if (id <= 0)
             {
                 var user = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);
-                mappedUser = _mapper.Map<CompleteUserContract>(user);
+                //mappedUser = _mapper.Map<CompleteUserContract>(user);
+                mappedUser = user.ConvertToCompleteUserContract(false, false, true, true, false, true);
             }
             else
             {
                 // todo: zjistit jestli má uživatel oprávnění read na jiného uživatele
                 // možno nastudovat v Vanda -> SmartMVC.Services -> Customers -> CustomerService.cs, metoda GetAllCustomers na ř. 161
                 var user = await _customerRepository.GetCustomerByIdTaskAsync(id);
-                mappedUser = _mapper.Map<CompleteUserContract>(user);
+
+                middleTime = DateTime.Now - startTime;
+
+                //mappedUser = _mapper.Map<CompleteUserContract>(user);
+                mappedUser = user.ConvertToCompleteUserContract(false, false, true, true, false, true);
+
             }
+
+            TimeSpan endTime = DateTime.Now - startTime;
+
+            _logger.LogInformation("{0} Data found, duration: {1}, middle: {2}", logHeader, endTime, middleTime);
 
             return new GenericResponse<CompleteUserContract>(mappedUser, true,0);
         }
@@ -127,44 +141,51 @@ public class UserApiController : ControllerBase
     }
 
     /// <summary>
-    /// Vrátí seznam uživatelů.
+    /// Vrátí seznam uživatelů pro grid
     /// </summary>
     /// <param name="userId"></param>
     /// <returns></returns>
     [HttpGet(Name = "GetUsers")]
-    public async Task<IActionResult> GetUsers([FromHeader(Name = "x-api-g")] string globalId, int? userId)
+    public async Task<IGenericResponse<List<CompleteUserContract>>> GetUsers([FromHeader(Name = "x-api-g")] string globalId, bool activeUsersOnly, int? filterRole, int? filterGroup, string? searchText, string? order = "created_desc", int? page = 1, int? pageSize = 20, int? providerId = null)
     {
-
-        if (userId <= 0 || string.IsNullOrEmpty(globalId))
+        DateTime startTime = DateTime.Now;
+        string logHeader = _logName + ".GetUsers:";
+        // kontrola na vstupní data
+        if (string.IsNullOrEmpty(globalId))
         {
-            return BadRequest();
+            _logger.LogWarning("{0} Invalid GlobalId: {1}", logHeader, globalId);
+            return new GenericResponse<List<CompleteUserContract>>(null, false, -3, "GlobalId is empty", "GlobalId must be set.");
+        }
+
+        Customer? currentUser = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);
+        if (currentUser == null)
+        {
+            _logger.LogWarning("{0} Current User not found", logHeader);
+            return new GenericResponse<List<CompleteUserContract>>(null, false, -4, "Current user not found", "User not found by GlobalId.");
         }
 
         try
         {
-            var mappedUser = new CompleteUserContract();
-            int id = userId.HasValue ? userId.Value : 0;
+            List<CompleteUserContract> data = new List<CompleteUserContract>();
 
-            if (id <= 0)
+            PaginatedListData<Customer> resultData = await _customerRepository.GetCustomersTaskAsync(currentUser, activeUsersOnly, filterRole, filterGroup, searchText, order, page, pageSize, providerId);
+
+            TimeSpan timeMiddle = DateTime.Now - startTime;
+
+            foreach (var item in resultData)
             {
-                var user = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);
-                mappedUser = _mapper.Map<CompleteUserContract>(user);
-            }
-            else
-            {
-                // todo: zjistit jestli má uživatel oprávnění read na jiného uživatele
-                // možno nastudovat v Vanda -> SmartMVC.Services -> Customers -> CustomerService.cs, metoda GetAllCustomers na ř. 161
-                var user = await _customerRepository.GetCustomerByIdTaskAsync(id);
-                mappedUser = _mapper.Map<CompleteUserContract>(user);
+                data.Add(item.ConvertToCompleteUserContract(false, false, false, false, true));
             }
 
-            return Ok(mappedUser);
+            TimeSpan timeEnd = DateTime.Now - startTime;
+            _logger.LogInformation("{0} Returning data - page: {1}, records: {2}, TotalRecords: {3}, TotalPages: {4}, duration: {5}, middle: {6}", logHeader, resultData.ActualPage, resultData.Count, resultData.TotalRecords, resultData.TotalPages, timeEnd, timeMiddle);
+
+            return new GenericResponse<List<CompleteUserContract>>(data, true, 0, null, null, resultData.TotalRecords);
         }
-
         catch (Exception ex)
         {
-            _logger.LogError(ex.Message);
-            return StatusCode(StatusCodes.Status500InternalServerError);
+            _logger.LogError("{0} {1}", logHeader, ex.Message);
+            return new GenericResponse<List<CompleteUserContract>>(null, false, -1, ex.Message);
         }
     }
 
@@ -188,6 +209,8 @@ public class UserApiController : ControllerBase
     public async Task<IGenericResponse<bool>> UpdateUser([FromHeader(Name = "x-api-g")] string globalId, CompleteUserContract user, int? providerId = null, bool isProviderAdmin = false)
     {
         string logHeader = _logName + ".UpdateUser:";
+        DateTime startTime = DateTime.Now;
+        using var tran = await _dbContext.Database.BeginTransactionAsync();
         try
         {
             // kontrola na vstupní data
@@ -207,7 +230,7 @@ public class UserApiController : ControllerBase
                 return new GenericResponse<bool>(false, false, -4, "Current user not found", "User not found by GlobalId.");
             }
 
-            Customer? actualData = await _customerRepository.GetCustomerByIdTaskAsync(user.Id);
+            Customer? actualData = await _customerRepository.GetCustomerByIdOnlyForUpdateTaskAsync(user.Id);
             if (actualData == null)
             {
                 _logger.LogWarning("{0} User not found, Name: {1}, ID: {2}, Email: {3}", logHeader, user.FriendlyName, user.Id, user.Email);
@@ -599,21 +622,22 @@ public class UserApiController : ControllerBase
 
             #endregion
 
-            bool ret = await _customerRepository.UpdateCustomerTaskAsync(currentUser, actualData);
-
+            bool ret = await _customerRepository.UpdateCustomerTaskAsync(currentUser, actualData, ignoreADB2C: null, tran);
+            TimeSpan timeEnd = DateTime.Now - startTime;
             if (ret)
             {
-                _logger.LogInformation("{0} User '{1}', Email: '{2}', Id: {3} updated succesfully", logHeader, actualData.FriendlyName, actualData.Email, actualData.Id);
+                _logger.LogInformation("{0} User '{1}', Email: '{2}', Id: {3} updated succesfully, duration: {4}", logHeader, actualData.FriendlyName, actualData.Email, actualData.Id, timeEnd);
                 return new GenericResponse<bool>(true, ret, 0);
             }
             else
             {
-                _logger.LogWarning("{0} User was not updated, Name: {1}, ID: {2}, Email: {3}", logHeader, user.FriendlyName, user.Id, user.Email);
+                _logger.LogWarning("{0} User was not updated, Name: {1}, ID: {2}, Email: {3}, duration: {4}", logHeader, user.FriendlyName, user.Id, user.Email, timeEnd);
                 return new GenericResponse<bool>(false, false, -1, "User was not updated", "Error when updating user.");
             }
         }
         catch (Exception ex)
         {
+            tran.Rollback();
             _logger.LogError("{0} {1}", logHeader, ex.Message);
             return new GenericResponse<bool>(false, false, -1, ex.Message);
         }
@@ -801,6 +825,7 @@ public class UserApiController : ControllerBase
     /// <param name="userID">ID uživatele</param>
     /// <param name="providerId">ID Poskytovatele pod kterým uživatele mažeme</param>
     /// <returns>GenericResponse s parametrem "success" TRUE nebo FALSE a případně chybu:
+    /// -1 = obecná chyba
     /// -2 = neplatné UserId
     /// -3 = chybí GlobalId
     /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
@@ -950,6 +975,153 @@ public class UserApiController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Metoda kontroluje, zda existuje uživatel v ADB2C
+    /// </summary>
+    /// <param name="globalId">GlobalID uživatele co metodu volá</param>
+    /// <param name="userId">ID uživatele</param>
+    /// <returns>GenericResponse s parametrem "INT" 1 (existuje) nebo 0 (neexistuje) a případně chybu:
+    /// -1 = obecná chyba
+    /// -2 = neplatné UserId
+    /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
+    /// -5 = mazaný uživatel nebyl nalezen
+    /// </returns>
+    [HttpGet(Name = "CheckUserInADB2C")]
+    public async Task<IGenericResponse<int>> CheckUserInADB2C([FromHeader(Name = "x-api-g")] string globalId, int userId)
+    {
+        string logHeader = _logName + ".CheckUserInADB2C:";
+        int ret = -1;
+
+        DateTime startTime = DateTime.Now;
+        try
+        {
+            // kontrola na vstupní data
+            if (userId <= 0)
+            {
+                _logger.LogWarning("{0} Invalid UserId: {1}", logHeader, userId);
+                return new GenericResponse<int>(ret, false, -2, "Invalid UserId", "UserId value must be greater then '0'.");
+            }
+
+            // dotáhneme si aktuálního uživatele
+            Customer? currentUser = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);
+            if (currentUser == null)
+            {
+                _logger.LogWarning("{0} Current User not found", logHeader);
+                return new GenericResponse<int>(ret, false, -4, "Current user not found", "Current user not found by GlobalId.");
+            }
+
+            // dotáhneme si uživatele
+            Customer? customer = await _customerRepository.GetCustomerInfoByIdTaskAsync(userId);
+
+            if (customer == null)
+            {
+                _logger.LogWarning("{0} User not found, Id: {1}", logHeader, userId);
+                return new GenericResponse<int>(ret, false, -5, "User not found", "User not found by Id.");
+            }
+
+            ret = await _adb2cRepository.CheckUserAsyncTask(customer);
+
+            TimeSpan timeEnd = DateTime.Now - startTime;
+            _logger.LogInformation("{0} User '{1}', Email: '{2}', Id: {3}, returned: {4}, duration: {5}", logHeader, customer.FriendlyName, customer.Email, customer.Id, ret, timeEnd);
+
+            return new GenericResponse<int>(ret, true, 0);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("{0} {1}", logHeader, ex.Message);
+            return new GenericResponse<int>(ret, false, -1, ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Metoda založí existujícího uživatele z DB i v ADB2C
+    /// </summary>
+    /// <param name="globalId">GlobalID uživatele co metodu volá</param>
+    /// <param name="userId">ID uživatele</param>
+    /// <returns>GenericResponse s parametrem "INT" 1 (založen) nebo 0 (nezaložen) a případně chybu:
+    /// -1 = obecná chyba
+    /// -2 = neplatné UserId
+    /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
+    /// -5 = uživatel nebyl nalezen v DB
+    /// -6 = uživatele se nepodařilo založit v ADB2C nebo aktualizovat DB
+    /// </returns>
+    [HttpGet(Name = "InsertUserInADB2C")]
+    public async Task<IGenericResponse<int>> InsertUserInADB2C([FromHeader(Name = "x-api-g")] string globalId, int userId)
+    {
+        string logHeader = _logName + ".InsertUserInADB2C:";
+        int ret = -1;
+
+        DateTime startTime = DateTime.Now;
+        try
+        {
+            // kontrola na vstupní data
+            if (userId <= 0 || string.IsNullOrEmpty(globalId))
+            {
+                _logger.LogWarning("{0} Invalid UserId: {1}", logHeader, userId);
+                return new GenericResponse<int>(ret, false, -2, "Invalid UserId", "UserId value must be greater then '0'.");
+            }
+
+            // dotáhneme si aktuálního uživatele
+            Customer? currentUser = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);
+            if (currentUser == null)
+            {
+                _logger.LogWarning("{0} Current User not found", logHeader);
+                return new GenericResponse<int>(ret, false, -4, "Current user not found", "Current user not found by GlobalId.");
+            }
+
+            // dotáhneme si uživatele
+            Customer? customer = await _customerRepository.GetCustomerByIdTaskAsync(userId);
+
+            if (customer == null)
+            {
+                _logger.LogWarning("{0} User not found, Id: {1}", logHeader, userId);
+                return new GenericResponse<int>(ret, false, -5, "User not found", "User not found by Id.");
+            }
+
+            // nasravíme GlobalId na email
+            customer.GlobalId = customer.Email;
+
+            // vygenerujeme heslo
+            customer.Password = PasswordGenerator.GetNewPassword();
+
+            // založíme uživatele v ADB2C
+            bool created = await _adb2cRepository.InsertUserAsyncTask(customer);
+
+            TimeSpan timeEnd = DateTime.Now - startTime;
+
+            if (created)
+            {
+                // aktualizujeme uživatele v DB
+                created = await _customerRepository.UpdateCustomerTaskAsync(currentUser, customer, true);
+            }
+            else
+            {
+                ret = 0;
+                _logger.LogWarning("{0} User was not created, Name: {1} ID: {2} Email: {3}, duration: {4}", logHeader, customer.FriendlyName, customer.Id, customer.Email, timeEnd);
+                return new GenericResponse<int>(ret, false, -6, "User was not created", "Error when inserting new user into ADB2C.");
+            }
+
+            timeEnd = DateTime.Now - startTime;
+
+            if (created)
+            {
+                ret = 1;
+                _logger.LogInformation("{0} User '{1}', Email: '{2}', Id: {3} created succesfully, duration: {4}", logHeader, customer.FriendlyName, customer.Email, customer.Id, timeEnd);
+                return new GenericResponse<int>(ret, true, 0);
+            }
+            else
+            {
+                ret = 0;
+                _logger.LogWarning("{0} User was created in ADB2C but not updated in DB, Name: {1} ID: {2} Email: {3}, duration: {4}", logHeader, customer.FriendlyName, customer.Id, customer.Email, timeEnd);
+                return new GenericResponse<int>(ret, false, -6, "User was not created", "Error when updating user in DB.");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("{0} {1}", logHeader, ex.Message);
+            return new GenericResponse<int>(ret, false, -1, ex.Message);
+        }
+    }
 
     /// <summary>
     /// Uloží Firebase Cloud Messaging token uživatele

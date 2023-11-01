@@ -122,4 +122,41 @@ public partial class EffectiveUser
 
         return data;
     }
+
+    /// <summary>
+    /// Vrátí EffectiveUserContract z EffectiveUser
+    /// </summary>
+    /// <param name="withProvider">Příznak, zda chceme vrátit i data Poskytovatele a to i v Rolích (default TRUE)</param>
+    /// <param name="withRolesAndGroups">Příznak, zda chceme vrátit i Role a Skupiny (default TRUE)</param>
+    /// <param name="withPermissions">Příznak, zda chceme vrátit Role nebo Skupiny i s Permissions (default TRUE)</param>
+    /// <param name="withPermissionSubject">Příznak, zda chceme vrátit v Permissions i data Subjektu (default TRUE)</param>
+    /// <param name="withRolesAndGroupsDetail">Příznak, zda chceme vrátit i podrobnější data jako kategorie nebo typ Role / Skupiny (default FALSE)</param>
+    /// <returns></returns>
+    public EffectiveUserContract ConvertToEffectiveUserContract(bool withProvider = true, bool withRolesAndGroups = true, bool withPermissions = true, bool withPermissionSubject = true, bool withRolesAndGroupsDetail = false)
+    {
+        EffectiveUserContract data = new EffectiveUserContract();
+        data.UserId = this.UserId;
+        data.ProviderId = this.ProviderId;
+
+        if (withProvider && Provider != null)
+            data.Provider = Provider.ConvertToProviderContract(false, false);
+
+        data.Active = this.Active.GetValueOrDefault();
+        data.Id = this.Id;
+        data.CreatedByCustomerId = this.CreatedByCustomerId;
+        data.CreatedDateUtc = this.CreatedDateUtc;
+        data.Deleted = this.Deleted;
+        data.UpdateDateUtc = this.UpdateDateUtc;
+        data.UpdatedByCustomerId = this.UpdatedByCustomerId;
+
+        if (withRolesAndGroups && RoleMembers != null && RoleMembers.Count > 0)
+            foreach (var roleMember in RoleMembers)
+                data.RoleMembers.Add(roleMember.ConvertToRoleMemberContract(withRolesAndGroups, withProvider, withPermissions, withPermissionSubject, withRolesAndGroupsDetail));
+
+        if (withRolesAndGroups && GroupEffectiveMembers != null && GroupEffectiveMembers.Count > 0)
+            foreach (var groupMember in GroupEffectiveMembers)
+                data.GroupEffectiveMembers.Add(groupMember.ConvertToGroupEffectiveMemberContract(withRolesAndGroups, withProvider, withPermissions, withPermissionSubject, withRolesAndGroupsDetail));
+
+        return data;
+    }
 }

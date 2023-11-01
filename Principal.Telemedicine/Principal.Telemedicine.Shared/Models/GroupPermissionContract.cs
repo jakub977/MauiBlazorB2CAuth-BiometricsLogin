@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Principal.Telemedicine.Shared.Models;
 
@@ -66,6 +67,7 @@ public class GroupPermissionContract
     /// <summary>
     /// Link to dbo.Permission as a permission which is assigned to group
     /// </summary>
+    [JsonPropertyName("permissionObject")]
     public virtual PermissionContract Permission { get; set; } = null!;
 
     /// <summary>

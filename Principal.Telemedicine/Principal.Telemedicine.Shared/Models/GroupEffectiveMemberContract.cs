@@ -54,4 +54,7 @@ public class GroupEffectiveMemberContract
     /// Link to dbo.Group as a group of which user is a member
     /// </summary>
     public int GroupId { get; set; }
+
+    [JsonPropertyName("groupObject")]
+    public virtual GroupContract? Group { get; set; }
 }

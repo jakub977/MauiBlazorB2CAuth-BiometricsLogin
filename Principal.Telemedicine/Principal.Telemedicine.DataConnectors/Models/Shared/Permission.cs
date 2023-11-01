@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
+using Principal.Telemedicine.Shared.Models;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
 
@@ -153,4 +154,39 @@ public partial class Permission
     /// </summary>
     [InverseProperty("Permission")]
     public virtual ICollection<UserPermission> UserPermissions { get; set; } = new List<UserPermission>();
+
+    /// <summary>
+    /// Vrátí PermissionContract z Permission
+    /// </summary>
+    /// <param name="withSubject">Příznak, zda chceme vrátit i Subject (default TRUE)</param>
+    /// <returns>PermissionContract</returns>
+    public PermissionContract ConvertToPermissionContract(bool withSubject = true)
+    {
+        PermissionContract data = new PermissionContract();
+
+        data.Active = Active;
+        data.CreatedByCustomerId = CreatedByCustomerId;
+        data.CreatedDateUtc = CreatedDateUtc;
+        data.Deleted = Deleted;
+        data.Description = Description;
+        data.Id = Id;
+        data.Name = Name;
+        data.ParentPermissionId = ParentPermissionId;
+
+        if (ParentPermission != null)
+            data.ParentPermission = ParentPermission.ConvertToPermissionContract(withSubject);
+
+        data.PermissionCategoryId = PermissionCategoryId;
+        data.PermissionTypeId = PermissionTypeId;
+        data.SubjectId = SubjectId;
+
+        if (withSubject && Subject != null)
+            data.Subject = Subject.ConvertToSubjectContract();
+
+        data.SystemName = SystemName;
+        data.UpdateDateUtc = UpdateDateUtc;
+        data.UpdatedByCustomerId = UpdatedByCustomerId;
+
+        return data;
+    }
 }
