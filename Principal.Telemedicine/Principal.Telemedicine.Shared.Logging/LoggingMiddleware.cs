@@ -32,19 +32,48 @@ public class LoggingMiddleware
     public async Task Invoke(HttpContext context)
     {
         await LogRequest(context);
-
+        bool isError = false;
         var originalResponseBody = context.Response.Body;
 
         using (var responseBody = new MemoryStream())
         {
             context.Response.Body = responseBody;
-            await _next.Invoke(context);
-            await context.Response.Body.CopyToAsync(responseBody);
-            await LogResponse(context, responseBody, originalResponseBody);
+            try
+            {
+                await _next.Invoke(context).ConfigureAwait(true);
+              
+                context.Response.Body.Seek(0, SeekOrigin.Begin);
+            }
+            catch(Exception ex) {
+               
+                _logger.LogError(ex.ToString());
+                var bytes = Encoding.UTF8.GetBytes(ex.Message);
+                context.Response.StatusCode = 510;
+                await context.Response.BodyWriter.WriteAsync(bytes);
+                await context.Response.BodyWriter.FlushAsync();
+                await context.Response.BodyWriter.CompleteAsync();
+                isError = true;
+                throw;
+               
+            }
+          finally { 
+                  context.Response.Body.Seek(0, SeekOrigin.Begin);
+                await context.Response.Body.CopyToAsync(responseBody);
+                  await LogResponse(context, responseBody);
+                if (!isError)
+                {   
+                    responseBody.Position = 0;
+                    await responseBody.CopyToAsync(originalResponseBody);
+                }
+                await responseBody.FlushAsync();
+                context.Response.Body = originalResponseBody;
+            }
+          
         }
+        
     }
 
-    private async Task LogResponse(HttpContext context, MemoryStream responseBody, Stream originalResponseBody)
+    private async Task LogResponse(HttpContext context, MemoryStream responseBody)
     {
         var responseContent = new StringBuilder();
         responseContent.AppendLine("=== Response Info ===");
@@ -62,10 +91,10 @@ public class LoggingMiddleware
         var content = await new StreamReader(responseBody).ReadToEndAsync();
         responseContent.AppendLine($"body = {content}");
         responseBody.Position = 0;
-        await responseBody.CopyToAsync(originalResponseBody);
-        context.Response.Body = originalResponseBody;
+
 
         _logger.LogCustom(Enumerators.CustomLogLevel.Audit, "<< INPUT CALL RESPONSE", $"[{_traceMethod}] {_tracePath}", responseContent.ToString(), _sessionTraceCall,  traceResponse,string.Empty, context.Response.HttpContext?.Connection?.RemoteIpAddress?.ToString(), _tracePath);
+
     }
 
     private async Task LogRequest(HttpContext context)

@@ -13,16 +13,34 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.Configuration;
 using Principal.Telemedicine.Shared.Security;
 using Microsoft.OpenApi.Models;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.Graph.Models.ExternalConnectors;
 
 var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").AddJsonFile("appsettings.Development.json").Build();
 var builder = WebApplication.CreateBuilder(args);
+
 builder.Services.AddTmMemoryCache(configuration);
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAdB2C"))
-    .EnableTokenAcquisitionToCallDownstreamApi().AddDownstreamWebApi("VandaTEST", opt => opt.Scopes = "VandaTESTSharedApi")
+builder.Services.AddAuthentication(x=>
+{  
+    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    
+})
+    .AddMicrosoftIdentityWebApi(options =>
+    {
+        configuration.Bind("AzureAdB2C", options);
+
+    },
+    options => { configuration.Bind("AzureAdB2C", options); })
+    .EnableTokenAcquisitionToCallDownstreamApi(options =>
+    {
+        configuration.Bind("AzureAdB2C", options);
+        options.LogLevel = Microsoft.Identity.Client.LogLevel.Warning;
+        
+    })
     .AddInMemoryTokenCaches();
 
-
+JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
 
 builder.Services.AddControllers()
@@ -44,7 +62,7 @@ builder.Services.AddSwaggerGen(config =>
            In = ParameterLocation.Header,
            Description = "Please enter into field the word 'Bearer' following by space and JWT",
            Name = "Authorization",
-           Type= SecuritySchemeType.ApiKey
+           Scheme = "Bearer"
        });
     config.AddSecurityRequirement(new OpenApiSecurityRequirement()
       {

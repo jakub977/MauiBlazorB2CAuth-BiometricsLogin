@@ -28,20 +28,28 @@ public class SecurityMiddleware
     {
 
         if(context != null && context.Request.Headers.ContainsKey(AUTHORIZATION_HEADER)) {
-            var stream = context.Request.Headers[AUTHORIZATION_HEADER];
-        
-            var handler = new  JwtSecurityTokenHandler();
-            var jsonToken = handler.ReadToken(stream.First().Replace("Bearer ", string.Empty, StringComparison.InvariantCultureIgnoreCase));
-            var tokenS = jsonToken as JwtSecurityToken;
-            if( tokenS.Claims.Any(m => m.Type == CLAIM_GLOBALID))
+            try
             {
-                var globalId = tokenS.Claims.FirstOrDefault(m => m.Type == CLAIM_GLOBALID).Value;
-                if (!string.IsNullOrWhiteSpace(globalId ))
+                var stream = context.Request.Headers[AUTHORIZATION_HEADER];
+
+                var handler = new JwtSecurityTokenHandler();
+                var jsonToken = handler.ReadToken(stream.First().Replace("Bearer ", string.Empty, StringComparison.InvariantCultureIgnoreCase));
+                var tokenS = jsonToken as JwtSecurityToken;
+                if (tokenS.Claims.Any(m => m.Type == CLAIM_GLOBALID))
                 {
-                    
-                  
-                    //Volani GetUser
+               
+                    var globalId = tokenS.Claims.FirstOrDefault(m => m.Type == CLAIM_GLOBALID).Value;
+                    if (!string.IsNullOrWhiteSpace(globalId))
+                    {
+
+
+                        //Volani GetUser
+                    }
                 }
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex.Message);
             }
         }
 
