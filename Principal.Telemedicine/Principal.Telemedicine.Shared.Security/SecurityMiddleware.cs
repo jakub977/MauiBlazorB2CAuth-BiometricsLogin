@@ -1,25 +1,33 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System.IdentityModel.Tokens.Jwt;
-using Principal.Telemedicine.Shared.Infrastructure;
 
 
 namespace Principal.Telemedicine.Shared.Security;
+
+/// <summary>
+/// Třída poskytuje Middleware pro vložení custom uživatele do contextu Identity.
+/// </summary>
 public class SecurityMiddleware
 {
     private readonly ILogger _logger;
     private readonly RequestDelegate _next;
+    private readonly HttpClient _client;
     private const string AUTHORIZATION_HEADER = "Authorization";
     private const string CLAIM_GLOBALID = "extension_GlobalID";
+
     private CancellationTokenSource tokenSource = new CancellationTokenSource();
-    public SecurityMiddleware(RequestDelegate next, ILogger<SecurityMiddleware> logger)
+    public SecurityMiddleware(RequestDelegate next, ILogger<SecurityMiddleware> logger, HttpClient client, IOptions<TmSecurityConfiguration>)
     {
+        _client = client;
         _next = next;
         _logger = logger;
     }
     /// <summary>
-    /// Zpracování požadavku a odpovědi - načtení autorizační hlavičky.
+    /// Zpracování požadavku a odpovědi - načtení autorizační hlavičky a vytáhnutí uživatele pro vložení do kontextu.
     /// </summary>
     /// <param name="context"></param>
     /// <returns></returns>
@@ -27,7 +35,8 @@ public class SecurityMiddleware
     public async Task Invoke(HttpContext context)
     {
 
-        if(context != null && context.Request.Headers.ContainsKey(AUTHORIZATION_HEADER)) {
+        if (context != null && context.Request.Headers.ContainsKey(AUTHORIZATION_HEADER))
+        {
             try
             {
                 var stream = context.Request.Headers[AUTHORIZATION_HEADER];
@@ -37,7 +46,7 @@ public class SecurityMiddleware
                 var tokenS = jsonToken as JwtSecurityToken;
                 if (tokenS.Claims.Any(m => m.Type == CLAIM_GLOBALID))
                 {
-               
+
                     var globalId = tokenS.Claims.FirstOrDefault(m => m.Type == CLAIM_GLOBALID).Value;
                     if (!string.IsNullOrWhiteSpace(globalId))
                     {
@@ -47,7 +56,7 @@ public class SecurityMiddleware
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
             }
@@ -57,4 +66,4 @@ public class SecurityMiddleware
     }
 
 
-    }
+}
