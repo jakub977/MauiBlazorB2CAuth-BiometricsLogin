@@ -22,12 +22,12 @@ public class AzureAdB2C
     /// <summary>
     /// Veřejný identifikátor rozšíření klienta. 
     /// </summary>
-    public string? ExtensionClientId { get; set; }
+    public string? B2cExtensionAppClientId { get; set; }
 
     /// <summary>
     /// Veřejná aplikační doména. 
     /// </summary>
-    public string? ApplicationDomain { get; set; }
+    public string? B2CApplicationDomain { get; set; }
 
     /// <summary>
     /// Skrytý identifikátor tenantu. 
@@ -51,11 +51,11 @@ public class AzureAdB2C
     /// Skrytý identifikátor rozšíření klienta  
     /// </summary>
     [SecretValue]
-    public string? SExtensionClientId { get; set; }
+    public string? SB2cExtensionAppClientId { get; set; }
 
     /// <summary>
     /// Skrytá aplikační doména. 
     /// </summary>
     [SecretValue]
-    public string? SApplicationDomain { get; set; }
+    public string? SB2CApplicationDomain { get; set; }
 }

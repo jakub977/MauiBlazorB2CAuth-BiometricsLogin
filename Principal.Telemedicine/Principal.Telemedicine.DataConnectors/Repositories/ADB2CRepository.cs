@@ -210,33 +210,50 @@ public class ADB2CRepository : IADB2CRepository
     {
         string logHeader = _logName + ".GetUserByObjectIdAsyncTask:";
         Customer cus = new Customer();
+
         try
         {
-            // UPN ukládáme jako email převedený na Base64 + aplikační doména
-            // string searchedUPN = CreateUPN(customer.Email);
-
-            // kontrola na existující účet
+            // nalezení uživatele pomocí id
             var result = await GetClient().Users.GetAsync(requestConfiguration =>
             {
-                requestConfiguration.QueryParameters.Select = new string[] { "displayName", "mail" };
+                requestConfiguration.QueryParameters.Select = new string[] { "displayName", "mail", "userPrincipalName", "mobilePhone" };
                 requestConfiguration.QueryParameters.Filter = $"id eq '{objectId}'";
             });
 
-            //userPrincipalName - z toho by to šlo? nebo identity, otherMail
             if (result == null || result.Value == null || result?.Value?.Count != 1)
             {
                 _logger.LogWarning($"{logHeader} ADB2C returned: User with object id '{objectId}' not found");
-                return null;
-            }
-
-            string? userId = result?.Value[0].Id;
-
-            if (userId != null)
-            {
                 return cus;
             }
 
-           // _logger.LogDebug("{0} ADB2C returned: OK, user '{0}', Email: '{1}', Id: {2} deleted succesfully", logHeader, customer.FriendlyName, customer.Email, customer.Id);
+            string? mail = result?.Value[0].Mail;
+            string? upn = result?.Value[0].UserPrincipalName;
+            string? telephoneNumber = result?.Value[0].MobilePhone;
+            string? displayName = result?.Value[0].DisplayName;
+
+            // pokud není vyplněn mail, získáme ho z userPrincipalName
+            if (mail == null)
+            {
+                if (upn != null) 
+                {
+                    mail = GetEmailFromUPN(upn);
+                    if (string.IsNullOrEmpty(mail)) 
+                        _logger.LogWarning($"'{logHeader}' ADB2C returned: User'{cus.FriendlyName}', Email: '{cus.Email}, Object id '{objectId}' not found by mail");
+                        return cus;    
+                }
+
+                else
+                {
+                    _logger.LogWarning($"'{logHeader}' ADB2C returned: User'{cus.FriendlyName}', Email: '{cus.Email}, Object id '{objectId}' not found by mail");
+                    return cus;
+                }
+            }
+
+            cus.Email = mail;
+            cus.FriendlyName = displayName;
+            cus.TelephoneNumber = telephoneNumber;
+
+            _logger.LogDebug($"'{logHeader}' ADB2C returned: User '{cus.FriendlyName}', Email: '{cus.Email}', ObjectId: '{objectId}' succesfully");          
         }
         catch (Exception ex)
         {
@@ -245,7 +262,7 @@ public class ADB2CRepository : IADB2CRepository
             {
                 errMessage += " " + ex.InnerException.Message;
             }
-            _logger.LogError("{0} ADB2C returned: User: '{0}', Error: {1}", logHeader, cus.Email, errMessage);
+            _logger.LogError($"'{logHeader}' ADB2C returned: User ObjectId: '{objectId}', Error: '{errMessage}'" );
         }
 
         return cus;
@@ -304,8 +321,27 @@ public class ADB2CRepository : IADB2CRepository
     /// <returns>email</returns>
     private string GetEmailFromUPN(string upn)
     {
-        string temp = upn.Replace("\"@\" + _applicationDomain", "").Replace("_","=");
-        return Base64Decode(temp);
+        string temp = string.Empty;
+        
+        try
+        {
+            string? applicationDomain = _applicationDomain;
+            temp = upn.Replace($"@{applicationDomain}", "").Replace("__", "==");
+            return Base64Decode(temp);
+        }
+
+        catch (Exception ex)
+        {
+                string errMessage = ex.Message;
+                if (ex.InnerException != null)
+                {
+                    errMessage += " " + ex.InnerException.Message;
+                }
+                _logger.LogError($"GetEmailFromUPN returned: User with upn: '{upn}', Error: {errMessage}");
+        }
+
+        return temp;
+
     }
 
     #endregion

@@ -6,7 +6,7 @@ using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.DataConnectors.Repositories;
 using Principal.Telemedicine.Shared.Configuration;
 using System.Text;
-using Microsoft.Graph.Models;
+using Principal.Telemedicine.DataConnectors.Models.Shared;
 
 namespace Principal.Telemedicine.B2CApi.Controllers;
 
@@ -76,15 +76,16 @@ public class ExtendedPropertiesController : ControllerBase
             if (data.email == null)
             {
                 string objectId = Convert.ToString(data.objectId);
-                var user = _adb2cRepository.GetUserByObjectIdAsyncTask(objectId);
-                if (user == null)
+
+                Customer? customer = new Customer();
+                customer = await _adb2cRepository.GetUserByObjectIdAsyncTask(objectId);
+                if (customer == null)
                 {
-                    //_logger.Log(LogLevel.Error, "Email is mandatory and is empty.");
                     _logger.Log(LogLevel.Error, "Email was not found by objectId.");
                     return new BadRequestObjectResult(new ResponseContent("|API_ERROR_3|Email is empty|"));
                 }
 
-              //  email = user.Mail;
+                email = customer.Email;
             }
             else email = Convert.ToString(data.email);
 
