@@ -15,13 +15,15 @@ public class SecurityMiddleware
 {
     private readonly ILogger _logger;
     private readonly RequestDelegate _next;
+    private readonly TmSecurityConfiguration _configuration;
     private readonly HttpClient _client;
     private const string AUTHORIZATION_HEADER = "Authorization";
     private const string CLAIM_GLOBALID = "extension_GlobalID";
 
     private CancellationTokenSource tokenSource = new CancellationTokenSource();
-    public SecurityMiddleware(RequestDelegate next, ILogger<SecurityMiddleware> logger, HttpClient client, IOptions<TmSecurityConfiguration>)
+    public SecurityMiddleware(RequestDelegate next, ILogger<SecurityMiddleware> logger, HttpClient client, IOptions<TmSecurityConfiguration> configuration )
     {
+        _configuration = configuration.Value;
         _client = client;
         _next = next;
         _logger = logger;
