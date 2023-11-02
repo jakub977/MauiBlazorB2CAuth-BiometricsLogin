@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.DataConnectors.Models;
+using Principal.Telemedicine.Shared.Cache;
 using Principal.Telemedicine.Shared.Configuration;
 using Principal.Telemedicine.Shared.Constants;
 using Principal.Telemedicine.Shared.Infrastructure;
@@ -34,7 +35,7 @@ public class TmInfrastructureTest
                    .UseTestServer().UseEnvironment("local")
                     .ConfigureServices(services =>
                     {
-                        services.AddMemoryCache();
+                        services.AddTmMemoryCache(configuration);
                        
                         services.AddLogging();
                         services.AddSecretConfiguration<TmAppConfiguration>(configuration,"/secrets.json");
@@ -49,7 +50,7 @@ public class TmInfrastructureTest
                     });
 
             });
-        host = hostBuilder.StartAsync().Result;
+        host = hostBuilder.UseEnvironment("local").StartAsync().Result;
         serviceProvider = new DependencyResolverHelper(host);
     }
 

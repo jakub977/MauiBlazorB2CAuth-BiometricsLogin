@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Caching.Memory;
+
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Principal.Telemedicine.Shared.Constants;
+using Principal.Telemedicine.Shared.Cache;
+using Principal.Telemedicine.Shared.Interfaces;
 
 namespace Principal.Telemedicine.Shared.Infrastructure;
 
@@ -16,6 +18,7 @@ public class TracingMiddleware
     private readonly IMemoryCache _cache;
     private readonly ILogger<TracingMiddleware> _logger;
     private readonly TmAppConfiguration _appConfig;
+    private CancellationTokenSource _tokenSource=new CancellationTokenSource();
 
     public TracingMiddleware(RequestDelegate next, ILogger<TracingMiddleware> logger, IMemoryCache cache, IOptions<TmAppConfiguration> appConfig)
     {
@@ -40,10 +43,8 @@ public class TracingMiddleware
         {
             if (context.Request.Headers.ContainsKey(HeaderKeysConst.TRACE_KEY))
             {
-
                 actualValue = Utils.StringUtils.JoinPath(context.Request.Headers[HeaderKeysConst.TRACE_KEY].First(), _appConfig.IdentificationId, _appConfig.IdentificationDelimeter);
-                _cache.Set<string?>(key, actualValue, new TimeSpan(0, 20, 0));
-
+                await _cache.AddAsync<string?>(key, actualValue, _tokenSource.Token, new CacheEntryOptions() { SlidingExpiration=new TimeSpan(0,20,0)}) ;
             }
             else
             {
@@ -55,7 +56,6 @@ public class TracingMiddleware
             {
                 context.Response.Headers.Remove(HeaderKeysConst.TRACE_KEY);
             }
-
         }
         catch (Exception ex) { _logger.LogError(ex.ToString()); }
         finally

@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Principal.Telemedicine.Shared.Cache\Principal.Telemedicine.Shared.Cache.csproj" />
     <ProjectReference Include="..\Principal.Telemedicine.Shared\Principal.Telemedicine.Shared.csproj" />
   </ItemGroup>
 

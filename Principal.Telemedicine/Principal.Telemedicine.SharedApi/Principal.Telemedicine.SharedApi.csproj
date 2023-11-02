@@ -22,13 +22,13 @@
     <PackageReference Include="Microsoft.Identity.Web" Version="1.16.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Principal.Telemedicine.Shared.Configuration" Version="1.2.0-CI-20231027-141458" />
-    <PackageReference Include="Principal.Telemedicine.Shared.Infrastructure" Version="1.2.0-CI-20231027-142004" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Principal.Telemedicine.DataConnectors\Principal.Telemedicine.DataConnectors.csproj" />
     <ProjectReference Include="..\Principal.Telemedicine.Shared.Cache\Principal.Telemedicine.Shared.Cache.csproj" />
+    <ProjectReference Include="..\Principal.Telemedicine.Shared.Infrastructure\Principal.Telemedicine.Shared.Infrastructure.csproj" />
     <ProjectReference Include="..\Principal.Telemedicine.Shared.Logging\Principal.Telemedicine.Shared.Logging.csproj" />
     <ProjectReference Include="..\Principal.Telemedicine.Shared.Security\Principal.Telemedicine.Shared.Security.csproj" />
     <ProjectReference Include="..\Principal.Telemedicine.Shared\Principal.Telemedicine.Shared.csproj" />

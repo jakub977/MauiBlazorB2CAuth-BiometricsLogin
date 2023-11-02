@@ -39,4 +39,10 @@
     <ProjectReference Include="..\Principal.Telemedicine.Shared.Configuration\Principal.Telemedicine.Shared.Configuration.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="secrets\secrets.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

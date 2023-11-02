@@ -16,6 +16,7 @@ using System.Text.Json.Serialization;
 using Principal.Telemedicine.Shared.Api;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Identity.Web.Resource;
+using Principal.Telemedicine.Shared.Security;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
 
@@ -88,17 +89,23 @@ public class UserApiController : ControllerBase
     /// <returns>GenericResponse s parametrem "success" TRUE a objektem "CompleteUserContract" nebo FALSE a případně chybu</returns>
     [Authorize]
     [HttpGet(Name = "GetUser")]
-    public async Task<IGenericResponse<CompleteUserContract>> GetUser([FromHeader(Name = "x-api-g")] string globalId, int? userId)
+    public async Task<IGenericResponse<CompleteUserContract>> GetUser( string? globalId=null, int? userId=null)
     {
         string logHeader = _logName + ".GetUser:";
+
+        //Aktualni uživatel
+        var actualUser = HttpContext.GetTmUser();
+        //Pokud nejsou vstupní parametry, nahrazuji globalId uživatelem volání
+        if ((!userId.HasValue || userId.Value <= 0) && string.IsNullOrEmpty(globalId)) globalId = actualUser?.GlobalId;
+
         // kontrola na vstupní data
-        if (userId <= 0 || string.IsNullOrEmpty(globalId))
+        if ((!userId.HasValue || userId.Value<=0)  && string.IsNullOrEmpty(globalId))
         {
             _logger.LogWarning("{0} Invalid UserId: {1} or GlobalId: {2}", logHeader, userId, globalId);
             if (userId > 0)
-                return new GenericResponse<CompleteUserContract>(null, false, -2, "Invalid UserId", "UserId vali is not '0'.");
+                return new GenericResponse<CompleteUserContract>(new CompleteUserContract(), false, -2, "Invalid UserId", "UserId vali is not '0'.");
             else
-                return new GenericResponse<CompleteUserContract>(null, false, -3, "GlobalId is empty", "GlobalId must be set.");
+                return new GenericResponse<CompleteUserContract>(new CompleteUserContract(), false, -3, "GlobalId is empty", "GlobalId must be set.");
         }
 
         try
