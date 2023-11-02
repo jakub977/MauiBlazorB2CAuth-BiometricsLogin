@@ -8,11 +8,8 @@ using Principal.Telemedicine.Shared.Models;
 using Principal.Telemedicine.Shared.Utils;
 using Microsoft.Data.SqlClient;
 using System.Data;
-using Castle.Core.Resource;
-using Microsoft.Graph.Models;
 using Principal.Telemedicine.DataConnectors.Extensions;
 using Principal.Telemedicine.Shared.Enums;
-using System.Text.Json.Serialization;
 using Principal.Telemedicine.Shared.Api;
 using Principal.Telemedicine.DataConnectors.Utils;
 
@@ -80,7 +77,6 @@ public class UserApiController : ControllerBase
             return new GenericResponse<UserContract>(null, false, -1, ex.Message);
         }
     }
-
 
     /// <summary>
     /// Vrátí údaje uživatele včetně rolí, efektivních uživatelů a oprávnění.
@@ -1128,16 +1124,17 @@ public class UserApiController : ControllerBase
     /// </summary>
     /// <param name="globalId"></param>
     /// <param name="appInstanceToken"></param>
-    /// <returns></returns>
+    /// <returns>true / false</returns>
     [HttpGet(Name = "CreateOrUpdateAppInstanceToken")]
-    public async Task<IActionResult> CreateOrUpdateAppInstanceToken(string globalId, string appInstanceToken)
+    public async Task<IGenericResponse<bool>> CreateOrUpdateAppInstanceToken(string globalId, string appInstanceToken)
     {
 
         string logHeader = _logName + ".CreateOrUpdateAppInstanceToken:";
 
         if (string.IsNullOrEmpty(globalId) || string.IsNullOrEmpty(appInstanceToken))
         {
-            return BadRequest();
+            _logger.LogWarning($"{logHeader} Invalid globalId or appInstanceToken, globalID: {globalId}, appInstanceToken: {appInstanceToken}");
+            return new GenericResponse<bool>(false, false, -2, "Invalid globalId or appInstanceToken", "");
         }
 
         try
@@ -1146,7 +1143,7 @@ public class UserApiController : ControllerBase
             if (user == null)
             {
                 _logger.LogWarning($"{logHeader} Current User not found, globalID: {globalId}");
-                return BadRequest();
+                return new GenericResponse<bool>(false, false, -3, "Current User not found", "");
             }
 
             user.AppInstanceToken = appInstanceToken;
@@ -1156,33 +1153,35 @@ public class UserApiController : ControllerBase
             if (updated)
             {
                 _logger.LogInformation($"{logHeader} AppInstanceToken has been updated successfully for UserId: {user.Id}");
-                return Ok();
+                return new GenericResponse<bool>(updated, true, 0);
             }
             else
             {
                 _logger.LogWarning($"{logHeader} AppInstanceToken update has failed for UserId: {user.Id}");
-                return BadRequest();
+                return new GenericResponse<bool>(updated, true, -4, "AppInstanceToken update has failed", "");
             }
 
         }
         catch (Exception ex)
         {
             _logger.LogError($"{logHeader} {ex.Message}");
-            return StatusCode(StatusCodes.Status500InternalServerError);
+            return new GenericResponse<bool>(false, false, -1, ex.Message);
         }
     }
 
     /// <summary>
     /// Uloží žádost o smazání dat uživatele do dedikované databáze.
     /// <param name="globalId">globalID uživatele co metodu volá</param>
-    /// <returns></returns>
+    /// <returns>true / false</returns>
     [HttpPost(Name = "SaveUserAccountDeletionDemand")]
-    public async Task<IActionResult> SaveUserAccountDeletionDemand(string globalId)
+    public async Task<IGenericResponse<bool>> SaveUserAccountDeletionDemand(string globalId)
     {
+        string logHeader = _logName + ".SaveUserAccountDeletionDemand:";
 
         if (string.IsNullOrEmpty(globalId))
         {
-            return BadRequest();
+            _logger.LogWarning($"{logHeader} Invalid globalId, globalID: {globalId}");
+            return new GenericResponse<bool>(false, false, -2, "Invalid globalId", "");
         }
 
         try
@@ -1217,17 +1216,16 @@ public class UserApiController : ControllerBase
 
             if (returnValue.Value == null || returnValue.Value.ToString() != "1")
             {
-                _logger.Log(LogLevel.Error, "Stored procedure dbo.sp_SaveUserDataDeletionDemand has failed.");
-                return NotFound();
+                _logger.LogWarning($"{logHeader} Stored procedure dbo.sp_SaveUserDataDeletionDemand has failed., globalID: {globalId}");
+                return new GenericResponse<bool>(false, false, -3, "Stored procedure dbo.sp_SaveUserDataDeletionDemand has failed.", "");
             }
 
-            return Ok();
+            return new GenericResponse<bool>(true, true, 0);
         }
-
         catch (Exception ex)
         {
-            _logger.LogError(ex.Message);
-            return StatusCode(StatusCodes.Status500InternalServerError);
+            _logger.LogError($"{logHeader} {ex.Message}");
+            return new GenericResponse<bool>(false, false, -1, ex.Message);
         }
     }
 
