@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
+using Principal.Telemedicine.DataConnectors.Models;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
 using Principal.Telemedicine.DataConnectors.Utils;
 
@@ -17,6 +18,13 @@ public interface ICustomerRepository
 
     /// <summary>
     /// Metoda vrací jen základní informace o uživateli
+    /// Metoda vrací všechny uživatele.
+    /// </summary>
+    /// <returns> Seznam uživatelů </returns>
+    public IQueryable<Customer> ListOfAllCustomers();
+
+    /// <summary>
+    /// Metoda vrací konkrétního uživatele na základě id.
     /// </summary>
     /// <param name="id">Id uživatele</param>
     /// <returns>Konkrétní uživatel</returns>

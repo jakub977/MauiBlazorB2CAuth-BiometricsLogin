@@ -53,6 +53,12 @@ public class CustomerRepository : ICustomerRepository
     }
 
     /// <inheritdoc/>
+    public IQueryable<Customer> ListOfAllCustomers()
+    {
+      return _dbContext.Customers.OrderBy(c => c.Id);
+    }
+
+    /// <inheritdoc/>
     public async Task<Customer?> GetCustomerByIdTaskAsync(int id)
     {
         var customer = await _dbContext.Customers

@@ -38,13 +38,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastru
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Principal.Telemedicine.Shared.Infrastructure", "Principal.Telemedicine.Shared.Infrastructure\Principal.Telemedicine.Shared.Infrastructure.csproj", "{9C97FC9D-B512-4FFC-9232-336899BF5901}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Security", "Security", "{29E7E94F-FCBF-4E6F-8233-BF3223A2BF1F}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Principal.Telemedicine.Shared.Infrastructure.Test", "Principal.Telemedicine.Shared.Infrastructure.Test\Principal.Telemedicine.Shared.Infrastructure.Test.csproj", "{61D9957C-C3CD-4A4D-B230-EA29DD427228}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Principal.Telemedicine.PenelopeApi", "Principal.Telemedicine.PenelopeApi\Principal.Telemedicine.PenelopeApi.csproj", "{C2EC0945-D503-43E3-8CFD-1493FF460592}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Principal.Telemedicine.PenelopeData", "Principal.Telemedicine.PenelopeData\Principal.Telemedicine.PenelopeData.csproj", "{6C754BD6-4D9A-4402-8495-143EF632AA66}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Cache", "Cache", "{87724454-AFE0-47B5-BC92-1878D64B2758}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Security", "Security", "{D3528310-B29D-4745-B046-CE22DAFC1C0C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Principal.Telemedicine.Shared.Cache", "Principal.Telemedicine.Shared.Cache\Principal.Telemedicine.Shared.Cache.csproj", "{869CBDF1-84DF-4580-A176-CC513BFAAA5D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Principal.Telemedicine.Shared.Security", "Principal.Telemedicine.Shared.Security\Principal.Telemedicine.Shared.Security.csproj", "{43C8C338-C409-49A9-A788-A45D12FD1124}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Principal.Telemedicine.Shared.Cache.Test", "Principal.Telemedicine.Shared.Cache.Test\Principal.Telemedicine.Shared.Cache.Test.csproj", "{DEDAF452-5C79-42D5-9594-28FF00001F27}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -108,6 +116,18 @@ Global
 		{6C754BD6-4D9A-4402-8495-143EF632AA66}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C754BD6-4D9A-4402-8495-143EF632AA66}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C754BD6-4D9A-4402-8495-143EF632AA66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{869CBDF1-84DF-4580-A176-CC513BFAAA5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{869CBDF1-84DF-4580-A176-CC513BFAAA5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{869CBDF1-84DF-4580-A176-CC513BFAAA5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{869CBDF1-84DF-4580-A176-CC513BFAAA5D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43C8C338-C409-49A9-A788-A45D12FD1124}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43C8C338-C409-49A9-A788-A45D12FD1124}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43C8C338-C409-49A9-A788-A45D12FD1124}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43C8C338-C409-49A9-A788-A45D12FD1124}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEDAF452-5C79-42D5-9594-28FF00001F27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEDAF452-5C79-42D5-9594-28FF00001F27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEDAF452-5C79-42D5-9594-28FF00001F27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEDAF452-5C79-42D5-9594-28FF00001F27}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -119,6 +139,9 @@ Global
 		{8E32C05E-F9A2-42AF-BCCF-622522619234} = {AF4A9949-6A78-4412-BDB8-3478F6C5F132}
 		{9C97FC9D-B512-4FFC-9232-336899BF5901} = {FAC8AF6F-4AD3-44E5-B0B3-F6FA11588388}
 		{61D9957C-C3CD-4A4D-B230-EA29DD427228} = {FAC8AF6F-4AD3-44E5-B0B3-F6FA11588388}
+		{869CBDF1-84DF-4580-A176-CC513BFAAA5D} = {87724454-AFE0-47B5-BC92-1878D64B2758}
+		{43C8C338-C409-49A9-A788-A45D12FD1124} = {D3528310-B29D-4745-B046-CE22DAFC1C0C}
+		{DEDAF452-5C79-42D5-9594-28FF00001F27} = {87724454-AFE0-47B5-BC92-1878D64B2758}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F5F516D6-896C-44FA-A02E-D96212B32E65}

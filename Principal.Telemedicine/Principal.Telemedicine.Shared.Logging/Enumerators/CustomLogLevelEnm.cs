@@ -13,5 +13,6 @@ public enum CustomLogLevel
     Information,
     Warning,
     Error,
+    Debug,
     Audit
 }

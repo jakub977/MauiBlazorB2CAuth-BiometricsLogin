@@ -490,7 +490,7 @@ public class UserApiController : ControllerBase
                             provider.UpdateDateUtc = DateTime.UtcNow;
                             provider.UpdatedByCustomerId = currentUser.Id;
 
-                            await _providerRepository.UpdateProviderTaskAsync(provider);
+                            await _providerRepository.UpdateProviderTaskAsync(provider, null);
                         }
                     }
             }
@@ -761,7 +761,7 @@ public class UserApiController : ControllerBase
                             provider.Active = true;
                             provider.UpdateDateUtc = DateTime.UtcNow;
                             provider.UpdatedByCustomerId = currentUser.Id;
-                            await _providerRepository.UpdateProviderTaskAsync(provider);
+                            await _providerRepository.UpdateProviderTaskAsync(provider, null);
                         }
                     }
             }

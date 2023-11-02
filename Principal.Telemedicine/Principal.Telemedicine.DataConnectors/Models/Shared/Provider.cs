@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Principal.Telemedicine.Shared.Models;
 
@@ -21,6 +22,7 @@ public partial class Provider
     /// Bit identifier if a provider is active
     /// </summary>
     [Required]
+    [DataMember]
     public bool? Active { get; set; }
 
     /// <summary>
