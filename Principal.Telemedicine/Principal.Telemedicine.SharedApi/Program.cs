@@ -11,6 +11,7 @@ using Principal.Telemedicine.Shared.Infrastructure;
 using Principal.Telemedicine.Shared.Logging;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Configuration;
+using Principal.Telemedicine.Shared.Firebase;
 
 var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 var builder = WebApplication.CreateBuilder(args);
@@ -29,6 +30,7 @@ builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IProviderRepository, ProviderRepository>();
 builder.Services.AddScoped<IEffectiveUserRepository, EffectiveUserRepository>();
 builder.Services.AddScoped<IADB2CRepository, ADB2CRepository>();
+builder.Services.AddScoped<IFcmNotificationService, FcmNotificationService>();
 builder.Services.AddAutoMapper(typeof(Mapping).Assembly);
 
 builder.Services.AddEndpointsApiExplorer();
