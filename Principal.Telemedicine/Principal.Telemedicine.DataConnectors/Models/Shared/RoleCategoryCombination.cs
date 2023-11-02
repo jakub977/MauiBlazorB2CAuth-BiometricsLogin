@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Principal.Telemedicine.Shared.Models;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
@@ -97,4 +98,30 @@ public partial class RoleCategoryCombination
     [ForeignKey("UpdatedByCustomerId")]
     [InverseProperty("RoleCategoryCombinationUpdatedByCustomers")]
     public virtual Customer? UpdatedByCustomer { get; set; }
+
+    /// <summary>
+    /// Vrátí RoleCategoryCombinationContract z RoleCategoryCombination
+    /// </summary>
+    /// <returns>RoleCategoryCombinationContract</returns>
+    public RoleCategoryCombinationContract ConvertToRoleCategoryCombinationContract()
+    {
+        RoleCategoryCombinationContract data = new RoleCategoryCombinationContract();
+
+        data.Active = Active;
+        data.CreatedByCustomerId = CreatedByCustomerId;
+        data.CreatedDateUtc = CreatedDateUtc;
+        data.Deleted = Deleted;
+        data.Id = Id;
+        data.Name = Name;
+        data.RoleCategoryId = RoleCategoryId;
+
+        if (RoleCategory != null)
+            data.RoleCategory = RoleCategory.ConvertToRoleCategoryContract();
+
+        data.RoleSubCategoryId = RoleSubCategoryId;
+        data.UpdateDateUtc = UpdateDateUtc;
+        data.UpdatedByCustomerId = UpdatedByCustomerId;
+
+        return data;
+    }
 }

@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
+using Principal.Telemedicine.Shared.Models;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
 
@@ -95,4 +96,26 @@ public partial class Organization
     /// </summary>
     [InverseProperty("Organization")]
     public virtual ICollection<SubjectAllowedToOrganization> SubjectAllowedToOrganizations { get; set; } = new List<SubjectAllowedToOrganization>();
+
+    /// <summary>
+    /// Vrátí OrganizationContract z Organization
+    /// </summary>
+    /// <returns>OrganizationContract</returns>
+    public OrganizationContract ConvertToOrganizationContract()
+    {
+        OrganizationContract data = new OrganizationContract();
+
+        data.Active = Active.GetValueOrDefault();
+        data.AddressLine = AddressLine;
+        data.CreatedDateUtc = CreatedDateUtc;
+        data.Deleted = Deleted;
+        data.Id = Id;
+        data.IdentificationNumber = IdentificationNumber;
+        data.Name = Name;
+        data.PostalCode = PostalCode;
+        data.TaxIdentificationNumber = TaxIdentificationNumber;
+        data.UpdateDateUtc = UpdateDateUtc;
+
+        return data;
+    }
 }

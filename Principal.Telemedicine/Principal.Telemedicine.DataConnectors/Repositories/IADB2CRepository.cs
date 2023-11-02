@@ -27,5 +27,12 @@ public interface IADB2CRepository
     /// <param name="customer">Customer</param>
     /// <returns>Výsledek smazání true / false</returns>
     Task<bool> DeleteUserAsyncTask(Customer customer);
+
+    /// <summary>
+    /// Metoda kontroluje, zda je uživatel založen v ADB2C
+    /// </summary>
+    /// <param name="customer">Customer</param>
+    /// <returns>1 - existuje, 0 - neexistuje, -1 - chyba</returns>
+    Task<int> CheckUserAsyncTask(Customer customer);
 }
 

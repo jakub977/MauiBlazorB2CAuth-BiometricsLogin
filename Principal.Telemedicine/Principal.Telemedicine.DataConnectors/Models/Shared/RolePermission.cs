@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Principal.Telemedicine.Shared.Models;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
@@ -85,4 +86,30 @@ public partial class RolePermission
     [ForeignKey("UpdatedByCustomerId")]
     [InverseProperty("RolePermissionUpdatedByCustomers")]
     public virtual Customer? UpdatedByCustomer { get; set; }
+
+    /// <summary>
+    /// Vrátí RolePermissionContract z RolePermission
+    /// </summary>
+    /// <param name="withSubject">Příznak, zda chceme vrátit i Subjekt v objektu Permission (default TRUE)</param>
+    /// <returns>RolePermissionContract</returns>
+    public RolePermissionContract ConvertToRolePermissionContract(bool withSubject = true)
+    {
+        RolePermissionContract data = new RolePermissionContract();
+
+        data.Active = Active;
+        data.CreatedByCustomerId = CreatedByCustomer.Id;
+        data.CreatedDateUtc = CreatedDateUtc;
+        data.Deleted = Deleted;
+        data.Id = Id;
+        data.PermissionId = PermissionId;
+
+        if (Permission != null)
+            data.Permission = Permission.ConvertToPermissionContract(withSubject);
+
+        data.RoleId = RoleId;
+        data.UpdateDateUtc = UpdateDateUtc;
+        data.UpdatedByCustomerId = UpdatedByCustomerId;
+
+        return data;
+    }
 }
