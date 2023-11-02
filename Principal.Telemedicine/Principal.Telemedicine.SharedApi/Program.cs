@@ -20,6 +20,8 @@ var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").A
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddTmMemoryCache(configuration);
+
+
 builder.Services.AddAuthentication(x=>
 {  
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -46,6 +48,7 @@ JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 builder.Services.AddControllers()
     .AddJsonOptions(options => options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull )
     .AddXmlDataContractSerializerFormatters();
+
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IProviderRepository, ProviderRepository>();
 builder.Services.AddScoped<IEffectiveUserRepository, EffectiveUserRepository>();
@@ -92,7 +95,8 @@ UseSqlServer(builder.Configuration.GetConnectionString("MAIN_DB")));
 
 builder.Services.AddLogging(configuration);
 builder.Services.AddTmInfrastructure(configuration);
-builder.Services.AddSecretConfiguration<DistributedRedisCacheOptions>(configuration, "secrets.json");
+builder.Services.AddSecretConfiguration<DistributedRedisCacheOptions>(configuration, "secrets/secrets.json");
+builder.Services.AddSecretConfiguration<TmSecurityConfiguration>(configuration, "secrets/secrets.json");
 builder.Services.AddTmDistributedCache(configuration, builder.Environment.IsLocalHosted());
 var app = builder.Build();
 
