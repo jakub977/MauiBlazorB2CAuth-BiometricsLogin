@@ -70,5 +70,11 @@ public class ResponseContent
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public string extension_OrganizationIDs { get; set; }
 
+    /// <summary>
+    /// Vlastní přidaný atribut odpovídající příznaku zda jde o uživatele mobilní aplikace
+    /// </summary>
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public bool extension_MAUser { get; set; }
+
 }
 

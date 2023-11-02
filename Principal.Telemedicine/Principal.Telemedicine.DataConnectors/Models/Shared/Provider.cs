@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.Serialization;
 using Microsoft.EntityFrameworkCore;
+using Principal.Telemedicine.Shared.Models;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
 
@@ -20,7 +22,8 @@ public partial class Provider
     /// Bit identifier if a provider is active
     /// </summary>
     [Required]
-    public bool Active { get; set; }
+    [DataMember]
+    public bool? Active { get; set; }
 
     /// <summary>
     /// Bit identifier if a provider is deleted
@@ -174,4 +177,49 @@ public partial class Provider
     /// </summary>
     [InverseProperty("Provider")]
     public virtual ICollection<UserPermission> UserPermissions { get; set; } = new List<UserPermission>();
+
+    /// <summary>
+    /// Vrátí ProviderContract z Provider
+    /// </summary>
+    /// <param name="withProviderPicture">Příznak, zda chceme vrátit i obrázek (default TRUE)</param>
+    /// <param name="withEffectiveUsers">Příznak, zda chceme vrátit i efektivní uživatele, ale bez rolí (default TRUE)</param>
+    /// <returns>ProviderContract</returns>
+    public ProviderContract ConvertToProviderContract(bool withProviderPicture = true, bool withEffectiveUsers = true)
+    {
+        ProviderContract data = new ProviderContract();
+
+        data.Active = Active;
+        data.AddressLine = AddressLine;
+        data.CityId = CityId;
+
+        if (CityId != null && City != null)
+            data.City = City.ConvertToAddressCityContract();
+
+        data.CreatedByCustomerId = CreatedByCustomerId;
+        data.CreatedDateUtc = CreatedDateUtc;
+        data.Deleted = Deleted;
+
+        if (withEffectiveUsers && EffectiveUsers != null && EffectiveUsers.Count > 0)
+        {
+            foreach (var item in EffectiveUsers)
+                data.EffectiveUserProviderUsers.Add(item.ConvertToEffectiveUserProviderContract());
+        }
+
+        data.Id = Id;
+        data.IdentificationNumber = IdentificationNumber;
+        data.Name = Name;
+        data.OrganizationId = OrganizationId;
+        data.PictureId = PictureId;
+
+        if (PictureId != null && Picture != null)
+            data.Picture = Picture.ConvertToPictureContract(withProviderPicture);
+
+        data.PostalCode = PostalCode;
+        data.Street = Street;
+        data.TaxIdentificationNumber = TaxIdentificationNumber;
+        data.UpdateDateUtc = UpdateDateUtc;
+        data.UpdatedByCustomerId = UpdatedByCustomerId;
+
+        return data;
+    }
 }

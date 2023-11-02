@@ -248,4 +248,8 @@ paket-files/
 *.sln.iml
 /Principal.Telemedicine/Principal.Telemedicine.Shared/obj/Debug/net6.0/Principal.Telemedicine.Shared.assets.cache
 /Principal.Telemedicine/Principal.Telemedicine.PenelopeApi/appsettings.Development.json
+
+/Principal.Telemedicine/Principal.Telemedicine.B2CApi/Properties/PublishProfiles/WetNOW-B2CApi - Web Deploy.pubxml
+
 /Principal.Telemedicine/Principal.Telemedicine.SharedApi/appsettings.Development.json
+

@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.Graph.Models;
+using Principal.Telemedicine.Shared.Models;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
@@ -131,4 +133,48 @@ public partial class Group
     [ForeignKey("UpdatedByCustomerId")]
     [InverseProperty("GroupUpdatedByCustomers")]
     public virtual Customer? UpdatedByCustomer { get; set; }
+
+    /// <summary>
+    /// Vrátí GroupContract z Group
+    /// </summary>
+    /// <param name="withProvider">Příznak, zda chceme vrátit i data Poskytovatele (default TRUE)</param>
+    /// <param name="withPermissions">Příznak, zda chceme vrátit i data Permissions (default TRUE)</param>
+    /// <param name="withSubject">Příznak, zda chceme vrátit i data Subjektu (default TRUE)</param>
+    /// <param name="withRolesAndGroupsDetail">Příznak, zda chceme vrátit i podrobnější data jako kategorie nebo typ Role / Skupiny (default FALSE)</param>
+    /// <returns>GroupContract</returns>
+    public GroupContract ConvertToGroupContract(bool withProvider = true, bool withPermissions = true, bool withSubject = true, bool withRolesAndGroupsDetail = false)
+    {
+        GroupContract data = new GroupContract();
+
+        data.Active = Active.GetValueOrDefault();
+        data.CreatedByCustomerId = CreatedByCustomerId;
+        data.CreatedDateUtc = CreatedDateUtc;
+        data.Deleted = Deleted;
+        data.Id = Id;
+        data.IsRiskGroup = IsRiskGroup;
+        data.Name = Name;
+
+        data.ParentGroupId = ParentGroupId;
+        data.ProviderId = ProviderId;
+
+        if (withRolesAndGroupsDetail && withProvider && Provider != null)
+            data.Provider = Provider.ConvertToProviderContract(false, false);
+
+        data.GroupTagTypeId = GroupTagTypeId;
+
+        if (ParentGroup != null)
+            data.ParentGroup = ParentGroup.ConvertToGroupContract(withProvider, withPermissions, withSubject, withRolesAndGroupsDetail);
+        // TODO až budou skupiny
+        //if (withRolesAndGroupsDetail && GroupTagType != null)
+        //    data.GroupTagType = GroupTagType.ConvertToGroupTagTypeCombinationContract();
+
+        if (withPermissions && GroupPermissions != null && GroupPermissions.Count > 0)
+            foreach (GroupPermission permission in GroupPermissions)
+                data.GroupPermissions.Add(permission.ConvertToGroupPermissionContract(withSubject));
+
+        data.UpdateDateUtc = UpdateDateUtc;
+        data.UpdatedByCustomerId = UpdatedByCustomerId;
+
+        return data;
+    }
 }

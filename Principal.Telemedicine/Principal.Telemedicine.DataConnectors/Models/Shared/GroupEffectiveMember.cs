@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.Graph.Drives.Item.Items.Item.Workbook.Functions.Delta;
+using Principal.Telemedicine.Shared.Models;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
@@ -19,7 +21,7 @@ public partial class GroupEffectiveMember
     /// Bit identifier if a group member is active
     /// </summary>
     [Required]
-    public bool Active { get; set; }
+    public bool? Active { get; set; }
 
     /// <summary>
     /// Bit identifier if a group member is deleted
@@ -85,4 +87,33 @@ public partial class GroupEffectiveMember
     [ForeignKey("UpdatedByCustomerId")]
     [InverseProperty("GroupEffectiveMemberUpdatedByCustomers")]
     public virtual Customer? UpdatedByCustomer { get; set; }
+
+    /// <summary>
+    /// Vrátí GroupEffectiveMemberContract z GroupEffectiveMember
+    /// </summary>
+    /// <param name="withGroup">Příznak, zda chceme vrátit i data Skupiny (default TRUE)</param>
+    /// <param name="withProviderInGroup">Příznak, zda chceme vrátit se Skupinou i data Poskytovatele (default TRUE)</param>
+    /// <param name="withGroupPermissions">Příznak, zda chceme vrátit se Skupinou i data Permissions (default TRUE)</param>
+    /// <param name="withPermissionSubject">Příznak, zda chceme vrátit se Skupinou i data Subjektu v Permissions (default TRUE)</param>
+    /// <param name="withRolesAndGroupsDetail">Příznak, zda chceme vrátit i podrobnější data jako kategorie nebo typ Role / Skupiny (default FALSE)</param>
+    /// <returns>GroupEffectiveMemberContract</returns>
+    public GroupEffectiveMemberContract ConvertToGroupEffectiveMemberContract(bool withGroup = true, bool withProviderInGroup = true, bool withGroupPermissions = true, bool withPermissionSubject = true, bool withRolesAndGroupsDetail = false)
+    {
+        GroupEffectiveMemberContract data = new GroupEffectiveMemberContract();
+
+        data.Active = Active.GetValueOrDefault();
+        data.CreatedByCustomerId = CreatedByCustomerId;
+        data.CreatedDateUtc = CreatedDateUtc;
+        data.Deleted = Deleted;
+        data.EffectiveUserId = EffectiveUserId;
+        data.GroupId = GroupId;
+        data.Id = Id;
+        data.UpdateDateUtc = UpdateDateUtc;
+        data.UpdatedByCustomerId = UpdatedByCustomerId;
+
+        if (withGroup && Group != null)
+            data.Group = Group.ConvertToGroupContract(withProviderInGroup, withGroupPermissions, withPermissionSubject, withRolesAndGroupsDetail);
+
+        return data;
+    }
 }

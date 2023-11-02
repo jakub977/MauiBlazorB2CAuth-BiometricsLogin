@@ -1,6 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Graph.Models;
+using Microsoft.Extensions.Logging;
 using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
+using Principal.Telemedicine.Shared.Enums;
 
 namespace Principal.Telemedicine.DataConnectors.Repositories;
 
@@ -9,10 +13,13 @@ public class EffectiveUserRepository : IEffectiveUserRepository
 {
 
     private readonly DbContextApi _dbContext;
+    private readonly ILogger _logger;
+    private readonly string _logName = "CustomerRepository";
 
-    public EffectiveUserRepository(DbContextApi dbContext)
+    public EffectiveUserRepository(DbContextApi dbContext, ILogger<EffectiveUserRepository> logger)
     {
         _dbContext = dbContext;
+        _logger = logger;
     }
 
     /// <inheritdoc/>
@@ -84,17 +91,53 @@ public class EffectiveUserRepository : IEffectiveUserRepository
     public async Task<bool> DeleteEffectiveUserTaskAsync(Customer currentUser, EffectiveUser user)
     {
         bool ret = false;
+        string logHeader = _logName + ".DeleteEffectiveUserTaskAsync:";
 
-        user.Deleted = true;
-        user.UpdateDateUtc = DateTime.UtcNow;
-        user.UpdatedByCustomerId = currentUser.Id;
+        try
+        {
+            user.UpdateDateUtc = DateTime.UtcNow;
+            user.UpdatedByCustomerId = currentUser.Id;
+            user.Deleted = true;
 
-        _dbContext.EffectiveUsers.Update(user);
-        int result = await _dbContext.SaveChangesAsync();
-        if (result != 0)
-            ret = true;
+            bool tracking = _dbContext.ChangeTracker.Entries<Customer>().Any(x => x.Entity.Id == user.Id);
+            if (!tracking)
+            {
+                _dbContext.EffectiveUsers.Update(user);
+            }
+
+            int result = await _dbContext.SaveChangesAsync();
+
+            if (result != 0)
+            {
+                _logger.LogDebug("{0} EffectiveUser Id: {1} deleted succesfully", logHeader, user.Id);
+                ret = true;
+            }
+            else
+            {
+                _logger.LogWarning("{0} EffectiveUser Id: {1} was not deleted", logHeader, user.Id);
+            }
+
+        }
+        catch (Exception ex)
+        {
+            string errMessage = ex.Message;
+            if (ex.InnerException != null)
+            {
+                errMessage += " " + ex.InnerException.Message;
+            }
+            _logger.LogError("{0} EffectiveUser Id: {1} was not deleted, Error: {4}", logHeader, user.Id, errMessage);
+        }
 
         return ret;
+    }
+
+    /// <inheritdoc/>
+    public IQueryable<EffectiveUser> GetEffectiveUsersByOrganizationId(int organizationId)
+    {
+        var query = _dbContext.EffectiveUsers.Include(p => p.Provider).Include(p => p.RoleMembers).Include(p => p.GroupEffectiveMembers)
+            .Where(p => p.Provider.OrganizationId == organizationId && !p.Deleted).OrderBy(p => p.Id);
+
+        return query;
     }
 }
 

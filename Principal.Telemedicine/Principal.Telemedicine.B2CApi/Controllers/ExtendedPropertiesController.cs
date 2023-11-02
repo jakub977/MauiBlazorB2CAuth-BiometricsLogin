@@ -49,7 +49,7 @@ public class ExtendedPropertiesController : ControllerBase
                 return new UnauthorizedObjectResult("|API_ERROR_1|Authentication validation failed|");
             }
 
-            // get the request body
+           // get the request body
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             _logger.Log(LogLevel.Error, $"Request body: '{requestBody}' ");
 
@@ -93,7 +93,8 @@ public class ExtendedPropertiesController : ControllerBase
                 {
                     extension_TelephoneNumber = foundTelephoneNumberStr,
                     extension_GlobalID = foundGlobalIdStr,
-                    extension_OrganizationIDs = foundOrganizationIdStr
+                    extension_OrganizationIDs = foundOrganizationIdStr,
+                    extension_MAUser = true
                 });
 
             }
