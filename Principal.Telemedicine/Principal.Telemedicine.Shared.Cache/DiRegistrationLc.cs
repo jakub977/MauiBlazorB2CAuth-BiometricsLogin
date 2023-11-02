@@ -10,8 +10,9 @@ public static class DiRegistrationLc
 {
     public static IServiceCollection AddTmMemoryCache(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<MemoryCacheOptions>(configuration.GetSection(typeof(MemoryCacheOptions).Name));
         services.AddMemoryCache();
+        services.Configure<MemoryCacheOptions>(configuration.GetSection(typeof(MemoryCacheOptions).Name));
+        
         services.Configure<MemoryCacheOptions>(configuration);
         services.AddSingleton<IMemoryCache, MemoryCache>();
 
