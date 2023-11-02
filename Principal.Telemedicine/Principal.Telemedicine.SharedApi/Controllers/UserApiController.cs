@@ -12,6 +12,8 @@ using Principal.Telemedicine.DataConnectors.Extensions;
 using Principal.Telemedicine.Shared.Enums;
 using Principal.Telemedicine.Shared.Api;
 using Principal.Telemedicine.DataConnectors.Utils;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Identity.Web.Resource;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
 
@@ -83,6 +85,7 @@ public class UserApiController : ControllerBase
     /// </summary>
     /// <param name="userId"></param>
     /// <returns>GenericResponse s parametrem "success" TRUE a objektem "CompleteUserContract" nebo FALSE a případně chybu</returns>
+    [Authorize]
     [HttpGet(Name = "GetUser")]
     public async Task<IGenericResponse<CompleteUserContract>> GetUser([FromHeader(Name = "x-api-g")] string globalId, int? userId)
     {

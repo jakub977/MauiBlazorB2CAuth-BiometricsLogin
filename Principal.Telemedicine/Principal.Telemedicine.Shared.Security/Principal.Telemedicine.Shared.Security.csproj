@@ -1,9 +1,22 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="7.0.13" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
+    <PackageReference Include="Principal.Telemedicine.Shared.Configuration" Version="1.2.0-CI-20231027-141458" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.32.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Principal.Telemedicine.Shared.Infrastructure\Principal.Telemedicine.Shared.Infrastructure.csproj" />
+    <ProjectReference Include="..\Principal.Telemedicine.Shared\Principal.Telemedicine.Shared.csproj" />
+  </ItemGroup>
 
 </Project>
