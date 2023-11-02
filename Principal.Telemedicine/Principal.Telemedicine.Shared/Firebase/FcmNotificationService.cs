@@ -38,7 +38,7 @@ public class FcmNotificationService : IFcmNotificationService
             message.Apns.Headers = new Dictionary<string, string>();
             //string apnsExpiration = ApnSender.ToEpoch(DateTime.UtcNow.AddHours(12)).ToString();
             //msg.Apns.Headers.Add("apns-expiration", apnsExpiration);
-
+            message.Data = new Dictionary<string, string>();
             message.Data.Add("AdditionalAttribute", "něco");
             message.Data.Add("ValidToDate", "něco");
 

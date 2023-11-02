@@ -1,10 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Principal.Telemedicine.DataConnectors.Contexts;
-using Principal.Telemedicine.DataConnectors.Repositories;
 using Principal.Telemedicine.Shared.Api;
 using Principal.Telemedicine.Shared.Firebase;
-using Principal.Telemedicine.Shared.Models;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
 
@@ -34,7 +32,7 @@ public class FcmNotificationApiController : ControllerBase
         try
         {
 
-            FcmNotificationResponse response = await _fcmNotificationService.SendFcmNotification("emqG_SPObkznssmWdAlwnI:APA91bFvBmphVtW1fNSRsDL5L4LjNMSHkxXRnNRVs0SZe1R2wbFpR6Asf0yT0H3mJh3lpZixIPCsEIK3plE0QyoS5q1WP_883eHReZCnTAUcKAf9Jx1r-iKSAEDjyzZSeArZphtt4vlt", "test-lenka", "test-lenka");
+            FcmNotificationResponse response = await _fcmNotificationService.SendFcmNotification("hmMK6ZZK8Qxo_JLPEeoMFLgVVWLloSnfEtFFBhA40mO", "test-lenka", "test-lenka");
 
             string message = response.Message;
             bool success = response.IsSuccess;

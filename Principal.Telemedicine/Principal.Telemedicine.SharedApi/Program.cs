@@ -47,7 +47,7 @@ JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
 
 builder.Services.AddControllers()
-    .AddJsonOptions(options => options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull )
+    .AddJsonOptions(options => options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)
     .AddXmlDataContractSerializerFormatters();
 
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
