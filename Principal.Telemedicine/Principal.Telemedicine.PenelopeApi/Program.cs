@@ -22,7 +22,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(config =>
 {
     config.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Penelope API", Version = "V1" });
-    config.OperationFilter<RequiredHeaderParameter>();
+    config.OperationFilter<TraceHeaderParameter>();
 });
 
 

@@ -6,7 +6,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 /// <summary>
 /// Filtr zajišťuje přidání hlavičky tokenu
 /// </summary>
-public class RequiredHeaderParameter : IOperationFilter
+public class TraceHeaderParameter : IOperationFilter
 {
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {
@@ -16,13 +16,13 @@ public class RequiredHeaderParameter : IOperationFilter
         operation.Parameters.Add(new OpenApiParameter()
         {
              
-            Name = "Auth",
-            AllowEmptyValue = false,
+            Name = "global_trace_key",
+            AllowEmptyValue = true,
            
             Schema = new OpenApiSchema() { Type = "string" },
             In =  ParameterLocation.Header,  
-            Required = true,
-            Example = new OpenApiString("Bearer ....")
+            Required = false,
+            Example = new OpenApiString("MY_API")
         });
     }
 }
