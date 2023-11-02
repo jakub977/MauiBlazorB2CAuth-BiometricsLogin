@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Principal.Telemedicine.Shared.Models;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
@@ -85,4 +86,30 @@ public partial class GroupPermission
     [ForeignKey("UpdatedByCustomerId")]
     [InverseProperty("GroupPermissionUpdatedByCustomers")]
     public virtual Customer? UpdatedByCustomer { get; set; }
+
+    /// <summary>
+    /// Vrátí GroupPermissionContract z GroupPermission
+    /// </summary>
+    /// <param name="withSubject">Příznak, zda chceme vrátit i Subjekt v objektu Permission (default TRUE)</param>
+    /// <returns>GroupPermissionContract</returns>
+    public GroupPermissionContract ConvertToGroupPermissionContract(bool withSubject = true)
+    {
+        GroupPermissionContract data = new GroupPermissionContract();
+
+        data.Active = Active;
+        data.CreatedByCustomerId = CreatedByCustomer.Id;
+        data.CreatedDateUtc = CreatedDateUtc;
+        data.Deleted = Deleted;
+        data.Id = Id;
+        data.PermissionId = PermissionId;
+
+        if (Permission != null)
+            data.Permission = Permission.ConvertToPermissionContract(withSubject);
+
+        data.GroupId = GroupId;
+        data.UpdateDateUtc = UpdateDateUtc;
+        data.UpdatedByCustomerId = UpdatedByCustomerId;
+
+        return data;
+    }
 }

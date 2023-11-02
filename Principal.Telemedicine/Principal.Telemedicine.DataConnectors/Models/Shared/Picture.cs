@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
+using Principal.Telemedicine.Shared.Models;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
 
@@ -183,4 +184,44 @@ public partial class Picture
     [ForeignKey("UserId")]
     [InverseProperty("PictureUsers")]
     public virtual Customer? User { get; set; }
+
+    /// <summary>
+    /// Vrátí PictureContract z Picture
+    /// </summary>
+    /// <param name="withPictureData">Příznak, zda chceme vrátit i data obrázku (default TRUE)</param>
+    /// <returns>PictureContract</returns>
+    public PictureContract ConvertToPictureContract(bool withPictureData = true)
+    {
+        PictureContract data = new PictureContract();
+
+        data.Active = Active.GetValueOrDefault();
+        data.ConvertedSizeInkB = ConvertedSizeInkB.GetValueOrDefault();
+        data.CreatedByCustomerId = CreatedByCustomerId;
+        data.CreatedDateUtc = CreatedDateUtc;
+        data.Deleted = Deleted;
+        data.DiseaseSymptomCategoryId = DiseaseSymptomCategoryId;
+        data.FriendlyName = FriendlyName;
+        data.Height = Height;
+        data.Id = Id;
+        data.IsConverted = IsConverted;
+        data.IsNew = IsNew;
+        data.IsPublic   = IsPublic;
+        data.IsTransient = IsTransient;
+        
+        data.MediaStorageId = MediaStorageId;
+        if (MediaStorageId != null && MediaStorage != null && withPictureData)
+            data.MediaStorage = MediaStorage.ConvertToMediaStorageContract();
+
+        data.MimeType = MimeType;
+        data.OriginalSizeInkB = OriginalSizeInkB.GetValueOrDefault();
+        data.SeoFilename = SeoFilename;
+        data.ThumbnailHeight = ThumbnailHeight;
+        data.ThumbnailWidth = ThumbnailWidth;
+        data.UpdatedByCustomerId = UpdatedByCustomerId;
+        data.UpdatedOnUtc = UpdatedOnUtc;
+        data.UserId = UserId;
+        data.Width = Width;
+
+        return data;
+    }
 }

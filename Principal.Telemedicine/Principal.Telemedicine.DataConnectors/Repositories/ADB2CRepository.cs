@@ -46,7 +46,7 @@ public class ADB2CRepository : IADB2CRepository
             }
 
             // UPN ukládáme jako email převedený na Base64 + aplikační doména
-            string searchedUPN = Base64Encode(customer.Email) + "@" + _applicationDomain;
+            string searchedUPN = CreateUPN(customer.Email);
 
             // kontrola na existující účet
             var result = await GetClient().Users.GetAsync(requestConfiguration =>
@@ -205,6 +205,45 @@ public class ADB2CRepository : IADB2CRepository
         return ret;
     }
 
+    /// <inheritdoc/>
+    public async Task<int> CheckUserAsyncTask(Customer customer)
+    {
+        int ret = -1;
+        string logHeader = _logName + ".CheckUserAsyncTask:";
+
+        try
+        {
+            // UPN je email převedený na Base64 + aplikační doména
+            string searchedUPN = CreateUPN(customer.Email);
+
+            // kontrola na existující účet
+            var result = await GetClient().Users.GetAsync(requestConfiguration =>
+            {
+                requestConfiguration.QueryParameters.Select = new string[] { "id", "createdDateTime", "displayName" };
+                requestConfiguration.QueryParameters.Filter = $"userPrincipalName eq '{searchedUPN}'";
+            });
+
+            // existuje účet
+            if (result != null && result.Value != null && result?.Value?.Count > 0)
+                ret = 1;
+            else 
+                ret = 0;
+
+            _logger.LogDebug("{0} ADB2C returned: {0}, user '{1}', Email: '{2}', Id: {3}", logHeader, ret, customer.FriendlyName, customer.Email, customer.Id);
+        }
+        catch (Exception ex)
+        {
+            string errMessage = ex.Message;
+            if (ex.InnerException != null)
+            {
+                errMessage += " " + ex.InnerException.Message;
+            }
+            _logger.LogError("{0} ADB2C returned: User: '{0}', Error: {1}", logHeader, customer.Email, errMessage);
+        }
+
+        return ret;
+    }
+
     #region Private methods
 
     /// <summary>
@@ -258,7 +297,8 @@ public class ADB2CRepository : IADB2CRepository
     /// <returns>email</returns>
     private string GetEmailFromUPN(string upn)
     {
-        string temp = upn.Replace("\"@\" + _applicationDomain", "").Replace("_","=");
+        string temp = upn.Replace("\"@\"" + _applicationDomain, "");
+        temp = temp.Replace("_", "=");
         return Base64Decode(temp);
     }
 

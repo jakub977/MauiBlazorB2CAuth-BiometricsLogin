@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Principal.Telemedicine.Shared.Models;
 
@@ -62,4 +63,7 @@ public class UserPermissionContract
     /// Bit identifier if permission is denied (1) or granted (0) to user beyond the granted permission based on assigned role or membership in an organizational unit
     /// </summary>
     public bool IsDeniedPermission { get; set; }
+
+    [JsonPropertyName("permissionObject")]
+    public virtual PermissionContract? Permission { get; set; }
 }

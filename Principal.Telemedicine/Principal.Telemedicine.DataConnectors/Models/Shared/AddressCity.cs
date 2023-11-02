@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Principal.Telemedicine.Shared.Models;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
@@ -73,4 +74,27 @@ public partial class AddressCity
 
     [InverseProperty("City")]
     public virtual ICollection<Provider> Providers { get; set; } = new List<Provider>();
+
+    /// <summary>
+    /// Vytvoří AddressCityContract z AddressCity
+    /// </summary>
+    /// <returns>AddressCityContract</returns>
+    public AddressCityContract ConvertToAddressCityContract()
+    {
+        AddressCityContract data = new AddressCityContract();
+
+        data.Active = Active;
+        data.Code = Code;
+        data.CreatedDateUtc = CreatedDateUtc;
+        data.Deleted = Deleted;
+        data.ExtendedName = ExtendedName;
+        data.Id = Id;
+        data.IdAddressDistrict = IdAddressDistrict;
+        data.IdAddressMunicipalityWithExtendedCompetence = IdAddressMunicipalityWithExtendedCompetence;
+        data.IdAddressRegion = IdAddressRegion;
+        data.Name = Name;
+        data.UpdateDateUtc = UpdateDateUtc;
+
+        return data;
+    }
 }

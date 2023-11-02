@@ -172,4 +172,51 @@ public partial class Role
 
         return data;
     }
+
+    /// <summary>
+    /// Vrátí RoleContract z Role
+    /// </summary>
+    /// <param name="withProvider">Příznak, zda chceme vrátit i data Poskytovatele (default TRUE)</param>
+    /// <param name="withPermissions">Příznak, zda chceme vrátit i data Permissions (default TRUE)</param>
+    /// <param name="withSubject">Příznak, zda chceme vrátit i data Subjektu (default TRUE)</param>
+    /// <param name="withRolesAndGroupsDetail">Příznak, zda chceme vrátit i podrobnější data jako kategorie nebo typ Role / Skupiny (default FALSE)</param>
+    /// <returns>RoleContract</returns>
+    public RoleContract ConvertToRoleContract(bool withProvider = true, bool withPermissions = true, bool withSubject = true, bool withRolesAndGroupsDetail = false)
+    {
+        RoleContract data = new RoleContract();
+
+        data.Active = Active.GetValueOrDefault();
+        data.CreatedByCustomerId = CreatedByCustomerId; 
+        data.CreatedDateUtc = CreatedDateUtc;
+        data.Deleted = Deleted;
+        data.Description = Description;
+        data.Id = Id;
+        data.IsGlobal = IsGlobal;
+        data.Name = Name;
+        data.OrganizationId = OrganizationId;
+
+        data.ParentRoleId = ParentRoleId;
+
+        if (ParentRole != null)
+            data.ParentRole = ParentRole.ConvertToRoleContract(withProvider, withPermissions, withSubject, withRolesAndGroupsDetail);
+
+        data.ProviderId = ProviderId;
+
+        if (withRolesAndGroupsDetail && withProvider && Provider != null)
+            data.Provider = Provider.ConvertToProviderContract(false, false);
+
+        data.RoleCategoryCombinationId = RoleCategoryCombinationId;
+        
+        if (withRolesAndGroupsDetail && RoleCategoryCombination != null)
+            data.RoleCategoryCombination = RoleCategoryCombination.ConvertToRoleCategoryCombinationContract();
+
+        if (withPermissions && RolePermissions != null && RolePermissions.Count > 0)
+            foreach(RolePermission permission in RolePermissions)
+                data.RolePermissions.Add(permission.ConvertToRolePermissionContract(withSubject));
+
+        data.UpdateDateUtc = UpdateDateUtc;
+        data.UpdatedByCustomerId = UpdatedByCustomerId;
+
+        return data;
+    }
 }

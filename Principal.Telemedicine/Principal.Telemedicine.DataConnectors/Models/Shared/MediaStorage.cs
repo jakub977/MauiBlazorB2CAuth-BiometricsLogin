@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Principal.Telemedicine.Shared.Models;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
@@ -30,4 +31,19 @@ public partial class MediaStorage
     /// </summary>
     [InverseProperty("MediaStorage")]
     public virtual ICollection<Picture> Pictures { get; set; } = new List<Picture>();
+
+    /// <summary>
+    /// Vrátí MediaStorageContract z MediaStorage
+    /// </summary>
+    /// <returns>MediaStorageContract</returns>
+    public MediaStorageContract ConvertToMediaStorageContract()
+    {
+        MediaStorageContract data = new MediaStorageContract();
+
+        data.Data = Data;
+        data.Id = Id;
+        data.Thumbnail = Thumbnail;
+
+        return data;
+    }
 }

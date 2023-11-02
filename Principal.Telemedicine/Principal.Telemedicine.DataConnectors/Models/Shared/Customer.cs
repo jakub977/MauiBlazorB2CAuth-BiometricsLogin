@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Graph.Models;
 using Newtonsoft.Json;
+using Principal.Telemedicine.Shared.Models;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
 
@@ -664,4 +666,111 @@ public partial class Customer
     /// </summary>
     [InverseProperty("User")]
     public virtual ICollection<UserPermission> UserPermissionUsers { get; set; } = new List<UserPermission>();
+
+    /// <summary>
+    /// Vrátí CompleteUserContract z Customer
+    /// </summary>
+    /// <param name="onlyCustomerData">Příznak, zda chceme vrátit pouze data z tabulky Customer, bez Rolí, Efektivních uživatelů a zakázaných oprávnění (default FALSE)</param>
+    /// <param name="withProvider">Příznak, zda chceme vrátit i data Poskytovatele v Effektivních uživatelích nebo v přímém uživateli včetně Rolí a Skupin (default TRUE)</param>
+    /// <param name="withPermissions">Příznak, zda chceme vrátit Role nebo Skupiny i s Permissions (default TRUE)</param>
+    /// <param name="withPermissionsSubject">Příznak, zda chceme vrátit v Permissions i data Subjektu (default TRUE)</param>
+    /// <param name="forList">Příznak, že chceme dat pro grid, stačí nám tak jen základní údaje (default FALSE)</param>
+    /// <param name="withRolesAndGroupsDetail">Příznak, zda chceme vrátit i podrobnější data jako kategorie nebo typ Role / Skupiny (default FALSE)</param>
+    /// <returns>CompleteUserContract</returns>
+    public CompleteUserContract ConvertToCompleteUserContract(bool onlyCustomerData = false, bool withProvider = true, bool withPermissions = true, bool withPermissionsSubject = true, bool forList = false, bool withRolesAndGroupsDetail = false)
+    {
+        CompleteUserContract data = new CompleteUserContract();
+        
+        data.Active = Active.GetValueOrDefault(); 
+        data.AddressLine = AddressLine;
+        data.AdminComment = AdminComment;
+        data.ApiloginEnabled = ApiloginEnabled.GetValueOrDefault();
+        data.ApiloginToken = ApiloginToken;
+        data.Birthdate = Birthdate;
+        data.BirthIdentificationNumber = BirthIdentificationNumber;
+        data.CityId = CityId;
+
+        if (CityId != null && City != null)
+            data.City = City.ConvertToAddressCityContract();
+
+        data.CreatedByCustomerId = CreatedByCustomerId;
+        data.CreatedByProviderId = CreatedByProviderId;
+        data.CreatedDateUtc = CreatedDateUtc;
+        data.Deleted = Deleted;      
+
+        data.Email = Email;
+        data.EmployerName = EmployerName;
+        data.FirstName = FirstName;
+        data.FriendlyName = FriendlyName;
+        data.GenderTypeId = GenderTypeId;
+
+        
+
+        data.GlobalId = GlobalId;
+        data.HealthCareInsurerCode = HealthCareInsurerCode;
+        data.HealthCareInsurerId = HealthCareInsurerId;
+        data.Id = Id;
+        data.InvalidLoginsCount = InvalidLoginsCount;
+        data.IsOrganizationAdminAccount = IsOrganizationAdminAccount;
+        data.IsProviderAdminAccount = IsProviderAdminAccount;
+        data.IsRiskPatient = IsRiskPatient;
+        data.IsSuperAdminAccount = IsSuperAdminAccount;
+        data.IsSystemAccount = IsSystemAccount;
+        data.LastActivityDateUtc = LastActivityDateUtc;
+        data.LastApiloginDateTime = LastApiloginDateTime;
+        data.LastIpAddress = LastIpAddress;
+        data.LastLoginDateUtc = LastLoginDateUtc;
+        data.LastName = LastName;
+        data.Note = Note;
+        data.OrganizationId =  OrganizationId;
+
+        data.Password = Password;
+        data.PasswordFormatTypeId = PasswordFormatTypeId;
+        data.PasswordSalt = PasswordSalt;
+        data.PersonalIdentificationNumber = PersonalIdentificationNumber;
+
+        data.PictureId = PictureId;
+
+        if (PictureId != null && Picture != null)
+            data.Picture = Picture.ConvertToPictureContract();
+
+        data.PostalCode = PostalCode;
+        data.ProfessionName = ProfessionName;
+        data.ProfessionTypeId = ProfessionTypeId;
+        data.PublicIdentifier = PublicIdentifier;
+        
+        data.Street = Street;
+        data.TelephoneNumber = TelephoneNumber;
+        data.TelephoneNumber2 = TelephoneNumber2;
+        data.TitleAfter = TitleAfter;
+        data.TitleBefore = TitleBefore;
+        data.UpdateDateUtc = UpdateDateUtc;
+        data.UpdatedByCustomerId = UpdatedByCustomerId;
+
+        if (!forList)
+        {
+            if (GenderTypeId != null && GenderType != null)
+                data.GenderType = GenderType.ConvertToGenderTypeContract();
+
+            if (OrganizationId != null && Organization != null)
+                data.Organization = Organization.ConvertToOrganizationContract();
+        }
+
+        if (!onlyCustomerData)
+        {
+            if (EffectiveUserUsers != null && EffectiveUserUsers.Count > 0)
+                foreach (var user in EffectiveUserUsers)
+                    data.EffectiveUserUsers.Add(user.ConvertToEffectiveUserContract(withProvider, true, withPermissions, withPermissionsSubject, withRolesAndGroupsDetail));
+
+            if (RoleMemberDirectUsers != null && RoleMemberDirectUsers.Count > 0)
+                foreach (var user in RoleMemberDirectUsers)
+                    data.RoleMemberDirectUsers.Add(user.ConvertToRoleMemberContract(true, withProvider, withPermissions, withPermissionsSubject, withRolesAndGroupsDetail));
+
+            if (!forList && UserPermissionUsers != null && UserPermissionUsers.Count > 0)
+                foreach (var user in UserPermissionUsers)
+                    data.UserPermissionUsers.Add(user.ConvertToUserPermissionContract(withPermissionsSubject));
+        }
+
+        return data;
+    }
 }
