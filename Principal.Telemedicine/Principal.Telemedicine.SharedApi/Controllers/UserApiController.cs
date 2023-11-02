@@ -419,17 +419,17 @@ public class UserApiController : ControllerBase
 
                 // kontrola na zaktivnění neaktivních Poskytovatelů
                 var setProviders = await _providerRepository.GetProvidersTaskAsync();
-                setProviders = setProviders.Where(w => providers.Contains(w.Id) && !w.Active).ToList();
+                setProviders = setProviders.Where(w => providers.Contains(w.Id) && !w.Active.Value).ToList();
                 if (setProviders.Count() > 0)
                     foreach (var provider in setProviders)
                     {
-                        if (!provider.Active)
+                        if (!provider.Active.Value)
                         {
                             provider.Active = true;
                             provider.UpdateDateUtc = DateTime.UtcNow;
                             provider.UpdatedByCustomerId = currentUser.Id;
 
-                            await _providerRepository.UpdateProviderTaskAsync(provider);
+                            await _providerRepository.UpdateProviderTaskAsync(provider, null);
                         }
                     }
             }
@@ -693,16 +693,16 @@ public class UserApiController : ControllerBase
 
                 // kontrola na zaktivnění neaktivních Poskytovatelů
                 var setProviders = await _providerRepository.GetProvidersTaskAsync();
-                setProviders = setProviders.Where(w => providers.Contains(w.Id) && !w.Active).ToList();
+                setProviders = setProviders.Where(w => providers.Contains(w.Id) && !w.Active.Value).ToList();
                 if (setProviders.Count() > 0)
                     foreach (var provider in setProviders)
                     {
-                        if (!provider.Active)
+                        if (!provider.Active.Value)
                         {
                             provider.Active = true;
                             provider.UpdateDateUtc = DateTime.UtcNow;
                             provider.UpdatedByCustomerId = currentUser.Id;
-                            await _providerRepository.UpdateProviderTaskAsync(provider);
+                            await _providerRepository.UpdateProviderTaskAsync(provider, null);
                         }
                     }
 

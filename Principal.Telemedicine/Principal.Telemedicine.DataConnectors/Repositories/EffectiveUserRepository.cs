@@ -1,6 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Graph.Models;
 using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
+using Principal.Telemedicine.Shared.Enums;
 
 namespace Principal.Telemedicine.DataConnectors.Repositories;
 
@@ -95,6 +98,15 @@ public class EffectiveUserRepository : IEffectiveUserRepository
             ret = true;
 
         return ret;
+    }
+
+    /// <inheritdoc/>
+    public IQueryable<EffectiveUser> GetEffectiveUsersByOrganizationId(int organizationId)
+    {
+        var query = _dbContext.EffectiveUsers.Include(p => p.Provider).Include(p => p.RoleMembers).Include(p => p.GroupEffectiveMembers)
+            .Where(p => p.Provider.OrganizationId == organizationId && !p.Deleted).OrderBy(p => p.Id);
+
+        return query;
     }
 }
 

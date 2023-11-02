@@ -1,4 +1,5 @@
-﻿using Principal.Telemedicine.DataConnectors.Models;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using Principal.Telemedicine.DataConnectors.Models;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
 
 namespace Principal.Telemedicine.DataConnectors.Repositories;
@@ -13,6 +14,12 @@ public interface ICustomerRepository
     /// </summary>
     /// <returns> Seznam uživatelů </returns>
     Task<IEnumerable<Customer>> GetCustomersTaskAsyncTask();
+
+    /// <summary>
+    /// Metoda vrací všechny uživatele.
+    /// </summary>
+    /// <returns> Seznam uživatelů </returns>
+    public IQueryable<Customer> ListOfAllCustomers();
 
     /// <summary>
     /// Metoda vrací konkrétního uživatele na základě id.
@@ -33,9 +40,11 @@ public interface ICustomerRepository
     /// </summary>
     /// <param name="currentUser">Aktuální uživatel</param>
     /// <param name="user">Customer</param>
-    /// <param name="ignoreADB2C"></param>
+    /// <param name="ignoreADB2C">Příznak, že se má ignorovat volání ADB2C (default FALSE)</param>
+    /// <param name="tran">Aktuální DB transakce (default NULL)</param>
+    /// <param name="dontManageTran">Příznak, zda se v metodě mají ignorovat transakční příkazy (default FALSE)</param>
     /// <returns>true / false</returns>
-    Task<bool> UpdateCustomerTaskAsync(Customer currentUser, Customer user, bool? ignoreADB2C = false);
+    Task<bool> UpdateCustomerTaskAsync(Customer currentUser, Customer user, bool? ignoreADB2C = false, IDbContextTransaction? tran = null, bool dontManageTran = false);
 
     /// <summary>
     /// Metoda založí nového Customera včetně založení v ADB2C

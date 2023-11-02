@@ -29,7 +29,10 @@ builder.Services.AddControllers()
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IProviderRepository, ProviderRepository>();
 builder.Services.AddScoped<IEffectiveUserRepository, EffectiveUserRepository>();
+builder.Services.AddScoped<IProviderRepository, ProviderRepository>();
+builder.Services.AddScoped<IRoleMemberRepository, RoleMemberRepository>();
 builder.Services.AddScoped<IADB2CRepository, ADB2CRepository>();
+builder.Services.AddScoped<ISubjectAllowedToOrganizationRepository, SubjectAllowedToOrganizationRepository>();
 builder.Services.AddScoped<IFcmNotificationService, FcmNotificationService>();
 builder.Services.AddAutoMapper(typeof(Mapping).Assembly);
 

@@ -1,5 +1,7 @@
-﻿using Principal.Telemedicine.DataConnectors.Models;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using Principal.Telemedicine.DataConnectors.Models;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
+using Principal.Telemedicine.Shared.Models;
 
 namespace Principal.Telemedicine.DataConnectors.Repositories;
 
@@ -25,8 +27,10 @@ public interface IProviderRepository
     /// Metoda aktualizuje poskytovatele
     /// </summary>
     /// <param name="provider">Poskytovatel</param>
+    /// /// <param name="tran">Aktuální DB transakce (default NULL)</param>
+    /// <param name="dontManageTran">Příznak, zda se v metodě mají ignorovat transakční příkazy (default FALSE)</param>
     /// <returns>true / false</returns>
-    Task<bool> UpdateProviderTaskAsync(Provider provider);
+    Task<bool> UpdateProviderTaskAsync(Provider provider, IDbContextTransaction? tran = null, bool dontManageTran = false);
 
     /// <summary>
     /// Metoda vytvoří poskytovatele
@@ -34,5 +38,26 @@ public interface IProviderRepository
     /// <param name="provider">Poskytovatel</param>
     /// <returns>true / false</returns>
     Task<bool> InsertProviderTaskAsync(Provider provider);
+
+    /// <summary>
+    /// Metoda odstraní poskytovatele
+    /// </summary>
+    /// <param name="provider">Poskytovatel</param>
+    /// <param name="currentUser">Aktuální uživatel</param>
+    /// <returns>true / false</returns>
+    Task<bool> DeleteProviderTaskAsync(Customer currentUser, Provider provider);
+
+    /// <summary>
+    /// Metoda vrací všechny poskytovatele
+    /// </summary>
+    /// <returns>Query poskytovatelů</returns>
+    public IQueryable<Provider> ListOfAllProviders();
+
+    /// <summary>
+    /// Metoda vrací konkrétního poskytovatele na základě id.
+    /// </summary>
+    /// <param name="id">ID poskytovatele</param>
+    /// <returns>Konkrétní poskytovatel</returns>
+    public Provider? GetProviderById(int providerId);
 }
 
