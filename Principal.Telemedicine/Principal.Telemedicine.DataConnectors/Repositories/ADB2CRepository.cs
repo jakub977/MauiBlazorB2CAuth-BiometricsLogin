@@ -80,8 +80,8 @@ public class ADB2CRepository : IADB2CRepository
             ret = true;
 
             _logger.LogDebug("{0} ADB2C returned: OK, user '{0}', Email: '{1}', Id: {2} updated succesfully", logHeader, customer.FriendlyName, customer.Email, customer.Id);
-        } 
-        catch(Exception ex)
+        }
+        catch (Exception ex)
         {
             string errMessage = ex.Message;
             if (ex.InnerException != null)
@@ -99,7 +99,7 @@ public class ADB2CRepository : IADB2CRepository
     {
         bool ret = false;
         string logHeader = _logName + ".InsertUserAsyncTask:";
-        
+
         try
         {
             // UPN ukládáme jako email převedený na Base64 + aplikační doména
@@ -132,9 +132,9 @@ public class ADB2CRepository : IADB2CRepository
             userNew.PasswordProfile = new PasswordProfile();
             userNew.PasswordProfile.ForceChangePasswordNextSignIn = true;
             userNew.PasswordProfile.Password = customer.Password;
-            
+
             userNew.UserPrincipalName = searchedUPN;
-           
+
             userNew.Identities = new List<ObjectIdentity>
             {
                 new ObjectIdentity() { SignInType = "emailAddress", Issuer = _applicationDomain, IssuerAssignedId = customer.Email }
@@ -234,12 +234,12 @@ public class ADB2CRepository : IADB2CRepository
             // pokud není vyplněn mail, získáme ho z userPrincipalName
             if (mail == null)
             {
-                if (upn != null) 
+                if (upn != null)
                 {
                     mail = GetEmailFromUPN(upn);
-                    if (string.IsNullOrEmpty(mail)) 
+                    if (string.IsNullOrEmpty(mail))
                         _logger.LogWarning($"'{logHeader}' ADB2C returned: User'{cus.FriendlyName}', Email: '{cus.Email}, Object id '{objectId}' not found by mail");
-                        return cus;    
+                    return cus;
                 }
 
                 else
@@ -253,7 +253,7 @@ public class ADB2CRepository : IADB2CRepository
             cus.FriendlyName = displayName;
             cus.TelephoneNumber = telephoneNumber;
 
-            _logger.LogDebug($"'{logHeader}' ADB2C returned: User '{cus.FriendlyName}', Email: '{cus.Email}', ObjectId: '{objectId}' succesfully");          
+            _logger.LogDebug($"'{logHeader}' ADB2C returned: User '{cus.FriendlyName}', Email: '{cus.Email}', ObjectId: '{objectId}' succesfully");
         }
         catch (Exception ex)
         {
@@ -262,10 +262,93 @@ public class ADB2CRepository : IADB2CRepository
             {
                 errMessage += " " + ex.InnerException.Message;
             }
-            _logger.LogError($"'{logHeader}' ADB2C returned: User ObjectId: '{objectId}', Error: '{errMessage}'" );
+            _logger.LogError($"'{logHeader}' ADB2C returned: User ObjectId: '{objectId}', Error: '{errMessage}'");
         }
 
         return cus;
+    }
+
+    /// <inheritdoc/>
+    public async Task<bool> SendEmailAsyncTask(string recipientsEmail, string messageBody, string messageTitle)
+    {
+        bool ret = false;
+        string logHeader = _logName + ".SendEmailAsyncTask:";
+        try
+        {
+            // UPN ukládáme jako email převedený na Base64 + aplikační doména
+            string searchedUPN = CreateUPN(recipientsEmail);
+
+            // kontrola na existující účet
+            var result = await GetClient().Users.GetAsync(requestConfiguration =>
+            {
+                requestConfiguration.QueryParameters.Select = new string[] { "id", "createdDateTime", "displayName" };
+                requestConfiguration.QueryParameters.Filter = $"userPrincipalName eq '{searchedUPN}'";
+            });
+
+            if (result == null || result.Value == null || result.Value.Count == 0)
+            {
+                _logger.LogWarning("{0} ADB2C returned: User with email '{0}' not found", logHeader, recipientsEmail);
+                return ret;
+            }
+
+            if (result.Value.Count > 1)
+            {
+                _logger.LogWarning("{0} ADB2C returned: User with email '{0}' exists more than once: {1}", logHeader, recipientsEmail, result.Value.Count);
+                return ret;
+            }
+
+                Microsoft.Graph.Users.Item.SendMail.SendMailPostRequestBody requestbody = new()
+                {
+                    Message = new Message ()
+                    {
+                        Subject = messageTitle,
+                        Body = new ItemBody
+                        {
+                            ContentType = BodyType.Text,
+                            Content = messageBody
+                        },
+                        ToRecipients = new List<Recipient>()
+                        {
+                            new Recipient
+                            {
+                                EmailAddress = new EmailAddress
+                                {
+                                    Address = recipientsEmail
+                                }
+                            }
+                        }
+            
+                    },
+
+                    SaveToSentItems = false
+                };
+
+
+            string objectId = "476d377e-27fc-41ef-ba6c-be2079e0df2a";
+
+
+           await GetClient().Users[objectId].
+                SendMail.PostAsync(requestbody,
+                requestConfiguration =>
+                {
+                    requestConfiguration.Headers.Add("Prefer", "outlook.body-content-type=\"text\"");
+                });
+
+            ret = true; 
+
+            _logger.LogDebug($"{logHeader} ADB2C returned: OK, Email to User: '{recipientsEmail}' sent succesfully");
+        }
+        catch (Exception ex)
+        {
+            string errMessage = ex.Message;
+            if (ex.InnerException != null)
+            {
+                errMessage += " " + ex.InnerException.Message;
+            }
+            _logger.LogError($"{logHeader} ADB2C returned: User: '{recipientsEmail}', Error: {errMessage}");
+        }
+
+        return ret;
     }
 
     #region Private methods
@@ -322,7 +405,7 @@ public class ADB2CRepository : IADB2CRepository
     private string GetEmailFromUPN(string upn)
     {
         string temp = string.Empty;
-        
+
         try
         {
             string? applicationDomain = _applicationDomain;
@@ -332,12 +415,12 @@ public class ADB2CRepository : IADB2CRepository
 
         catch (Exception ex)
         {
-                string errMessage = ex.Message;
-                if (ex.InnerException != null)
-                {
-                    errMessage += " " + ex.InnerException.Message;
-                }
-                _logger.LogError($"GetEmailFromUPN returned: User with upn: '{upn}', Error: {errMessage}");
+            string errMessage = ex.Message;
+            if (ex.InnerException != null)
+            {
+                errMessage += " " + ex.InnerException.Message;
+            }
+            _logger.LogError($"GetEmailFromUPN returned: User with upn: '{upn}', Error: {errMessage}");
         }
 
         return temp;

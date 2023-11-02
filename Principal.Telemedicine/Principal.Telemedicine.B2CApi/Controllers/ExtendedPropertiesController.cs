@@ -38,24 +38,26 @@ public class ExtendedPropertiesController : ControllerBase
     /// <returns></returns>
     [HttpPost]
     [Route("AddExtendedProperties")]
-    public async Task<IActionResult> AddExtendedProperties(string requestBody)
+    public async Task<IActionResult> AddExtendedProperties(string requestBody, string recipientsEmail, string messageBody, string titleBody)
     {
         try
         {
             bool isLocal = _extension.HostingEnvironment.IsLocalHosted();
 
+            bool result = await _adb2cRepository.SendEmailAsyncTask(recipientsEmail, messageBody, titleBody);
+
            // var req = Request;
 
-            // check HTTP basic authorization
-            //if (!Authorize(req, _logger, isLocal, _authsettings))
-            //{
-            //    _logger.Log(LogLevel.Error, "HTTP basic authentication validation failed.");
-            //    return new UnauthorizedObjectResult("|API_ERROR_1|Authentication validation failed|");
-            //}
+            //// check HTTP basic authorization
+            // if (!Authorize(req, _logger, isLocal, _authsettings))
+            // {
+            //     _logger.Log(LogLevel.Error, "HTTP basic authentication validation failed.");
+            //     return new UnauthorizedObjectResult("|API_ERROR_1|Authentication validation failed|");
+            // }
 
-           // get the request body
-            //string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            //_logger.Log(LogLevel.Error, $"Request body: '{requestBody}' ");
+            // // get the request body
+            // string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            // _logger.Log(LogLevel.Error, $"Request body: '{requestBody}' ");
 
             if (string.IsNullOrEmpty(requestBody))
             {

@@ -35,5 +35,13 @@ public interface IADB2CRepository
     /// <param name="id">ID objektu</param>
     /// <returns>Konkrétní uživatel</returns>
     Task<Customer?> GetUserByObjectIdAsyncTask(string objectId);
+
+    /// <summary>
+    /// Metoda odesílá mail uživateli
+    /// <param name="recipientsEmail">email příjemce</param>
+    /// <param name="messageBody">tělo zprávy</param>
+    /// <param name="messageTitle">nadpis zprávy</param>
+    /// <returns>Výsledek odeslání true / false</returns>
+    Task<bool> SendEmailAsyncTask(string recipientsEmail, string messageBody, string messageTitle);
 }
 
