@@ -450,7 +450,8 @@ public class ProviderApiController : ControllerBase
                     }
                 }
                 // odstranění vazby u uživatele
-                var users = _customerRepository.ListOfAllCustomers().Where(w => w.CreatedByProviderId == mappedProvider.Id && !w.Deleted);
+                var users = await _customerRepository.GetCustomersTaskAsyncTask(mappedProvider.Id);
+                users = users.Where(w => !w.Deleted);
                 // projdeme uživatele, pokud uživatel nemá vazbu na jiného poskytovatele, tak ho smažeme
                 foreach (var usr in users)
                 {
@@ -511,7 +512,7 @@ public class ProviderApiController : ControllerBase
         var providerAdminsOfProvider = _effectiveUserRepository.GetEffectiveUsersByOrganizationId(provider.OrganizationId).Where(p => p.Provider.Id == provider.Id && p.RoleMembers.Any(r => r.RoleId == (int)RoleEnum.ProviderAdmin && !r.Deleted)).ToList();
 
         // všichni SP za danou organizaci
-        var providerAdminsOfOrganization = _effectiveUserRepository.GetEffectiveUsersByOrganizationId(provider.OrganizationId).Where(p => p.RoleMembers.Any(r => r.RoleId == (int)RoleEnum.ProviderAdmin && r.Active && !r.Deleted)).ToList();
+        var providerAdminsOfOrganization = _effectiveUserRepository.GetEffectiveUsersByOrganizationId(provider.OrganizationId).Where(p => p.RoleMembers.Any(r => r.RoleId == (int)RoleEnum.ProviderAdmin && r.Active.Value && !r.Deleted)).ToList();
 
         foreach (var effectiveAdminUser in provider.EffectiveUsers)
         {
@@ -548,7 +549,7 @@ public class ProviderApiController : ControllerBase
                     else
                     {
                         // EF uživatel je neaktivní
-                        if (!existingEffectiveProviderUser.Active)
+                        if (!existingEffectiveProviderUser.Active.GetValueOrDefault())
                         {
                             existingEffectiveProviderUser.Active = true;
                             existingEffectiveProviderUser.UpdatedByCustomerId = customer.Id;

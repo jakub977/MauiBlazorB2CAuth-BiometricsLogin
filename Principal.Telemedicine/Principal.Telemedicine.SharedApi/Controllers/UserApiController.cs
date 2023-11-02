@@ -260,7 +260,7 @@ public class UserApiController : ControllerBase
                 var existingEfUsers = await _effectiveUserRepository.GetEffectiveUsersTaskAsync(user.Id);
                 existingEfUsers = existingEfUsers.Where(x => x.Id != editedEfUser.Id).ToList();
 
-                if (!user.Active && existingEfUsers.Any(x => x.Active.GetValueOrDefault()))
+                if (!user.Active && existingEfUsers.Any(x => x.Active.Value))
                     user.Active = true;
 
             }
@@ -480,7 +480,7 @@ public class UserApiController : ControllerBase
 
                 // kontrola na zaktivnění neaktivních Poskytovatelů
                 var setProviders = await _providerRepository.GetProvidersTaskAsync();
-                setProviders = setProviders.Where(w => providers.Contains(w.Id) && !w.Active.GetValueOrDefault()).ToList();
+                setProviders = setProviders.Where(w => providers.Contains(w.Id) && !w.Active.Value).ToList();
                 if (setProviders.Count() > 0)
                     foreach (var provider in setProviders)
                     {
@@ -752,7 +752,7 @@ public class UserApiController : ControllerBase
 
                 // kontrola na zaktivnění neaktivních Poskytovatelů
                 var setProviders = await _providerRepository.GetProvidersTaskAsync();
-                setProviders = setProviders.Where(w => providers.Contains(w.Id) && !w.Active.GetValueOrDefault()).ToList();
+                setProviders = setProviders.Where(w => providers.Contains(w.Id) && !w.Active.Value).ToList();
                 if (setProviders.Count() > 0)
                     foreach (var provider in setProviders)
                     {
@@ -887,7 +887,7 @@ public class UserApiController : ControllerBase
             {
                 DateTime prStart = DateTime.Now;
                 // musíme projít všechny nesmazené EF uživatele v roli Správce posyktovatele = všechny Poskytovatele, které má přiřazené
-                List<int> providers = customer.EffectiveUserUsers.Where(w => !w.Deleted && w.RoleMembers.Any(r => r.RoleId == (int)RoleMainEnum.ProviderAdmin && r.Active.GetValueOrDefault() && !r.Deleted)).Select(s => s.ProviderId).ToList();
+                List<int> providers = customer.EffectiveUserUsers.Where(w => !w.Deleted && w.RoleMembers.Any(r => r.RoleId == (int)RoleMainEnum.ProviderAdmin && r.Active.Value && !r.Deleted)).Select(s => s.ProviderId).ToList();
 
                 foreach (int i in providers)
                 {
@@ -898,8 +898,8 @@ public class UserApiController : ControllerBase
                     {
                         int otherAdminsCount = provider.EffectiveUsers.Count(w => w.UserId != customer.Id
                                                                               && !w.Deleted
-                                                                              && w.Active.GetValueOrDefault()
-                                                                              && w.RoleMembers.Any(r => r.RoleId == (int)RoleMainEnum.ProviderAdmin && r.Active.GetValueOrDefault() && !r.Deleted));
+                                                                              && w.Active.Value
+                                                                              && w.RoleMembers.Any(r => r.RoleId == (int)RoleMainEnum.ProviderAdmin && r.Active.Value && !r.Deleted));
 
                         // odebral bych posledního Správce Poskytovatele
                         if (otherAdminsCount == 0)
@@ -927,7 +927,7 @@ public class UserApiController : ControllerBase
                     var existingEfUser = existingEfUsers.First(x => x.Id == editedEfUser.Id);
                     await _effectiveUserRepository.DeleteEffectiveUserTaskAsync(currentUser, existingEfUser);
                     // pokud Customer nemá další EF uživatele u tohoto Poskytovatele, smažu ho
-                    if (!existingEfUsers.Any(x => x.Id != editedEfUser.Id && x.Active.GetValueOrDefault()))
+                    if (!existingEfUsers.Any(x => x.Id != editedEfUser.Id && x.Active.Value))
                     {
                         deleteCustomer = true;
                     }
@@ -937,7 +937,7 @@ public class UserApiController : ControllerBase
                     // aktuální EF je smazaný
                     editedEfUser = customer.EffectiveUserUsers.FirstOrDefault(u => u.ProviderId == providerId.Value);
                     // aktuální EF Poskytovatele je smazaný a neexistují jiní aktivní EF uživatelé Poskytovatele
-                    if (editedEfUser != null && !existingEfUsers.Any(x => x.Id != editedEfUser.Id && x.Active.GetValueOrDefault()))
+                    if (editedEfUser != null && !existingEfUsers.Any(x => x.Id != editedEfUser.Id && x.Active.Value))
                     {
                         deleteCustomer = true;
                     }

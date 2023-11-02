@@ -1,16 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Graph.Models;
-using Microsoft.Graph.Models.Security;
 using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.DataConnectors.Extensions;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
 using Principal.Telemedicine.DataConnectors.Utils;
 using Principal.Telemedicine.Shared.Enums;
-using System.ComponentModel;
 using System.Data;
 
 namespace Principal.Telemedicine.DataConnectors.Repositories;
@@ -32,11 +27,12 @@ public class CustomerRepository : ICustomerRepository
     }
 
     /// <inheritdoc/>
-    public async Task<IEnumerable<Customer>> GetCustomersTaskAsyncTask()
+    public async Task<IEnumerable<Customer>> GetCustomersTaskAsyncTask(int? providerId = null)
     {
-        var listOfCustomers = await _dbContext.Customers.OrderBy(p => p.Id).ToListAsync();
-
-        return listOfCustomers;
+        if (providerId.HasValue)
+            return await _dbContext.Customers.Where(w => w.CreatedByProviderId == providerId.Value).OrderBy(p => p.Id).ToListAsync();
+        else
+            return await _dbContext.Customers.OrderBy(p => p.Id).ToListAsync();
     }
 
     /// <inheritdoc/>
@@ -119,11 +115,8 @@ public class CustomerRepository : ICustomerRepository
             .Include(p => p.EffectiveUserUsers).ThenInclude(efus => efus.RoleMembers.Where(w => !w.Deleted)).ThenInclude(efus => efus.Role).DefaultIfEmpty()// efektivního uživatele mají jenom uživatelé, kteřé mají vyplněné ProviderId - do RoleMember vazba přes EffectiveUserId -- pacient, lékař atd.
             .Include(p => p.EffectiveUserUsers).ThenInclude(i => i.GroupEffectiveMembers.Where(w => !w.Deleted)).ThenInclude(i => i.Group).DefaultIfEmpty()
             .Include(p => p.RoleMemberDirectUsers.Where(w => !w.Deleted)).ThenInclude(efus => efus.Role).DefaultIfEmpty() // uživatelé bez ProviderId mají vazbu do RoleMember přes DirectUserId -- administrativní role
-            //.Include(p => p.UserPermissionUsers).ThenInclude(i => i.Permission).ThenInclude(i => i.Subject).DefaultIfEmpty() //DeniedPermissions
             .Include(p => p.Picture).DefaultIfEmpty()
-        //.Include(p => p.Organization).DefaultIfEmpty()
-        //.Include(p => p.GenderType).DefaultIfEmpty()
-        .Include(p => p.City).DefaultIfEmpty().AsQueryable();
+            .Include(p => p.City).DefaultIfEmpty().AsQueryable();
 
 
         // filtrování podle role

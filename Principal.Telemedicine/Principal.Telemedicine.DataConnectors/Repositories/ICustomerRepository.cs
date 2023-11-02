@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
-using Principal.Telemedicine.DataConnectors.Models;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
 using Principal.Telemedicine.DataConnectors.Utils;
 
@@ -13,11 +12,11 @@ public interface ICustomerRepository
     /// <summary>
     /// Metoda vrací všechny uživatele.
     /// </summary>
-    /// <returns> Seznam uživatelů </returns>
-    Task<IEnumerable<Customer>> GetCustomersTaskAsyncTask();
+    /// <param name="providerId">Id Poskytovatele, který uživatele vytvořil</param>
+    /// <returns>Seznam uživatelů</returns>
+    Task<IEnumerable<Customer>> GetCustomersTaskAsyncTask(int? providerId = null);
 
     /// <summary>
-    /// Metoda vrací jen základní informace o uživateli
     /// Metoda vrací všechny uživatele.
     /// </summary>
     /// <returns> Seznam uživatelů </returns>
