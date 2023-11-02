@@ -26,6 +26,7 @@ public static class CustomLoggerExtensions
     public static void LogCustom<T>(this ILogger<T> logger, CustomLogLevel customLogLevel, string source, string shortMessage,  string fullMessage, string aditionalInfo, string traceInformation, string httpMethod = "" , string ipAddress = "", string pageUrl = "" )
     {
         LogLevel logLevel = MapCustomLogLevelToLogLevel(customLogLevel);
+        //TODO: Udělat substring nad dlouhé zprávy... 
         Log logEntry = new() {Logger= $"{typeof(T).Name} : {source}", ReferrerUrl = aditionalInfo, LogLevelId = (int) customLogLevel, CreatedOnUtc =DateTime.UtcNow, HttpMethod = httpMethod, FullMessage = fullMessage, ShortMessage = shortMessage, CorrelationGuid=traceInformation, IpAddress = ipAddress , PageUrl = pageUrl };
         
         string message = JsonSerializer.Serialize(logEntry);
@@ -47,6 +48,7 @@ public static class CustomLoggerExtensions
     public static void LogCustom(this ILogger logger, CustomLogLevel customLogLevel, string source, string shortMessage, string fullMessage, string aditionalInfo, string traceInformation, string httpMethod="", string ipAddress = "", string pageUrl = "")
     {
         LogLevel logLevel = MapCustomLogLevelToLogLevel(customLogLevel);
+        //TODO Udělat substring na dlouhé zprávy - přidat do konfigurace maximální délku. 
         Log logEntry = new() { Logger = source, ReferrerUrl = aditionalInfo, LogLevelId = (int) customLogLevel, CreatedOnUtc = DateTime.UtcNow,  FullMessage = fullMessage, ShortMessage = shortMessage, CorrelationGuid = traceInformation, HttpMethod = httpMethod, IpAddress= "" , PageUrl=pageUrl };
 
         string message = JsonSerializer.Serialize(logEntry);
