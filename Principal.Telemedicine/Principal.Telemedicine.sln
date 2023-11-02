@@ -52,7 +52,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Principal.Telemedicine.Shar
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Principal.Telemedicine.Shared.Security", "Principal.Telemedicine.Shared.Security\Principal.Telemedicine.Shared.Security.csproj", "{43C8C338-C409-49A9-A788-A45D12FD1124}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Principal.Telemedicine.Shared.Cache.Test", "Principal.Telemedicine.Shared.Cache.Test\Principal.Telemedicine.Shared.Cache.Test.csproj", "{DEDAF452-5C79-42D5-9594-28FF00001F27}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Principal.Telemedicine.Shared.Cache.Test", "Principal.Telemedicine.Shared.Cache.Test\Principal.Telemedicine.Shared.Cache.Test.csproj", "{DEDAF452-5C79-42D5-9594-28FF00001F27}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -89,7 +89,6 @@ Global
 		{2FA6DDBE-722C-4AD4-B670-CA74FECA8380}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2FA6DDBE-722C-4AD4-B670-CA74FECA8380}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FF2AC56E-2358-4E64-A3B5-0D0637DA4C5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FF2AC56E-2358-4E64-A3B5-0D0637DA4C5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FF2AC56E-2358-4E64-A3B5-0D0637DA4C5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FF2AC56E-2358-4E64-A3B5-0D0637DA4C5B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8E32C05E-F9A2-42AF-BCCF-622522619234}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
