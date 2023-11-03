@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -6,6 +6,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>aspnet-Principal.Telemedicine.SharedApi-6455D89C-9651-49B5-8D62-A94A1F4414F5</UserSecretsId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="secrets\secrets.json" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
@@ -21,16 +25,23 @@
     <PackageReference Include="Microsoft.Graph" Version="5.28.0" />
     <PackageReference Include="Microsoft.Identity.Web" Version="1.16.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Principal.Telemedicine.Shared.Configuration" Version="1.2.0-CI-20231011-090407" />
-    <PackageReference Include="Principal.Telemedicine.Shared.Infrastructure" Version="1.2.0-CI-20231011-090834" />
-    <PackageReference Include="Principal.Telemedicine.Shared.Logging" Version="2.2.0-CI-20231019-092430" />
+    <PackageReference Include="Principal.Telemedicine.Shared.Configuration" Version="1.2.0-CI-20231027-141458" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Principal.Telemedicine.DataConnectors\Principal.Telemedicine.DataConnectors.csproj" />
     <ProjectReference Include="..\Principal.Telemedicine.Shared.Cache\Principal.Telemedicine.Shared.Cache.csproj" />
+    <ProjectReference Include="..\Principal.Telemedicine.Shared.Infrastructure\Principal.Telemedicine.Shared.Infrastructure.csproj" />
+    <ProjectReference Include="..\Principal.Telemedicine.Shared.Logging\Principal.Telemedicine.Shared.Logging.csproj" />
+    <ProjectReference Include="..\Principal.Telemedicine.Shared.Security\Principal.Telemedicine.Shared.Security.csproj" />
     <ProjectReference Include="..\Principal.Telemedicine.Shared\Principal.Telemedicine.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="secrets\secrets.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

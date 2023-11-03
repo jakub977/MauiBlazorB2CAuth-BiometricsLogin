@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Principal.Telemedicine.Shared.Models;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
@@ -43,4 +44,21 @@ public partial class GenderType
     /// </summary>
     [InverseProperty("GenderType")]
     public virtual ICollection<Customer> Customers { get; set; } = new List<Customer>();
+
+    /// <summary>
+    /// Vrátí GenderTypeContract z GenderType
+    /// </summary>
+    /// <returns>GenderTypeContract</returns>
+    public GenderTypeContract ConvertToGenderTypeContract()
+    {
+        GenderTypeContract data = new GenderTypeContract();
+
+        data.Active = Active;
+        data.CreatedDateUtc = CreatedDateUtc;
+        data.Deleted = Deleted;
+        data.Id = Id;
+        data.Name = Name;
+
+        return data;
+    }
 }

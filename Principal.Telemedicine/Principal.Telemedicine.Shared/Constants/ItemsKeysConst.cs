@@ -5,8 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Principal.Telemedicine.Shared.Constants;
-public static class HeaderKeysConst
+public class ItemsKeysConst
 {
-    public  const string TRACE_KEY = "global_trace_key";
-    public const string AUTHORIZE_KEY = "Authorization";
+    public const string CONTEXT_ITEM_USER = "TmUser";
 }

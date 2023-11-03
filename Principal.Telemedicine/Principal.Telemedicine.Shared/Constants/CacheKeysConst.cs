@@ -5,8 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Principal.Telemedicine.Shared.Constants;
-public static class HeaderKeysConst
+public static class CacheKeysConst
 {
-    public  const string TRACE_KEY = "global_trace_key";
-    public const string AUTHORIZE_KEY = "Authorization";
+    public const string CACHE_KEY_HTTPUSER_PREFIX = "UserGlobal_Id_{0}";
 }

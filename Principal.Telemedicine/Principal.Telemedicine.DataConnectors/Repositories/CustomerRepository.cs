@@ -2,7 +2,11 @@
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 using Principal.Telemedicine.DataConnectors.Contexts;
+using Principal.Telemedicine.DataConnectors.Extensions;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
+using Principal.Telemedicine.DataConnectors.Utils;
+using Principal.Telemedicine.Shared.Enums;
+using System.Data;
 
 namespace Principal.Telemedicine.DataConnectors.Repositories;
 
@@ -23,11 +27,25 @@ public class CustomerRepository : ICustomerRepository
     }
 
     /// <inheritdoc/>
-    public async Task<IEnumerable<Customer>> GetCustomersTaskAsyncTask()
+    public async Task<IEnumerable<Customer>> GetCustomersTaskAsyncTask(int? providerId = null)
     {
-        var listOfCustomers = await _dbContext.Customers.OrderBy(p => p.Id).ToListAsync();
+        if (providerId.HasValue)
+            return await _dbContext.Customers.Where(w => w.CreatedByProviderId == providerId.Value).OrderBy(p => p.Id).ToListAsync();
+        else
+            return await _dbContext.Customers.OrderBy(p => p.Id).ToListAsync();
+    }
 
-        return listOfCustomers;
+    /// <inheritdoc/>
+    public async Task<Customer?> GetCustomerInfoByIdTaskAsync(int id)
+    {
+        var customer = await _dbContext.Customers
+            .Include(p => p.Picture).DefaultIfEmpty()
+            .Include(p => p.Organization).DefaultIfEmpty()
+            .Include(p => p.GenderType).DefaultIfEmpty()
+            .Include(p => p.City).DefaultIfEmpty()
+            .Where(p => p.Id == id).FirstOrDefaultAsync();
+
+        return customer;
     }
 
     /// <inheritdoc/>
@@ -40,9 +58,16 @@ public class CustomerRepository : ICustomerRepository
     public async Task<Customer?> GetCustomerByIdTaskAsync(int id)
     {
         var customer = await _dbContext.Customers
-            .Include(p => p.EffectiveUserUsers).ThenInclude(efus => efus.RoleMembers).ThenInclude(efus => efus.Role).DefaultIfEmpty()// efektivního uživatele mají jenom uživatelé, kteřé mají vyplněné ProviderId - do RoleMember vazba přes EffectiveUserId -- pacient, lékař atd.
-            .Include(p => p.RoleMemberDirectUsers).ThenInclude(efus => efus.Role).DefaultIfEmpty() // uživatelé bez ProviderId mají vazbu do RoleMember přes DirectUserId -- administrativní role
-            .Include(p => p.UserPermissionUsers).DefaultIfEmpty() //DeniedPermissions
+            .Include(p => p.EffectiveUserUsers).ThenInclude(efus => efus.RoleMembers.Where(w => !w.Deleted)).ThenInclude(efus => efus.Role).ThenInclude(p => p.RolePermissions).ThenInclude(p => p.Permission).ThenInclude(p => p.Subject).DefaultIfEmpty()// efektivního uživatele mají jenom uživatelé, kteřé mají vyplněné ProviderId - do RoleMember vazba přes EffectiveUserId -- pacient, lékař atd.
+            .Include(p => p.EffectiveUserUsers).ThenInclude(efus => efus.RoleMembers.Where(w => !w.Deleted)).ThenInclude(efus => efus.Role).ThenInclude(i => i.RoleCategoryCombination).ThenInclude(i => i.RoleCategory).DefaultIfEmpty()
+            .Include(p => p.EffectiveUserUsers).ThenInclude(i => i.GroupEffectiveMembers.Where(w => !w.Deleted)).ThenInclude(i => i.Group).ThenInclude(p => p.GroupPermissions).ThenInclude(p => p.Permission).ThenInclude(p => p.Subject).DefaultIfEmpty()
+            .Include(p => p.RoleMemberDirectUsers.Where(w => !w.Deleted)).ThenInclude(efus => efus.Role).ThenInclude(p => p.RolePermissions).ThenInclude(p => p.Permission).ThenInclude(p => p.Subject).DefaultIfEmpty() // uživatelé bez ProviderId mají vazbu do RoleMember přes DirectUserId -- administrativní role
+            .Include(p => p.RoleMemberDirectUsers.Where(w => !w.Deleted)).ThenInclude(efus => efus.Role).ThenInclude(i => i.RoleCategoryCombination).ThenInclude(i => i.RoleCategory).DefaultIfEmpty()
+            .Include(p => p.UserPermissionUsers).ThenInclude(p => p.Permission).ThenInclude(p => p.Subject).DefaultIfEmpty() //DeniedPermissions
+            .Include(p => p.Picture).DefaultIfEmpty()
+            .Include(p => p.Organization).DefaultIfEmpty()
+            .Include(p => p.GenderType).DefaultIfEmpty()
+            .Include(p => p.City).DefaultIfEmpty()
             .Where(p => p.Id == id).FirstOrDefaultAsync();
 
         return customer;
@@ -52,12 +77,152 @@ public class CustomerRepository : ICustomerRepository
     public async Task<Customer?> GetCustomerByGlobalIdTaskAsync(string globalId)
     {
         var customer = await _dbContext.Customers
-            .Include(p => p.EffectiveUserUsers).ThenInclude(efus => efus.RoleMembers).ThenInclude(efus => efus.Role).DefaultIfEmpty()// efektivního uživatele mají jenom uživatelé, kteřé mají vyplněné ProviderId - do RoleMember vazba přes EffectiveUserId -- pacient, lékař atd.
-            .Include(p => p.RoleMemberDirectUsers).ThenInclude(efus => efus.Role).DefaultIfEmpty() // uživatelé bez ProviderId mají vazbu do RoleMember přes DirectUserId -- administrativní role
-            .Include(p => p.UserPermissionUsers).DefaultIfEmpty() //DeniedPermissions
+            .Include(p => p.EffectiveUserUsers).ThenInclude(efus => efus.RoleMembers.Where(w => !w.Deleted)).ThenInclude(efus => efus.Role).ThenInclude(p => p.RolePermissions).ThenInclude(p => p.Permission).ThenInclude(p => p.Subject).DefaultIfEmpty()// efektivního uživatele mají jenom uživatelé, kteřé mají vyplněné ProviderId - do RoleMember vazba přes EffectiveUserId -- pacient, lékař atd.
+            .Include(p => p.EffectiveUserUsers).ThenInclude(efus => efus.RoleMembers.Where(w => !w.Deleted)).ThenInclude(efus => efus.Role).ThenInclude(i => i.RoleCategoryCombination).ThenInclude(i => i.RoleCategory).DefaultIfEmpty()
+            .Include(p => p.EffectiveUserUsers).ThenInclude(i => i.GroupEffectiveMembers.Where(w => !w.Deleted)).ThenInclude(i => i.Group).ThenInclude(p => p.GroupPermissions).ThenInclude(p => p.Permission).ThenInclude(p => p.Subject).DefaultIfEmpty()
+            .Include(p => p.RoleMemberDirectUsers.Where(w => !w.Deleted)).ThenInclude(efus => efus.Role).ThenInclude(p => p.RolePermissions).ThenInclude(p => p.Permission).ThenInclude(p => p.Subject).DefaultIfEmpty() // uživatelé bez ProviderId mají vazbu do RoleMember přes DirectUserId -- administrativní role
+            .Include(p => p.RoleMemberDirectUsers.Where(w => !w.Deleted)).ThenInclude(efus => efus.Role).ThenInclude(i => i.RoleCategoryCombination).ThenInclude(i => i.RoleCategory).DefaultIfEmpty()
+            .Include(p => p.UserPermissionUsers).ThenInclude(p => p.Permission).ThenInclude(p => p.Subject).DefaultIfEmpty() //DeniedPermissions
+            .Include(p => p.Organization).DefaultIfEmpty()
+            .Include(p => p.GenderType).DefaultIfEmpty()
+            .Include(p => p.City).DefaultIfEmpty()
             .Where(p => p.GlobalId == globalId).FirstOrDefaultAsync();
 
         return customer;
+    }
+
+    /// <inheritdoc/>
+    public async Task<Customer?> GetCustomerByIdOnlyForUpdateTaskAsync(int id)
+    {
+        var customer = await _dbContext.Customers
+            .Include(p => p.EffectiveUserUsers).ThenInclude(efus => efus.RoleMembers).DefaultIfEmpty()// efektivního uživatele mají jenom uživatelé, kteřé mají vyplněné ProviderId - do RoleMember vazba přes EffectiveUserId -- pacient, lékař atd.
+            .Include(p => p.EffectiveUserUsers).ThenInclude(i => i.GroupEffectiveMembers).DefaultIfEmpty()
+            .Include(p => p.RoleMemberDirectUsers).DefaultIfEmpty() // uživatelé bez ProviderId mají vazbu do RoleMember přes DirectUserId -- administrativní role
+            .Include(p => p.UserPermissionUsers).DefaultIfEmpty() //DeniedPermissions
+            .Include(p => p.Picture).DefaultIfEmpty()
+            .Include(p => p.Organization).DefaultIfEmpty()
+            .Include(p => p.GenderType).DefaultIfEmpty()
+            .Include(p => p.City).DefaultIfEmpty()
+            .Where(p => p.Id == id).FirstOrDefaultAsync();
+
+        return customer;
+    }
+
+    /// <inheritdoc/>
+    public async Task<PaginatedListData<Customer>> GetCustomersTaskAsync(Customer currentUser, bool activeUsersOnly, int? filterRole, int? filteGroup, string? searchText, string? order = "created_desc", int? page = 1, int? pageSize = 20, int? providerId = null)
+    {
+        IQueryable<Customer> query = _dbContext.Customers
+            .Include(p => p.EffectiveUserUsers).ThenInclude(efus => efus.RoleMembers.Where(w => !w.Deleted)).ThenInclude(efus => efus.Role).DefaultIfEmpty()// efektivního uživatele mají jenom uživatelé, kteřé mají vyplněné ProviderId - do RoleMember vazba přes EffectiveUserId -- pacient, lékař atd.
+            .Include(p => p.EffectiveUserUsers).ThenInclude(i => i.GroupEffectiveMembers.Where(w => !w.Deleted)).ThenInclude(i => i.Group).DefaultIfEmpty()
+            .Include(p => p.RoleMemberDirectUsers.Where(w => !w.Deleted)).ThenInclude(efus => efus.Role).DefaultIfEmpty() // uživatelé bez ProviderId mají vazbu do RoleMember přes DirectUserId -- administrativní role
+            .Include(p => p.Picture).DefaultIfEmpty()
+            .Include(p => p.City).DefaultIfEmpty().AsQueryable();
+
+
+        // filtrování podle role
+        if (filterRole != null)
+        {
+            if (filterRole > 0)
+                query = activeUsersOnly
+        ? query.Where(w => w.RoleMemberDirectUsers.Any(a => a.RoleId == filterRole && a.Active.Value && !a.Deleted) || (w.EffectiveUserUsers.Count > 0 && w.EffectiveUserUsers.Any(a => !a.Deleted && a.Active.Value && a.RoleMembers.Any(g => g.Active.Value && !g.Deleted && g.RoleId == filterRole))))
+        : query.Where(w => w.RoleMemberDirectUsers.Any(a => a.RoleId == filterRole && a.Active.Value && !a.Deleted) || (w.EffectiveUserUsers.Count > 0 && w.EffectiveUserUsers.Any(a => !a.Deleted && a.RoleMembers.Any(g => g.Active.Value && !g.Deleted && g.RoleId == filterRole))));
+        }
+        // filtrování podle skupiny
+        if (filteGroup != null)
+        {
+            if (filteGroup > 0)
+                query = activeUsersOnly
+                ? query = query.Where(w => w.EffectiveUserUsers.Count > 0 && w.EffectiveUserUsers.Any(a => !a.Deleted && a.Active.Value && a.GroupEffectiveMembers.Any(g => g.Active.Value && !g.Deleted && g.GroupId == filteGroup)))
+                : query = query.Where(w => w.EffectiveUserUsers.Count > 0 && w.EffectiveUserUsers.Any(a => !a.Deleted && a.GroupEffectiveMembers.Any(g => g.Active.Value && !g.Deleted && g.GroupId == filteGroup)));
+        }
+        // filtrování podle jména a adresy
+        if (searchText != null)
+        {
+            if (!string.IsNullOrEmpty(searchText))
+                query = query.Where(w => w.FriendlyName.Contains(searchText) || (w.AddressLine == null ? false : w.AddressLine.Contains(searchText)));
+        }
+
+        if (currentUser.IsGlobalAdmin())
+        {
+            // globální admin vidí i uživatele bez přiřazeného poskytovatele -> Správce organizace a ostatní super adminy
+            if (providerId.HasValue)
+            {
+                query = activeUsersOnly
+                    ? query.Where(w => w.Active.Value && !w.Deleted && ((w.EffectiveUserUsers.Count > 0 && w.EffectiveUserUsers.Any(a => a.ProviderId == providerId && a.Active.Value && !a.Deleted)) // efektivní uživatel
+                    || w.IsOrganizationAdminAccount || w.IsSuperAdminAccount // správce organizace a super admin podle příznaku
+                    || w.RoleMemberDirectUsers.Any(r => r.Active.Value && !r.Deleted && (r.RoleId == (int)RoleMainEnum.SuperAdmin || r.RoleId == (int)RoleMainEnum.OrganizationAdmin || r.RoleId == (int)RoleMainEnum.Research || (r.Role.ParentRoleId.HasValue && r.Role.ParentRole.Active.Value && !r.Role.ParentRole.Deleted && (r.Role.ParentRoleId.Value == (int)RoleMainEnum.SuperAdmin || r.RoleId == (int)RoleMainEnum.OrganizationAdmin || r.RoleId == (int)RoleMainEnum.Research)))))) // správce organizace a super admin a výzkum podle role
+
+                    : query.Where(w => !w.Deleted && (
+                    (w.EffectiveUserUsers.Count > 0 && w.EffectiveUserUsers.Any(a => a.ProviderId == providerId && !a.Deleted))  // efektivní uživatel
+                    || w.IsOrganizationAdminAccount || w.IsSuperAdminAccount // správce organizace a super admin podle příznaku
+                    || (!w.RoleMemberDirectUsers.Any(r => r.Active.Value && !r.Deleted) && !w.EffectiveUserUsers.Any(a => !a.Deleted) && w.CreatedByProviderId.HasValue && w.CreatedByProviderId == providerId) // uživatel bez role
+                    || w.RoleMemberDirectUsers.Any(r => r.Active.Value && !r.Deleted && (r.RoleId == (int)RoleMainEnum.SuperAdmin || r.RoleId == (int)RoleMainEnum.OrganizationAdmin || r.RoleId == (int)RoleMainEnum.Research || (r.Role.ParentRoleId.HasValue && r.Role.ParentRole.Active.Value && !r.Role.ParentRole.Deleted && (r.Role.ParentRoleId.Value == (int)RoleMainEnum.SuperAdmin || r.RoleId == (int)RoleMainEnum.OrganizationAdmin || r.RoleId == (int)RoleMainEnum.Research)))))); // správce organizace a super admin a výzkum podle role
+            }
+            else
+            {
+                query = activeUsersOnly
+                    ? query.Where(w => w.Active.Value && !w.Deleted && (w.IsOrganizationAdminAccount || w.IsSuperAdminAccount // správce organizace a super admin podle příznaku
+                    || w.RoleMemberDirectUsers.Any(r => r.Active.Value && !r.Deleted && (r.RoleId == (int)RoleMainEnum.SuperAdmin || r.RoleId == (int)RoleMainEnum.OrganizationAdmin || r.RoleId == (int)RoleMainEnum.Research || (r.Role.ParentRoleId.HasValue && (r.Role.ParentRoleId.Value == (int)RoleMainEnum.SuperAdmin || r.RoleId == (int)RoleMainEnum.OrganizationAdmin || r.RoleId == (int)RoleMainEnum.Research)))))) // správce organizace a super admin a výzkum podle role
+
+                    : query.Where(w => !w.Deleted && (w.IsOrganizationAdminAccount || w.IsSuperAdminAccount // správce organizace a super admin podle příznaku
+                    || (!w.RoleMemberDirectUsers.Any(r => r.Active.Value && !r.Deleted) && !w.EffectiveUserUsers.Any(a => !a.Deleted)) // uživatel bez role
+                    || w.RoleMemberDirectUsers.Any(r => r.Active.Value && !r.Deleted && (r.RoleId == (int)RoleMainEnum.SuperAdmin || r.RoleId == (int)RoleMainEnum.OrganizationAdmin || r.RoleId == (int)RoleMainEnum.Research || (r.Role.ParentRoleId.HasValue && (r.Role.ParentRoleId.Value == (int)RoleMainEnum.SuperAdmin || r.RoleId == (int)RoleMainEnum.OrganizationAdmin || r.RoleId == (int)RoleMainEnum.Research)))))); // správce organizace a super admin a výzkum podle role
+            }
+        }
+        else if (currentUser.IsOrganizationAdmin())
+        {
+            // Správce organizace vidí Správce poskytovatel a sebe
+            query = activeUsersOnly
+                ? query.Where(w => w.Active.Value && !w.Deleted && (w.EffectiveUserUsers.Count > 0 && w.EffectiveUserUsers.Any(a => a.Active.Value && !a.Deleted && a.RoleMembers.Any(r => r.Active.Value && !r.Deleted && (r.RoleId == (int)RoleMainEnum.ProviderAdmin || (r.Role.ParentRoleId.HasValue && r.Role.ParentRoleId.Value == (int)RoleMainEnum.ProviderAdmin && r.Role.ParentRole != null && r.Role.ParentRole.Active.Value && !r.Role.ParentRole.Deleted))))) || (w.Id == currentUser.Id && w.Active.Value))
+                : query.Where(w => (!w.Deleted && w.EffectiveUserUsers.Count > 0 && w.EffectiveUserUsers.Any(a => !a.Deleted && a.RoleMembers.Any(r => r.Active.Value && !r.Deleted && (r.RoleId == (int)RoleMainEnum.ProviderAdmin || (r.Role.ParentRoleId.HasValue && r.Role.ParentRoleId.Value == (int)RoleMainEnum.ProviderAdmin && r.Role.ParentRole != null && r.Role.ParentRole.Active.Value && !r.Role.ParentRole.Deleted))))) || w.Id == currentUser.Id);
+        }
+        else if (currentUser.IsResearch())
+        {
+            // Výzkum vidí všechny ve stejné roli
+            query = activeUsersOnly
+                ? query.Where(w => w.Active.Value && !w.Deleted && w.RoleMemberDirectUsers.Any(r => r.Active.Value && !r.Deleted && (r.RoleId == (int)RoleMainEnum.Research && r.Role.Active.Value && !r.Role.Deleted || (r.Role.ParentRoleId.HasValue && r.Role.ParentRoleId.Value == (int)RoleMainEnum.Research && r.Role.ParentRole.Active.Value && !r.Role.ParentRole.Deleted))))
+                : query.Where(w => !w.Deleted && w.RoleMemberDirectUsers.Any(r => r.Active.Value && !r.Deleted && (r.RoleId == (int)RoleMainEnum.Research && r.Role.Active.Value && !r.Role.Deleted || (r.Role.ParentRoleId.HasValue && r.Role.ParentRoleId.Value == (int)RoleMainEnum.Research && r.Role.ParentRole.Active.Value && !r.Role.ParentRole.Deleted))));
+        }
+        else
+        {
+            // pouze uživatelé kteří mají přiděleného poskytovatele a nejsou to Admini
+            if (providerId.HasValue)
+            {
+                query = activeUsersOnly
+                    ? query.Where(w => !w.RoleMemberDirectUsers.Any(a => a.Active.Value && !a.Deleted) && w.EffectiveUserUsers.Count > 0 && w.EffectiveUserUsers.Any(a => a.ProviderId == providerId && a.Active.Value && !a.Deleted))
+                    : query.Where(w => (!w.RoleMemberDirectUsers.Any(a => a.Active.Value && !a.Deleted) && w.EffectiveUserUsers.Count > 0 && w.EffectiveUserUsers.Any(a => a.ProviderId == providerId && !a.Deleted))
+                    || (!w.RoleMemberDirectUsers.Any(r => r.Active.Value && !r.Deleted) && !w.EffectiveUserUsers.Any(a => !a.Deleted) && w.CreatedByProviderId.HasValue && w.CreatedByProviderId == providerId) // uživatel bez role
+                    );
+            }
+            else
+            {
+                // může vidět jen sebe
+                query = activeUsersOnly
+                    ? query.Where(w => w.Active.Value && w.Id == currentUser.Id)
+                    : query.Where(w => w.Id == currentUser.Id);
+            }
+        }
+
+        // řazení
+        switch (order)
+        {
+            case "created_desc":
+                query = query.OrderByDescending(o => o.CreatedDateUtc);
+                break;
+            case "created_asc":
+                query = query.OrderBy(o => o.CreatedDateUtc);
+                break;
+            case "updated_desc":
+                query = query.OrderByDescending(o => o.UpdateDateUtc).ThenByDescending(o => o.CreatedDateUtc);
+                break;
+            case "updated_asc":
+                query = query.OrderBy(o => o.UpdateDateUtc).ThenBy(o => o.CreatedDateUtc);
+                break;
+            default:
+                break;
+        }
+
+        return await PaginatedListData<Customer>.CreateAsync(query, page ?? 1, pageSize ?? 20);
     }
 
     /// <inheritdoc/>

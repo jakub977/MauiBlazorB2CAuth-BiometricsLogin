@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
+using Principal.Telemedicine.Shared.Models;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
 
@@ -124,4 +125,31 @@ public partial class Subject
     [ForeignKey("UpdatedByCustomerId")]
     [InverseProperty("SubjectUpdatedByCustomers")]
     public virtual Customer? UpdatedByCustomer { get; set; }
+
+    /// <summary>
+    /// Vrátí SubjectContract z Subject
+    /// </summary>
+    /// <returns>SubjectContract</returns>
+    public SubjectContract ConvertToSubjectContract()
+    {
+        SubjectContract data = new SubjectContract();
+
+        data.Active = Active;
+        data.CreatedByCustomerId = CreatedByCustomerId;
+        data.CreatedDateUtc = CreatedDateUtc;
+        data.Deleted = Deleted;
+        data.IconName = IconName;
+        data.Id = Id;
+        data.Name = Name;
+        data.ParentSubjectId = ParentSubjectId;
+        if (ParentSubject != null)
+            data.ParentSubject = ParentSubject.ConvertToSubjectContract();
+
+        data.SubjectTypeId = SubjectTypeId;
+        data.SystemName = SystemName;
+        data.UpdateDateUtc = UpdateDateUtc;
+        data.UpdatedByCustomerId = UpdatedByCustomerId;
+
+        return data;
+    }
 }

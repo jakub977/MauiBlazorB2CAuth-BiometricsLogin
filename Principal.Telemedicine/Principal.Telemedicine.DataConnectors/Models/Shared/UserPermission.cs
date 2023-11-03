@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Principal.Telemedicine.Shared.Models;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
@@ -102,4 +103,32 @@ public partial class UserPermission
     [ForeignKey("UserId")]
     [InverseProperty("UserPermissionUsers")]
     public virtual Customer User { get; set; } = null!;
+
+    /// <summary>
+    /// Vrátí UserPermissionContract z UserPermission
+    /// </summary>
+    /// <param name="withSubject">Příznak, zda chceme vrátit v Permission i Subject (default TRUE)</param>
+    /// <returns>UserPermissionContract</returns>
+    public UserPermissionContract ConvertToUserPermissionContract(bool withSubject = true)
+    {
+        UserPermissionContract data = new UserPermissionContract();
+
+        data.Active = Active;
+        data.CreatedByCustomerId = CreatedByCustomerId;
+        data.CreatedDateUtc = CreatedDateUtc;
+        data.Deleted = Deleted;
+        data.Id = Id;
+        data.IsDeniedPermission = IsDeniedPermission;
+        data.PermissionId = PermissionId;
+        
+        if (Permission != null)
+            data.Permission = Permission.ConvertToPermissionContract(withSubject);
+
+        data.ProviderId = ProviderId;
+        data.UpdateDateUtc = UpdateDateUtc;
+        data.UpdatedByCustomerId = UpdatedByCustomerId;
+        data.UserId = UserId;
+
+        return data;
+    }
 }

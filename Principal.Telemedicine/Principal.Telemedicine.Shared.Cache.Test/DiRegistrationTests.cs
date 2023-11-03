@@ -27,7 +27,7 @@ public class DiRegistrationTests
                 services.AddTmMemoryCache(configuration);
             });
 
-        serviceProvider = new DependencyResolverHelper(hostBuilder.Build());
+        serviceProvider = new DependencyResolverHelper(hostBuilder.UseEnvironment("local").Build());
 
     }
     [Fact(DisplayName ="Test of distributed cache")]

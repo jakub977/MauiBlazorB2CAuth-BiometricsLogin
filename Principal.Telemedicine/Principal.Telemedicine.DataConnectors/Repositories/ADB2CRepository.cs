@@ -19,6 +19,7 @@ public class ADB2CRepository : IADB2CRepository
     private string? _clientSecret = "";
     private string? _extensionClientId = "";
     private string? _applicationDomain = "";
+    private bool _allowWebApiToBeAuthorizedByACL = false;
     private readonly string _logName = "ADB2CRepository";
 
     public ADB2CRepository(IConfiguration configuration, ILogger<ADB2CRepository> logger)
@@ -30,6 +31,7 @@ public class ADB2CRepository : IADB2CRepository
         _clientSecret = _configuration["AzureAdB2C:ClientSecret"];
         _extensionClientId = _configuration["AzureAdB2C:B2cExtensionAppClientId"];
         _applicationDomain = _configuration["AzureAdB2C:B2CApplicationDomain"];
+        _allowWebApiToBeAuthorizedByACL = bool.Parse(_configuration["AzureAdB2C:AllowWebApiToBeAuthorizedByACL"]);
     }
 
     /// <inheritdoc/>
@@ -46,7 +48,7 @@ public class ADB2CRepository : IADB2CRepository
             }
 
             // UPN ukládáme jako email převedený na Base64 + aplikační doména
-            string searchedUPN = Base64Encode(customer.Email) + "@" + _applicationDomain;
+            string searchedUPN = CreateUPN(customer.Email);
 
             // kontrola na existující účet
             var result = await GetClient().Users.GetAsync(requestConfiguration =>
@@ -346,6 +348,45 @@ public class ADB2CRepository : IADB2CRepository
                 errMessage += " " + ex.InnerException.Message;
             }
             _logger.LogError($"{logHeader} ADB2C returned: User: '{recipientsEmail}', Error: {errMessage}");
+        }
+
+        return ret;
+    }
+
+    /// <inheritdoc/>
+    public async Task<int> CheckUserAsyncTask(Customer customer)
+    {
+        int ret = -1;
+        string logHeader = _logName + ".CheckUserAsyncTask:";
+
+        try
+        {
+            // UPN je email převedený na Base64 + aplikační doména
+            string searchedUPN = CreateUPN(customer.Email);
+
+            // kontrola na existující účet
+            var result = await GetClient().Users.GetAsync(requestConfiguration =>
+            {
+                requestConfiguration.QueryParameters.Select = new string[] { "id", "createdDateTime", "displayName" };
+                requestConfiguration.QueryParameters.Filter = $"userPrincipalName eq '{searchedUPN}'";
+            });
+
+            // existuje účet
+            if (result != null && result.Value != null && result?.Value?.Count > 0)
+                ret = 1;
+            else 
+                ret = 0;
+
+            _logger.LogDebug("{0} ADB2C returned: {0}, user '{1}', Email: '{2}', Id: {3}", logHeader, ret, customer.FriendlyName, customer.Email, customer.Id);
+        }
+        catch (Exception ex)
+        {
+            string errMessage = ex.Message;
+            if (ex.InnerException != null)
+            {
+                errMessage += " " + ex.InnerException.Message;
+            }
+            _logger.LogError("{0} ADB2C returned: User: '{0}', Error: {1}", logHeader, customer.Email, errMessage);
         }
 
         return ret;
