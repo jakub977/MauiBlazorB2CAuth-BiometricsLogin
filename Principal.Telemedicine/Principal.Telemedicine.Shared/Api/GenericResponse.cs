@@ -15,6 +15,15 @@ namespace Principal.Telemedicine.Shared.Api
         private int _code = -1;
         private int _records = 0;
 
+        /// <summary>
+        /// Construktor for deserialization
+        /// </summary>
+        public GenericResponse()
+        {
+
+        }
+
+
         [DataMember()]
         public bool Success
         {

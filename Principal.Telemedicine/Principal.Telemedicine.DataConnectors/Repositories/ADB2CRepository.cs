@@ -17,8 +17,8 @@ public class ADB2CRepository : IADB2CRepository
     private string? _tenantId = "";
     private string? _clientId = "";
     private string? _clientSecret = "";
-    private string? _extensionClientId = "";
     private string? _applicationDomain = "";
+    private bool _allowWebApiToBeAuthorizedByACL = false;
     private readonly string _logName = "ADB2CRepository";
 
     public ADB2CRepository(IConfiguration configuration, ILogger<ADB2CRepository> logger)
@@ -28,8 +28,8 @@ public class ADB2CRepository : IADB2CRepository
         _tenantId = _configuration["AzureAdB2C:TenantId"];
         _clientId = _configuration["AzureAdB2C:ClientId"];
         _clientSecret = _configuration["AzureAdB2C:ClientSecret"];
-        _extensionClientId = _configuration["AzureAdB2C:B2cExtensionAppClientId"];
         _applicationDomain = _configuration["AzureAdB2C:B2CApplicationDomain"];
+        _allowWebApiToBeAuthorizedByACL = bool.Parse(_configuration["AzureAdB2C:AllowWebApiToBeAuthorizedByACL"]);
     }
 
     /// <inheritdoc/>

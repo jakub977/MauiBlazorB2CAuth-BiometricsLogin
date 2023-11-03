@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Http;
 
 namespace Principal.Telemedicine.Shared.Infrastructure;
 /// <summary>
@@ -17,12 +18,21 @@ public static class DiRegistration
     public static IServiceCollection AddTmInfrastructure(this IServiceCollection services, IConfiguration configuration) 
     {
         services.AddHttpContextAccessor();
+        services.Configure<TmAppConfiguration>(configuration.GetSection(typeof(TmAppConfiguration).Name));
+       
+        services.AddScoped<CustomHeaderHandler>();
+        services.ConfigureAll<HttpClientFactoryOptions>(options =>
+        {
+            options.HttpMessageHandlerBuilderActions.Add(builder =>
+            {
+                builder.AdditionalHandlers.Add(builder.Services.GetRequiredService<CustomHeaderHandler>());
+            });
+        });
+        services.AddHttpClient("TmHttpClient")
+              .AddHttpMessageHandler<CustomHeaderHandler>().ConfigurePrimaryHttpMessageHandler<CustomHeaderHandler>();
+      
 
-        services.ConfigureOptions<TmAppConfigurationSetup>();        
-        services.AddTransient<CustomHeaderHandler>();
-        services.AddHttpClient<TmHttpClient>()
-              .AddHttpMessageHandler<CustomHeaderHandler>();
-        
+
         return services;
     }
 }

@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Caching.Memory;
+
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Principal.Telemedicine.Shared.Constants;
+using Principal.Telemedicine.Shared.Interfaces;
 
 namespace Principal.Telemedicine.Shared.Infrastructure;
 /// <summary>
@@ -25,6 +26,13 @@ public class CustomHeaderHandler : DelegatingHandler
         }
         _logger = logger;
     }
+
+    protected override HttpResponseMessage Send(HttpRequestMessage request, CancellationToken cancellationToken)
+    {
+
+        return base.Send(request, cancellationToken);
+    }
+
     /// <summary>
     /// Add into call headers tracing header that take from IMemmoryCache. Registered TracingMiddleware is requiered.
     /// </summary>
@@ -33,8 +41,28 @@ public class CustomHeaderHandler : DelegatingHandler
     /// <returns></returns>
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        string key = $"{HeaderKeysConst.TRACE_KEY}_{_contextAccessor.HttpContext.TraceIdentifier}";
-        if (_cache.TryGetValue(key, out string? val))
+
+        //Authorize Header
+        if (_contextAccessor?.HttpContext != null && _contextAccessor.HttpContext.Request.Headers.ContainsKey(HeaderKeysConst.AUTHORIZE_KEY))
+        {
+            try
+            {
+                var stream = _contextAccessor.HttpContext.Request.Headers[HeaderKeysConst.AUTHORIZE_KEY];
+                if (request.Headers.Contains(HeaderKeysConst.AUTHORIZE_KEY)) request.Headers.Remove(HeaderKeysConst.AUTHORIZE_KEY);
+                request.Headers.Add(HeaderKeysConst.AUTHORIZE_KEY, stream.FirstOrDefault());
+            }
+            catch (Exception ex)
+            { _logger.LogError($"Problem in add authorization header during call by HttpClient >> {ex.ToString()}"); }
+        }
+
+
+
+
+
+
+         string key = $"{HeaderKeysConst.TRACE_KEY}_{_contextAccessor.HttpContext.TraceIdentifier}";
+        string val = await _cache.GetAsync<string>(key, cancellationToken);
+        if (!string.IsNullOrWhiteSpace(val))
         {
             request.Headers.Add(HeaderKeysConst.TRACE_KEY, val);
         }
