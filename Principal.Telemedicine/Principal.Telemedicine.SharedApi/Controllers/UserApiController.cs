@@ -283,7 +283,7 @@ public class UserApiController : ControllerBase
             actualData.FirstName = user.FirstName;
             actualData.GenderTypeId = user.GenderTypeId;
             actualData.HealthCareInsurerCode = user.HealthCareInsurerCode;
-            actualData.HealthCareInsurerId = user.HealthCareInsurerId;
+            actualData.HealthCareInsurerId = user.HealthCareInsurerId.HasValue && user.HealthCareInsurerId.Value > 0 ? user.HealthCareInsurerId.Value : null;
             actualData.IsSystemAccount = user.IsSystemAccount;
             actualData.LastName = user.LastName;
             actualData.TitleBefore = user.TitleBefore;
@@ -797,6 +797,9 @@ public class UserApiController : ControllerBase
             }
 
             actualData.GlobalId = actualData.Email;
+
+            if (actualData.HealthCareInsurerId.HasValue && user.HealthCareInsurerId.GetValueOrDefault() <= 0)
+                actualData.HealthCareInsurerId = null;
 
             // pokud nemáme heslo, tak ho vygenerujeme
             if (string.IsNullOrEmpty(actualData.Password))
