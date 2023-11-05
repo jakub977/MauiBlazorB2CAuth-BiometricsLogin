@@ -19,12 +19,12 @@ builder.Services.AddDbContext<DbContextApi>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("VANDA_TEST")));
 
 builder.Services.AddLogging(configuration);
-
+builder.Services.AddScoped<IADB2CRepository, ADB2CRepository>();
 builder.Services.AddSecretConfiguration<AuthorizationSettings>(configuration, secretFilePath);
-builder.Services.AddSecretConfiguration<AzureAdB2C>(configuration, secretFilePath);
+builder.Services.AddSecretConfiguration<Principal.Telemedicine.Shared.Configuration.AzureAdB2C>(configuration, secretFilePath);
 
 builder.Services.AddControllers();
-builder.Services.AddScoped<IADB2CRepository, ADB2CRepository>();
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

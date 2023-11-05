@@ -299,42 +299,42 @@ public class ADB2CRepository : IADB2CRepository
                 return ret;
             }
 
-                Microsoft.Graph.Users.Item.SendMail.SendMailPostRequestBody requestbody = new()
-                {
-                    Message = new Message ()
-                    {
-                        Subject = messageTitle,
-                        Body = new ItemBody
-                        {
-                            ContentType = BodyType.Text,
-                            Content = messageBody
-                        },
-                        ToRecipients = new List<Recipient>()
-                        {
-                            new Recipient
-                            {
-                                EmailAddress = new EmailAddress
-                                {
-                                    Address = recipientsEmail
-                                }
-                            }
-                        }
+           //     Microsoft.Graph.Users.Item.SendMail.SendMailPostRequestBody requestbody = new()
+           //     {
+           //         Message = new Message ()
+           //         {
+           //             Subject = messageTitle,
+           //             Body = new ItemBody
+           //             {
+           //                 ContentType = BodyType.Text,
+           //                 Content = messageBody
+           //             },
+           //             ToRecipients = new List<Recipient>()
+           //             {
+           //                 new Recipient
+           //                 {
+           //                     EmailAddress = new EmailAddress
+           //                     {
+           //                         Address = recipientsEmail
+           //                     }
+           //                 }
+           //             }
             
-                    },
+           //         },
 
-                    SaveToSentItems = false
-                };
-
-
-            string objectId = "476d377e-27fc-41ef-ba6c-be2079e0df2a";
+           //         SaveToSentItems = false
+           //     };
 
 
-           await GetClient().Users[objectId].
-                SendMail.PostAsync(requestbody,
-                requestConfiguration =>
-                {
-                    requestConfiguration.Headers.Add("Prefer", "outlook.body-content-type=\"text\"");
-                });
+           // string objectId = "476d377e-27fc-41ef-ba6c-be2079e0df2a";
+
+
+           //await GetClient().Users[objectId].
+           //     SendMail.PostAsync(requestbody,
+           //     requestConfiguration =>
+           //     {
+           //         requestConfiguration.Headers.Add("Prefer", "outlook.body-content-type=\"text\"");
+           //     });
 
             ret = true; 
 

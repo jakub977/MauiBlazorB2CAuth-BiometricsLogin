@@ -22,14 +22,16 @@ public class ExtendedPropertiesController : ControllerBase
     private readonly AuthorizationSettings _authsettings;
     private readonly HostBuilderContext _extension;
     private readonly IADB2CRepository _adb2cRepository;
+    private readonly IConfiguration _configuration;
 
-    public ExtendedPropertiesController(ILogger<ExtendedPropertiesController> logger, DbContextApi context, IOptions<AuthorizationSettings> authsettings, HostBuilderContext extension, IADB2CRepository adb2cRepository)
+    public ExtendedPropertiesController(ILogger<ExtendedPropertiesController> logger, DbContextApi context, IOptions<AuthorizationSettings> authsettings, HostBuilderContext extension, IADB2CRepository adb2cRepository, IConfiguration configuration)
     {
         _logger = logger;
         _context = context;
-        _authsettings = authsettings?.Value;
+        _authsettings = authsettings.Value;
         _extension = extension;
         _adb2cRepository = adb2cRepository;
+        _configuration = configuration;
     }
 
     /// <summary>
@@ -38,26 +40,63 @@ public class ExtendedPropertiesController : ControllerBase
     /// <returns></returns>
     [HttpPost]
     [Route("AddExtendedProperties")]
-    public async Task<IActionResult> AddExtendedProperties(string requestBody, string recipientsEmail, string messageBody, string titleBody)
+    public async Task<IActionResult> AddExtendedProperties(string requestBody, string author) //string requestBody, string recipientsEmail, string messageBody, string titleBody
     {
         try
         {
             bool isLocal = _extension.HostingEnvironment.IsLocalHosted();
+            isLocal = false;
 
-            bool result = await _adb2cRepository.SendEmailAsyncTask(recipientsEmail, messageBody, titleBody);
+            //přidáno
+            // get the environment's credentials 
+            string passwordStored = string.Empty;
+            string emailStored = string.Empty;
 
-           // var req = Request;
+            emailStored = !isLocal ? _authsettings.SEmail : _authsettings.PEmail;
+            passwordStored = !isLocal ? _authsettings.SPassword : _authsettings.PPassword;
+
+
+
+            // ensure the type of the authorization header id `Basic`
+            if (author.StartsWith("Basic "))
+            {
+                _logger.Log(LogLevel.Error, "HTTP basic authentication header must start with 'Basic '.");
+            }
+
+            // get the the HTTP basic authorization credentials
+            var cred = Encoding.UTF8.GetString(Convert.FromBase64String(author.Substring(6))).Split(':');
+            string userNameCredentials = cred[0];
+            string passwordCredentials = cred[1];
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            ////bool result = await _adb2cRepository.SendEmailAsyncTask(recipientsEmail, messageBody, titleBody);
+
+            //var req = Request;
+
+            //// get the request body
+            //string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
 
             //// check HTTP basic authorization
-            // if (!Authorize(req, _logger, isLocal, _authsettings))
-            // {
-            //     _logger.Log(LogLevel.Error, "HTTP basic authentication validation failed.");
-            //     return new UnauthorizedObjectResult("|API_ERROR_1|Authentication validation failed|");
-            // }
+            //if (!Authorize(req, _logger, isLocal, _authsettings))
+            //{
+            //    _logger.Log(LogLevel.Error, $"HTTP basic authentication validation failed.Request body: '{requestBody}'");
+            //    return new UnauthorizedObjectResult("|API_ERROR_1|Authentication validation failed|");
+            //}
 
-            // // get the request body
-            // string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            // _logger.Log(LogLevel.Error, $"Request body: '{requestBody}' ");
+
+            //_logger.Log(LogLevel.Error, $"Request body: '{requestBody}' ");
 
             if (string.IsNullOrEmpty(requestBody))
             {
@@ -138,7 +177,7 @@ public class ExtendedPropertiesController : ControllerBase
         string emailStored = string.Empty;
 
         emailStored = !isLocal ? _authsettings.SEmail : _authsettings.PEmail;
-        passwordStored = isLocal ? _authsettings.SPassword : _authsettings.PPassword;
+        passwordStored = !isLocal ? _authsettings.SPassword : _authsettings.PPassword;
 
 
         // check if the HTTP Authorization header exist
