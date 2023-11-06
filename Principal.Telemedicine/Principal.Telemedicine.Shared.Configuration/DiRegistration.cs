@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Azure;
 
 namespace Principal.Telemedicine.Shared.Configuration;
 
@@ -28,13 +29,15 @@ public static class DiRegistration
     /// <returns></returns>
     public static IServiceCollection AddSecretConfiguration<T>(this IServiceCollection services, IConfiguration configuration, string secretPath) where T : class
     {
-
+        var nowConfig = services.BuildServiceProvider().GetService<IConfiguration>();
         services.AddSingleton<IConfiguration>(sp =>
         {
             var logger = sp.GetRequiredService<ILogger<T>>();
             var hostEnironment = sp.GetRequiredService<IHostEnvironment>();
+
             IConfigurationBuilder configurationBuilder = new ConfigurationBuilder()
             .Add(new SecretConfigurationSource<T>(configuration, secretPath, logger, hostEnironment.IsLocalHosted()));
+            if(nowConfig!=null) configurationBuilder.AddConfiguration(nowConfig);
             return configurationBuilder.Build();
         });
 
