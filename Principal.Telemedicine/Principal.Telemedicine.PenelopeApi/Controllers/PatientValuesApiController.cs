@@ -7,6 +7,10 @@ using Principal.Telemedicine.Shared.Enums;
 using System.Data;
 using Newtonsoft.Json;
 using Principal.Telemedicine.PenelopeData.Models;
+using Principal.Telemedicine.Shared.Api;
+using Principal.Telemedicine.Shared.Models;
+using Microsoft.Kiota.Abstractions;
+using Microsoft.Graph.Models.TermStore;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
 
@@ -37,13 +41,14 @@ public class PatientValuesApiController : ControllerBase
     /// <returns></returns>
     [AllowAnonymous]
     [HttpGet(Name = "PENEGetUserPregnancyCalendarWithMeasuredValues")]          
-    public async Task<IActionResult> PENEGetUserPregnancyCalendarWithMeasuredValues(string userGlobalId, string preferredLanguageCode)
+    public async Task<IGenericResponse<List<CalendarWithMeasuredValuesDataModel>>> PENEGetUserPregnancyCalendarWithMeasuredValues(string userGlobalId, string preferredLanguageCode)
     {
+        string logHeader = _logName + ".PENEGetUserPregnancyCalendarWithMeasuredValues:";
 
         if (string.IsNullOrEmpty(userGlobalId) || string.IsNullOrEmpty(preferredLanguageCode))
         {
-            _logger.Log(LogLevel.Error, "GlobalId and preferredLanguage are empty.");
-            return BadRequest();
+            _logger.LogWarning($"{logHeader} UserGlobalId and preferredLanguage parameters are empty.");
+            return new GenericResponse<List<CalendarWithMeasuredValuesDataModel>>(null, false, -2, "UserGlobalId and preferredLanguage parameters are empty", "UserGlobalId and preferredLanguage must be set.");
         }
 
         try
@@ -55,17 +60,18 @@ public class PatientValuesApiController : ControllerBase
             
             if (!peneCalendar.Any())
             {
-                _logger.Log(LogLevel.Error, "No calendar with measured values was found");
-                return NotFound();
+                _logger.LogWarning($"{logHeader} No calendar with measured values was found");
+                return new GenericResponse<List<CalendarWithMeasuredValuesDataModel>>(null, false, -3, "Stored procedure dbo.sp_GetUserPregnancyCalendarWithMeasuredValues has failed.");
             }
-            return Ok(peneCalendar);
+
+            return new GenericResponse<List<CalendarWithMeasuredValuesDataModel>>(peneCalendar, true, 0);
 
         }
 
         catch (Exception ex)
         {
-            _logger.LogError(ex.Message);
-            return StatusCode(StatusCodes.Status500InternalServerError);
+            _logger.LogError($"{logHeader} {ex.Message}");
+            return new GenericResponse<List<CalendarWithMeasuredValuesDataModel>>(null, false, -1, ex.Message);
         }
     }
 
@@ -77,13 +83,14 @@ public class PatientValuesApiController : ControllerBase
     /// <returns></returns>
     [AllowAnonymous]
     [HttpGet(Name = "PENEGetOneDayScheduledActivities")]
-    public async Task<IActionResult> PENEGetOneDayScheduledActivities(string userGlobalId, string preferredLanguageCode)
+    public async Task<IGenericResponse<List<ScheduledActivitiesDataModel>>> PENEGetOneDayScheduledActivities(string userGlobalId, string preferredLanguageCode)
     {
+        string logHeader = _logName + ".PENEGetOneDayScheduledActivities:";
 
         if (string.IsNullOrEmpty(userGlobalId) || string.IsNullOrEmpty(preferredLanguageCode))
         {
-            _logger.Log(LogLevel.Error, "GlobalId and preferredLanguage are empty.");
-            return BadRequest();
+            _logger.LogWarning($"{logHeader} UserGlobalId and preferredLanguage parameters are empty.");
+            return new GenericResponse<List<ScheduledActivitiesDataModel>>(null, false, -2, "UserGlobalId and preferredLanguage parameters are empty", "UserGlobalId and preferredLanguage must be set.");
         }
 
         try
@@ -99,17 +106,18 @@ public class PatientValuesApiController : ControllerBase
 
             if (!oneDayActivities.Any())
             {
-                _logger.Log(LogLevel.Error, "No scheduled activities were found");
-                return NotFound();
+                _logger.LogWarning($"{logHeader} No scheduled activities were found");
+                return new GenericResponse<List<ScheduledActivitiesDataModel>>(null, false, -3, "Stored procedure dbo.sp_GetScheduledActivities has failed.");
             }
-            return Ok(oneDayActivities);
+
+            return new GenericResponse<List<ScheduledActivitiesDataModel>>(oneDayActivities, true, 0);
 
         }
 
         catch (Exception ex)
         {
-            _logger.LogError(ex.Message);
-            return StatusCode(StatusCodes.Status500InternalServerError);
+            _logger.LogError($"{logHeader} {ex.Message}");
+            return new GenericResponse<List<ScheduledActivitiesDataModel>>(null, false, -1, ex.Message);
         }
     }
 
@@ -121,13 +129,14 @@ public class PatientValuesApiController : ControllerBase
     /// <returns></returns>
     [AllowAnonymous]
     [HttpGet(Name = "PENEGetAllScheduledActivities")]
-    public async Task<IActionResult> PENEGetAllScheduledActivities(string userGlobalId, string preferredLanguageCode)
+    public async Task<IGenericResponse<List<ScheduledActivitiesDataModel>>> PENEGetAllScheduledActivities(string userGlobalId, string preferredLanguageCode)
     {
+        string logHeader = _logName + ".PENEGetAllScheduledActivities:";
 
         if (string.IsNullOrEmpty(userGlobalId) || string.IsNullOrEmpty(preferredLanguageCode))
         {
-            _logger.Log(LogLevel.Error, "GlobalId and preferredLanguage are empty.");
-            return BadRequest();
+            _logger.LogWarning($"{logHeader} UserGlobalId and preferredLanguage parameters are empty.");
+            return new GenericResponse<List<ScheduledActivitiesDataModel>>(null, false, -2, "UserGlobalId and preferredLanguage parameters are empty", "UserGlobalId and preferredLanguage must be set.");
         }
 
 
@@ -143,17 +152,18 @@ public class PatientValuesApiController : ControllerBase
 
             if (!allActivities.Any())
             {
-                _logger.Log(LogLevel.Error, "No scheduled activities were found");
-                return NotFound();
+                _logger.LogWarning($"{logHeader} No scheduled activities were found");
+                return new GenericResponse<List<ScheduledActivitiesDataModel>>(null, false, -3, "Stored procedure dbo.sp_GetScheduledActivities has failed.");
             }
-            return Ok(allActivities);
+
+            return new GenericResponse<List<ScheduledActivitiesDataModel>>(allActivities, true, 0);
 
         }
 
         catch (Exception ex)
         {
-            _logger.LogError(ex.Message);
-            return StatusCode(StatusCodes.Status500InternalServerError);
+            _logger.LogError($"{logHeader} {ex.Message}");
+            return new GenericResponse<List<ScheduledActivitiesDataModel>>(null, false, -1, ex.Message);
         }
     }
 
@@ -165,13 +175,14 @@ public class PatientValuesApiController : ControllerBase
     /// <returns></returns>
     [AllowAnonymous]
     [HttpGet(Name = "PENEGetLastUserMeasuredValue")]
-    public async Task<IActionResult> PENEGetLastUserMeasuredValue(string userGlobalId, string preferredLanguageCode)
+    public async Task<IGenericResponse<List<UserMeasuredValuesDataModel>>> PENEGetLastUserMeasuredValue(string userGlobalId, string preferredLanguageCode)
     {
+        string logHeader = _logName + ".PENEGetLastUserMeasuredValue:";
 
         if (string.IsNullOrEmpty(userGlobalId) || string.IsNullOrEmpty(preferredLanguageCode))
         {
-            _logger.Log(LogLevel.Error, "GlobalId and preferredLanguage are empty.");
-            return BadRequest();
+            _logger.LogWarning($"{logHeader} UserGlobalId and preferredLanguage parameters are empty.");
+            return new GenericResponse<List<UserMeasuredValuesDataModel>>(null, false, -2, "UserGlobalId and preferredLanguage parameters are empty", "UserGlobalId and preferredLanguage must be set.");
         }
 
         try
@@ -183,17 +194,18 @@ public class PatientValuesApiController : ControllerBase
 
             if (!userMeasuredValues.Any())
             {
-                _logger.Log(LogLevel.Error, "No measured values of the user were found.");
-                return NotFound();
+                _logger.LogWarning($"{logHeader} No measured values of the user were found.");
+                return new GenericResponse<List<UserMeasuredValuesDataModel>>(null, false, -3, "Stored procedure dbo.sp_GetLastUserMeasuredValue has failed.");
             }
-            return Ok(userMeasuredValues);
+
+            return new GenericResponse<List<UserMeasuredValuesDataModel>>(userMeasuredValues, true, 0);
 
         }
 
         catch (Exception ex)
         {
-            _logger.LogError(ex.Message);
-            return StatusCode(StatusCodes.Status500InternalServerError);
+            _logger.LogError($"{logHeader} {ex.Message}");
+            return new GenericResponse<List<UserMeasuredValuesDataModel>>(null, false, -1, ex.Message);
         }
     }
 
@@ -205,13 +217,14 @@ public class PatientValuesApiController : ControllerBase
     /// <returns></returns>
     [AllowAnonymous]
     [HttpGet(Name = "PENEGetClinicalSymptomQuestions")]
-    public async Task<IActionResult> PENEGetClinicalSymptomQuestions(string preferredLanguageCode)
+    public async Task<IGenericResponse<List<ClinicalSymptomQuestionDataModel>>> PENEGetClinicalSymptomQuestions(string preferredLanguageCode)
     {
+        string logHeader = _logName + ".PENEGetClinicalSymptomQuestions:";
 
         if (string.IsNullOrEmpty(preferredLanguageCode))
         {
-            _logger.Log(LogLevel.Error, "PreferredLanguage is empty.");
-            return BadRequest();
+            _logger.LogWarning($"{logHeader} PreferredLanguage parameter is empty.");
+            return new GenericResponse<List<ClinicalSymptomQuestionDataModel>>(null, false, -2, "PreferredLanguage parameter is empty", "PreferredLanguage must be set.");
         }
 
         try
@@ -223,17 +236,18 @@ public class PatientValuesApiController : ControllerBase
 
             if (!clinicalSymptomQuestions.Any())
             {
-                _logger.Log(LogLevel.Error, "No clinical symptom questions were found.");
-                return NotFound();
+                _logger.LogWarning($"{logHeader} No clinical symptom questions were found.");
+                return new GenericResponse<List<ClinicalSymptomQuestionDataModel>>(null, false, -3, "Stored procedure dbo.sp_GetClinicalSymptomQuerySimpleRaw has failed.");
             }
-            return Ok(clinicalSymptomQuestions);
+
+            return new GenericResponse<List<ClinicalSymptomQuestionDataModel>>(clinicalSymptomQuestions, true, 0);
 
         }
 
         catch (Exception ex)
         {
-            _logger.LogError(ex.Message);
-            return StatusCode(StatusCodes.Status500InternalServerError);
+            _logger.LogError($"{logHeader} {ex.Message}");
+            return new GenericResponse<List<ClinicalSymptomQuestionDataModel>>(null, false, -1, ex.Message);
         }
     }
 
@@ -244,13 +258,14 @@ public class PatientValuesApiController : ControllerBase
     /// <returns></returns>
     [AllowAnonymous]
     [HttpGet(Name = "PENEGetExpectedBirthDate")]
-    public async Task<IActionResult> PENEGetExpectedBirthDate(string userGlobalId)
+    public async Task<IGenericResponse<List<PregnancyInfoDataModel>>> PENEGetExpectedBirthDate(string userGlobalId)
     {
+        string logHeader = _logName + ".PENEGetExpectedBirthDate:";
 
         if (string.IsNullOrEmpty(userGlobalId))
         {
-            _logger.Log(LogLevel.Error, "GlobalId parameter is empty.");
-            return BadRequest();
+            _logger.LogWarning($"{logHeader} UserGlobalId parameter is empty.");
+            return new GenericResponse<List<PregnancyInfoDataModel>>(null, false, -2, "UserGlobalId parameter is empty", "UserGlobalId must be set.");
         }
 
         try
@@ -259,17 +274,18 @@ public class PatientValuesApiController : ControllerBase
 
             if (!pregnancyInfo.Any())
             {
-                _logger.Log(LogLevel.Error, "No pregnancy info was found.");
-                return NotFound();
+                _logger.LogWarning($"{logHeader} No pregnancy info was found.");
+                return new GenericResponse<List<PregnancyInfoDataModel>>(null, false, -3, "Stored procedure dbo.sp_GetExpectedBirthDate has failed.");
             }
-            return Ok(pregnancyInfo);
+
+            return new GenericResponse<List<PregnancyInfoDataModel>>(pregnancyInfo, true, 0);
 
         }
 
         catch (Exception ex)
         {
-            _logger.LogError(ex.Message);
-            return StatusCode(StatusCodes.Status500InternalServerError);
+            _logger.LogError($"{logHeader} {ex.Message}");
+            return new GenericResponse<List<PregnancyInfoDataModel>>(null, false, -1, ex.Message);
         }
     }
 
@@ -280,10 +296,16 @@ public class PatientValuesApiController : ControllerBase
     /// <returns></returns>
     [AllowAnonymous]
     [HttpPost(Name = "PENESaveMeasuredPhysiologicalDataFromMA")]
-    public async Task<IActionResult> PENESaveMeasuredPhysiologicalDataFromMA([FromBody]PhysiologicalDataRoot physiologicalDataRoot)
+    public async Task<IGenericResponse<int>> PENESaveMeasuredPhysiologicalDataFromMA([FromBody]PhysiologicalDataRoot physiologicalDataRoot)
     {
+        string logHeader = _logName + ".PENESaveMeasuredPhysiologicalDataFromMA:";
+        int returnValue = -1;
+
         if (physiologicalDataRoot == null)
-            return BadRequest();
+        {
+            _logger.LogWarning($"{logHeader} Invalid PhysiologicalDataRoot object: {physiologicalDataRoot}");
+            return new GenericResponse<int>(returnValue, false, -2, "Invalid PhysiologicalDataRoot object", "PhysiologicalDataRoot object must be set.");
+        }
 
         try
         {
@@ -299,17 +321,17 @@ public class PatientValuesApiController : ControllerBase
             int procedureResultState = await _dbContext.Database.ExecuteSqlRawAsync("dbo.sp_SaveMeasuredPhysiologicalDataFromMA @dataJson", parameters);
             if (procedureResultState < 0)
             {
-                _logger.Log(LogLevel.Error, "Stored procedure dbo.sp_SaveMeasuredPhysiologicalDataFromMA has failed.");
-                return NotFound();
+                _logger.LogWarning($"{logHeader} Stored procedure dbo.sp_SaveMeasuredPhysiologicalDataFromMA has failed.");
+                return new GenericResponse<int>(returnValue, false, -3, "Stored procedure dbo.sp_SaveMeasuredPhysiologicalDataFromMA has failed.");
             }
 
-            return Ok();
+            return new GenericResponse<int>(procedureResultState, true, 0);
         }
 
         catch (Exception ex)
         {
-            _logger.LogError(ex.Message);
-            return StatusCode(StatusCodes.Status500InternalServerError);
+            _logger.LogError($"{logHeader} {ex.Message}");
+            return new GenericResponse<int>(returnValue, false, -1, ex.Message);
         }
     }
 
@@ -320,10 +342,16 @@ public class PatientValuesApiController : ControllerBase
     /// <returns></returns>
     [AllowAnonymous]
     [HttpPost(Name = "PENESaveUserResponseToNotification")]
-    public async Task<IActionResult> PENESaveUserResponseToNotification([FromBody] ScheduledActivityDataModel scheduledActivity)
+    public async Task<IGenericResponse<int>> PENESaveUserResponseToNotification([FromBody] ScheduledActivityDataModel scheduledActivity)
     {
+        string logHeader = _logName + ".PENESaveUserResponseToNotification:";
+        int returnValue = -1;
+
         if (scheduledActivity == null)
-            return BadRequest();
+        {
+            _logger.LogWarning($"{logHeader} Invalid ScheduledActivityDataModel object: {scheduledActivity}");
+            return new GenericResponse<int>(returnValue, false, -2, "Invalid ScheduledActivityDataModel object", "ScheduledActivityDataModel object must be set.");
+        }
 
         try
         {
@@ -347,17 +375,17 @@ public class PatientValuesApiController : ControllerBase
             int procedureResultState = await _dbContext.Database.ExecuteSqlRawAsync("dbo.sp_SetActivityStatus @ActivityUniqueId, @IsCompleted,  @DateOfCompletion", parameters);
             if (procedureResultState < 0)
             {
-                _logger.Log(LogLevel.Error, "Stored procedure dbo.sp_SetActivityStatus has failed.");
-                return NotFound();
+                _logger.LogWarning($"{logHeader} Stored procedure dbo.sp_SetActivityStatus has failed.");
+                return new GenericResponse<int>(returnValue, false, -3, "Stored procedure dbo.sp_SetActivityStatus has failed.");
             }
 
-            return Ok();
+            return new GenericResponse<int>(procedureResultState, true, 0);
         }
 
         catch (Exception ex)
         {
-            _logger.LogError(ex.Message);
-            return StatusCode(StatusCodes.Status500InternalServerError);
+            _logger.LogError($"{logHeader} {ex.Message}");
+            return new GenericResponse<int>(returnValue, false, -1, ex.Message);
         }
     }
 
@@ -368,10 +396,16 @@ public class PatientValuesApiController : ControllerBase
     /// <returns></returns>
     [AllowAnonymous]
     [HttpPost(Name = "PENESaveUserDiseaseSymptomSubjectiveAssessment")]
-    public async Task<IActionResult> PENESaveUserDiseaseSymptomSubjectiveAssessment([FromBody]List<ClinicalSymptomAnswerDataModel> clinicalSymptomAnswerDataModels)
+    public async Task<IGenericResponse<int>> PENESaveUserDiseaseSymptomSubjectiveAssessment([FromBody]List<ClinicalSymptomAnswerDataModel> clinicalSymptomAnswerDataModels)
     {
+        string logHeader = _logName + ".PENESaveUserDiseaseSymptomSubjectiveAssessment:";
+        int returnValue = -1;
+
         if (!clinicalSymptomAnswerDataModels.Any())
-            return BadRequest();
+        {
+            _logger.LogWarning($"{logHeader} Invalid ClinicalSymptomAnswerDataModel object: {clinicalSymptomAnswerDataModels}");
+            return new GenericResponse<int>(returnValue, false, -2, "Invalid ClinicalSymptomAnswerDataModel object", "ClinicalSymptomAnswerDataModel object must be set.");
+        }
 
         try
         {
@@ -385,17 +419,17 @@ public class PatientValuesApiController : ControllerBase
             int resultState = await _dbContext.Database.ExecuteSqlAsync($"dbo.sp_SaveUserDiseaseSymptomSubjectiveAssessmentSimple @answerJson = {answerJson}");
             if (resultState < 0)
             {
-                _logger.Log(LogLevel.Error, "Stored procedure dbo.sp_SaveUserDiseaseSymptomSubjectiveAssessmentSimple has failed.");
-                return NotFound();
+                _logger.LogWarning($"{logHeader} Stored procedure dbo.sp_SaveUserDiseaseSymptomSubjectiveAssessmentSimple has failed.");
+                return new GenericResponse<int>(returnValue, false, -3, "Stored procedure dbo.sp_SaveUserDiseaseSymptomSubjectiveAssessmentSimple has failed.");
             }
 
-            return Ok();
+            return new GenericResponse<int>(resultState, true, 0);
         }
 
         catch (Exception ex)
         {
-            _logger.LogError(ex.Message);
-            return StatusCode(StatusCodes.Status500InternalServerError);
+            _logger.LogError($"{logHeader} {ex.Message}");
+            return new GenericResponse<int>(returnValue, false, -1, ex.Message);
         }
     }
 
@@ -405,14 +439,17 @@ public class PatientValuesApiController : ControllerBase
     /// <param name="userGlobalId"></param>
     /// <returns></returns>
     [HttpGet(Name = "CreateScheduledActivities")]
-    public async Task<IActionResult> CreateScheduledActivities(string userGlobalId)
+    public async Task<IGenericResponse<int>> CreateScheduledActivities(string userGlobalId)
     {
-        string logHeader = _logName + ".CreateOrUpdateAppInstanceToken:";
+        string logHeader = _logName + ".CreateScheduledActivities:";
+        int returnValue = -1;
+
 
         if (string.IsNullOrEmpty(userGlobalId))
         {
-            _logger.LogWarning($"{logHeader} GlobalId parameter is empty.");
-            return BadRequest();
+            _logger.LogWarning($"{logHeader} UserGlobalId parameter is empty.");
+            return new GenericResponse<int>(returnValue, false, -2, "UserGlobalId parameter is empty", "UserGlobalId must be set.");
+
         }
 
         try
@@ -428,32 +465,32 @@ public class PatientValuesApiController : ControllerBase
             if (procedureResultState < 0)
             {
                 _logger.LogWarning($"{logHeader} Stored procedure dbo.sp_CreateScheduledActivities_BloodPressureMeasurement has failed.");
-                return NotFound();
+                return new GenericResponse<int>(returnValue, false, -3, "Stored procedure dbo.sp_CreateScheduledActivities_BloodPressureMeasurement has failed.");
             }
 
             int procResultState = await _dbContext.Database.ExecuteSqlRawAsync("dbo.sp_CreateScheduledActivities_UrineProteinMeasurement @GlobalId", parameters);
             if (procResultState < 0)
             {
                 _logger.LogWarning($"{logHeader} Stored procedure dbo.sp_CreateScheduledActivities_UrineProteinMeasurement has failed.");
-                return NotFound();
+                return new GenericResponse<int>(returnValue, false, -3, "Stored procedure dbo.sp_CreateScheduledActivities_UrineProteinMeasurement has failed.");
             }
 
             int procedureResult = await _dbContext.Database.ExecuteSqlRawAsync("dbo.sp_CreateScheduledActivities_Medication @GlobalId", parameters);
             if (procedureResult < 0)
             {
                 _logger.LogWarning($"{logHeader} Stored procedure dbo.sp_CreateScheduledActivities_Medication has failed.");
-                return NotFound();
+                return new GenericResponse<int>(returnValue, false, -3, "Stored procedure dbo.sp_CreateScheduledActivities_Medication has failed.");
             }
 
             //TODO zde notifikace
 
-            return Ok();
+            return new GenericResponse<int>(procedureResult, true, 0);
 
         }
         catch (Exception ex)
         {
             _logger.LogError($"{logHeader} {ex.Message}");
-            return StatusCode(StatusCodes.Status500InternalServerError);
+            return new GenericResponse<int>(returnValue, false, -1, ex.Message);
         }
     }
 }
