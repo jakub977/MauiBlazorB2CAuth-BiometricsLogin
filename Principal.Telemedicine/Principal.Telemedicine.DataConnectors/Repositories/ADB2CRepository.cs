@@ -1,9 +1,11 @@
 ﻿using Azure.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Graph;
 using Microsoft.Graph.Models;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
+using Principal.Telemedicine.Shared.Configuration;
 
 namespace Principal.Telemedicine.DataConnectors.Repositories;
 
@@ -13,6 +15,7 @@ public class ADB2CRepository : IADB2CRepository
 
     private readonly IConfiguration _configuration;
     private readonly ILogger _logger;
+    private readonly AzureAdB2C _adB2C;
 
     private string? _tenantId = "";
     private string? _clientId = "";
@@ -21,8 +24,8 @@ public class ADB2CRepository : IADB2CRepository
     private string? _applicationDomain = "";
     private bool _allowWebApiToBeAuthorizedByACL = false;
     private readonly string _logName = "ADB2CRepository";
-
-    public ADB2CRepository(IConfiguration configuration, ILogger<ADB2CRepository> logger)
+                            
+    public ADB2CRepository(IConfiguration configuration, ILogger<ADB2CRepository> logger, IOptions<AzureAdB2C> adB2C)
     {
         _configuration = configuration;
         _logger = logger;
@@ -32,6 +35,8 @@ public class ADB2CRepository : IADB2CRepository
         _extensionClientId = _configuration["AzureAdB2C:B2cExtensionAppClientId"];
         _applicationDomain = _configuration["AzureAdB2C:B2CApplicationDomain"];
         _allowWebApiToBeAuthorizedByACL = bool.Parse(_configuration["AzureAdB2C:AllowWebApiToBeAuthorizedByACL"]);
+        _adB2C = adB2C.Value;
+        
     }
 
     /// <inheritdoc/>

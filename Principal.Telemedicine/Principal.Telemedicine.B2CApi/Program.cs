@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.ApplicationInsights;
-using Microsoft.Identity.Web;
 using Principal.Telemedicine.B2CApi;
 using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.DataConnectors.Repositories;
@@ -17,11 +15,10 @@ var secretFilePath = "Secured/secrets.json";
 
 builder.Services.AddDbContext<DbContextApi>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("VANDA_TEST")));
-
 builder.Services.AddLogging(configuration);
 builder.Services.AddScoped<IADB2CRepository, ADB2CRepository>();
-builder.Services.AddSecretConfiguration<AuthorizationSettings>(configuration, secretFilePath);
-builder.Services.AddSecretConfiguration<Principal.Telemedicine.Shared.Configuration.AzureAdB2C>(configuration, secretFilePath);
+
+builder.Services.AddSecretConfiguration<AzureAdB2C>(configuration, secretFilePath).AddSecretConfiguration<AuthorizationSettings>(configuration, secretFilePath);
 
 builder.Services.AddControllers();
 
