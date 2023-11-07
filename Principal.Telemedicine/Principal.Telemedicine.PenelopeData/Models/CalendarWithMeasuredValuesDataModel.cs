@@ -1,4 +1,5 @@
-﻿using Principal.Telemedicine.Shared.Models;
+﻿using System.Text.Json.Serialization;
+using Principal.Telemedicine.Shared.Models;
 
 namespace Principal.Telemedicine.PenelopeData.Models;
 
@@ -9,5 +10,6 @@ public class CalendarWithMeasuredValuesDataModel : ACalendarWithMeasuredValuesDa
 {   /// <summary>
     /// Patients week of pregnancy
     /// </summary>
+    [JsonPropertyName("WeekOfPregnancy")]
     public string? WeekOfPregnancy { get; set; }
 }
