@@ -1296,7 +1296,6 @@ public class UserApiController : ControllerBase
             return new GenericResponse<bool>(false, false, -1, ex.Message);
         }
     }
-
 }
 
 

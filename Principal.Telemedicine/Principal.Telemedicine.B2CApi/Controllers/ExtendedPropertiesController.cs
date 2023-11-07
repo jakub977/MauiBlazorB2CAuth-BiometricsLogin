@@ -3,8 +3,9 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Principal.Telemedicine.B2CApi.Models;
 using Principal.Telemedicine.DataConnectors.Contexts;
-using Principal.Telemedicine.Shared.Configuration;
+using Principal.Telemedicine.DataConnectors.Repositories;
 using System.Text;
+using Principal.Telemedicine.DataConnectors.Models.Shared;
 
 namespace Principal.Telemedicine.B2CApi.Controllers;
 
@@ -18,14 +19,16 @@ public class ExtendedPropertiesController : ControllerBase
     private readonly ILogger<ExtendedPropertiesController> _logger;
     private readonly DbContextApi _context;
     private readonly AuthorizationSettings _authsettings;
-    private readonly HostBuilderContext _extension;
+    private readonly IADB2CRepository _adb2cRepository;
 
-    public ExtendedPropertiesController(ILogger<ExtendedPropertiesController> logger, DbContextApi context, IOptions<AuthorizationSettings> authsettings, HostBuilderContext extension)
+    
+    public ExtendedPropertiesController(ILogger<ExtendedPropertiesController> logger, DbContextApi context, IOptions<AuthorizationSettings> authsettings, IADB2CRepository adb2cRepository)
     {
         _logger = logger;
         _context = context;
-        _authsettings = authsettings?.Value;
-        _extension = extension;
+        _authsettings = authsettings.Value;
+        _adb2cRepository = adb2cRepository;
+
     }
 
     /// <summary>
@@ -34,23 +37,22 @@ public class ExtendedPropertiesController : ControllerBase
     /// <returns></returns>
     [HttpPost]
     [Route("AddExtendedProperties")]
-    public async Task<IActionResult> AddExtendedProperties()
+    public async Task<IActionResult> AddExtendedProperties() 
     {
         try
         {
-            bool isLocal = _extension.HostingEnvironment.IsLocalHosted();
-
             var req = Request;
 
-            // check HTTP basic authorization
-            if (!Authorize(req, _logger, isLocal, _authsettings))
+            //get the request body
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+
+            //check HTTP basic authorization
+            if (!Authorize(req, _logger, _authsettings))
             {
-                _logger.Log(LogLevel.Error, "HTTP basic authentication validation failed.");
+                _logger.Log(LogLevel.Error, $"HTTP basic authentication validation failed.Request body: '{requestBody}'");
                 return new UnauthorizedObjectResult("|API_ERROR_1|Authentication validation failed|");
             }
 
-           // get the request body
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             _logger.Log(LogLevel.Error, $"Request body: '{requestBody}' ");
 
             if (string.IsNullOrEmpty(requestBody))
@@ -67,13 +69,23 @@ public class ExtendedPropertiesController : ControllerBase
                 return new BadRequestObjectResult(new ResponseContent("|API_ERROR_2|General error|"));
             }
 
+            string email = string.Empty;
+
             if (data.email == null)
             {
-                _logger.Log(LogLevel.Error, "Email is mandatory and is empty.");
-                return new BadRequestObjectResult(new ResponseContent("|API_ERROR_3|Email is empty|"));
-            }
+                string objectId = Convert.ToString(data.objectId);
 
-            string email = Convert.ToString(data.email);
+                Customer? customer = new Customer();
+                customer = await _adb2cRepository.GetUserByObjectIdAsyncTask(objectId);
+                if (customer == null)
+                {
+                    _logger.Log(LogLevel.Error, "Email was not found by objectId.");
+                    return new BadRequestObjectResult(new ResponseContent("|API_ERROR_3|Email is empty|"));
+                }
+
+                email = customer.Email;
+            }
+            else email = Convert.ToString(data.email);
 
             List<ExtendedPropertiesDataModel> dbResult = new List<ExtendedPropertiesDataModel>();
 
@@ -96,7 +108,6 @@ public class ExtendedPropertiesController : ControllerBase
                     extension_OrganizationIDs = foundOrganizationIdStr,
                     extension_MAUser = true
                 });
-
             }
 
             else
@@ -104,7 +115,6 @@ public class ExtendedPropertiesController : ControllerBase
                 _logger.Log(LogLevel.Error, $"User '{email}' doesnt exist in database.");
                 return new BadRequestObjectResult(new ResponseContent($"|API_ERROR_4|User doesnt exist in database|'{email}|'"));
             }
-
         }
 
         catch (Exception ex)
@@ -115,14 +125,14 @@ public class ExtendedPropertiesController : ControllerBase
 
     }
 
-    private static bool Authorize(HttpRequest req, ILogger _logger, bool isLocal, AuthorizationSettings _authsettings)
+    private static bool Authorize(HttpRequest req, ILogger _logger, AuthorizationSettings _authsettings)
     {
         // get the environment's credentials 
-        string passwordStored = string.Empty;
-        string emailStored = string.Empty;
+        string? passwordStored = string.Empty;
+        string? emailStored = string.Empty;
 
-        emailStored = !isLocal ? _authsettings.SEmail : _authsettings.PEmail;
-        passwordStored = isLocal ? _authsettings.SPassword : _authsettings.PPassword;
+        emailStored = _authsettings.Email;
+        passwordStored = _authsettings.Password;
 
 
         // check if the HTTP Authorization header exist

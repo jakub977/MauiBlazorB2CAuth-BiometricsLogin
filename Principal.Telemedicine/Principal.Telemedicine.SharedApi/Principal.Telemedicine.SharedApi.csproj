@@ -40,7 +40,7 @@
 
   <ItemGroup>
     <None Include="secrets\secrets.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

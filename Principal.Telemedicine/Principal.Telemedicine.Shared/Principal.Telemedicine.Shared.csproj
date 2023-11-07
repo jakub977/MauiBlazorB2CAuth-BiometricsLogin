@@ -16,4 +16,8 @@
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.5.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Principal.Telemedicine.Shared.Configuration\Principal.Telemedicine.Shared.Configuration.csproj" />
+  </ItemGroup>
+
 </Project>
