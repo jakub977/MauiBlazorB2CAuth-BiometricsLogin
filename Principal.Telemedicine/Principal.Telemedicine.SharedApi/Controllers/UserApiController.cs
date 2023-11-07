@@ -97,7 +97,7 @@ public class UserApiController : ControllerBase
     /// </returns>
     [Authorize]
     [HttpGet(Name = "GetUserForAuthorization")]
-    public async Task<IGenericResponse<Customer>> GetUserForAuthorization([FromHeader(Name = "x-api-g")] string? globalId)
+    public async Task<IGenericResponse<Customer>> GetUserForAuthorization(string? globalId)
     {
         DateTime startTime = DateTime.Now;
         string logHeader = _logName + ".GetUserForAuthorization:";
