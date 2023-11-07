@@ -6,6 +6,7 @@ using Principal.Telemedicine.DataConnectors.Extensions;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
 using Principal.Telemedicine.DataConnectors.Utils;
 using Principal.Telemedicine.Shared.Enums;
+using Principal.Telemedicine.Shared.Models;
 using System.Data;
 
 namespace Principal.Telemedicine.DataConnectors.Repositories;
@@ -77,12 +78,12 @@ public class CustomerRepository : ICustomerRepository
     public async Task<Customer?> GetCustomerByGlobalIdTaskAsync(string globalId)
     {
         var customer = await _dbContext.Customers
-            .Include(p => p.EffectiveUserUsers).ThenInclude(efus => efus.RoleMembers.Where(w => !w.Deleted)).ThenInclude(efus => efus.Role).ThenInclude(p => p.RolePermissions).ThenInclude(p => p.Permission).ThenInclude(p => p.Subject).DefaultIfEmpty()// efektivního uživatele mají jenom uživatelé, kteřé mají vyplněné ProviderId - do RoleMember vazba přes EffectiveUserId -- pacient, lékař atd.
-            .Include(p => p.EffectiveUserUsers).ThenInclude(efus => efus.RoleMembers.Where(w => !w.Deleted)).ThenInclude(efus => efus.Role).ThenInclude(i => i.RoleCategoryCombination).ThenInclude(i => i.RoleCategory).DefaultIfEmpty()
-            .Include(p => p.EffectiveUserUsers).ThenInclude(i => i.GroupEffectiveMembers.Where(w => !w.Deleted)).ThenInclude(i => i.Group).ThenInclude(p => p.GroupPermissions).ThenInclude(p => p.Permission).ThenInclude(p => p.Subject).DefaultIfEmpty()
-            .Include(p => p.RoleMemberDirectUsers.Where(w => !w.Deleted)).ThenInclude(efus => efus.Role).ThenInclude(p => p.RolePermissions).ThenInclude(p => p.Permission).ThenInclude(p => p.Subject).DefaultIfEmpty() // uživatelé bez ProviderId mají vazbu do RoleMember přes DirectUserId -- administrativní role
+            .Include(p => p.EffectiveUserUsers.Where(w => !w.Deleted)).ThenInclude(efus => efus.RoleMembers.Where(w => !w.Deleted)).ThenInclude(efus => efus.Role).ThenInclude(p => p.RolePermissions.Where(w => !w.Deleted)).ThenInclude(p => p.Permission).ThenInclude(p => p.Subject).DefaultIfEmpty()// efektivního uživatele mají jenom uživatelé, kteřé mají vyplněné ProviderId - do RoleMember vazba přes EffectiveUserId -- pacient, lékař atd.
+            .Include(p => p.EffectiveUserUsers.Where(w => !w.Deleted)).ThenInclude(efus => efus.RoleMembers.Where(w => !w.Deleted)).ThenInclude(efus => efus.Role).ThenInclude(i => i.RoleCategoryCombination).ThenInclude(i => i.RoleCategory).DefaultIfEmpty()
+            .Include(p => p.EffectiveUserUsers.Where(w => !w.Deleted)).ThenInclude(i => i.GroupEffectiveMembers.Where(w => !w.Deleted)).ThenInclude(i => i.Group).ThenInclude(p => p.GroupPermissions.Where(w => !w.Deleted)).ThenInclude(p => p.Permission).ThenInclude(p => p.Subject).DefaultIfEmpty()
+            .Include(p => p.RoleMemberDirectUsers.Where(w => !w.Deleted)).ThenInclude(efus => efus.Role).ThenInclude(p => p.RolePermissions.Where(w => !w.Deleted)).ThenInclude(p => p.Permission).ThenInclude(p => p.Subject).DefaultIfEmpty() // uživatelé bez ProviderId mají vazbu do RoleMember přes DirectUserId -- administrativní role
             .Include(p => p.RoleMemberDirectUsers.Where(w => !w.Deleted)).ThenInclude(efus => efus.Role).ThenInclude(i => i.RoleCategoryCombination).ThenInclude(i => i.RoleCategory).DefaultIfEmpty()
-            .Include(p => p.UserPermissionUsers).ThenInclude(p => p.Permission).ThenInclude(p => p.Subject).DefaultIfEmpty() //DeniedPermissions
+            .Include(p => p.UserPermissionUsers.Where(w => !w.Deleted)).ThenInclude(p => p.Permission).ThenInclude(p => p.Subject).DefaultIfEmpty() //DeniedPermissions
             .Include(p => p.Organization).DefaultIfEmpty()
             .Include(p => p.GenderType).DefaultIfEmpty()
             .Include(p => p.City).DefaultIfEmpty()
@@ -109,7 +110,7 @@ public class CustomerRepository : ICustomerRepository
     }
 
     /// <inheritdoc/>
-    public async Task<PaginatedListData<Customer>> GetCustomersTaskAsync(Customer currentUser, bool activeUsersOnly, int? filterRole, int? filteGroup, string? searchText, string? order = "created_desc", int? page = 1, int? pageSize = 20, int? providerId = null)
+    public async Task<PaginatedListData<Customer>> GetCustomersTaskAsync(CompleteUserContract currentUser, bool activeUsersOnly, int? filterRole, int? filteGroup, string? searchText, string? order = "created_desc", int? page = 1, int? pageSize = 20, int? providerId = null)
     {
         IQueryable<Customer> query = _dbContext.Customers
             .Include(p => p.EffectiveUserUsers).ThenInclude(efus => efus.RoleMembers.Where(w => !w.Deleted)).ThenInclude(efus => efus.Role).DefaultIfEmpty()// efektivního uživatele mají jenom uživatelé, kteřé mají vyplněné ProviderId - do RoleMember vazba přes EffectiveUserId -- pacient, lékař atd.
@@ -226,7 +227,7 @@ public class CustomerRepository : ICustomerRepository
     }
 
     /// <inheritdoc/>
-    public async Task<bool> UpdateCustomerTaskAsync(Customer currentUser, Customer user, bool? ignoreADB2C = false, IDbContextTransaction? tran = null, bool dontManageTran = false)
+    public async Task<bool> UpdateCustomerTaskAsync(CompleteUserContract currentUser, Customer user, bool? ignoreADB2C = false, IDbContextTransaction? tran = null, bool dontManageTran = false)
     {
         bool ret = false;
         string logHeader = _logName + ".InsertCustomerTaskAsync:";
@@ -304,7 +305,7 @@ public class CustomerRepository : ICustomerRepository
     }
 
     /// <inheritdoc/>
-    public async Task<bool> InsertCustomerTaskAsync(Customer currentUser, Customer user)
+    public async Task<bool> InsertCustomerTaskAsync(CompleteUserContract currentUser, Customer user)
     {
         bool ret = false;
         string logHeader = _logName + ".InsertCustomerTaskAsync:";
@@ -353,7 +354,7 @@ public class CustomerRepository : ICustomerRepository
     }
 
     /// <inheritdoc/>
-    public async Task<bool> DeleteCustomerTaskAsync(Customer currentUser, Customer user, bool? ignoreADB2C = false)
+    public async Task<bool> DeleteCustomerTaskAsync(CompleteUserContract currentUser, Customer user, bool? ignoreADB2C = false)
     {
         bool ret = false;
         string logHeader = _logName + ".DeleteCustomerTaskAsync:";
@@ -433,7 +434,7 @@ public class CustomerRepository : ICustomerRepository
     /// -12 = uživatel se stejným PersonalIdentificationNumber existuje
     /// -13 = uživatel se stejným GlobalID existuje
     /// </returns>
-    public async Task<int> CheckIfUserExists(Customer currentUser, Customer user)
+    public async Task<int> CheckIfUserExists(CompleteUserContract currentUser, Customer user)
     {
         string logHeader = _logName + ".CheckIfUserExists:";
         string logData = string.Format("Customer: ({0}) {1}, Email: {2}, CurrentUser: ({3}) {4}", user.Id, user.FriendlyName, user.Email, currentUser.Id, currentUser.FriendlyName);

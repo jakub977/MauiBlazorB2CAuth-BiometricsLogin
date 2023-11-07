@@ -1,4 +1,5 @@
 ﻿using Principal.Telemedicine.DataConnectors.Models.Shared;
+using Principal.Telemedicine.Shared.Models;
 
 namespace Principal.Telemedicine.DataConnectors.Repositories;
 
@@ -40,7 +41,7 @@ public interface IEffectiveUserRepository
     /// <param name="currentUser">Aktuální uživatel</param>
     /// <param name="user">EffectiveUser</param>
     /// <returns>true / false</returns>
-    Task<bool> UpdateEffectiveUserTaskAsync(Customer currentUser, EffectiveUser user);
+    Task<bool> UpdateEffectiveUserTaskAsync(CompleteUserContract currentUser, EffectiveUser user);
 
     /// <summary>
     /// Metoda zakládá nového EffectiveUser
@@ -48,7 +49,7 @@ public interface IEffectiveUserRepository
     /// <param name="currentUser">Aktuální uživatel</param>
     /// <param name="user">EffectiveUser</param>
     /// <returns>true / false</returns>
-    Task<bool> InsertEffectiveUserTaskAsync(Customer currentUser, EffectiveUser user);
+    Task<bool> InsertEffectiveUserTaskAsync(CompleteUserContract currentUser, EffectiveUser user);
 
     /// <summary>
     /// Metoda označí EffectiveUser za smazaeného
@@ -56,7 +57,7 @@ public interface IEffectiveUserRepository
     /// <param name="currentUser">Aktuální uživatel</param>
     /// <param name="user">EffectiveUser</param>
     /// <returns>true / false</returns>
-    Task<bool> DeleteEffectiveUserTaskAsync(Customer currentUser, EffectiveUser user);
+    Task<bool> DeleteEffectiveUserTaskAsync(CompleteUserContract currentUser, EffectiveUser user);
 
     /// <summary>
     /// Metoda vrací nesmazané Efektivní uživatele dané organizace.

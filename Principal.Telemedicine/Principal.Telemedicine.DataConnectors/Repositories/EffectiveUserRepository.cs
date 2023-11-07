@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
 using Principal.Telemedicine.Shared.Enums;
+using Principal.Telemedicine.Shared.Models;
 
 namespace Principal.Telemedicine.DataConnectors.Repositories;
 
@@ -55,7 +56,7 @@ public class EffectiveUserRepository : IEffectiveUserRepository
     }
 
     /// <inheritdoc/>
-    public async Task<bool> UpdateEffectiveUserTaskAsync(Customer currentUser, EffectiveUser user)
+    public async Task<bool> UpdateEffectiveUserTaskAsync(CompleteUserContract currentUser, EffectiveUser user)
     {
         bool ret = false;
 
@@ -71,7 +72,7 @@ public class EffectiveUserRepository : IEffectiveUserRepository
     }
 
     /// <inheritdoc/>
-    public async Task<bool> InsertEffectiveUserTaskAsync(Customer currentUser, EffectiveUser user)
+    public async Task<bool> InsertEffectiveUserTaskAsync(CompleteUserContract currentUser, EffectiveUser user)
     {
         bool ret = false;
 
@@ -88,7 +89,7 @@ public class EffectiveUserRepository : IEffectiveUserRepository
     }
 
     /// <inheritdoc/>
-    public async Task<bool> DeleteEffectiveUserTaskAsync(Customer currentUser, EffectiveUser user)
+    public async Task<bool> DeleteEffectiveUserTaskAsync(CompleteUserContract currentUser, EffectiveUser user)
     {
         bool ret = false;
         string logHeader = _logName + ".DeleteEffectiveUserTaskAsync:";

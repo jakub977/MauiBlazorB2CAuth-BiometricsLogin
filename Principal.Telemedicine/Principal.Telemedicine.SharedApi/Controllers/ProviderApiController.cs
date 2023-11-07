@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Castle.Core.Resource;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Graph.Models;
@@ -11,6 +12,7 @@ using Principal.Telemedicine.DataConnectors.Repositories;
 using Principal.Telemedicine.Shared.Api;
 using Principal.Telemedicine.Shared.Enums;
 using Principal.Telemedicine.Shared.Models;
+using Principal.Telemedicine.Shared.Security;
 using System.Data;
 using System.Linq;
 
@@ -91,15 +93,13 @@ public class ProviderApiController : ControllerBase
     /// <summary>
     /// Uloží nového poskytovatele
     /// </summary>
-    /// <param name="globalId"> GUID uživatele</param>
     /// <param name="providerContract"> objekt ProviderContract</param>
     /// <returns>GenericResponse s parametrem "success" TRUE nebo FALSE a případně chybu:
     /// -1 = obecná chyba
-    /// -3 = chybí GlobalId
     /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
-    /// <returns></returns>
+    [Authorize]
     [HttpPost(Name = "InsertProvider")]
-    public async Task<IGenericResponse<bool>> InsertProvider([FromHeader(Name = "x-api-g")] string globalId, [FromBody] ProviderContract? providerContract)
+    public async Task<IGenericResponse<bool>> InsertProvider([FromBody] ProviderContract? providerContract)
     {
         string logHeader = _logName + ".InsertProvider:";
         bool ret = false;
@@ -109,16 +109,10 @@ public class ProviderApiController : ControllerBase
         try
         {
             // kontrola na vstupní data
-            if (string.IsNullOrEmpty(globalId))
-            {
-                tran.Rollback();
-                _logger.LogWarning($"{logHeader} Invalid GlobalId: {globalId}");
-                return new GenericResponse<bool>(false, false, -3, "GlobalId is empty", "GlobalId must be set.");
-            }
             var mappedProvider = new Provider();
             mappedProvider = _mapper.Map<Provider>(providerContract);
 
-            Customer? currentUser = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);
+            CompleteUserContract? currentUser = HttpContext.GetTmUser();
             if (currentUser == null)
             {
                 tran.Rollback();
@@ -189,17 +183,15 @@ public class ProviderApiController : ControllerBase
     /// <summary>
     /// Updatuje poskytovatele
     /// </summary>
-    /// <param name="globalId"> GUID uživatele</param>
-    /// <param name="provider"> objekt ProviderContract</param>
+    /// <param name="providerContract"> objekt ProviderContract</param>
     /// <returns>GenericResponse s parametrem "success" TRUE nebo FALSE a případně chybu:
     /// -1 = obecná chyba
-    /// -3 = chybí GlobalId
     /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
     /// -5 = poskytovatele se nepodařilo dohledat podle ID
     /// -6 = subjekty pro organizaci se nepodařilo dohledat podle ID a OrganizationId
-    /// <returns></returns>
+    [Authorize]
     [HttpPost(Name = "UpdateProvider")]
-    public async Task<IGenericResponse<bool>> UpdateProvider([FromHeader(Name = "x-api-g")] string globalId, [FromBody] ProviderContract? providerContract)
+    public async Task<IGenericResponse<bool>> UpdateProvider( [FromBody] ProviderContract? providerContract)
     {
         string logHeader = _logName + ".UpdateProvider:";
         bool ret = false;
@@ -209,17 +201,10 @@ public class ProviderApiController : ControllerBase
         try
         {
             // kontrola na vstupní data
-            if (string.IsNullOrEmpty(globalId))
-            {
-                tran.Rollback();
-                _logger.LogWarning($"{logHeader} Invalid GlobalId: {globalId}");
-                return new GenericResponse<bool>(false, false, -3, "GlobalId is empty", "GlobalId must be set.");
-            }
-
             var mappedProvider = new Provider();
             mappedProvider = _mapper.Map<Provider>(providerContract);
 
-            Customer? currentUser = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);
+            CompleteUserContract? currentUser = HttpContext.GetTmUser();
             if (currentUser == null)
             {
                 tran.Rollback();
@@ -369,20 +354,19 @@ public class ProviderApiController : ControllerBase
 
     }
 
-
     /// <summary>
     /// Smaže poskytovatele včetně jeho vazeb na efektivní uživatele
     /// </summary>
-    /// <param name="globalId"> GUID uživatele</param>
-    /// <param name="provider"> objekt Providera</param>
+    /// <param name="providerContract"> objekt Providera</param>
     /// <returns>GenericResponse s parametrem "success" TRUE nebo FALSE a případně chybu:
     /// -1 = obecná chyba
     /// -3 = chybí GlobalId
     /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
     /// -5 = poskytovatele se nepodařilo dohledat podle ID
     /// </returns>
+    [Authorize]
     [HttpPost(Name = "DeleteProvider")]
-    public async Task<IGenericResponse<bool>> DeleteProvider([FromHeader(Name = "x-api-g")] string globalId, [FromBody] ProviderContract? providerContract)
+    public async Task<IGenericResponse<bool>> DeleteProvider([FromBody] ProviderContract? providerContract)
     {
         string logHeader = _logName + ".DeleteProvider:";
         bool ret = false;
@@ -392,14 +376,7 @@ public class ProviderApiController : ControllerBase
         try
         {
             // kontrola na vstupní data
-            if (string.IsNullOrEmpty(globalId))
-            {
-                tran.Rollback();
-                _logger.LogWarning($"{logHeader} Invalid GlobalId: {globalId}");
-                return new GenericResponse<bool>(false, false, -3, "GlobalId is empty", "GlobalId must be set.");
-            }
-
-            Customer? currentUser = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);
+            CompleteUserContract? currentUser = HttpContext.GetTmUser();
             if (currentUser == null)
             {
                 tran.Rollback();
@@ -507,7 +484,7 @@ public class ProviderApiController : ControllerBase
         }
     }
 
-    private void SetProviderAdminUsers(Customer customer, Provider provider)
+    private void SetProviderAdminUsers(CompleteUserContract customer, Provider provider)
     {
         var providerAdminsOfProvider = _effectiveUserRepository.GetEffectiveUsersByOrganizationId(provider.OrganizationId).Where(p => p.Provider.Id == provider.Id && p.RoleMembers.Any(r => r.RoleId == (int)RoleEnum.ProviderAdmin && !r.Deleted)).ToList();
 
