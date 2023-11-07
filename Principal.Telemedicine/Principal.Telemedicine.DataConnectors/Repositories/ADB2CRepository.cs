@@ -16,7 +16,6 @@ public class ADB2CRepository : IADB2CRepository
 
     private readonly ILogger _logger;
     private readonly AzureAdB2C _adB2C;
-    private readonly HostBuilderContext _extension;
 
     private string? _tenantId = "";
     private string? _clientId = "";
@@ -24,21 +23,18 @@ public class ADB2CRepository : IADB2CRepository
     private string? _extensionClientId = "";
     private string? _applicationDomain = "";
     private bool _allowWebApiToBeAuthorizedByACL = false;
-    private bool _isLocal = true;
     private readonly string _logName = "ADB2CRepository";
                             
-    public ADB2CRepository(ILogger<ADB2CRepository> logger, IOptions<AzureAdB2C> adB2C, HostBuilderContext extension)
+    public ADB2CRepository(ILogger<ADB2CRepository> logger, IOptions<AzureAdB2C> adB2C)
     {
         _logger = logger;
-        _extension = extension;
-        _isLocal = _extension.HostingEnvironment.IsLocalHosted();
         _adB2C = adB2C.Value;
-        _tenantId = !_isLocal ? _adB2C.STenantId : _adB2C.TenantId;
-        _clientId = !_isLocal ? _adB2C.SClientId : _adB2C.ClientId;
-        _clientSecret = !_isLocal ? _adB2C.SClientSecret : _adB2C.ClientSecret;
-        _extensionClientId = !_isLocal ? _adB2C.SB2cExtensionAppClientId : _adB2C.B2cExtensionAppClientId;
-        _applicationDomain = !_isLocal ? _adB2C.SB2CApplicationDomain : _adB2C.B2CApplicationDomain;
-        _allowWebApiToBeAuthorizedByACL = !_isLocal ? _adB2C.SAllowWebApiToBeAuthorizedByACL : _adB2C.AllowWebApiToBeAuthorizedByACL;
+        _tenantId = _adB2C.TenantId;
+        _clientId = _adB2C.ClientId;
+        _clientSecret = _adB2C.ClientSecret;
+        _extensionClientId = _adB2C.B2cExtensionAppClientId;
+        _applicationDomain = _adB2C.B2CApplicationDomain;
+        _allowWebApiToBeAuthorizedByACL = _adB2C.AllowWebApiToBeAuthorizedByACL;
     }
 
     /// <inheritdoc/>

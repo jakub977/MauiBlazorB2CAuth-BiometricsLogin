@@ -4,7 +4,6 @@ using Newtonsoft.Json;
 using Principal.Telemedicine.B2CApi.Models;
 using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.DataConnectors.Repositories;
-using Principal.Telemedicine.Shared.Configuration;
 using System.Text;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
 
@@ -20,16 +19,14 @@ public class ExtendedPropertiesController : ControllerBase
     private readonly ILogger<ExtendedPropertiesController> _logger;
     private readonly DbContextApi _context;
     private readonly AuthorizationSettings _authsettings;
-    private readonly HostBuilderContext _extension;
     private readonly IADB2CRepository _adb2cRepository;
 
     
-    public ExtendedPropertiesController(ILogger<ExtendedPropertiesController> logger, DbContextApi context, IOptions<AuthorizationSettings> authsettings, HostBuilderContext extension, IADB2CRepository adb2cRepository)
+    public ExtendedPropertiesController(ILogger<ExtendedPropertiesController> logger, DbContextApi context, IOptions<AuthorizationSettings> authsettings, IADB2CRepository adb2cRepository)
     {
         _logger = logger;
         _context = context;
         _authsettings = authsettings.Value;
-        _extension = extension;
         _adb2cRepository = adb2cRepository;
 
     }
@@ -44,15 +41,13 @@ public class ExtendedPropertiesController : ControllerBase
     {
         try
         {
-            bool isLocal = _extension.HostingEnvironment.IsLocalHosted();
-
             var req = Request;
 
             //get the request body
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
 
             //check HTTP basic authorization
-            if (!Authorize(req, _logger, isLocal, _authsettings))
+            if (!Authorize(req, _logger, _authsettings))
             {
                 _logger.Log(LogLevel.Error, $"HTTP basic authentication validation failed.Request body: '{requestBody}'");
                 return new UnauthorizedObjectResult("|API_ERROR_1|Authentication validation failed|");
@@ -113,7 +108,6 @@ public class ExtendedPropertiesController : ControllerBase
                     extension_OrganizationIDs = foundOrganizationIdStr,
                     extension_MAUser = true
                 });
-
             }
 
             else
@@ -121,7 +115,6 @@ public class ExtendedPropertiesController : ControllerBase
                 _logger.Log(LogLevel.Error, $"User '{email}' doesnt exist in database.");
                 return new BadRequestObjectResult(new ResponseContent($"|API_ERROR_4|User doesnt exist in database|'{email}|'"));
             }
-
         }
 
         catch (Exception ex)
@@ -132,14 +125,14 @@ public class ExtendedPropertiesController : ControllerBase
 
     }
 
-    private static bool Authorize(HttpRequest req, ILogger _logger, bool isLocal, AuthorizationSettings _authsettings)
+    private static bool Authorize(HttpRequest req, ILogger _logger, AuthorizationSettings _authsettings)
     {
         // get the environment's credentials 
-        string passwordStored = string.Empty;
-        string emailStored = string.Empty;
+        string? passwordStored = string.Empty;
+        string? emailStored = string.Empty;
 
-        emailStored = !isLocal ? _authsettings.SEmail : _authsettings.PEmail;
-        passwordStored = !isLocal ? _authsettings.SPassword : _authsettings.PPassword;
+        emailStored = _authsettings.Email;
+        passwordStored = _authsettings.Password;
 
 
         // check if the HTTP Authorization header exist
