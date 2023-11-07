@@ -48,10 +48,10 @@ public class ExtendedPropertiesController : ControllerBase
 
             var req = Request;
 
-            // get the request body
+            //get the request body
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
 
-            // check HTTP basic authorization
+            //check HTTP basic authorization
             if (!Authorize(req, _logger, isLocal, _authsettings))
             {
                 _logger.Log(LogLevel.Error, $"HTTP basic authentication validation failed.Request body: '{requestBody}'");

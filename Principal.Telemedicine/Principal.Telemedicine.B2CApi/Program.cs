@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting.Internal;
 using Microsoft.Extensions.Logging.ApplicationInsights;
 using Principal.Telemedicine.B2CApi;
 using Principal.Telemedicine.DataConnectors.Contexts;
@@ -11,6 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json")
            .Build();
+builder.Services.TryAddSingleton<IHostEnvironment>(new HostingEnvironment { EnvironmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") });
+
 var secretFilePath = "Secured/secrets.json";
 
 builder.Services.AddDbContext<DbContextApi>(options =>
@@ -18,7 +22,8 @@ builder.Services.AddDbContext<DbContextApi>(options =>
 builder.Services.AddLogging(configuration);
 builder.Services.AddScoped<IADB2CRepository, ADB2CRepository>();
 
-builder.Services.AddSecretConfiguration<AzureAdB2C>(configuration, secretFilePath).AddSecretConfiguration<AuthorizationSettings>(configuration, secretFilePath);
+builder.Services.AddSecretConfiguration<AzureAdB2C>(configuration, secretFilePath);
+builder.Services.AddSecretConfiguration<AuthorizationSettings>(configuration, secretFilePath);
 
 builder.Services.AddControllers();
 

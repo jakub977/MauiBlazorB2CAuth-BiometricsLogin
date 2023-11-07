@@ -1,5 +1,6 @@
 ﻿using Azure.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Graph;
@@ -13,9 +14,9 @@ namespace Principal.Telemedicine.DataConnectors.Repositories;
 public class ADB2CRepository : IADB2CRepository
 {
 
-    private readonly IConfiguration _configuration;
     private readonly ILogger _logger;
     private readonly AzureAdB2C _adB2C;
+    private readonly HostBuilderContext _extension;
 
     private string? _tenantId = "";
     private string? _clientId = "";
@@ -23,20 +24,21 @@ public class ADB2CRepository : IADB2CRepository
     private string? _extensionClientId = "";
     private string? _applicationDomain = "";
     private bool _allowWebApiToBeAuthorizedByACL = false;
+    private bool _isLocal = true;
     private readonly string _logName = "ADB2CRepository";
                             
-    public ADB2CRepository(IConfiguration configuration, ILogger<ADB2CRepository> logger, IOptions<AzureAdB2C> adB2C)
+    public ADB2CRepository(ILogger<ADB2CRepository> logger, IOptions<AzureAdB2C> adB2C, HostBuilderContext extension)
     {
-        _configuration = configuration;
         _logger = logger;
-        _tenantId = _configuration["AzureAdB2C:TenantId"];
-        _clientId = _configuration["AzureAdB2C:ClientId"];
-        _clientSecret = _configuration["AzureAdB2C:ClientSecret"];
-        _extensionClientId = _configuration["AzureAdB2C:B2cExtensionAppClientId"];
-        _applicationDomain = _configuration["AzureAdB2C:B2CApplicationDomain"];
-        _allowWebApiToBeAuthorizedByACL = bool.Parse(_configuration["AzureAdB2C:AllowWebApiToBeAuthorizedByACL"]);
+        _extension = extension;
+        _isLocal = _extension.HostingEnvironment.IsLocalHosted();
         _adB2C = adB2C.Value;
-        
+        _tenantId = !_isLocal ? _adB2C.STenantId : _adB2C.TenantId;
+        _clientId = !_isLocal ? _adB2C.SClientId : _adB2C.ClientId;
+        _clientSecret = !_isLocal ? _adB2C.SClientSecret : _adB2C.ClientSecret;
+        _extensionClientId = !_isLocal ? _adB2C.SB2cExtensionAppClientId : _adB2C.B2cExtensionAppClientId;
+        _applicationDomain = !_isLocal ? _adB2C.SB2CApplicationDomain : _adB2C.B2CApplicationDomain;
+        _allowWebApiToBeAuthorizedByACL = !_isLocal ? _adB2C.SAllowWebApiToBeAuthorizedByACL : _adB2C.AllowWebApiToBeAuthorizedByACL;
     }
 
     /// <inheritdoc/>
