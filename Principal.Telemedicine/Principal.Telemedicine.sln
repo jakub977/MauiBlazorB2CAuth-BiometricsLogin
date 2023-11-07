@@ -52,7 +52,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Principal.Telemedicine.Shar
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Principal.Telemedicine.Shared.Security", "Principal.Telemedicine.Shared.Security\Principal.Telemedicine.Shared.Security.csproj", "{43C8C338-C409-49A9-A788-A45D12FD1124}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Principal.Telemedicine.Shared.Cache.Test", "Principal.Telemedicine.Shared.Cache.Test\Principal.Telemedicine.Shared.Cache.Test.csproj", "{DEDAF452-5C79-42D5-9594-28FF00001F27}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Principal.Telemedicine.Shared.Cache.Test", "Principal.Telemedicine.Shared.Cache.Test\Principal.Telemedicine.Shared.Cache.Test.csproj", "{DEDAF452-5C79-42D5-9594-28FF00001F27}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
