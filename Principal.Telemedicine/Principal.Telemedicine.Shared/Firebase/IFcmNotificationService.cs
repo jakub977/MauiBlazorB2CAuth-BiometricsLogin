@@ -2,6 +2,6 @@
 
 public interface IFcmNotificationService
 {
-    Task<FcmNotificationResponse> SendFcmNotification(string token, string title, string body);
+    Task<string> SendFcmNotification(string token, string title, string body);
 }
 
