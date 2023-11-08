@@ -253,3 +253,7 @@ paket-files/
 
 /Principal.Telemedicine/Principal.Telemedicine.SharedApi/appsettings.Development.json
 
+/Principal.Telemedicine/Principal.Telemedicine.SharedApi/appsettings.Development.json
+/Principal.Telemedicine/Principal.Telemedicine.SharedApi/appsettings.PenelopeTest.json
+/Principal.Telemedicine/Principal.Telemedicine.SharedApi/appsettings.VandaTest.json
+/Principal.Telemedicine/Principal.Telemedicine.B2CApi/appsettings.PenelopeTest.json
