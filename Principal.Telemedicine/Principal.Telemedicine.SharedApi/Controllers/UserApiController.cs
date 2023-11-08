@@ -102,7 +102,7 @@ public class UserApiController : ControllerBase
     /// -2 = neplatné UserId
     /// -3 = chybí GlobalId
     /// </returns>
-    
+    [Authorize]
     [HttpGet(Name = "GetUser")]
     public async Task<IGenericResponse<CompleteUserContract>> GetUser(string? globalId = null, int? userId = null)
     {

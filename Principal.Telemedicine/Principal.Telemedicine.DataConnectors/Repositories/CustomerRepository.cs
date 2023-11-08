@@ -59,12 +59,12 @@ public class CustomerRepository : ICustomerRepository
     public async Task<Customer?> GetCustomerByIdTaskAsync(int id)
     {
         var customer = await _dbContext.Customers
-            .Include(p => p.EffectiveUserUsers).ThenInclude(efus => efus.RoleMembers.Where(w => !w.Deleted)).ThenInclude(efus => efus.Role).ThenInclude(p => p.RolePermissions).ThenInclude(p => p.Permission).ThenInclude(p => p.Subject).DefaultIfEmpty()// efektivního uživatele mají jenom uživatelé, kteřé mají vyplněné ProviderId - do RoleMember vazba přes EffectiveUserId -- pacient, lékař atd.
+            .Include(p => p.EffectiveUserUsers).ThenInclude(efus => efus.RoleMembers.Where(w => !w.Deleted)).ThenInclude(efus => efus.Role).ThenInclude(p => p.RolePermissions).ThenInclude(p => p.Permission).ThenInclude(p => p.Subject).ThenInclude(p => p.ParentSubject).DefaultIfEmpty()// efektivního uživatele mají jenom uživatelé, kteřé mají vyplněné ProviderId - do RoleMember vazba přes EffectiveUserId -- pacient, lékař atd.
             .Include(p => p.EffectiveUserUsers).ThenInclude(efus => efus.RoleMembers.Where(w => !w.Deleted)).ThenInclude(efus => efus.Role).ThenInclude(i => i.RoleCategoryCombination).ThenInclude(i => i.RoleCategory).DefaultIfEmpty()
-            .Include(p => p.EffectiveUserUsers).ThenInclude(i => i.GroupEffectiveMembers.Where(w => !w.Deleted)).ThenInclude(i => i.Group).ThenInclude(p => p.GroupPermissions).ThenInclude(p => p.Permission).ThenInclude(p => p.Subject).DefaultIfEmpty()
-            .Include(p => p.RoleMemberDirectUsers.Where(w => !w.Deleted)).ThenInclude(efus => efus.Role).ThenInclude(p => p.RolePermissions).ThenInclude(p => p.Permission).ThenInclude(p => p.Subject).DefaultIfEmpty() // uživatelé bez ProviderId mají vazbu do RoleMember přes DirectUserId -- administrativní role
+            .Include(p => p.EffectiveUserUsers).ThenInclude(i => i.GroupEffectiveMembers.Where(w => !w.Deleted)).ThenInclude(i => i.Group).ThenInclude(p => p.GroupPermissions).ThenInclude(p => p.Permission).ThenInclude(p => p.Subject).ThenInclude(p => p.ParentSubject).DefaultIfEmpty()
+            .Include(p => p.RoleMemberDirectUsers.Where(w => !w.Deleted)).ThenInclude(efus => efus.Role).ThenInclude(p => p.RolePermissions).ThenInclude(p => p.Permission).ThenInclude(p => p.Subject).ThenInclude(p => p.ParentSubject).DefaultIfEmpty() // uživatelé bez ProviderId mají vazbu do RoleMember přes DirectUserId -- administrativní role
             .Include(p => p.RoleMemberDirectUsers.Where(w => !w.Deleted)).ThenInclude(efus => efus.Role).ThenInclude(i => i.RoleCategoryCombination).ThenInclude(i => i.RoleCategory).DefaultIfEmpty()
-            .Include(p => p.UserPermissionUsers).ThenInclude(p => p.Permission).ThenInclude(p => p.Subject).DefaultIfEmpty() //DeniedPermissions
+            .Include(p => p.UserPermissionUsers).ThenInclude(p => p.Permission).ThenInclude(p => p.Subject).ThenInclude(p => p.ParentSubject).DefaultIfEmpty() //DeniedPermissions
             .Include(p => p.Picture).DefaultIfEmpty()
             .Include(p => p.Organization).DefaultIfEmpty()
             .Include(p => p.GenderType).DefaultIfEmpty()
@@ -78,12 +78,12 @@ public class CustomerRepository : ICustomerRepository
     public async Task<Customer?> GetCustomerByGlobalIdTaskAsync(string globalId)
     {
         var customer = await _dbContext.Customers
-            .Include(p => p.EffectiveUserUsers.Where(w => !w.Deleted)).ThenInclude(efus => efus.RoleMembers.Where(w => !w.Deleted)).ThenInclude(efus => efus.Role).ThenInclude(p => p.RolePermissions.Where(w => !w.Deleted)).ThenInclude(p => p.Permission).ThenInclude(p => p.Subject).DefaultIfEmpty()// efektivního uživatele mají jenom uživatelé, kteřé mají vyplněné ProviderId - do RoleMember vazba přes EffectiveUserId -- pacient, lékař atd.
+            .Include(p => p.EffectiveUserUsers.Where(w => !w.Deleted)).ThenInclude(efus => efus.RoleMembers.Where(w => !w.Deleted)).ThenInclude(efus => efus.Role).ThenInclude(p => p.RolePermissions.Where(w => !w.Deleted)).ThenInclude(p => p.Permission).ThenInclude(p => p.Subject).ThenInclude(p => p.ParentSubject).DefaultIfEmpty()// efektivního uživatele mají jenom uživatelé, kteřé mají vyplněné ProviderId - do RoleMember vazba přes EffectiveUserId -- pacient, lékař atd.
             .Include(p => p.EffectiveUserUsers.Where(w => !w.Deleted)).ThenInclude(efus => efus.RoleMembers.Where(w => !w.Deleted)).ThenInclude(efus => efus.Role).ThenInclude(i => i.RoleCategoryCombination).ThenInclude(i => i.RoleCategory).DefaultIfEmpty()
-            .Include(p => p.EffectiveUserUsers.Where(w => !w.Deleted)).ThenInclude(i => i.GroupEffectiveMembers.Where(w => !w.Deleted)).ThenInclude(i => i.Group).ThenInclude(p => p.GroupPermissions.Where(w => !w.Deleted)).ThenInclude(p => p.Permission).ThenInclude(p => p.Subject).DefaultIfEmpty()
-            .Include(p => p.RoleMemberDirectUsers.Where(w => !w.Deleted)).ThenInclude(efus => efus.Role).ThenInclude(p => p.RolePermissions.Where(w => !w.Deleted)).ThenInclude(p => p.Permission).ThenInclude(p => p.Subject).DefaultIfEmpty() // uživatelé bez ProviderId mají vazbu do RoleMember přes DirectUserId -- administrativní role
+            .Include(p => p.EffectiveUserUsers.Where(w => !w.Deleted)).ThenInclude(i => i.GroupEffectiveMembers.Where(w => !w.Deleted)).ThenInclude(i => i.Group).ThenInclude(p => p.GroupPermissions.Where(w => !w.Deleted)).ThenInclude(p => p.Permission).ThenInclude(p => p.Subject).ThenInclude(p => p.ParentSubject).DefaultIfEmpty()
+            .Include(p => p.RoleMemberDirectUsers.Where(w => !w.Deleted)).ThenInclude(efus => efus.Role).ThenInclude(p => p.RolePermissions.Where(w => !w.Deleted)).ThenInclude(p => p.Permission).ThenInclude(p => p.Subject).ThenInclude(p => p.ParentSubject).DefaultIfEmpty() // uživatelé bez ProviderId mají vazbu do RoleMember přes DirectUserId -- administrativní role
             .Include(p => p.RoleMemberDirectUsers.Where(w => !w.Deleted)).ThenInclude(efus => efus.Role).ThenInclude(i => i.RoleCategoryCombination).ThenInclude(i => i.RoleCategory).DefaultIfEmpty()
-            .Include(p => p.UserPermissionUsers.Where(w => !w.Deleted)).ThenInclude(p => p.Permission).ThenInclude(p => p.Subject).DefaultIfEmpty() //DeniedPermissions
+            .Include(p => p.UserPermissionUsers.Where(w => !w.Deleted)).ThenInclude(p => p.Permission).ThenInclude(p => p.Subject).ThenInclude(p => p.ParentSubject).DefaultIfEmpty() //DeniedPermissions
             .Include(p => p.Organization).DefaultIfEmpty()
             .Include(p => p.GenderType).DefaultIfEmpty()
             .Include(p => p.City).DefaultIfEmpty()
