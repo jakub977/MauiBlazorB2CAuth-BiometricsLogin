@@ -8,25 +8,15 @@ namespace Principal.Telemedicine.B2CApi;
 public class AuthorizationSettings
 {
     /// <summary>
-    /// Veřejný email. 
-    /// </summary>
-    public string PEmail { get; set; }
-
-    /// <summary>
-    /// Skrytý email.
+    /// Email nutný k autorizace vůči AD.
     /// </summary>
     [SecretValue]
-    public string SEmail { get; set; }
+    public string? Email { get; set; }
 
     /// <summary>
-    /// Veřejné heslo.
-    /// </summary>
-    public string PPassword { get; set; }
-
-    /// <summary>
-    /// Skryté heslo.
+    /// Heslo nutné k autorizaci vůči AD.
     /// </summary>
     [SecretValue]
-    public string SPassword { get; set; }
+    public string? Password { get; set; }
 
 }

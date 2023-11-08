@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using System.Linq;
 using Principal.Telemedicine.Shared.Interfaces;
 
 namespace Principal.Telemedicine.Shared.Cache;
