@@ -206,12 +206,12 @@ public partial class Role
             data.Provider = Provider.ConvertToProviderContract(false, false);
 
         data.RoleCategoryCombinationId = RoleCategoryCombinationId;
-        
+
         if (withRolesAndGroupsDetail && RoleCategoryCombination != null)
             data.RoleCategoryCombination = RoleCategoryCombination.ConvertToRoleCategoryCombinationContract();
 
         if (withPermissions && RolePermissions != null && RolePermissions.Count > 0)
-            foreach(RolePermission permission in RolePermissions)
+            foreach (RolePermission permission in RolePermissions)
                 data.RolePermissions.Add(permission.ConvertToRolePermissionContract(withSubject));
 
         data.UpdateDateUtc = UpdateDateUtc;

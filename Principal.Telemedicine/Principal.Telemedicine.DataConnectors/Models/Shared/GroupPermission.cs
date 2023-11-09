@@ -97,7 +97,7 @@ public partial class GroupPermission
         GroupPermissionContract data = new GroupPermissionContract();
 
         data.Active = Active;
-        data.CreatedByCustomerId = CreatedByCustomer.Id;
+        data.CreatedByCustomerId = CreatedByCustomerId;
         data.CreatedDateUtc = CreatedDateUtc;
         data.Deleted = Deleted;
         data.Id = Id;

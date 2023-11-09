@@ -52,14 +52,19 @@ public class UserApiController : ControllerBase
     /// Vrátí základní údaje uživatele.
     /// </summary>
     /// <param name="userId">Id uživatele</param>
-    /// <returns>GenericResponse s parametrem "success" TRUE a objektem "UserContract" nebo FALSE a případně chybu</returns>
+    /// <returns>GenericResponse s parametrem "success" TRUE a objektem "UserContract" nebo FALSE a případně chybu:
+    /// -1 = obecná chyba
+    /// -2 = neplatné UserId
+    /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
+    /// </returns>
+    [Authorize]
     [HttpGet(Name = "GetUserInfo")]
     public async Task<IGenericResponse<UserContract>> GetUserInfo(int userId)
     {
         string logHeader = _logName + ".GetUserInfo:";
 
         // kontrola na vstupní data
-        var currentUser = HttpContext.GetTmUser();
+        CompleteUserContract? currentUser = HttpContext.GetTmUser();
         if (currentUser == null)
         {
             _logger.LogWarning("{0} Current User not found", logHeader);
@@ -88,76 +93,33 @@ public class UserApiController : ControllerBase
     }
 
     /// <summary>
-    /// Vrátí kompletní údaje uživatele jako třídu Customer
-    /// </summary>
-    /// <param name="globalId">globalID uživatele</param>
-    /// <returns>GenericResponse s parametrem "success" TRUE a objektem "Customer" nebo FALSE a případně chybu:
-    /// -1 = obecná chyba
-    /// -3 = chybí global ID
-    /// </returns>
-    [Authorize]
-    [HttpGet(Name = "GetUserForAuthorization")]
-    public async Task<IGenericResponse<Customer>> GetUserForAuthorization(string? globalId = null)
-    {
-        DateTime startTime = DateTime.Now;
-        string logHeader = _logName + ".GetUserForAuthorization:";
-        Customer? retData = null;
-
-        //Aktualni uživatel
-        var actualUser = HttpContext.GetTmUser();
-        //Pokud nejsou vstupní parametry, nahrazuji globalId uživatelem volání
-        if (string.IsNullOrEmpty(globalId))
-            globalId = actualUser?.GlobalId;
-
-        // kontrola na vstupní data
-        if (string.IsNullOrEmpty(globalId))
-        {
-            _logger.LogWarning("{0} Invalid GlobalId: {1}", logHeader, globalId);
-            return new GenericResponse<Customer>(new Customer(), false, -3, "GlobalId is empty", "GlobalId must be set.");
-        }
-
-        try
-        {
-            retData = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);
-            
-            TimeSpan endTime = DateTime.Now - startTime;
-
-            _logger.LogInformation("{0} Data found, duration: {1}", logHeader, endTime);
-
-            return new GenericResponse<Customer>(retData, true, 0);
-        }
-
-        catch (Exception ex)
-        {
-            _logger.LogError("{0} {1}", logHeader, ex.Message);
-            return new GenericResponse<Customer>(null, false, -1, ex.Message);
-        }
-    }
-
-    /// <summary>
     /// Vrátí údaje uživatele včetně rolí, efektivních uživatelů a oprávnění.
     /// </summary>
     /// <param name="globalId">GlobalId uživatele, který metodu volá</param>
     /// <param name="userId">Id uživatele, kterého chceme vrátit, pokud je jiný než ten co metodu volá</param>
-    /// <returns>GenericResponse s parametrem "success" TRUE a objektem "CompleteUserContract" nebo FALSE a případně chybu</returns>
+    /// <returns>GenericResponse s parametrem "success" TRUE a objektem "CompleteUserContract" nebo FALSE a případně chybu:
+    /// -1 = obecná chyba
+    /// -2 = neplatné UserId
+    /// -3 = chybí GlobalId
+    /// </returns>
     [Authorize]
     [HttpGet(Name = "GetUser")]
-    public async Task<IGenericResponse<CompleteUserContract>> GetUser(string? globalId=null, int? userId=null)
+    public async Task<IGenericResponse<CompleteUserContract>> GetUser(string? globalId = null, int? userId = null)
     {
         DateTime startTime = DateTime.Now;
         string logHeader = _logName + ".GetUser:";
 
         //Aktualni uživatel
-        var actualUser = HttpContext.GetTmUser();
+        CompleteUserContract? actualUser = HttpContext.GetTmUser();
         //Pokud nejsou vstupní parametry, nahrazuji globalId uživatelem volání
         if ((!userId.HasValue || userId.Value <= 0) && string.IsNullOrEmpty(globalId)) globalId = actualUser?.GlobalId;
 
         // kontrola na vstupní data
-        if ((!userId.HasValue || userId.Value<=0)  && string.IsNullOrEmpty(globalId))
+        if ((!userId.HasValue || userId.Value <= 0) && string.IsNullOrEmpty(globalId))
         {
             _logger.LogWarning("{0} Invalid UserId: {1} or GlobalId: {2}", logHeader, userId, globalId);
             if (userId > 0)
-                return new GenericResponse<CompleteUserContract>(new CompleteUserContract(), false, -2, "Invalid UserId", "UserId vali is not '0'.");
+                return new GenericResponse<CompleteUserContract>(new CompleteUserContract(), false, -2, "Invalid UserId", "UserId value must be greater then '0'.");
             else
                 return new GenericResponse<CompleteUserContract>(new CompleteUserContract(), false, -3, "GlobalId is empty", "GlobalId must be set.");
         }
@@ -184,7 +146,6 @@ public class UserApiController : ControllerBase
 
                 //mappedUser = _mapper.Map<CompleteUserContract>(user);
                 mappedUser = user.ConvertToCompleteUserContract(false, false, true, true, false, true);
-
             }
 
             TimeSpan endTime = DateTime.Now - startTime;
@@ -211,14 +172,17 @@ public class UserApiController : ControllerBase
     /// <param name="page">Požadovaná stránka</param>
     /// <param name="pageSize">Počet záznamů na stránce</param>
     /// <param name="providerId">Id Poskytovatele</param>
-    /// <returns>List CompleteUserContract</returns>
+    /// <returns>GenericResponse s parametrem "success" a seznamem CompleteUserContract nebo chybu:
+    /// -1 = obecná chyba
+    /// -4 = uživatel volající metodu (podle GlobalID) nenalezen</returns>
+    [Authorize]
     [HttpGet(Name = "GetUsers")]
-    public async Task<IGenericResponse<List<CompleteUserContract>>> GetUsers([FromHeader(Name = "x-api-g")] string globalId, bool activeUsersOnly, int? filterRole, int? filterGroup, string? searchText, string? order = "created_desc", int? page = 1, int? pageSize = 20, int? providerId = null)
+    public async Task<IGenericResponse<List<CompleteUserContract>>> GetUsers(bool activeUsersOnly, int? filterRole, int? filterGroup, string? searchText, string? order = "created_desc", int? page = 1, int? pageSize = 20, int? providerId = null)
     {
         DateTime startTime = DateTime.Now;
         string logHeader = _logName + ".GetUsers:";
         // kontrola na vstupní data
-        Customer? currentUser = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);
+        CompleteUserContract? currentUser = HttpContext.GetTmUser();
         if (currentUser == null)
         {
             _logger.LogWarning("{0} Current User not found", logHeader);
@@ -253,12 +217,10 @@ public class UserApiController : ControllerBase
     /// <summary>
     /// Uloží změny uživatele
     /// </summary>
-    /// <param name="globalId">globalID uživatele co metodu volá</param>
     /// <param name="user">Objekt uživatele</param>
     /// <returns>GenericResponse s parametrem "success" TRUE nebo FALSE a případně chybu:
     /// -1 = obecná chyba
     /// -2 = neplatné UserId
-    /// -3 = chybí GlobalId
     /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
     /// -5 = uživatele se nepodařilo dohledat podle ID
     /// -11 = uživatel se stejným emailem existuje
@@ -266,8 +228,9 @@ public class UserApiController : ControllerBase
     /// -13 = uživatel se stejným PersonalIdentificationNumber existuje
     /// -14 = uživatel se stejným GlobalID existuje
     /// </returns>
+    [Authorize]
     [HttpPost(Name = "UpdateUser")]
-    public async Task<IGenericResponse<bool>> UpdateUser([FromHeader(Name = "x-api-g")] string globalId, CompleteUserContract user, int? providerId = null, bool isProviderAdmin = false)
+    public async Task<IGenericResponse<bool>> UpdateUser(CompleteUserContract user, int? providerId = null, bool isProviderAdmin = false)
     {
         string logHeader = _logName + ".UpdateUser:";
         DateTime startTime = DateTime.Now;
@@ -275,16 +238,13 @@ public class UserApiController : ControllerBase
         try
         {
             // kontrola na vstupní data
-            if (user.Id <= 0 || string.IsNullOrEmpty(globalId))
+            if (user.Id <= 0)
             {
-                _logger.LogWarning("{0} Invalid UserId: {1} or GlobalId: {2}", logHeader, user.Id, globalId);
-                if (user.Id > 0)
-                    return new GenericResponse<bool>(false, false,-2, "Invalid UserId", "UserId vali is not '0'.");
-                else
-                    return new GenericResponse<bool>(false, false,-3, "GlobalId is empty", "GlobalId must be set.");
+                _logger.LogWarning("{0} Invalid UserId: {1}", logHeader, user.Id);
+                return new GenericResponse<bool>(false, false,-2, "Invalid UserId", "UserId value must be greater then '0'.");
             }
 
-            Customer? currentUser = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);
+            CompleteUserContract? currentUser = HttpContext.GetTmUser();
             if (currentUser == null)
             {
                 _logger.LogWarning("{0} Current User not found", logHeader);
@@ -707,12 +667,10 @@ public class UserApiController : ControllerBase
     /// <summary>
     /// Uloží nového uživatele
     /// </summary>
-    /// <param name="globalId">GlobalID uživatele co metodu volá</param>
     /// <param name="user">Objekt nového uživatele</param>
     /// <returns>GenericResponse s parametrem "success" TRUE a objektem "CompleteUserContract" nebo FALSE a případně chybu:
     /// -1 = obecná chyba
     /// -2 = neplatné UserId
-    /// -3 = chybí GlobalId
     /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
     /// -6 = uživatele se nepodařilo založit v DB nebo ADB2C
     /// -7 = chyby při konverzi dat uživatele
@@ -721,8 +679,9 @@ public class UserApiController : ControllerBase
     /// -13 = uživatel se stejným PersonalIdentificationNumber existuje
     /// -14 = uživatel se stejným GlobalID existuje
     /// </returns>
+    [Authorize]
     [HttpPost(Name = "InsertUser")]
-    public async Task<IGenericResponse<CompleteUserContract>> InsertUser([FromHeader(Name = "x-api-g")] string globalId, CompleteUserContract user)
+    public async Task<IGenericResponse<CompleteUserContract>> InsertUser(CompleteUserContract user)
     {
         string logHeader = _logName + ".InsertUser:";
         bool ret = false;
@@ -731,20 +690,15 @@ public class UserApiController : ControllerBase
 
         try
         {
-            _logger.LogDebug("{0} START", logHeader);
-
             // kontrola na vstupní data
-            if (user.Id > 0 || string.IsNullOrEmpty(globalId))
+            if (user.Id > 0)
             {
-                _logger.LogWarning("{0} Invalid UserId: {1} or GlobalId: {2}", logHeader, user.Id, globalId);
-                if (user.Id > 0)
-                    return new GenericResponse<CompleteUserContract>(null, false,-2, "Invalid UserId", "UserId vali is not '0'.");
-                else
-                    return new GenericResponse<CompleteUserContract>(null, false,-3, "GlobalId is empty", "GlobalId must be set.");
+                _logger.LogWarning("{0} Invalid UserId: {1}", logHeader, user.Id);
+                return new GenericResponse<CompleteUserContract>(null, false,-2, "Invalid UserId", "UserId value is not '0'.");
             }
 
             // dotáhneme si aktuálního uživatele
-            Customer? currentUser = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);
+            CompleteUserContract? currentUser = HttpContext.GetTmUser();
             if (currentUser == null)
             {
                 _logger.LogWarning("{0} Current User not found", logHeader);
@@ -885,13 +839,11 @@ public class UserApiController : ControllerBase
     /// <summary>
     /// Označí existujícího uživatelejako smazaného a smaže ho z ADB2C
     /// </summary>
-    /// <param name="globalId">GlobalID uživatele co metodu volá</param>
-    /// <param name="userID">ID uživatele</param>
+    /// <param name="userId">ID uživatele</param>
     /// <param name="providerId">ID Poskytovatele pod kterým uživatele mažeme</param>
     /// <returns>GenericResponse s parametrem "success" TRUE nebo FALSE a případně chybu:
     /// -1 = obecná chyba
     /// -2 = neplatné UserId
-    /// -3 = chybí GlobalId
     /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
     /// -5 = mazaný uživatel nebyl nalezen
     /// -8 = uživatele se nepodařilo smazat v DB nebo ADB2C
@@ -899,8 +851,9 @@ public class UserApiController : ControllerBase
     /// -21 = uživatel nemůže smazat sebe
     /// -22 = nemůžeme smazat posledního uživatele v roli Správce Poskytovatele (u Poskytovatele)
     /// </returns>
+    [Authorize]
     [HttpGet(Name = "DeleteUser")]
-    public async Task<IGenericResponse<bool>> DeleteUser([FromHeader(Name = "x-api-g")] string globalId, int userId, int? providerId)
+    public async Task<IGenericResponse<bool>> DeleteUser(int userId, int? providerId)
     {
         string logHeader = _logName + ".DeleteUser:";
         bool ret = false;
@@ -909,17 +862,14 @@ public class UserApiController : ControllerBase
         try
         {
             // kontrola na vstupní data
-            if (userId <= 0 || string.IsNullOrEmpty(globalId))
+            if (userId <= 0)
             {
-                _logger.LogWarning("{0} Invalid UserId: {1} or GlobalId: {2}", logHeader, userId, globalId);
-                if (userId <= 0)
-                    return new GenericResponse<bool>(ret, false,-2, "Invalid UserId", "UserId value must be greater then '0'.");
-                else
-                    return new GenericResponse<bool>(ret, false,-3, "GlobalId is empty", "GlobalId must be set.");
+                _logger.LogWarning("{0} Invalid UserId: {1}", logHeader, userId);
+                return new GenericResponse<bool>(ret, false,-2, "Invalid UserId", "UserId value must be greater then '0'.");
             }
 
             // dotáhneme si aktuálního uživatele
-            Customer? currentUser = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);
+            CompleteUserContract? currentUser = HttpContext.GetTmUser();
             if (currentUser == null)
             {
                 _logger.LogWarning("{0} Current User not found", logHeader);
@@ -1042,7 +992,6 @@ public class UserApiController : ControllerBase
     /// <summary>
     /// Metoda kontroluje, zda existuje uživatel v ADB2C
     /// </summary>
-    /// <param name="globalId">GlobalID uživatele co metodu volá</param>
     /// <param name="userId">ID uživatele</param>
     /// <returns>GenericResponse s parametrem "INT" 1 (existuje) nebo 0 (neexistuje) a případně chybu:
     /// -1 = obecná chyba
@@ -1050,8 +999,9 @@ public class UserApiController : ControllerBase
     /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
     /// -5 = mazaný uživatel nebyl nalezen
     /// </returns>
+    [Authorize]
     [HttpGet(Name = "CheckUserInADB2C")]
-    public async Task<IGenericResponse<int>> CheckUserInADB2C([FromHeader(Name = "x-api-g")] string globalId, int userId)
+    public async Task<IGenericResponse<int>> CheckUserInADB2C(int userId)
     {
         string logHeader = _logName + ".CheckUserInADB2C:";
         int ret = -1;
@@ -1067,7 +1017,7 @@ public class UserApiController : ControllerBase
             }
 
             // dotáhneme si aktuálního uživatele
-            Customer? currentUser = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);
+            CompleteUserContract? currentUser = HttpContext.GetTmUser();
             if (currentUser == null)
             {
                 _logger.LogWarning("{0} Current User not found", logHeader);
@@ -1100,7 +1050,6 @@ public class UserApiController : ControllerBase
     /// <summary>
     /// Metoda založí existujícího uživatele z DB i v ADB2C
     /// </summary>
-    /// <param name="globalId">GlobalID uživatele co metodu volá</param>
     /// <param name="userId">ID uživatele</param>
     /// <returns>GenericResponse s parametrem "INT" 1 (založen) nebo 0 (nezaložen) a případně chybu:
     /// -1 = obecná chyba
@@ -1109,8 +1058,9 @@ public class UserApiController : ControllerBase
     /// -5 = uživatel nebyl nalezen v DB
     /// -6 = uživatele se nepodařilo založit v ADB2C nebo aktualizovat DB
     /// </returns>
+    [Authorize]
     [HttpGet(Name = "InsertUserInADB2C")]
-    public async Task<IGenericResponse<int>> InsertUserInADB2C([FromHeader(Name = "x-api-g")] string globalId, int userId)
+    public async Task<IGenericResponse<int>> InsertUserInADB2C(int userId)
     {
         string logHeader = _logName + ".InsertUserInADB2C:";
         int ret = -1;
@@ -1119,14 +1069,14 @@ public class UserApiController : ControllerBase
         try
         {
             // kontrola na vstupní data
-            if (userId <= 0 || string.IsNullOrEmpty(globalId))
+            if (userId <= 0)
             {
                 _logger.LogWarning("{0} Invalid UserId: {1}", logHeader, userId);
                 return new GenericResponse<int>(ret, false, -2, "Invalid UserId", "UserId value must be greater then '0'.");
             }
 
             // dotáhneme si aktuálního uživatele
-            Customer? currentUser = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);
+            CompleteUserContract? currentUser = HttpContext.GetTmUser();
             if (currentUser == null)
             {
                 _logger.LogWarning("{0} Current User not found", logHeader);
@@ -1190,9 +1140,14 @@ public class UserApiController : ControllerBase
     /// <summary>
     /// Uloží Firebase Cloud Messaging token uživatele
     /// </summary>
-    /// <param name="globalId"></param>
+    /// <param name="globalId">GlobalId uživatele</param>
     /// <param name="appInstanceToken"></param>
-    /// <returns>true / false</returns>
+    /// <returns>GenericResponse s parametrem "success" TRUE nebo FALSE a případně chybu:
+    /// -1 = obecná chyba
+    /// -2 = neplatné GlobalId nebo appInstanceToken
+    /// -3 = uživatel volající metodu (podle GlobalID) nenalezen
+    /// -4 = nepodařilo se uložit data
+    /// </returns>
     [HttpGet(Name = "CreateOrUpdateAppInstanceToken")]
     public async Task<IGenericResponse<bool>> CreateOrUpdateAppInstanceToken(string globalId, string appInstanceToken)
     {
@@ -1216,7 +1171,12 @@ public class UserApiController : ControllerBase
 
             user.AppInstanceToken = appInstanceToken;
 
-            bool updated = await _customerRepository.UpdateCustomerTaskAsync(user, user, true);
+            // PŠ - Nevím, jestli tady známe uživatele z HTTP contextu?
+            // Tak použiju nalezeného pro informaci to tom, kdo záznam akualizoval
+            CompleteUserContract actualUser = new CompleteUserContract();
+            actualUser.Id = user.Id;
+
+            bool updated = await _customerRepository.UpdateCustomerTaskAsync(actualUser, user, true);
 
             if (updated)
             {
@@ -1240,7 +1200,11 @@ public class UserApiController : ControllerBase
     /// <summary>
     /// Uloží žádost o smazání dat uživatele do dedikované databáze.
     /// <param name="globalId">globalID uživatele co metodu volá</param>
-    /// <returns>true / false</returns>
+    /// <returns>GenericResponse s parametrem "success" TRUE nebo FALSE a případně chybu:
+    /// -1 = obecná chyba
+    /// -2 = neplatné GlobalId
+    /// -3 = záznam se nepodařilo uložit
+    /// </returns>
     [HttpPost(Name = "SaveUserAccountDeletionDemand")]
     public async Task<IGenericResponse<bool>> SaveUserAccountDeletionDemand(string globalId)
     {

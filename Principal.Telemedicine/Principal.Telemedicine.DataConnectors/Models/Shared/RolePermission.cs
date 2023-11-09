@@ -97,7 +97,7 @@ public partial class RolePermission
         RolePermissionContract data = new RolePermissionContract();
 
         data.Active = Active;
-        data.CreatedByCustomerId = CreatedByCustomer.Id;
+        data.CreatedByCustomerId = CreatedByCustomerId;
         data.CreatedDateUtc = CreatedDateUtc;
         data.Deleted = Deleted;
         data.Id = Id;
