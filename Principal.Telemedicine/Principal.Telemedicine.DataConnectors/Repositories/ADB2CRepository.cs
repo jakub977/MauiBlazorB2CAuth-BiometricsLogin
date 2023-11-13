@@ -46,29 +46,26 @@ public class ADB2CRepository : IADB2CRepository
         {
             if (customer.Id <= 0)
             {
-                _logger.LogWarning("{0} Can't update user with email '{1}' and Id {2} - user is new", logHeader, customer.Email, customer.Id);
+                _logger.LogWarning("{0} Can't update user UPN '{1}' and Id {2} - user is new", logHeader, customer.GlobalId, customer.Id);
                 return ret;
             }
-
-            // UPN ukládáme jako email převedený na Base64 + aplikační doména
-            string searchedUPN = CreateUPN(customer.Email);
 
             // kontrola na existující účet
             var result = await GetClient().Users.GetAsync(requestConfiguration =>
             {
                 requestConfiguration.QueryParameters.Select = new string[] { "id", "createdDateTime", "displayName" };
-                requestConfiguration.QueryParameters.Filter = $"userPrincipalName eq '{searchedUPN}'";
+                requestConfiguration.QueryParameters.Filter = $"userPrincipalName eq '{customer.GlobalId}'";
             });
 
             if (result == null || result.Value == null || result.Value.Count == 0)
             {
-                _logger.LogWarning("{0} ADB2C returned: User with email '{0}' not found", logHeader, customer.Email);
+                _logger.LogWarning("{0} ADB2C returned: User UPN '{0}' not found", logHeader, customer.Email);
                 return ret;
             }
 
             if (result.Value.Count > 1)
             {
-                _logger.LogWarning("{0} ADB2C returned: User with email '{0}' exists more than once: {1}", logHeader, customer.Email, result.Value.Count);
+                _logger.LogWarning("{0} ADB2C returned: User UPN '{0}' exists more than once: {1}", logHeader, customer.GlobalId, result.Value.Count);
                 return ret;
             }
 
@@ -78,13 +75,14 @@ public class ADB2CRepository : IADB2CRepository
             userFound.MobilePhone = customer.TelephoneNumber;
             userFound.AccountEnabled = customer.Active;
             userFound.DisplayName = customer.FriendlyName;
+            userFound.Mail = customer.Email;
             if (customer.CityId > 0 && customer.City != null)
                 userFound.City = customer.City.Name;
 
             await GetClient().Users[$"{userFound.Id}"].PatchAsync(userFound);
             ret = true;
 
-            _logger.LogDebug("{0} ADB2C returned: OK, user '{0}', Email: '{1}', Id: {2} updated succesfully", logHeader, customer.FriendlyName, customer.Email, customer.Id);
+            _logger.LogDebug("{0} ADB2C returned: OK, user '{0}', UPN: '{1}', Id: {2} updated succesfully", logHeader, customer.FriendlyName, customer.GlobalId, customer.Id);
         }
         catch (Exception ex)
         {
@@ -93,7 +91,7 @@ public class ADB2CRepository : IADB2CRepository
             {
                 errMessage += " " + ex.InnerException.Message;
             }
-            _logger.LogError("{0} ADB2C returned: User: '{0}', Error: {1}", logHeader, customer.Email, errMessage);
+            _logger.LogError("{0} ADB2C returned: User: '{0}', Error: {1}", logHeader, customer.GlobalId, errMessage);
         }
 
         return ret;
@@ -171,19 +169,16 @@ public class ADB2CRepository : IADB2CRepository
 
         try
         {
-            // UPN ukládáme jako email převedený na Base64 + aplikační doména
-            string searchedUPN = CreateUPN(customer.Email);
-
             // kontrola na existující účet
             var result = await GetClient().Users.GetAsync(requestConfiguration =>
             {
                 requestConfiguration.QueryParameters.Select = new string[] { "id", "createdDateTime", "displayName" };
-                requestConfiguration.QueryParameters.Filter = $"userPrincipalName eq '{searchedUPN}'";
+                requestConfiguration.QueryParameters.Filter = $"userPrincipalName eq '{customer.GlobalId}'";
             });
 
             if (result == null || result.Value == null || result?.Value?.Count != 1)
             {
-                _logger.LogWarning("{0} ADB2C returned: User with email '{0}' not found", logHeader, customer.Email);
+                _logger.LogWarning("{0} ADB2C returned: User with UPN '{0}' not found", logHeader, customer.GlobalId);
                 return ret;
             }
 
@@ -195,7 +190,7 @@ public class ADB2CRepository : IADB2CRepository
                 ret = true;
             }
 
-            _logger.LogDebug("{0} ADB2C returned: OK, user '{0}', Email: '{1}', Id: {2} deleted succesfully", logHeader, customer.FriendlyName, customer.Email, customer.Id);
+            _logger.LogDebug("{0} ADB2C returned: OK, user '{0}', UPN: '{1}', Id: {2} deleted succesfully", logHeader, customer.FriendlyName, customer.GlobalId, customer.Id);
         }
         catch (Exception ex)
         {
@@ -364,14 +359,11 @@ public class ADB2CRepository : IADB2CRepository
 
         try
         {
-            // UPN je email převedený na Base64 + aplikační doména
-            string searchedUPN = CreateUPN(customer.Email);
-
             // kontrola na existující účet
             var result = await GetClient().Users.GetAsync(requestConfiguration =>
             {
                 requestConfiguration.QueryParameters.Select = new string[] { "id", "createdDateTime", "displayName" };
-                requestConfiguration.QueryParameters.Filter = $"userPrincipalName eq '{searchedUPN}'";
+                requestConfiguration.QueryParameters.Filter = $"userPrincipalName eq '{customer.GlobalId}'";
             });
 
             // existuje účet
@@ -393,6 +385,18 @@ public class ADB2CRepository : IADB2CRepository
         }
 
         return ret;
+    }
+
+    /// <inheritdoc/>
+    public string CreateUPN(string email)
+    {
+        return Base64Encode(email).Replace("=", "_") + "@" + _applicationDomain;
+    }
+
+    /// <inheritdoc/>
+    public string? GetApplicationDomain()
+    {
+        return _applicationDomain;
     }
 
     #region Private methods
@@ -428,17 +432,6 @@ public class ADB2CRepository : IADB2CRepository
     {
         var base64Bytes = System.Convert.FromBase64String(base64);
         return System.Text.Encoding.UTF8.GetString(base64Bytes);
-    }
-
-    /// <summary>
-    /// Vytvoří UPN z emailu. UPN je tvořeno emailem kódovaným jako Base64 a přidáním "@aplikační doména".
-    /// V Base64 řetězci je pak nahrazen znak "=" znakem "_", jinak by nešlo UPN uložit v ADB2C
-    /// </summary>
-    /// <param name="email">email</param>
-    /// <returns>UPN</returns>
-    private string CreateUPN(string email)
-    {
-        return Base64Encode(email).Replace("=", "_") + "@" + _applicationDomain;
     }
 
     /// <summary>

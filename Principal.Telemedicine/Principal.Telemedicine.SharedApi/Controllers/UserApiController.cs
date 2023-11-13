@@ -805,7 +805,8 @@ public class UserApiController : ControllerBase
                 permission.IsDeniedPermission = true;
             }
 
-            actualData.GlobalId = actualData.Email;
+            // GlobalId nastavujeme v repository
+            //actualData.GlobalId = actualData.Email;
 
             if (actualData.HealthCareInsurerId.HasValue && user.HealthCareInsurerId.GetValueOrDefault() <= 0)
                 actualData.HealthCareInsurerId = null;
@@ -1092,8 +1093,8 @@ public class UserApiController : ControllerBase
                 return new GenericResponse<int>(ret, false, -5, "User not found", "User not found by Id.");
             }
 
-            // nasravíme GlobalId na email
-            customer.GlobalId = customer.Email;
+            // nastavíme GlobalId jako UPN
+            customer.GlobalId = _adb2cRepository.CreateUPN(customer.Email);
 
             // vygenerujeme heslo
             customer.Password = PasswordGenerator.GetNewPassword();

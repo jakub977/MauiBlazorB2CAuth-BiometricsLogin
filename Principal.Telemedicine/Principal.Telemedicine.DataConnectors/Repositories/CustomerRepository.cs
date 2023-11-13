@@ -240,6 +240,10 @@ public class CustomerRepository : ICustomerRepository
             user.UpdateDateUtc = DateTime.UtcNow;
             user.UpdatedByCustomerId = currentUser.Id;
 
+            // kontrola, pokud stávající uživatel nemá GlobalId ve formátu UPN
+            if (!user.GlobalId.ToLower().EndsWith(_adb2cRepository.GetApplicationDomain().ToLower()))
+                user.GlobalId = _adb2cRepository.CreateUPN(user.Email);
+
             bool tracking = _dbContext.ChangeTracker.Entries<Customer>().Any(x => x.Entity.Id == user.Id);
             if (!tracking)
             {
@@ -317,6 +321,8 @@ public class CustomerRepository : ICustomerRepository
         {
             user.CreatedDateUtc = DateTime.UtcNow;
             user.CreatedByCustomerId = currentUser.Id;
+            user.GlobalId = _adb2cRepository.CreateUPN(user.Email);
+            user.AdminComment = user.Email; // sem si uloženíme uživatelské přihlašovací jméno "do zálohy", pokud si uživatel změní email (slouží jen jako informace, přihlašování obsluhuje AD B2C)
 
             _dbContext.Customers.Update(user);
 
