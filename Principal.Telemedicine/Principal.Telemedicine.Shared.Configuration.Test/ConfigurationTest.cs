@@ -11,7 +11,7 @@ public class SecretConfigurationProviderTests
 
     public SecretConfigurationProviderTests()
     {
-       
+        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "local");
     }
     [Fact(DisplayName ="Test pro načtení hodnot z secrets pouze")]
     public void ShouldLoadSecretValueFromSecretJson()
@@ -44,7 +44,7 @@ public class SecretConfigurationProviderTests
            .Build();
         var mock = new Mock<ILogger<SecretConfigurationProviderTests>>();
         ILogger<SecretConfigurationProviderTests> logger = mock.Object;
-
+        
         // Act
         var hostBuilder = new HostBuilder().UseEnvironment("local")
         .UseSecretConfiguration<TestSettings>(configuration, logger, secretFilePath).UseSecretConfiguration<TestSettings2>(configuration, logger, secretFilePath);
