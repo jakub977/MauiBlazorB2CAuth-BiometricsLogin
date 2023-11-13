@@ -306,6 +306,7 @@ public class UserApiController : ControllerBase
             actualData.OrganizationId = user.OrganizationId;
             actualData.PersonalIdentificationNumber = user.PersonalIdentificationNumber;
             actualData.BirthIdentificationNumber = user.BirthIdentificationNumber;
+            actualData.GynecologistNote = user.GynecologistNote;
 
             if (user.Picture != null && user.Picture.IsNew)
             {
