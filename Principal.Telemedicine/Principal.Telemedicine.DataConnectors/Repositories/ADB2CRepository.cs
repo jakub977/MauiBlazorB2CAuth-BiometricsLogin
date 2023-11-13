@@ -59,7 +59,7 @@ public class ADB2CRepository : IADB2CRepository
 
             if (result == null || result.Value == null || result.Value.Count == 0)
             {
-                _logger.LogWarning("{0} ADB2C returned: User UPN '{0}' not found", logHeader, customer.Email);
+                _logger.LogWarning("{0} ADB2C returned: User UPN '{0}' not found", logHeader, customer.GlobalId);
                 return ret;
             }
 
