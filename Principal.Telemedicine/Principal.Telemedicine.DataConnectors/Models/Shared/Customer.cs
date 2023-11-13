@@ -668,6 +668,13 @@ public partial class Customer
     public virtual ICollection<UserPermission> UserPermissionUsers { get; set; } = new List<UserPermission>();
 
     /// <summary>
+    /// Comment of a Gynecologist
+    /// </summary>
+    [StringLength(100)]
+    [Unicode(false)]
+    public string? GynecologistNote { get; set; }
+
+    /// <summary>
     /// Vrátí CompleteUserContract z Customer
     /// </summary>
     /// <param name="onlyCustomerData">Příznak, zda chceme vrátit pouze data z tabulky Customer, bez Rolí, Efektivních uživatelů a zakázaných oprávnění (default FALSE)</param>
@@ -746,6 +753,7 @@ public partial class Customer
         data.TitleBefore = TitleBefore;
         data.UpdateDateUtc = UpdateDateUtc;
         data.UpdatedByCustomerId = UpdatedByCustomerId;
+        data.GynecologistNote = GynecologistNote;
 
         if (!forList)
         {
