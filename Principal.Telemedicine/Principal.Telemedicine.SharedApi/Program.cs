@@ -5,19 +5,20 @@ using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.DataConnectors.Mapping;
 using Principal.Telemedicine.DataConnectors.Repositories;
 using Principal.Telemedicine.Shared.Configuration;
-
 using Principal.Telemedicine.Shared.Cache;
 using Principal.Telemedicine.Shared.Infrastructure;
 using Principal.Telemedicine.Shared.Logging;
 using System.Text.Json.Serialization;
-using Microsoft.Extensions.Configuration;
 using Principal.Telemedicine.Shared.Security;
 using Microsoft.OpenApi.Models;
 using System.IdentityModel.Tokens.Jwt;
-using Microsoft.Graph.Models.ExternalConnectors;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting.Internal;
 
 var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").AddJsonFile("appsettings.development.json",true).Build();
+
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.TryAddSingleton<IHostEnvironment>(new HostingEnvironment { EnvironmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") });
 builder.Services.AddSecretConfiguration<DistributedRedisCacheOptions>(configuration, "secrets/secrets.json");
 builder.Services.AddSecretConfiguration<TmSecurityConfiguration>(configuration, "secrets/secrets.json");
 builder.Services.AddTmMemoryCache(configuration);
@@ -30,19 +31,16 @@ builder.Services.AddAuthentication(x=>
     .AddMicrosoftIdentityWebApi(options =>
     {
         configuration.Bind("AzureAdB2C", options);
-
     },
     options => { configuration.Bind("AzureAdB2C", options); })
     .EnableTokenAcquisitionToCallDownstreamApi(options =>
     {
         configuration.Bind("AzureAdB2C", options);
         options.LogLevel = Microsoft.Identity.Client.LogLevel.Warning;
-        
     })
     .AddInMemoryTokenCaches();
 
 JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
-
 
 builder.Services.AddControllers()
     .AddJsonOptions(options => options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull )

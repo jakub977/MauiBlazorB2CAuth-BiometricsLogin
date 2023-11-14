@@ -307,7 +307,6 @@ public class CompleteUserContract
     /// <summary>
     /// Link to dbo.City
     /// </summary>
-    [DataMember]
     public int? CityId { get; set; }
 
     /// <summary>
@@ -341,5 +340,10 @@ public class CompleteUserContract
     [DataMember]
     [JsonPropertyName("userPermissions")]
     public virtual ICollection<UserPermissionContract> UserPermissionUsers { get; set; } = new List<UserPermissionContract>();
+
+    /// <summary>
+    /// Comment of a Gynecologist
+    /// </summary>
+    public string? GynecologistNote { get; set; }
 
 }

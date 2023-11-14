@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
 using Principal.Telemedicine.DataConnectors.Utils;
+using Principal.Telemedicine.Shared.Models;
 
 namespace Principal.Telemedicine.DataConnectors.Repositories;
 
@@ -65,7 +66,7 @@ public interface ICustomerRepository
     /// <param name="pageSize">Počet záznamů na stránce</param>
     /// <param name="providerId">Id Poskytovatele pod kterým hledáme</param>
     /// <returns>Jednu stránku seznamu</returns>
-    Task<PaginatedListData<Customer>> GetCustomersTaskAsync(Customer currentUser, bool activeUsersOnly, int? filterRole, int? filteGroup, string? searchText, string? order = "created_desc", int? page = 1, int? pageSize = 20, int? providerId = null);
+    Task<PaginatedListData<Customer>> GetCustomersTaskAsync(CompleteUserContract currentUser, bool activeUsersOnly, int? filterRole, int? filteGroup, string? searchText, string? order = "created_desc", int? page = 1, int? pageSize = 20, int? providerId = null);
 
     /// <summary>
     /// Metoda aktualizuje Customera včetně aktualizace v ADB2C
@@ -76,7 +77,7 @@ public interface ICustomerRepository
     /// <param name="tran">Aktuální DB transakce (default NULL)</param>
     /// <param name="dontManageTran">Příznak, zda se v metodě mají ignorovat transakční příkazy (default FALSE)</param>
     /// <returns>true / false</returns>
-    Task<bool> UpdateCustomerTaskAsync(Customer currentUser, Customer user, bool? ignoreADB2C = false, IDbContextTransaction? tran = null, bool dontManageTran = false);
+    Task<bool> UpdateCustomerTaskAsync(CompleteUserContract currentUser, Customer user, bool? ignoreADB2C = false, IDbContextTransaction? tran = null, bool dontManageTran = false);
 
     /// <summary>
     /// Metoda založí nového Customera včetně založení v ADB2C
@@ -84,7 +85,7 @@ public interface ICustomerRepository
     /// <param name="currentUser">Aktuální uživatel</param>
     /// <param name="user">Customer</param>
     /// <returns>true / false</returns>
-    Task<bool> InsertCustomerTaskAsync(Customer currentUser, Customer user);
+    Task<bool> InsertCustomerTaskAsync(CompleteUserContract currentUser, Customer user);
 
     /// <summary>
     /// Označí užvatele za smazaného a smaže ho z ADB2C
@@ -93,7 +94,7 @@ public interface ICustomerRepository
     /// <param name="user">Customer</param>
     /// <param name="ignoreADB2C">Nemezat v ADB2C?</param>
     /// <returns>true / false</returns>
-    Task<bool> DeleteCustomerTaskAsync(Customer currentUser, Customer user, bool? ignoreADB2C = false);
+    Task<bool> DeleteCustomerTaskAsync(CompleteUserContract currentUser, Customer user, bool? ignoreADB2C = false);
 
     /// <summary>
     /// Zkontroluje, zda uživatel (nesmazaný) již existuje v dedikované DB podel Emailu, tel. čísla 1 a tel. čísla 2, GlobalId nebo PersonalIdentificationNumber
@@ -106,6 +107,6 @@ public interface ICustomerRepository
     /// -12 = uživatel se stejným PersonalIdentificationNumber existuje
     /// -13 = uživatel se stejným GlobalID existuje
     /// </returns>
-    Task<int> CheckIfUserExists(Customer currentUser, Customer user);
+    Task<int> CheckIfUserExists(CompleteUserContract currentUser, Customer user);
 }
 
