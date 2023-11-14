@@ -454,17 +454,16 @@ public class ProviderApiController : ControllerBase
                     usr.UpdateDateUtc = DateTime.UtcNow;
                     usr.UpdatedByCustomerId = currentUser.Id;
 
-                    ret = await _customerRepository.UpdateCustomerTaskAsync(currentUser, usr, true, tran, true);
+                    int retUser = await _customerRepository.UpdateCustomerTaskAsync(currentUser, usr, true, tran, true);
 
                     timeEnd = DateTime.Now - startTime;
 
-                    if (!ret)
+                    if (retUser != 1)
                     {
                         tran.Rollback();
                         _logger.LogWarning($"{logHeader} User '{usr.FriendlyName}', Email: '{usr.Email}', Id: {usr.Id} was not updated, duration: {timeEnd}");
                         return new GenericResponse<bool>(ret, false, -1, "User was not updated", "Error when deleting user.");
                     }
-
                     else
                     {
                         tran.Commit();

@@ -227,9 +227,9 @@ public class CustomerRepository : ICustomerRepository
     }
 
     /// <inheritdoc/>
-    public async Task<bool> UpdateCustomerTaskAsync(CompleteUserContract currentUser, Customer user, bool? ignoreADB2C = false, IDbContextTransaction? tran = null, bool dontManageTran = false)
+    public async Task<int> UpdateCustomerTaskAsync(CompleteUserContract currentUser, Customer user, bool? ignoreADB2C = false, IDbContextTransaction? tran = null, bool dontManageTran = false)
     {
-        bool ret = false;
+        int ret = -1;
         string logHeader = _logName + ".InsertCustomerTaskAsync:";
 
         if (tran == null && !dontManageTran)
@@ -259,14 +259,14 @@ public class CustomerRepository : ICustomerRepository
                     if (!dontManageTran)
                         tran.Commit();
                     _logger.LogDebug("{0} User '{1}', Email: '{2}', Id: {3} updated succesfully", logHeader, user.FriendlyName, user.Email, user.Id);
-                    return true;
+                    return 1;
                 }
                 else
                 {
                     if (!dontManageTran)
                         tran.Rollback();
                     _logger.LogWarning("{0} User '{1}', Email: '{2}', Id: {3} was not updated", logHeader, user.FriendlyName, user.Email, user.Id);
-                    return false;
+                    return -14;
                 }
             }
             else
@@ -274,7 +274,7 @@ public class CustomerRepository : ICustomerRepository
                 if (result != 0)
                     ret = await _adb2cRepository.UpdateUserAsyncTask(user);
 
-                if (ret)
+                if (ret == 1)
                 {
                     if (!dontManageTran)
                         tran.Commit();
@@ -309,9 +309,9 @@ public class CustomerRepository : ICustomerRepository
     }
 
     /// <inheritdoc/>
-    public async Task<bool> InsertCustomerTaskAsync(CompleteUserContract currentUser, Customer user)
+    public async Task<int> InsertCustomerTaskAsync(CompleteUserContract currentUser, Customer user)
     {
-        bool ret = false;
+        int ret = -1;
         string logHeader = _logName + ".InsertCustomerTaskAsync:";
         DateTime startTime = DateTime.Now;
 
@@ -331,12 +331,15 @@ public class CustomerRepository : ICustomerRepository
             _logger.LogInformation("{0} Saved to DB: {1}", logHeader, end1);
             if (result != 0)
                 ret = await _adb2cRepository.InsertUserAsyncTask(user);
+            else
+                ret = -6;
 
             TimeSpan timeEnd = DateTime.Now - startTime;
 
-            if (ret)
+            if (ret == 1)
             {
                 tran.Commit();
+                ret = user.Id;
                 _logger.LogInformation("{0} User '{1}', Email: '{2}', Id: {3} created succesfully, duration: {4}", logHeader, user.FriendlyName, user.Email, user.Id, timeEnd);
             }
             else

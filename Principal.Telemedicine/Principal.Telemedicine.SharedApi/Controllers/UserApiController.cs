@@ -223,10 +223,14 @@ public class UserApiController : ControllerBase
     /// -2 = neplatné UserId
     /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
     /// -5 = uživatele se nepodařilo dohledat podle ID
-    /// -11 = uživatel se stejným emailem existuje
-    /// -12 = uživatel se stejným tel. číslem existuje
-    /// -13 = uživatel se stejným PersonalIdentificationNumber existuje
-    /// -14 = uživatel se stejným GlobalID existuje
+    /// -10 = uživatel se stejným emailem existuje
+    /// -11 = uživatel se stejným tel. číslem existuje
+    /// -12 = uživatel se stejným PersonalIdentificationNumber existuje
+    /// -13 = uživatel se stejným GlobalID existuje
+    /// -14 = uživatel se stejným tel. číslem existuje
+    /// -15 = uživatel se stejným PersonalIdentificationNumber existuje
+    /// -16 = uživatel se stejným GlobalID existuje
+    /// -17 = existuje více uživatelů v AD B2C
     /// </returns>
     [Authorize]
     [HttpPost(Name = "UpdateUser")]
@@ -644,17 +648,17 @@ public class UserApiController : ControllerBase
 
             #endregion
 
-            bool ret = await _customerRepository.UpdateCustomerTaskAsync(currentUser, actualData, ignoreADB2C: null, tran);
+            int ret = await _customerRepository.UpdateCustomerTaskAsync(currentUser, actualData, ignoreADB2C: null, tran);
             TimeSpan timeEnd = DateTime.Now - startTime;
-            if (ret)
+            if (ret == 1)
             {
                 _logger.LogInformation("{0} User '{1}', Email: '{2}', Id: {3} updated succesfully, duration: {4}", logHeader, actualData.FriendlyName, actualData.Email, actualData.Id, timeEnd);
-                return new GenericResponse<bool>(true, ret, 0);
+                return new GenericResponse<bool>(true, true, 0);
             }
             else
             {
                 _logger.LogWarning("{0} User was not updated, Name: {1}, ID: {2}, Email: {3}, duration: {4}", logHeader, user.FriendlyName, user.Id, user.Email, timeEnd);
-                return new GenericResponse<bool>(false, false, -1, "User was not updated", "Error when updating user.");
+                return new GenericResponse<bool>(false, false, ret, "User was not updated", "Error when updating user.");
             }
         }
         catch (Exception ex)
@@ -673,19 +677,20 @@ public class UserApiController : ControllerBase
     /// -1 = obecná chyba
     /// -2 = neplatné UserId
     /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
-    /// -6 = uživatele se nepodařilo založit v DB nebo ADB2C
+    /// -6 = uživatele se nepodařilo založit v DB
     /// -7 = chyby při konverzi dat uživatele
-    /// -11 = uživatel se stejným emailem existuje
-    /// -12 = uživatel se stejným tel. číslem existuje
-    /// -13 = uživatel se stejným PersonalIdentificationNumber existuje
-    /// -14 = uživatel se stejným GlobalID existuje
+    /// -10 = uživatel se stejným emailem existuje
+    /// -11 = uživatel se stejným tel. číslem existuje
+    /// -12 = uživatel se stejným PersonalIdentificationNumber existuje
+    /// -13 = uživatel se stejným GlobalID existuje
+    /// -18 = uživatel již existuje v AD B2C
+    /// -19 = uživatel se stejným emailem již existuje v AD B2C
     /// </returns>
     [Authorize]
     [HttpPost(Name = "InsertUser")]
     public async Task<IGenericResponse<CompleteUserContract>> InsertUser(CompleteUserContract user)
     {
         string logHeader = _logName + ".InsertUser:";
-        bool ret = false;
         bool isProviderAdmin = false;
         DateTime startTime = DateTime.Now;
 
@@ -816,10 +821,10 @@ public class UserApiController : ControllerBase
             if (string.IsNullOrEmpty(actualData.Password))
                 actualData.Password = PasswordGenerator.GetNewPassword();
 
-            ret = await _customerRepository.InsertCustomerTaskAsync(currentUser, actualData);
+            int ret = await _customerRepository.InsertCustomerTaskAsync(currentUser, actualData);
 
             TimeSpan timeEnd = DateTime.Now - startTime;
-            if (ret)
+            if (ret == 1)
             {
                 user = _mapper.Map<CompleteUserContract>(actualData);
                 _logger.LogInformation("{0} User '{1}', Email: '{2}', Id: {3} created succesfully, duration: {4}", logHeader, actualData.FriendlyName, actualData.Email, actualData.Id, timeEnd);
@@ -828,7 +833,7 @@ public class UserApiController : ControllerBase
             else
             {
                 _logger.LogWarning("{0} User was not created, Name: {1} ID: {2} Email: {3}, duration: {4}", logHeader, user.FriendlyName, user.Id, user.Email, timeEnd);
-                return new GenericResponse<CompleteUserContract>(null, false,-6, "User was not created", "Error when inserting new user into DB or ADB2C.");
+                return new GenericResponse<CompleteUserContract>(null, false, ret, "User was not created", "Error when inserting new user into DB or ADB2C.");
             }
         }
         catch (Exception ex)
@@ -1059,6 +1064,11 @@ public class UserApiController : ControllerBase
     /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
     /// -5 = uživatel nebyl nalezen v DB
     /// -6 = uživatele se nepodařilo založit v ADB2C nebo aktualizovat DB
+    /// -14 = uživatel se stejným tel. číslem existuje
+    /// -15 = uživatel se stejným PersonalIdentificationNumber existuje
+    /// -16 = uživatel se stejným GlobalID existuje
+    /// -18 = uživatel již existuje v AD B2C
+    /// -19 = uživatel se stejným emailem již existuje v AD B2C
     /// </returns>
     [Authorize]
     [HttpGet(Name = "InsertUserInADB2C")]
@@ -1096,40 +1106,38 @@ public class UserApiController : ControllerBase
 
             // nastavíme GlobalId jako UPN
             customer.GlobalId = _adb2cRepository.CreateUPN(customer.Email);
+            customer.AdminComment = customer.Email;
 
             // vygenerujeme heslo
             customer.Password = PasswordGenerator.GetNewPassword();
 
             // založíme uživatele v ADB2C
-            bool created = await _adb2cRepository.InsertUserAsyncTask(customer);
+            ret = await _adb2cRepository.InsertUserAsyncTask(customer);
 
             TimeSpan timeEnd = DateTime.Now - startTime;
 
-            if (created)
+            if (ret == 1)
             {
                 // aktualizujeme uživatele v DB
-                created = await _customerRepository.UpdateCustomerTaskAsync(currentUser, customer, true);
+                ret = await _customerRepository.UpdateCustomerTaskAsync(currentUser, customer, true);
             }
             else
             {
-                ret = 0;
                 _logger.LogWarning("{0} User was not created, Name: {1} ID: {2} Email: {3}, duration: {4}", logHeader, customer.FriendlyName, customer.Id, customer.Email, timeEnd);
-                return new GenericResponse<int>(ret, false, -6, "User was not created", "Error when inserting new user into ADB2C.");
+                return new GenericResponse<int>(ret, false, ret, "User was not created", "Error when inserting new user into ADB2C.");
             }
 
             timeEnd = DateTime.Now - startTime;
 
-            if (created)
+            if (ret == 1)
             {
-                ret = 1;
                 _logger.LogInformation("{0} User '{1}', Email: '{2}', Id: {3} created succesfully, duration: {4}", logHeader, customer.FriendlyName, customer.Email, customer.Id, timeEnd);
                 return new GenericResponse<int>(ret, true, 0);
             }
             else
             {
-                ret = 0;
                 _logger.LogWarning("{0} User was created in ADB2C but not updated in DB, Name: {1} ID: {2} Email: {3}, duration: {4}", logHeader, customer.FriendlyName, customer.Id, customer.Email, timeEnd);
-                return new GenericResponse<int>(ret, false, -6, "User was not created", "Error when updating user in DB.");
+                return new GenericResponse<int>(ret, false, ret, "User was not created", "Error when updating user in DB.");
             }
         }
         catch (Exception ex)
@@ -1178,17 +1186,17 @@ public class UserApiController : ControllerBase
             CompleteUserContract actualUser = new CompleteUserContract();
             actualUser.Id = user.Id;
 
-            bool updated = await _customerRepository.UpdateCustomerTaskAsync(actualUser, user, true);
+            int updated = await _customerRepository.UpdateCustomerTaskAsync(actualUser, user, true);
 
-            if (updated)
+            if (updated == 1)
             {
                 _logger.LogInformation($"{logHeader} AppInstanceToken has been updated successfully for UserId: {user.Id}");
-                return new GenericResponse<bool>(updated, true, 0);
+                return new GenericResponse<bool>(true, true, 0);
             }
             else
             {
                 _logger.LogWarning($"{logHeader} AppInstanceToken update has failed for UserId: {user.Id}");
-                return new GenericResponse<bool>(updated, true, -4, "AppInstanceToken update has failed", "");
+                return new GenericResponse<bool>(false, false, -4, "AppInstanceToken update has failed", "");
             }
 
         }
