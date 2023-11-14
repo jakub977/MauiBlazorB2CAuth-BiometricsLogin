@@ -24,6 +24,7 @@ builder.Services.AddScoped<IADB2CRepository, ADB2CRepository>();
 
 builder.Services.AddSecretConfiguration<AzureAdB2C>(configuration, secretFilePath);
 builder.Services.AddSecretConfiguration<AuthorizationSettings>(configuration, secretFilePath);
+builder.Services.AddSecretConfiguration<MailSettings>(configuration, secretFilePath);
 
 builder.Services.AddControllers();
 

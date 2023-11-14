@@ -4,9 +4,13 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Graph;
+using Microsoft.Graph.Me.SendMail;
 using Microsoft.Graph.Models;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
 using Principal.Telemedicine.Shared.Configuration;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
 
 namespace Principal.Telemedicine.DataConnectors.Repositories;
 
@@ -16,6 +20,7 @@ public class ADB2CRepository : IADB2CRepository
 
     private readonly ILogger _logger;
     private readonly AzureAdB2C _adB2C;
+    private readonly MailSettings _mailSettings;
 
     private string? _tenantId = "";
     private string? _clientId = "";
@@ -24,8 +29,8 @@ public class ADB2CRepository : IADB2CRepository
     private string? _applicationDomain = "";
     private bool _allowWebApiToBeAuthorizedByACL = false;
     private readonly string _logName = "ADB2CRepository";
-                            
-    public ADB2CRepository(ILogger<ADB2CRepository> logger, IOptions<AzureAdB2C> adB2C)
+
+    public ADB2CRepository(ILogger<ADB2CRepository> logger, IOptions<AzureAdB2C> adB2C, IOptions<MailSettings> mailSettings)
     {
         _logger = logger;
         _adB2C = adB2C.Value;
@@ -35,6 +40,7 @@ public class ADB2CRepository : IADB2CRepository
         _extensionClientId = _adB2C.B2cExtensionAppClientId;
         _applicationDomain = _adB2C.B2CApplicationDomain;
         _allowWebApiToBeAuthorizedByACL = _adB2C.AllowWebApiToBeAuthorizedByACL;
+        _mailSettings = mailSettings.Value;
     }
 
     /// <inheritdoc/>
@@ -274,74 +280,82 @@ public class ADB2CRepository : IADB2CRepository
     }
 
     /// <inheritdoc/>
-    public async Task<bool> SendEmailAsyncTask(string recipientsEmail, string messageBody, string messageTitle)
+    public async Task<bool> SendEmailAsyncTask(string recipientsEmail, string messageBody, string title)
     {
         bool ret = false;
         string logHeader = _logName + ".SendEmailAsyncTask:";
         try
         {
-            // UPN ukládáme jako email převedený na Base64 + aplikační doména
-            string searchedUPN = CreateUPN(recipientsEmail);
-
-            // kontrola na existující účet
-            var result = await GetClient().Users.GetAsync(requestConfiguration =>
+            string tokenEndpoint = $"https://login.microsoftonline.com/{_mailSettings.TenantId}/oauth2/v2.0/token";
+            // create an httpclient
+            using (HttpClient client = new HttpClient())
             {
-                requestConfiguration.QueryParameters.Select = new string[] { "id", "createdDateTime", "displayName" };
-                requestConfiguration.QueryParameters.Filter = $"userPrincipalName eq '{searchedUPN}'";
-            });
+                var requestContent = new FormUrlEncodedContent(new[]
+                {
+                    new KeyValuePair<string, string>("grant_type", "client_credentials"),
+                    new KeyValuePair<string, string>("client_id", _mailSettings.ClientId),
+                    new KeyValuePair<string, string>("client_secret", _mailSettings.ClientSecret),
+                    new KeyValuePair<string, string>("scope", "https://graph.microsoft.com/.default"),
 
-            if (result == null || result.Value == null || result.Value.Count == 0)
-            {
-                _logger.LogWarning("{0} ADB2C returned: User with email '{0}' not found", logHeader, recipientsEmail);
-                return ret;
+                });
+
+               // retrieve access token
+                HttpResponseMessage response = await client.PostAsync(tokenEndpoint, requestContent);
+                string responseContent = await response.Content.ReadAsStringAsync();
+                var tokenResponse = JsonSerializer.Deserialize<JsonElement>(responseContent);
+                string accessToken = tokenResponse.GetProperty("access_token").GetString();
+                string sendMailEndpoint = $"https://graph.microsoft.com/v1.0/users/{_mailSettings.ObjectId}/sendMail";
+
+                var message = new Dictionary<string, object>()
+                {
+                    {"message", new Dictionary<string, object>()
+                        {
+                            {"subject", title},
+                            {"body", new Dictionary<string, object>()
+                                {
+                                    {"contentType", "Text"},
+                                    {"content", messageBody}
+                                }
+                            },
+                            {"toRecipients", new object[]
+                               {
+                                new Dictionary<string, object>()
+                                {
+                                    {"emailAddress", new Dictionary<string, object>()
+                                        {
+                                            {"address", recipientsEmail}
+                                        }
+                                    }
+                                }
+                               }
+                            },
+                         }
+                    },
+                    {"saveToSentItems", "true"}
+                };
+
+                var jsonMessage = JsonSerializer.Serialize(message);
+                var content = new StringContent(jsonMessage, Encoding.UTF8, "application/json");
+
+                // post request to send the email
+                var request = new HttpRequestMessage(HttpMethod.Post, sendMailEndpoint);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                request.Content = content;
+
+                HttpResponseMessage sendMailResponse = await client.SendAsync(request);
+                string sendMailResponseContent = await sendMailResponse.Content.ReadAsStringAsync();
+                if (sendMailResponse.IsSuccessStatusCode)
+                {
+                    _logger.LogDebug($"{logHeader} AD returned: OK, email to user: '{recipientsEmail}' sent succesfully");
+                    ret = true;
+                    return ret;
+                }
+                else
+                {
+                    _logger.LogWarning($"{logHeader} AD returned: Email was not send to user '{recipientsEmail}'");
+                    return ret;
+                }
             }
-
-            if (result.Value.Count > 1)
-            {
-                _logger.LogWarning("{0} ADB2C returned: User with email '{0}' exists more than once: {1}", logHeader, recipientsEmail, result.Value.Count);
-                return ret;
-            }
-
-           //     Microsoft.Graph.Users.Item.SendMail.SendMailPostRequestBody requestbody = new()
-           //     {
-           //         Message = new Message ()
-           //         {
-           //             Subject = messageTitle,
-           //             Body = new ItemBody
-           //             {
-           //                 ContentType = BodyType.Text,
-           //                 Content = messageBody
-           //             },
-           //             ToRecipients = new List<Recipient>()
-           //             {
-           //                 new Recipient
-           //                 {
-           //                     EmailAddress = new EmailAddress
-           //                     {
-           //                         Address = recipientsEmail
-           //                     }
-           //                 }
-           //             }
-            
-           //         },
-
-           //         SaveToSentItems = false
-           //     };
-
-
-           // string objectId = "476d377e-27fc-41ef-ba6c-be2079e0df2a";
-
-
-           //await GetClient().Users[objectId].
-           //     SendMail.PostAsync(requestbody,
-           //     requestConfiguration =>
-           //     {
-           //         requestConfiguration.Headers.Add("Prefer", "outlook.body-content-type=\"text\"");
-           //     });
-
-            ret = true; 
-
-            _logger.LogDebug($"{logHeader} ADB2C returned: OK, Email to User: '{recipientsEmail}' sent succesfully");
         }
         catch (Exception ex)
         {
@@ -350,7 +364,7 @@ public class ADB2CRepository : IADB2CRepository
             {
                 errMessage += " " + ex.InnerException.Message;
             }
-            _logger.LogError($"{logHeader} ADB2C returned: User: '{recipientsEmail}', Error: {errMessage}");
+            _logger.LogError($"{logHeader} AD returned: User: '{recipientsEmail}', Error: {errMessage}");
         }
 
         return ret;
@@ -377,7 +391,7 @@ public class ADB2CRepository : IADB2CRepository
             // existuje účet
             if (result != null && result.Value != null && result?.Value?.Count > 0)
                 ret = 1;
-            else 
+            else
                 ret = 0;
 
             _logger.LogDebug("{0} ADB2C returned: {0}, user '{1}', Email: '{2}', Id: {3}", logHeader, ret, customer.FriendlyName, customer.Email, customer.Id);

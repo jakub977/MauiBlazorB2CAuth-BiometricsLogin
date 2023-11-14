@@ -103,6 +103,7 @@ builder.Services.AddTmInfrastructure(configuration);
 builder.Services.AddSecretConfiguration<DistributedRedisCacheOptions>(configuration, "secrets/secrets.json");
 builder.Services.AddSecretConfiguration<TmSecurityConfiguration>(configuration, "secrets/secrets.json");
 builder.Services.AddSecretConfiguration<AzureAdB2C>(configuration, "secrets/secrets.json");
+builder.Services.AddSecretConfiguration<MailSettings>(configuration, "secrets/secrets.json");
 builder.Services.AddTmDistributedCache(configuration, builder.Environment.IsLocalHosted());
 var app = builder.Build();
 
