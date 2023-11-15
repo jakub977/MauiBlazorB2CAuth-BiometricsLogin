@@ -25,7 +25,7 @@
     <PackageReference Include="Microsoft.Graph" Version="5.28.0" />
     <PackageReference Include="Microsoft.Identity.Web" Version="1.16.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Principal.Telemedicine.Shared.Configuration" Version="1.2.0-CI-20231027-141458" />
+    <PackageReference Include="Principal.Telemedicine.Shared.Configuration" Version="1.6.0-CI-20231113-081506" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 

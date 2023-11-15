@@ -10,17 +10,21 @@ using Principal.Telemedicine.Shared.Cache;
 using Principal.Telemedicine.Shared.Infrastructure;
 using Principal.Telemedicine.Shared.Logging;
 using System.Text.Json.Serialization;
-using Microsoft.Extensions.Configuration;
 using Principal.Telemedicine.Shared.Security;
 using Microsoft.OpenApi.Models;
 using System.IdentityModel.Tokens.Jwt;
-using Microsoft.Graph.Models.ExternalConnectors;
 using Principal.Telemedicine.Shared.Firebase;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting.Internal;
 
 var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").AddJsonFile("appsettings.development.json",true).Build();
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.TryAddSingleton<IHostEnvironment>(new HostingEnvironment { EnvironmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") });
+
 builder.Services.AddSecretConfiguration<DistributedRedisCacheOptions>(configuration, "secrets/secrets.json");
 builder.Services.AddSecretConfiguration<TmSecurityConfiguration>(configuration, "secrets/secrets.json");
+builder.Services.AddSecretConfiguration<FcmSettings>(configuration, "secrets/secrets.json");
 builder.Services.AddTmMemoryCache(configuration);
 builder.Services.AddAuthentication(x=>
 {  
