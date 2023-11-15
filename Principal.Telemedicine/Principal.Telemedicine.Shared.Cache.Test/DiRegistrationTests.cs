@@ -17,9 +17,9 @@ public class DiRegistrationTests
         // Arrange
         var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json")
             .Build();
-
+        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "local");
         // Registr logging
-        var hostBuilder = new HostBuilder()
+        var hostBuilder = new HostBuilder().UseEnvironment("local")
             .ConfigureServices((context, services) =>
             {
                 services.AddSecretConfiguration<DistributedRedisCacheOptions>(configuration, "secrets/secrets.json");
