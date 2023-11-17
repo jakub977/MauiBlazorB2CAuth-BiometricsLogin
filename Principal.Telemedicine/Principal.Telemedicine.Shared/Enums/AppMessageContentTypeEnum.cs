@@ -1,5 +1,8 @@
 ﻿namespace Principal.Telemedicine.Shared.Enums;
 
+/// <summary>
+/// Seznam typů notifikací/zpráv
+/// </summary>
 public enum AppMessageContentTypeEnum 
 {
 

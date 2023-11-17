@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Graph.Models.TermStore;
-using Microsoft.Graph.Models;
+using Microsoft.IdentityModel.Tokens;
 using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
 using Principal.Telemedicine.Shared.Api;
@@ -10,6 +9,9 @@ using Principal.Telemedicine.DataConnectors.Repositories;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
 
+/// <summary>
+/// Api metody pro zpracování požadavku na notifikaci a komunikaci s FCM
+/// </summary>
 [Route("api/[controller]/[action]")]
 [ApiController]
 public class FcmNotificationApiController : ControllerBase
@@ -18,49 +20,123 @@ public class FcmNotificationApiController : ControllerBase
     private readonly ILogger _logger;
     private readonly IFcmNotificationService _fcmNotificationService;
     private readonly ICustomerRepository _customerRepository;
+    private readonly IAppMessageRepository _appMessageRepository;
 
 
     private readonly string _logName = "FcmNotificationApiController";
 
-    public FcmNotificationApiController(DbContextApi dbContext, ILogger<UserApiController> logger, IFcmNotificationService fcmNotificationService, ICustomerRepository customerRepository)
+    public FcmNotificationApiController(DbContextApi dbContext, ILogger<UserApiController> logger, IFcmNotificationService fcmNotificationService, ICustomerRepository customerRepository, IAppMessageRepository appMessageRepository)
     {
         _dbContext = dbContext;
         _logger = logger;
         _fcmNotificationService = fcmNotificationService;
         _customerRepository = customerRepository;
+        _appMessageRepository = appMessageRepository;
     }
 
-    
+    /// <summary>
+    /// Zpracuje a odešle požadavek na notifikování uživatele/ů prostřednictvím FCM
+    /// </summary>
+    /// <param name="fcmNotificationRequest"></param>
+    /// <returns>bool value</returns>
     [HttpPost(Name = "NotifyUser")]
-    public async Task<IGenericResponse<string>> NotifyUser([FromBody]FcmNotificationRequest fcmNotificationRequest)
+    public async Task<IGenericResponse<bool>> NotifyUser([FromBody]FcmNotificationRequest fcmNotificationRequest)
     {
         string logHeader = _logName + ".NotifyUser:";
-        
+
+        if (fcmNotificationRequest == null)
+        {
+            _logger.LogWarning($"{logHeader} Invalid FcmNotificationRequest object: {fcmNotificationRequest}");
+            return new GenericResponse<bool>(false, false, -2, "Invalid FcmNotificationRequest object", "FcmNotificationRequest object must be set.");
+        }
+
+        AppMessageTemplate? messageTemplate;
+        AppMessageAdditionalAttribute? additionalAttribute;
+
         try
         {
-            //Customer? customer = await _customerRepository.GetCustomerByIdTaskAsync(fcmNotificationRequest.UserId);
-            //if (customer == null)
-            //{
-            //    _logger.LogWarning("{0} User not found, Id: {1}", logHeader, fcmNotificationRequest.UserId);
-            //    return new GenericResponse<string>(null, false, -5, "User not found", "User not found by Id.");
-            //}
+            messageTemplate = await _appMessageRepository.GetTemplateByContentTypeIdTaskAsync((int)fcmNotificationRequest.AppMessageContentTypeEnum);
 
-            //string token = customer.AppInstanceToken;
+            additionalAttribute = await _appMessageRepository.GetAdditionalAttributeByContentTypeIdTaskAsync((int)fcmNotificationRequest.AppMessageContentTypeEnum);
 
-            List<string> tokens = new List<string>();
-            tokens.Add("fbljgSKuQoexLrvEUjwBW6:APA91bFHptGHBLgBTsU73qnT4nQ0_g88jMhvUtWSwtYZF608kY3YjyNDHqMcqO-ww_Eax6mzur9Ym47WJqVmhuXQnFi_-Y2QKgVoPi1K3HKCe4-CJ7SQ9n2xgqfn00IBbES3l5gz1ZUA");
-            tokens.Add("ecpfY-4kmkHrnuwFHlMy1l:APA91bFefF8KNWzeFTv_ug0-lSaQVQPklgyG1g_FuuFPrz8b24BwdbQEUgdwtDRJTBWRR3skeOk7ht-7aC62gn8SP8VLg2a7_1j7r22xqS3RU8rTIameItQ_1GUocI8qEhSEccRGy7BW");
+            if (fcmNotificationRequest.NotifyAllUsers)
+            {
+                var users = await _customerRepository.GetCustomersTaskAsyncTask();
+                foreach (var user in users)
+                {
+                    if (!user.AppInstanceToken.IsNullOrEmpty())
+                    {
+                        FcmNotificationResponse response = await _fcmNotificationService.SendFcmNotification(user.AppInstanceToken, messageTemplate?.Title, messageTemplate?.Body, additionalAttribute?.AttributeContent, fcmNotificationRequest?.ValidToDate);
 
-            string response = await _fcmNotificationService.SendFcmNotification(tokens, "test-lenka-14112023", "test-lenka-14112023");
+                        if (response.IsSuccess == false)
+                        {
+                            _logger.LogWarning($"{logHeader} Notification process has failed. User: {user.FriendlyName}, reason: {response.Message}");
+                            continue;
+                        }
 
-            
+                        AppMessageSentLog sentLog = new AppMessageSentLog();
+                        sentLog.UserId = user.Id;
+                        sentLog.AppMessageContentTypeId = (int)fcmNotificationRequest.AppMessageContentTypeEnum;
+                        sentLog.MessageSentDateUtc = DateTime.UtcNow;
+                        sentLog.MessageId = response.MessageId;
 
-            return new GenericResponse<string>(null, true, 0);
+                        bool saved = await _appMessageRepository.InsertSentLogTaskAsync(sentLog);
+                        if (saved)
+                        {
+                            _logger.LogInformation($"{logHeader} User: {user.FriendlyName}, Email: {user.Email}, MessageId: {sentLog.MessageId} has been notificated succesfully");
+                        }
+                        else
+                        {
+                            _logger.LogWarning($"{logHeader} Error when saving AppMessageSentLog. User: {user.FriendlyName}, Email: {user.Email}");
+                        }
+                    }
+                }
+            }
+            else
+            {
+                Customer? user = await _customerRepository.GetCustomerByGlobalIdTaskAsync(fcmNotificationRequest.UserGlobalId);
+                if (user == null)
+                {
+                    _logger.LogWarning($"{logHeader} Current User not found, globalID: {fcmNotificationRequest.UserGlobalId}");
+                    return new GenericResponse<bool>(false, false, -3, "Current User not found", "");
+                }
+                
+                if (!user.AppInstanceToken.IsNullOrEmpty())
+                {
+                    FcmNotificationResponse response = await _fcmNotificationService.SendFcmNotification(user.AppInstanceToken, messageTemplate?.Title, messageTemplate?.Body, additionalAttribute?.AttributeContent, fcmNotificationRequest?.ValidToDate);
+
+                    if (response.IsSuccess == false)
+                    {
+                        _logger.LogWarning($"{logHeader} Notification process has failed. User: {user.FriendlyName}, reason: {response.Message}");
+                    }
+
+                    AppMessageSentLog sentLog = new AppMessageSentLog();
+                    sentLog.UserId = user.Id;
+                    sentLog.AppMessageContentTypeId = (int)fcmNotificationRequest.AppMessageContentTypeEnum;
+                    sentLog.MessageSentDateUtc = DateTime.UtcNow;
+                    sentLog.MessageId = response.MessageId;
+
+                    bool saved = await _appMessageRepository.InsertSentLogTaskAsync(sentLog);
+                    if (saved)
+                    {
+                        _logger.LogInformation($"{logHeader} User: {user.FriendlyName}, Email: {user.Email}, MessageId: {sentLog.MessageId} has been notificated succesfully");
+                        return new GenericResponse<bool>(true, saved, 0);
+                    }
+                    else
+                    {
+                        _logger.LogWarning($"{logHeader} Error when saving AppMessageSentLog. User: {user.FriendlyName}, Email: {user.Email}");
+                        return new GenericResponse<bool>(false, false, -1, "AppMessageSentLog has not been saved", "Error when saving AppMessageSentLog.");
+                    }
+                }
+            }
+
+            return new GenericResponse<bool>(true, true, 0);
         }
+
         catch (Exception ex)
         {
-            _logger.LogError("{0} {1}", logHeader, ex.Message);
-            return new GenericResponse<string>(null, false, -1, ex.Message);
+            _logger.LogError($"{logHeader} {ex.Message}");
+            return new GenericResponse<bool>(false, false, -1, ex.Message);
         }
     }
 }
