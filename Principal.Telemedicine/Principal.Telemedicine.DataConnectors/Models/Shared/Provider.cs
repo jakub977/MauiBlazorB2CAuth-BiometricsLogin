@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 using Microsoft.EntityFrameworkCore;
+using Principal.Telemedicine.DataConnectors.Extensions;
 using Principal.Telemedicine.Shared.Models;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
@@ -183,8 +184,10 @@ public partial class Provider
     /// </summary>
     /// <param name="withProviderPicture">Příznak, zda chceme vrátit i obrázek (default TRUE)</param>
     /// <param name="withEffectiveUsers">Příznak, zda chceme vrátit i efektivní uživatele, ale bez rolí (default TRUE)</param>
+    /// <param name="withEffectiveUserRole">Chceme efektivního uživatele včetně objektu Role?</param>
+    /// <param name="withAllowedSubjects">Příznak, zda chceme vrátit i povolené Subjekty Poskytovatele</param>
     /// <returns>ProviderContract</returns>
-    public ProviderContract ConvertToProviderContract(bool withProviderPicture = true, bool withEffectiveUsers = true)
+    public ProviderContract ConvertToProviderContract(bool withProviderPicture = true, bool withEffectiveUsers = true, bool withEffectiveUserRole = true, bool withAllowedSubjects = false)
     {
         ProviderContract data = new ProviderContract();
 
@@ -201,17 +204,20 @@ public partial class Provider
 
         if (withEffectiveUsers && EffectiveUsers != null && EffectiveUsers.Count > 0)
         {
-            foreach (var item in EffectiveUsers)
-                data.EffectiveUserProviderUsers.Add(item.ConvertToEffectiveUserProviderContract());
+            data.UsersCount = EffectiveUsers.Count;
+            foreach (var item in EffectiveUsers.Where(w => w.IsProviderAdmin()))
+                data.AdminUsers.Add(item.ConvertToEffectiveUserProviderContract(withRole: withEffectiveUserRole));
         }
 
         data.Id = Id;
         data.IdentificationNumber = IdentificationNumber;
         data.Name = Name;
         data.OrganizationId = OrganizationId;
+        if (OrganizationId > 0 && Organization != null)
+            data.Organization = Organization.ConvertToOrganizationContract();
         data.PictureId = PictureId;
 
-        if (PictureId != null && Picture != null)
+        if (withProviderPicture && PictureId != null && Picture != null)
             data.Picture = Picture.ConvertToPictureContract(withProviderPicture);
 
         data.PostalCode = PostalCode;
@@ -219,6 +225,9 @@ public partial class Provider
         data.TaxIdentificationNumber = TaxIdentificationNumber;
         data.UpdateDateUtc = UpdateDateUtc;
         data.UpdatedByCustomerId = UpdatedByCustomerId;
+
+        if (withAllowedSubjects && SubjectAllowedToProviders != null && SubjectAllowedToProviders.Count > 0)
+            data.SubjectAllowedToProviders = SubjectAllowedToProviders.Select(s => s.ConvertToSubjectAllowedToProviderContract()).ToList();
 
         return data;
     }

@@ -48,6 +48,8 @@ public class SubjectAllowedToOrganizationContract
     /// </summary>
     public int SubjectId { get; set; }
 
+    public virtual SubjectContract? SubjectObject { get; set; }
+
     /// <summary>
     /// Link to dbo.Organization as an organization to which subjects are allowed
     /// </summary>

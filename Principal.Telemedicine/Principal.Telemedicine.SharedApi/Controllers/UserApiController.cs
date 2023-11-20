@@ -517,10 +517,7 @@ public class UserApiController : ControllerBase
                         if (!provider.Active.GetValueOrDefault())
                         {
                             provider.Active = true;
-                            provider.UpdateDateUtc = DateTime.UtcNow;
-                            provider.UpdatedByCustomerId = currentUser.Id;
-
-                            await _providerRepository.UpdateProviderTaskAsync(provider, null);
+                            await _providerRepository.UpdateProviderTaskAsync(currentUser, provider);
                         }
                     }
             }
@@ -784,9 +781,7 @@ public class UserApiController : ControllerBase
                         if (!provider.Active.GetValueOrDefault())
                         {
                             provider.Active = true;
-                            provider.UpdateDateUtc = DateTime.UtcNow;
-                            provider.UpdatedByCustomerId = currentUser.Id;
-                            await _providerRepository.UpdateProviderTaskAsync(provider, null);
+                            await _providerRepository.UpdateProviderTaskAsync(currentUser, provider);
                         }
                     }
             }

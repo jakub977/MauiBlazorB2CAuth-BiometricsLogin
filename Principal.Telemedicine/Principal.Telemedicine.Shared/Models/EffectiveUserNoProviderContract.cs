@@ -4,10 +4,10 @@ using System.Text.Json.Serialization;
 namespace Principal.Telemedicine.Shared.Models;
 
 /// <summary>
-/// Slouží pro správu Poskytovatelů
+/// Data contract derived from EffectiveUser.cs
 /// </summary>
 [DataContract]
-public class EffectiveUserProviderContract
+public class EffectiveUserNoProviderContract
 {
     /// <summary>
     /// Primary identifier of an effective user
@@ -55,14 +55,8 @@ public class EffectiveUserProviderContract
     public int ProviderId { get; set; }
 
     [JsonPropertyName("roles")]
-    public virtual ICollection<RoleMemberProviderContract> RoleMembers { get; set; } = new List<RoleMemberProviderContract>();
+    public virtual ICollection<RoleMemberContract> RoleMembers { get; set; } = new List<RoleMemberContract>();
 
     [JsonPropertyName("groups")]
     public virtual ICollection<GroupEffectiveMemberContract> GroupEffectiveMembers { get; set; } = new List<GroupEffectiveMemberContract>();
-
-    [JsonPropertyName("providerObject")]
-    public virtual ProviderContract? Provider { get; set; }
-
-    public virtual UserContract? UserObject { get; set; }
-
 }

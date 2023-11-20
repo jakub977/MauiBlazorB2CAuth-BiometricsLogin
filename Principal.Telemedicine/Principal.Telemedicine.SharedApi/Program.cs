@@ -15,7 +15,11 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting.Internal;
 
-var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").AddJsonFile("appsettings.development.json",true).Build();
+var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+
+#if DEBUG
+    configuration = new ConfigurationBuilder().AddJsonFile("appsettings.development.json", true).Build();
+#endif
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.TryAddSingleton<IHostEnvironment>(new HostingEnvironment { EnvironmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") });

@@ -327,8 +327,7 @@ public class CustomerRepository : ICustomerRepository
             _dbContext.Customers.Update(user);
 
             int result = await _dbContext.SaveChangesAsync();
-            TimeSpan end1 = DateTime.Now - startTime;
-            _logger.LogInformation("{0} Saved to DB: {1}", logHeader, end1);
+            
             if (result != 0)
                 ret = await _adb2cRepository.InsertUserAsyncTask(user);
             else

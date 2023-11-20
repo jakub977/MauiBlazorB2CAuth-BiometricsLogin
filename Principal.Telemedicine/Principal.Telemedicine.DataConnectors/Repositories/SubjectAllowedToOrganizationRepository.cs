@@ -23,6 +23,14 @@ public class SubjectAllowedToOrganizationRepository : ISubjectAllowedToOrganizat
     }
 
     /// <inheritdoc/>
+    public async Task<IEnumerable<SubjectAllowedToOrganization>> GetSubjectsAllowedToOrganizationsByOrganizationIdAsyncTask(int organizationId)
+    {
+        var data = await _dbContext.SubjectAllowedToOrganizations.Where(w => w.OrganizationId == organizationId).OrderBy(p => p.Id).ToListAsync();
+
+        return data;
+    }
+
+    /// <inheritdoc/>
     public async Task<SubjectAllowedToOrganization?> GetSubjectAllowedToOrganizationsBySubjectAndOrganizationIdAsyncTask(int subjectId, int organizationId)
     {
         var data = await _dbContext.SubjectAllowedToOrganizations.Where(p => p.SubjectId == subjectId
