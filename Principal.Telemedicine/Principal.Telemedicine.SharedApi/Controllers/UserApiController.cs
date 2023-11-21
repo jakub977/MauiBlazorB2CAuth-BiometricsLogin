@@ -60,12 +60,12 @@ public class UserApiController : ControllerBase
     /// -2 = neplatné UserId
     /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
     /// </returns>
-    //[Authorize]
+    [Authorize]
     [HttpGet(Name = "GetUserInfo")]
-    public async Task<IGenericResponse<UserContract>> GetUserInfo(int userId, string recipientsEmail, string body, string title)
+    public async Task<IGenericResponse<UserContract>> GetUserInfo(int userId)
     {
         string logHeader = _logName + ".GetUserInfo:";
-        var result = await _mailFactory.SendEmailAsyncTask(recipientsEmail, body, title);
+
         // kontrola na vstupní data
         CompleteUserContract? currentUser = HttpContext.GetTmUser();
         if (currentUser == null)

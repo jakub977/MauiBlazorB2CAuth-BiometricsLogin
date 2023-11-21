@@ -22,6 +22,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.TryAddSingleton<IHostEnvironment>(new HostingEnvironment { EnvironmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") });
 builder.Services.AddSecretConfiguration<DistributedRedisCacheOptions>(configuration, "secrets/secrets.json");
 builder.Services.AddSecretConfiguration<TmSecurityConfiguration>(configuration, "secrets/secrets.json");
+builder.Services.AddSecretConfiguration<MailSettings>(configuration, "secrets/secrets.json");
 builder.Services.AddTmMemoryCache(configuration);
 builder.Services.AddAuthentication(x=>
 {  
@@ -54,8 +55,8 @@ builder.Services.AddScoped<IProviderRepository, ProviderRepository>();
 builder.Services.AddScoped<IRoleMemberRepository, RoleMemberRepository>();
 builder.Services.AddScoped<IADB2CRepository, ADB2CRepository>();
 builder.Services.AddScoped<ISubjectAllowedToOrganizationRepository, SubjectAllowedToOrganizationRepository>();
-builder.Services.AddScoped<IMailFactory, MailFactory>();
 builder.Services.AddScoped<IGraphAPI, GraphAPI>();
+builder.Services.AddScoped<IMailFactory, MailFactory>();
 builder.Services.AddAutoMapper(typeof(Mapping).Assembly);
 
 builder.Services.AddEndpointsApiExplorer();
@@ -91,8 +92,6 @@ builder.Services.AddSwaggerGen(config =>
         });
    // config.OperationFilter<RequiredHeaderParameter>();
 });
-builder.Services.AddScoped<IGraphAPI, GraphAPI>();
-builder.Services.AddScoped<IMailFactory, MailFactory>();
 
 builder.Services.AddDbContext<DbContextApi>(options => options.UseLazyLoadingProxies().EnableSensitiveDataLogging().
 UseSqlServer(builder.Configuration.GetConnectionString("MAIN_DB")));

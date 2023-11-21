@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Principal.Telemedicine.Shared.Configuration;
 using System.Net.Http.Headers;
 using System.Text;
@@ -12,10 +13,10 @@ public class MailFactory : IMailFactory
     private readonly MailSettings _mailSettings;
     private readonly string _logName = "MailFactory";
 
-    public MailFactory(ILogger<MailFactory> logger, MailSettings mailSettings, IGraphAPI graphAPI)
+    public MailFactory(ILogger<MailFactory> logger, IOptions<MailSettings> mailSettings, IGraphAPI graphAPI)
     {
         _logger = logger;
-        _mailSettings = mailSettings;
+        _mailSettings = mailSettings.Value;
         _graphAPI = graphAPI;
     }
 
@@ -90,6 +91,6 @@ public class MailFactory : IMailFactory
             _logger.LogError($"{logHeader} AD returned: User: '{recipientsEmail}', Error: {errMessage}");
         }
 
-        return ret;
+        return result;
     }
 }

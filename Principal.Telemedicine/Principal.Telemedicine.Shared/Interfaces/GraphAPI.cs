@@ -1,6 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Principal.Telemedicine.Shared.Configuration;
 using System.Text.Json;
 
 namespace Principal.Telemedicine.Shared.Interfaces;
@@ -8,14 +6,12 @@ namespace Principal.Telemedicine.Shared.Interfaces;
 public class GraphAPI: IGraphAPI
 {
     private readonly ILogger _logger;
-    private readonly MailSettings _mailSettings;
     private readonly string _logName = "GraphAPI";
 
 
-    public GraphAPI(ILogger<GraphAPI> logger, IOptions<MailSettings> mailSettings)
+    public GraphAPI(ILogger<GraphAPI> logger)
     {
         _logger = logger;
-        _mailSettings = mailSettings.Value;
     }
 
     public string GetEmailRequestBody(string recipientsEmail, string messageSubject, string messageBody)
@@ -55,7 +51,7 @@ public class GraphAPI: IGraphAPI
 
                 jsonMessage = JsonSerializer.Serialize(message);
                
-                if (!string.IsNullOrEmpty(jsonMessage))
+                if (string.IsNullOrEmpty(jsonMessage))
                 {
                     _logger.LogDebug($"{logHeader} Request body of email to user '{recipientsEmail}' was not prepared.");
                 }
