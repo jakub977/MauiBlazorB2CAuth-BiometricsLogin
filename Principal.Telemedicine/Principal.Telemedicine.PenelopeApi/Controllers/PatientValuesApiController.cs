@@ -9,8 +9,7 @@ using Newtonsoft.Json;
 using Principal.Telemedicine.PenelopeData.Models;
 using Principal.Telemedicine.Shared.Api;
 using Principal.Telemedicine.Shared.Models;
-using Microsoft.Kiota.Abstractions;
-using Microsoft.Graph.Models.TermStore;
+using Principal.Telemedicine.Shared.Security;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
 
@@ -24,13 +23,15 @@ public class PatientValuesApiController : ControllerBase
 
     private readonly DbContextApi _dbContext;
     private readonly ILogger _logger;
+    private readonly UserApiController _userApiController;
 
     private readonly string _logName = "PatientValuesApiController";
 
-    public PatientValuesApiController(ILogger<PatientValuesApiController> logger, DbContextApi dbContext)
+    public PatientValuesApiController(ILogger<PatientValuesApiController> logger, DbContextApi dbContext, UserApiController userApiController)
     {
         _dbContext = dbContext;
         _logger = logger;
+        _userApiController = userApiController;
     }
 
     /// <summary>
@@ -39,16 +40,23 @@ public class PatientValuesApiController : ControllerBase
     /// <param name="apiKey"></param>
     /// <param name="userGlobalId"></param>
     /// <returns></returns>
-    [AllowAnonymous]
+    [Authorize]
     [HttpGet(Name = "PENEGetUserPregnancyCalendarWithMeasuredValues")]          
-    public async Task<IGenericResponse<List<CalendarWithMeasuredValuesDataModel>>> PENEGetUserPregnancyCalendarWithMeasuredValues(string userGlobalId, string preferredLanguageCode)
+    public async Task<IGenericResponse<List<CalendarWithMeasuredValuesDataModel>>> PENEGetUserPregnancyCalendarWithMeasuredValues(string preferredLanguageCode)
     {
         string logHeader = _logName + ".PENEGetUserPregnancyCalendarWithMeasuredValues:";
 
-        if (string.IsNullOrEmpty(userGlobalId) || string.IsNullOrEmpty(preferredLanguageCode))
+        if (string.IsNullOrEmpty(preferredLanguageCode))
         {
-            _logger.LogWarning($"{logHeader} UserGlobalId and preferredLanguage parameters are empty.");
-            return new GenericResponse<List<CalendarWithMeasuredValuesDataModel>>(null, false, -2, "UserGlobalId and preferredLanguage parameters are empty", "UserGlobalId and preferredLanguage must be set.");
+            _logger.LogWarning($"{logHeader} PreferredLanguage parameter is empty.");
+            return new GenericResponse<List<CalendarWithMeasuredValuesDataModel>>(null, false, -2, "PreferredLanguage parameter is empty", "PreferredLanguage must be set.");
+        }
+
+        CompleteUserContract? currentUser = HttpContext.GetTmUser();
+        if (currentUser == null)
+        {
+            _logger.LogWarning("{0} Current User not found", logHeader);
+            return new GenericResponse<List<CalendarWithMeasuredValuesDataModel>>(null, false, -4, "Current user not found", "User not found");
         }
 
         try
@@ -56,7 +64,7 @@ public class PatientValuesApiController : ControllerBase
             LanguageCodeEnum lce = Enum.Parse<LanguageCodeEnum>(preferredLanguageCode);
             int languageId = (int)lce;
 
-            var peneCalendar =  await _dbContext.CalendarWithMeasuredValuesDataModels.FromSql($"dbo.sp_GetUserPregnancyCalendarWithMeasuredValues @GlobalId = {userGlobalId}, @LanguageId = {languageId} ").AsNoTracking().ToListAsync();
+            var peneCalendar =  await _dbContext.CalendarWithMeasuredValuesDataModels.FromSql($"dbo.sp_GetUserPregnancyCalendarWithMeasuredValues @GlobalId = {currentUser.GlobalId}, @LanguageId = {languageId} ").AsNoTracking().ToListAsync();
             
             if (!peneCalendar.Any())
             {
@@ -83,14 +91,21 @@ public class PatientValuesApiController : ControllerBase
     /// <returns></returns>
     [AllowAnonymous]
     [HttpGet(Name = "PENEGetOneDayScheduledActivities")]
-    public async Task<IGenericResponse<List<ScheduledActivitiesDataModel>>> PENEGetOneDayScheduledActivities(string userGlobalId, string preferredLanguageCode)
+    public async Task<IGenericResponse<List<ScheduledActivitiesDataModel>>> PENEGetOneDayScheduledActivities(string preferredLanguageCode)
     {
         string logHeader = _logName + ".PENEGetOneDayScheduledActivities:";
 
-        if (string.IsNullOrEmpty(userGlobalId) || string.IsNullOrEmpty(preferredLanguageCode))
+        if (string.IsNullOrEmpty(preferredLanguageCode))
         {
-            _logger.LogWarning($"{logHeader} UserGlobalId and preferredLanguage parameters are empty.");
-            return new GenericResponse<List<ScheduledActivitiesDataModel>>(null, false, -2, "UserGlobalId and preferredLanguage parameters are empty", "UserGlobalId and preferredLanguage must be set.");
+            _logger.LogWarning($"{logHeader} PreferredLanguage parameter is empty.");
+            return new GenericResponse<List<ScheduledActivitiesDataModel>>(null, false, -2, "PreferredLanguage parameter is empty", "PreferredLanguage must be set.");
+        }
+
+        CompleteUserContract? currentUser = HttpContext.GetTmUser();
+        if (currentUser == null)
+        {
+            _logger.LogWarning("{0} Current User not found", logHeader);
+            return new GenericResponse<List<ScheduledActivitiesDataModel>>(null, false, -4, "Current user not found", "User not found");
         }
 
         try
@@ -102,7 +117,7 @@ public class PatientValuesApiController : ControllerBase
             DateTime dateTo = DateTime.Today.AddDays(1).AddSeconds(-1);
 
 
-            var oneDayActivities = await _dbContext.ScheduledActivitiesDataModels.FromSql($"dbo.sp_GetScheduledActivities @GlobalId = {userGlobalId}, @DateFrom = {dateFrom}, @DateTo = {dateTo}, @LanguageId = {languageId} ").AsNoTracking().ToListAsync();
+            var oneDayActivities = await _dbContext.ScheduledActivitiesDataModels.FromSql($"dbo.sp_GetScheduledActivities @GlobalId = {currentUser.GlobalId}, @DateFrom = {dateFrom}, @DateTo = {dateTo}, @LanguageId = {languageId} ").AsNoTracking().ToListAsync();
 
             if (!oneDayActivities.Any())
             {
@@ -129,16 +144,22 @@ public class PatientValuesApiController : ControllerBase
     /// <returns></returns>
     [AllowAnonymous]
     [HttpGet(Name = "PENEGetAllScheduledActivities")]
-    public async Task<IGenericResponse<List<ScheduledActivitiesDataModel>>> PENEGetAllScheduledActivities(string userGlobalId, string preferredLanguageCode)
+    public async Task<IGenericResponse<List<ScheduledActivitiesDataModel>>> PENEGetAllScheduledActivities(string preferredLanguageCode)
     {
         string logHeader = _logName + ".PENEGetAllScheduledActivities:";
 
-        if (string.IsNullOrEmpty(userGlobalId) || string.IsNullOrEmpty(preferredLanguageCode))
+        if (string.IsNullOrEmpty(preferredLanguageCode))
         {
-            _logger.LogWarning($"{logHeader} UserGlobalId and preferredLanguage parameters are empty.");
-            return new GenericResponse<List<ScheduledActivitiesDataModel>>(null, false, -2, "UserGlobalId and preferredLanguage parameters are empty", "UserGlobalId and preferredLanguage must be set.");
+            _logger.LogWarning($"{logHeader} PreferredLanguage parameter is empty.");
+            return new GenericResponse<List<ScheduledActivitiesDataModel>>(null, false, -2, "PreferredLanguage parameter is empty", "PreferredLanguage must be set.");
         }
 
+        CompleteUserContract? currentUser = HttpContext.GetTmUser();
+        if (currentUser == null)
+        {
+            _logger.LogWarning("{0} Current User not found", logHeader);
+            return new GenericResponse<List<ScheduledActivitiesDataModel>>(null, false, -4, "Current user not found", "User not found");
+        }
 
         try
         {
@@ -148,7 +169,7 @@ public class PatientValuesApiController : ControllerBase
             DateTime? dtStart = null;
             DateTime? dtEnd = null;
 
-            var allActivities = await _dbContext.ScheduledActivitiesDataModels.FromSql($"dbo.sp_GetScheduledActivities @GlobalId = {userGlobalId}, @DateFrom = {dtStart}, @DateTo = {dtEnd}, @LanguageId = {languageId} ").AsNoTracking().ToListAsync();
+            var allActivities = await _dbContext.ScheduledActivitiesDataModels.FromSql($"dbo.sp_GetScheduledActivities @GlobalId = {currentUser.GlobalId}, @DateFrom = {dtStart}, @DateTo = {dtEnd}, @LanguageId = {languageId} ").AsNoTracking().ToListAsync();
 
             if (!allActivities.Any())
             {
@@ -482,7 +503,6 @@ public class PatientValuesApiController : ControllerBase
                 return new GenericResponse<int>(returnValue, false, -3, "Stored procedure dbo.sp_CreateScheduledActivities_Medication has failed.");
             }
 
-            //TODO zde notifikace
 
             return new GenericResponse<int>(procedureResult, true, 0);
 
