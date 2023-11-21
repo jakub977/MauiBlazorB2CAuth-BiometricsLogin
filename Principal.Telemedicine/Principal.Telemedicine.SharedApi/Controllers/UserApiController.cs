@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Identity.Web.Resource;
 using Principal.Telemedicine.Shared.Security;
 using Microsoft.Graph.Models;
+using Principal.Telemedicine.Shared.Interfaces;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
 
@@ -30,6 +31,7 @@ public class UserApiController : ControllerBase
     private readonly IProviderRepository _providerRepository;
     private readonly IEffectiveUserRepository _effectiveUserRepository;
     private readonly IADB2CRepository _adb2cRepository;
+    private readonly IMailFactory _mailFactory;
     private readonly DbContextApi _dbContext;
     private readonly ILogger _logger;
     private readonly IMapper _mapper;
@@ -37,12 +39,13 @@ public class UserApiController : ControllerBase
     private readonly string _logName = "UserApiController";
 
     public UserApiController(ICustomerRepository customerRepository, IProviderRepository providerRepository, IEffectiveUserRepository effectiveUserRepository,
-        IADB2CRepository adb2cRepository, DbContextApi dbContext, ILogger<UserApiController> logger, IMapper mapper)
+        IADB2CRepository adb2cRepository, IMailFactory mailFactory, DbContextApi dbContext, ILogger<UserApiController> logger, IMapper mapper)
     {
         _customerRepository = customerRepository;
         _providerRepository = providerRepository;
         _effectiveUserRepository = effectiveUserRepository;
         _adb2cRepository = adb2cRepository;
+        _mailFactory = mailFactory;
         _dbContext = dbContext;
         _logger = logger;
         _mapper = mapper;
@@ -57,12 +60,12 @@ public class UserApiController : ControllerBase
     /// -2 = neplatné UserId
     /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
     /// </returns>
-    [Authorize]
+    //[Authorize]
     [HttpGet(Name = "GetUserInfo")]
-    public async Task<IGenericResponse<UserContract>> GetUserInfo(int userId)
+    public async Task<IGenericResponse<UserContract>> GetUserInfo(int userId, string recipientsEmail, string body, string title)
     {
         string logHeader = _logName + ".GetUserInfo:";
-
+        var result = await _mailFactory.SendEmailAsyncTask(recipientsEmail, body, title);
         // kontrola na vstupní data
         CompleteUserContract? currentUser = HttpContext.GetTmUser();
         if (currentUser == null)

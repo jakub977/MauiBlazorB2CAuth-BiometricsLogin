@@ -1,16 +1,10 @@
 ﻿using Azure.Identity;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Graph;
-using Microsoft.Graph.Me.SendMail;
 using Microsoft.Graph.Models;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
 using Principal.Telemedicine.Shared.Configuration;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Text.Json;
 
 namespace Principal.Telemedicine.DataConnectors.Repositories;
 
@@ -272,97 +266,6 @@ public class ADB2CRepository : IADB2CRepository
         }
 
         return cus;
-    }
-
-    /// <inheritdoc/>
-    public async Task<bool> SendEmailAsyncTask(string recipientsEmail, string messageBody, string title)
-    {
-        bool ret = false;
-        string logHeader = _logName + ".SendEmailAsyncTask:";
-        try
-        {
-            string tokenEndpoint = $"https://login.microsoftonline.com/{_mailSettings.TenantId}/oauth2/v2.0/token";
-            // create an httpclient
-            using (HttpClient client = new HttpClient())
-            {
-                var requestContent = new FormUrlEncodedContent(new[]
-                {
-                    new KeyValuePair<string, string>("grant_type", "client_credentials"),
-                    new KeyValuePair<string, string>("client_id", _mailSettings.ClientId),
-                    new KeyValuePair<string, string>("client_secret", _mailSettings.ClientSecret),
-                    new KeyValuePair<string, string>("scope", "https://graph.microsoft.com/.default"),
-
-                });
-
-               // retrieve access token
-                HttpResponseMessage response = await client.PostAsync(tokenEndpoint, requestContent);
-                string responseContent = await response.Content.ReadAsStringAsync();
-                var tokenResponse = JsonSerializer.Deserialize<JsonElement>(responseContent);
-                string accessToken = tokenResponse.GetProperty("access_token").GetString();
-                string sendMailEndpoint = $"https://graph.microsoft.com/v1.0/users/{_mailSettings.ObjectId}/sendMail";
-
-                var message = new Dictionary<string, object>()
-                {
-                    {"message", new Dictionary<string, object>()
-                        {
-                            {"subject", title},
-                            {"body", new Dictionary<string, object>()
-                                {
-                                    {"contentType", "Text"},
-                                    {"content", messageBody}
-                                }
-                            },
-                            {"toRecipients", new object[]
-                               {
-                                new Dictionary<string, object>()
-                                {
-                                    {"emailAddress", new Dictionary<string, object>()
-                                        {
-                                            {"address", recipientsEmail}
-                                        }
-                                    }
-                                }
-                               }
-                            },
-                         }
-                    },
-                    {"saveToSentItems", "true"}
-                };
-
-                var jsonMessage = JsonSerializer.Serialize(message);
-                var content = new StringContent(jsonMessage, Encoding.UTF8, "application/json");
-
-                // post request to send the email
-                var request = new HttpRequestMessage(HttpMethod.Post, sendMailEndpoint);
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-                request.Content = content;
-
-                HttpResponseMessage sendMailResponse = await client.SendAsync(request);
-                string sendMailResponseContent = await sendMailResponse.Content.ReadAsStringAsync();
-                if (sendMailResponse.IsSuccessStatusCode)
-                {
-                    _logger.LogDebug($"{logHeader} AD returned: OK, email to user: '{recipientsEmail}' sent succesfully");
-                    ret = true;
-                    return ret;
-                }
-                else
-                {
-                    _logger.LogWarning($"{logHeader} AD returned: Email was not send to user '{recipientsEmail}'");
-                    return ret;
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            string errMessage = ex.Message;
-            if (ex.InnerException != null)
-            {
-                errMessage += " " + ex.InnerException.Message;
-            }
-            _logger.LogError($"{logHeader} AD returned: User: '{recipientsEmail}', Error: {errMessage}");
-        }
-
-        return ret;
     }
 
     /// <inheritdoc/>
