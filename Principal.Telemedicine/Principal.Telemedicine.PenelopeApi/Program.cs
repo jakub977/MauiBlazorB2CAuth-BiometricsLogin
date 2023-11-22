@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -9,7 +10,10 @@ using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.Shared.Infrastructure;
 using Principal.Telemedicine.Shared.Logging;
 using Principal.Telemedicine.Shared.Cache;
+using Principal.Telemedicine.Shared.Firebase;
 using Principal.Telemedicine.Shared.Security;
+using Principal.Telemedicine.SharedApi.Controllers;
+using Principal.Telemedicine.DataConnectors.Repositories;
 
 var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 
@@ -18,10 +22,34 @@ builder.Services.TryAddSingleton<IHostEnvironment>(new HostingEnvironment { Envi
 builder.Services.AddTmDistributedCache(configuration, builder.Environment.IsLocalHosted());
 builder.Services.AddSecretConfiguration<DistributedRedisCacheOptions>(configuration, "secrets/secrets.json");
 builder.Services.AddSecretConfiguration<TmSecurityConfiguration>(configuration, "secrets/secrets.json");
+builder.Services.AddSecretConfiguration<FcmSettings>(configuration, "secrets/secrets.json");
 
-// Add services to the container.
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAdB2C"));
+builder.Services.AddScoped<FcmNotificationApiController>();
+builder.Services.AddScoped<IFcmNotificationService, FcmNotificationService>();
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<IADB2CRepository, ADB2CRepository>();
+builder.Services.AddScoped<IAppMessageRepository, AppMessageRepository>();
+
+builder.Services.AddAuthentication(x =>
+    {
+        x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+    })
+    .AddMicrosoftIdentityWebApi(options =>
+        {
+            configuration.Bind("AzureAdB2C", options);
+        },
+        options => { configuration.Bind("AzureAdB2C", options); })
+    .EnableTokenAcquisitionToCallDownstreamApi(options =>
+    {
+        configuration.Bind("AzureAdB2C", options);
+        options.LogLevel = Microsoft.Identity.Client.LogLevel.Warning;
+    })
+    .AddInMemoryTokenCaches();
+
+JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
+
 builder.Services.AddTmMemoryCache(configuration);
 
 builder.Services.AddControllers();
@@ -57,9 +85,7 @@ builder.Services.AddSwaggerGen(config =>
             new List<string>()
         }
     });
-    // config.OperationFilter<RequiredHeaderParameter>();
 });
-
 
 builder.Services.AddDbContext<DbContextApi>(options => options.UseLazyLoadingProxies().
     UseSqlServer(builder.Configuration.GetConnectionString("MAIN_DB")));

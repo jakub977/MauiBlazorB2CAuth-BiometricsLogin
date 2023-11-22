@@ -10,6 +10,7 @@ using Principal.Telemedicine.PenelopeData.Models;
 using Principal.Telemedicine.Shared.Api;
 using Principal.Telemedicine.Shared.Models;
 using Principal.Telemedicine.Shared.Security;
+using Principal.Telemedicine.Shared.Firebase;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
 
@@ -23,22 +24,21 @@ public class PatientValuesApiController : ControllerBase
 
     private readonly DbContextApi _dbContext;
     private readonly ILogger _logger;
-    private readonly UserApiController _userApiController;
+    private readonly FcmNotificationApiController _fcmNotificationApiController;
 
     private readonly string _logName = "PatientValuesApiController";
 
-    public PatientValuesApiController(ILogger<PatientValuesApiController> logger, DbContextApi dbContext, UserApiController userApiController)
+    public PatientValuesApiController(ILogger<PatientValuesApiController> logger, DbContextApi dbContext, FcmNotificationApiController fcmNotificationApiController)
     {
         _dbContext = dbContext;
         _logger = logger;
-        _userApiController = userApiController;
+        _fcmNotificationApiController = fcmNotificationApiController;
     }
 
     /// <summary>
     /// Vrátí plánovač pacienta s naměřenými hodnotami.
     /// </summary>
-    /// <param name="apiKey"></param>
-    /// <param name="userGlobalId"></param>
+    /// <param name="preferredLanguageCode"></param>
     /// <returns></returns>
     [Authorize]
     [HttpGet(Name = "PENEGetUserPregnancyCalendarWithMeasuredValues")]          
@@ -55,7 +55,7 @@ public class PatientValuesApiController : ControllerBase
         CompleteUserContract? currentUser = HttpContext.GetTmUser();
         if (currentUser == null)
         {
-            _logger.LogWarning("{0} Current User not found", logHeader);
+            _logger.LogWarning($"{logHeader} Current User not found");
             return new GenericResponse<List<CalendarWithMeasuredValuesDataModel>>(null, false, -4, "Current user not found", "User not found");
         }
 
@@ -86,10 +86,9 @@ public class PatientValuesApiController : ControllerBase
     /// <summary>
     /// Vrátí seznam platných aktivit v daném dni pro konkrétního pacienta.
     /// </summary>
-    /// <param name="apiKey"></param>
-    /// <param name="userGlobalId"></param>
+    /// <param name="preferredLanguageCode"></param>
     /// <returns></returns>
-    [AllowAnonymous]
+    [Authorize]
     [HttpGet(Name = "PENEGetOneDayScheduledActivities")]
     public async Task<IGenericResponse<List<ScheduledActivitiesDataModel>>> PENEGetOneDayScheduledActivities(string preferredLanguageCode)
     {
@@ -104,7 +103,7 @@ public class PatientValuesApiController : ControllerBase
         CompleteUserContract? currentUser = HttpContext.GetTmUser();
         if (currentUser == null)
         {
-            _logger.LogWarning("{0} Current User not found", logHeader);
+            _logger.LogWarning($"{logHeader} Current User not found");
             return new GenericResponse<List<ScheduledActivitiesDataModel>>(null, false, -4, "Current user not found", "User not found");
         }
 
@@ -139,10 +138,9 @@ public class PatientValuesApiController : ControllerBase
     /// <summary>
     /// Vrátí seznam všech platných aktivit pro konkrétního pacienta.
     /// </summary>
-    /// <param name="apiKey"></param>
-    /// <param name="userGlobalId"></param>
+    /// <param name="preferredLanguageCode"></param>
     /// <returns></returns>
-    [AllowAnonymous]
+    [Authorize]
     [HttpGet(Name = "PENEGetAllScheduledActivities")]
     public async Task<IGenericResponse<List<ScheduledActivitiesDataModel>>> PENEGetAllScheduledActivities(string preferredLanguageCode)
     {
@@ -157,7 +155,7 @@ public class PatientValuesApiController : ControllerBase
         CompleteUserContract? currentUser = HttpContext.GetTmUser();
         if (currentUser == null)
         {
-            _logger.LogWarning("{0} Current User not found", logHeader);
+            _logger.LogWarning($"{logHeader} Current User not found");
             return new GenericResponse<List<ScheduledActivitiesDataModel>>(null, false, -4, "Current user not found", "User not found");
         }
 
@@ -191,19 +189,25 @@ public class PatientValuesApiController : ControllerBase
     /// <summary>
     /// Vrácení posledních známých naměřených hodnot pro homepage - zde se nejedná o hodinové agregované hodnoty, ale hodnoty aktualizované po provedeném měření.
     /// </summary>
-    /// <param name="userGlobalId"></param>
     /// <param name="preferredLanguageCode"></param>
     /// <returns></returns>
-    [AllowAnonymous]
+    [Authorize]
     [HttpGet(Name = "PENEGetLastUserMeasuredValue")]
-    public async Task<IGenericResponse<List<UserMeasuredValuesDataModel>>> PENEGetLastUserMeasuredValue(string userGlobalId, string preferredLanguageCode)
+    public async Task<IGenericResponse<List<UserMeasuredValuesDataModel>>> PENEGetLastUserMeasuredValue(string preferredLanguageCode)
     {
         string logHeader = _logName + ".PENEGetLastUserMeasuredValue:";
 
-        if (string.IsNullOrEmpty(userGlobalId) || string.IsNullOrEmpty(preferredLanguageCode))
+        if (string.IsNullOrEmpty(preferredLanguageCode))
         {
             _logger.LogWarning($"{logHeader} UserGlobalId and preferredLanguage parameters are empty.");
-            return new GenericResponse<List<UserMeasuredValuesDataModel>>(null, false, -2, "UserGlobalId and preferredLanguage parameters are empty", "UserGlobalId and preferredLanguage must be set.");
+            return new GenericResponse<List<UserMeasuredValuesDataModel>>(null, false, -2, "PreferredLanguage parameter is empty", "PreferredLanguage must be set.");
+        }
+
+        CompleteUserContract? currentUser = HttpContext.GetTmUser();
+        if (currentUser == null)
+        {
+            _logger.LogWarning($"{logHeader} Current User not found");
+            return new GenericResponse<List<UserMeasuredValuesDataModel>>(null, false, -4, "Current user not found", "User not found");
         }
 
         try
@@ -211,7 +215,7 @@ public class PatientValuesApiController : ControllerBase
             LanguageCodeEnum lce = Enum.Parse<LanguageCodeEnum>(preferredLanguageCode);
             int languageId = (int)lce;
             
-            var userMeasuredValues = await _dbContext.UserMeasuredValuesDataModels.FromSql($"dbo.sp_GetLastUserMeasuredValue @userGlobalId = {userGlobalId}, @LanguageId = {languageId} ").AsNoTracking().ToListAsync();
+            var userMeasuredValues = await _dbContext.UserMeasuredValuesDataModels.FromSql($"dbo.sp_GetLastUserMeasuredValue @userGlobalId = {currentUser.GlobalId}, @LanguageId = {languageId} ").AsNoTracking().ToListAsync();
 
             if (!userMeasuredValues.Any())
             {
@@ -236,7 +240,7 @@ public class PatientValuesApiController : ControllerBase
     /// </summary>
     /// <param name="preferredLanguageCode"></param>
     /// <returns></returns>
-    [AllowAnonymous]
+    [Authorize]
     [HttpGet(Name = "PENEGetClinicalSymptomQuestions")]
     public async Task<IGenericResponse<List<ClinicalSymptomQuestionDataModel>>> PENEGetClinicalSymptomQuestions(string preferredLanguageCode)
     {
@@ -245,7 +249,7 @@ public class PatientValuesApiController : ControllerBase
         if (string.IsNullOrEmpty(preferredLanguageCode))
         {
             _logger.LogWarning($"{logHeader} PreferredLanguage parameter is empty.");
-            return new GenericResponse<List<ClinicalSymptomQuestionDataModel>>(null, false, -2, "PreferredLanguage parameter is empty", "PreferredLanguage must be set.");
+            return new GenericResponse<List<ClinicalSymptomQuestionDataModel>>(null, false, -4, "Current user not found", "User not found");
         }
 
         try
@@ -275,23 +279,23 @@ public class PatientValuesApiController : ControllerBase
     /// <summary>
     /// Vrátí počet dní zbývajících do vypočteného termínu porodu, k zobrazení v mobilní aplikaci.
     /// </summary>
-    /// <param name="userGlobalId"></param>
     /// <returns></returns>
-    [AllowAnonymous]
+    [Authorize]
     [HttpGet(Name = "PENEGetExpectedBirthDate")]
-    public async Task<IGenericResponse<List<PregnancyInfoDataModel>>> PENEGetExpectedBirthDate(string userGlobalId)
+    public async Task<IGenericResponse<List<PregnancyInfoDataModel>>> PENEGetExpectedBirthDate()
     {
         string logHeader = _logName + ".PENEGetExpectedBirthDate:";
 
-        if (string.IsNullOrEmpty(userGlobalId))
+        CompleteUserContract? currentUser = HttpContext.GetTmUser();
+        if (currentUser == null)
         {
-            _logger.LogWarning($"{logHeader} UserGlobalId parameter is empty.");
-            return new GenericResponse<List<PregnancyInfoDataModel>>(null, false, -2, "UserGlobalId parameter is empty", "UserGlobalId must be set.");
+            _logger.LogWarning($"{logHeader} Current User not found");
+            return new GenericResponse<List<PregnancyInfoDataModel>>(null, false, -4, "Current user not found", "User not found");
         }
 
         try
         {
-            var pregnancyInfo = await _dbContext.PregnancyInfoDataModels.FromSql($"dbo.sp_GetExpectedBirthDate @GlobalId = {userGlobalId}").AsNoTracking().ToListAsync();
+            var pregnancyInfo = await _dbContext.PregnancyInfoDataModels.FromSql($"dbo.sp_GetExpectedBirthDate @GlobalId = {currentUser.GlobalId}").AsNoTracking().ToListAsync();
 
             if (!pregnancyInfo.Any())
             {
@@ -315,7 +319,7 @@ public class PatientValuesApiController : ControllerBase
     /// </summary>
     /// <param name="physiologicalDataRoot"></param>
     /// <returns></returns>
-    [AllowAnonymous]
+    [Authorize]
     [HttpPost(Name = "PENESaveMeasuredPhysiologicalDataFromMA")]
     public async Task<IGenericResponse<int>> PENESaveMeasuredPhysiologicalDataFromMA([FromBody]PhysiologicalDataRoot physiologicalDataRoot)
     {
@@ -361,7 +365,7 @@ public class PatientValuesApiController : ControllerBase
     /// </summary>
     /// <param name="scheduledActivity"></param>
     /// <returns></returns>
-    [AllowAnonymous]
+    [Authorize]
     [HttpPost(Name = "PENESaveUserResponseToNotification")]
     public async Task<IGenericResponse<int>> PENESaveUserResponseToNotification([FromBody] ScheduledActivityDataModel scheduledActivity)
     {
@@ -415,7 +419,7 @@ public class PatientValuesApiController : ControllerBase
     /// </summary>
     /// <param name="clinicalSymptomAnswerDataModels"></param>
     /// <returns></returns>
-    [AllowAnonymous]
+    [Authorize]
     [HttpPost(Name = "PENESaveUserDiseaseSymptomSubjectiveAssessment")]
     public async Task<IGenericResponse<int>> PENESaveUserDiseaseSymptomSubjectiveAssessment([FromBody]List<ClinicalSymptomAnswerDataModel> clinicalSymptomAnswerDataModels)
     {
@@ -457,27 +461,27 @@ public class PatientValuesApiController : ControllerBase
     /// <summary>
     /// Vygeneruje plán aktivit pacientky při aktivaci MA
     /// </summary>
-    /// <param name="userGlobalId"></param>
     /// <returns></returns>
+    [Authorize]
     [HttpGet(Name = "CreateScheduledActivities")]
-    public async Task<IGenericResponse<int>> CreateScheduledActivities(string userGlobalId)
+    public async Task<IGenericResponse<int>> CreateScheduledActivities()
     {
         string logHeader = _logName + ".CreateScheduledActivities:";
         int returnValue = -1;
 
 
-        if (string.IsNullOrEmpty(userGlobalId))
+        CompleteUserContract? currentUser = HttpContext.GetTmUser();
+        if (currentUser == null)
         {
-            _logger.LogWarning($"{logHeader} UserGlobalId parameter is empty.");
-            return new GenericResponse<int>(returnValue, false, -2, "UserGlobalId parameter is empty", "UserGlobalId must be set.");
-
+            _logger.LogWarning($"{logHeader} Current User not found");
+            return new GenericResponse<int>(returnValue, false, -4, "Current user not found", "User not found");
         }
 
         try
         {
             object[] parameters = new object[1];
 
-            var globalId = new SqlParameter("GlobalId", userGlobalId);
+            var globalId = new SqlParameter("GlobalId", currentUser.GlobalId);
             globalId.SqlDbType = SqlDbType.VarChar;
             globalId.Direction = ParameterDirection.Input;
             parameters[0] = globalId;
@@ -503,6 +507,12 @@ public class PatientValuesApiController : ControllerBase
                 return new GenericResponse<int>(returnValue, false, -3, "Stored procedure dbo.sp_CreateScheduledActivities_Medication has failed.");
             }
 
+            FcmNotificationRequest fcmNotificationRequest = new FcmNotificationRequest();
+            fcmNotificationRequest.AppMessageContentTypeEnum = AppMessageContentTypeEnum.P_SCHED_01;
+            fcmNotificationRequest.UserGlobalId = currentUser.GlobalId;
+            fcmNotificationRequest.NotifyAllUsers = false;
+            
+            await _fcmNotificationApiController.NotifyUser(fcmNotificationRequest);
 
             return new GenericResponse<int>(procedureResult, true, 0);
 

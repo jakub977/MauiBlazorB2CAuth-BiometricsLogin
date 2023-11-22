@@ -108,6 +108,7 @@ public class FcmNotificationApiController : ControllerBase
                     if (response.IsSuccess == false)
                     {
                         _logger.LogWarning($"{logHeader} Notification process has failed. User: {user.FriendlyName}, reason: {response.Message}");
+                        return new GenericResponse<bool>(false, false, -1, $"Notification process has failed. User: {user.FriendlyName}", $"{response.Message}");
                     }
 
                     AppMessageSentLog sentLog = new AppMessageSentLog();

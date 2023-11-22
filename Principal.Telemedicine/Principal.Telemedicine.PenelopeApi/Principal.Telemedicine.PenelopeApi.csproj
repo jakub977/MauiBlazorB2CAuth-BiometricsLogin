@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <None Include="Secrets\secrets.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
@@ -31,6 +31,12 @@
     <ProjectReference Include="..\Principal.Telemedicine.Shared.Cache\Principal.Telemedicine.Shared.Cache.csproj" />
     <ProjectReference Include="..\Principal.Telemedicine.Shared.Security\Principal.Telemedicine.Shared.Security.csproj" />
     <ProjectReference Include="..\Principal.Telemedicine.SharedApi\Principal.Telemedicine.SharedApi.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>
