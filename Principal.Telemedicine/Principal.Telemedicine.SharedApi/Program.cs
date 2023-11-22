@@ -15,6 +15,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Principal.Telemedicine.Shared.Firebase;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting.Internal;
+using Principal.Telemedicine.Shared.Interfaces;
 
 var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").AddJsonFile("appsettings.development.json",true).Build();
 
@@ -25,6 +26,7 @@ builder.Services.AddSecretConfiguration<DistributedRedisCacheOptions>(configurat
 builder.Services.AddSecretConfiguration<TmSecurityConfiguration>(configuration, "secrets/secrets.json");
 builder.Services.AddSecretConfiguration<FcmSettings>(configuration, "secrets/secrets.json");
 builder.Services.AddSecretConfiguration<AzureAdB2C>(configuration, "secrets/secrets.json");
+builder.Services.AddSecretConfiguration<MailSettings>(configuration, "secrets/secrets.json");
 builder.Services.AddTmMemoryCache(configuration);
 builder.Services.AddAuthentication(x=>
 {  
@@ -59,6 +61,8 @@ builder.Services.AddScoped<IADB2CRepository, ADB2CRepository>();
 builder.Services.AddScoped<ISubjectAllowedToOrganizationRepository, SubjectAllowedToOrganizationRepository>();
 builder.Services.AddScoped<IFcmNotificationService, FcmNotificationService>();
 builder.Services.AddScoped<IAppMessageRepository, AppMessageRepository>();
+builder.Services.AddScoped<IGraphAPI, GraphAPI>();
+builder.Services.AddScoped<IMailFactory, MailFactory>();
 builder.Services.AddAutoMapper(typeof(Mapping).Assembly);
 
 builder.Services.AddEndpointsApiExplorer();
