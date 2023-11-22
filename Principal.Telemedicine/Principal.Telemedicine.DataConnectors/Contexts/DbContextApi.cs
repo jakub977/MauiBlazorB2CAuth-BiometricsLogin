@@ -62,6 +62,14 @@ public partial class DbContextApi : DbContext
 
     public virtual DbSet<AddressCity> AddressCities { get; set; }
 
+    public virtual DbSet<AppMessageAdditionalAttribute> AppMessageAdditionalAttributes { get; set; }
+
+    public virtual DbSet<AppMessageContentType> AppMessageContentTypes { get; set; }
+
+    public virtual DbSet<AppMessageSentLog> AppMessageSentLogs { get; set; }
+
+    public virtual DbSet<AppMessageTemplate> AppMessageTemplates { get; set; }
+
     public virtual DbSet<Customer> Customers { get; set; }
 
     public virtual DbSet<EffectiveUser> EffectiveUsers { get; set; }
@@ -160,6 +168,34 @@ public partial class DbContextApi : DbContext
             entity.Property(e => e.IdAddressRegion).HasComment("Link to dbo.AddressRegion as a parent region of city");
             entity.Property(e => e.Name).HasComment("City name");
             entity.Property(e => e.UpdateDateUtc).HasComment("Date of city update, using coordinated universal time");
+        });
+
+        modelBuilder.Entity<AppMessageAdditionalAttribute>(entity =>
+        {
+            entity.HasOne(d => d.AppMessageContentType).WithMany(p => p.AppMessageAdditionalAttributes)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_AppMessageAdditionalAttribute_AppMessageContentType");
+        });
+
+        modelBuilder.Entity<AppMessageContentType>(entity =>
+        {
+            entity.Property(e => e.Active).HasDefaultValueSql("((1))");
+        });
+
+        modelBuilder.Entity<AppMessageSentLog>(entity =>
+        {
+            entity.Property(e => e.MessageSentDateUtc).HasDefaultValueSql("(getutcdate())");
+
+            entity.HasOne(d => d.AppMessageContentType).WithMany(p => p.AppMessageSentLogs)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_AppMessageSentLog_AppMessageContentType");
+        });
+
+        modelBuilder.Entity<AppMessageTemplate>(entity =>
+        {
+            entity.HasOne(d => d.AppMessageContentType).WithMany(p => p.AppMessageTemplates)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_AppMessageTemplate_AppMessageContentType");
         });
 
         modelBuilder.Entity<Customer>(entity =>
