@@ -11,7 +11,7 @@ namespace Principal.Telemedicine.DataConnectors.Repositories;
 public interface ICustomerRepository
 {
     /// <summary>
-    /// Metoda vrací všechny uživatele.
+    /// Metoda vrací všechny nesmazané uživatele včetně Efektivní uživatelů.
     /// </summary>
     /// <param name="providerId">Id Poskytovatele, který uživatele vytvořil</param>
     /// <returns>Seznam uživatelů</returns>

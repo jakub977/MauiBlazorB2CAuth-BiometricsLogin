@@ -63,8 +63,34 @@ public class EffectiveUserRepository : IEffectiveUserRepository
         user.UpdateDateUtc = DateTime.UtcNow;
         user.UpdatedByCustomerId = currentUser.Id;
 
-        _dbContext.EffectiveUsers.Update(user);
+        bool tracking = _dbContext.ChangeTracker.Entries<EffectiveUser>().Any(x => x.Entity.Id == user.Id);
+        if (!tracking)
+        {
+            _dbContext.EffectiveUsers.Update(user);
+        }
+
         int result = await _dbContext.SaveChangesAsync();
+        if (result != 0)
+            ret = true;
+
+        return ret;
+    }
+
+    /// <inheritdoc/>
+    public bool UpdateEffectiveUser(CompleteUserContract currentUser, EffectiveUser user)
+    {
+        bool ret = false;
+
+        user.UpdateDateUtc = DateTime.UtcNow;
+        user.UpdatedByCustomerId = currentUser.Id;
+
+        bool tracking = _dbContext.ChangeTracker.Entries<EffectiveUser>().Any(x => x.Entity.Id == user.Id);
+        if (!tracking)
+        {
+            _dbContext.EffectiveUsers.Update(user);
+        }
+
+        int result = _dbContext.SaveChanges();
         if (result != 0)
             ret = true;
 
@@ -80,8 +106,25 @@ public class EffectiveUserRepository : IEffectiveUserRepository
         user.CreatedDateUtc = DateTime.UtcNow;
         user.CreatedByCustomerId = currentUser.Id;
 
-        await _dbContext.EffectiveUsers.AddAsync(user);
+        _dbContext.EffectiveUsers.Add(user);
         int result = await _dbContext.SaveChangesAsync();
+        if (result != 0)
+            ret = true;
+
+        return ret;
+    }
+
+    /// <inheritdoc/>
+    public bool InsertEffectiveUser(CompleteUserContract currentUser, EffectiveUser user)
+    {
+        bool ret = false;
+
+        user.Deleted = false;
+        user.CreatedDateUtc = DateTime.UtcNow;
+        user.CreatedByCustomerId = currentUser.Id;
+
+        _dbContext.EffectiveUsers.Add(user);
+        int result = _dbContext.SaveChanges();
         if (result != 0)
             ret = true;
 
@@ -100,7 +143,7 @@ public class EffectiveUserRepository : IEffectiveUserRepository
             user.UpdatedByCustomerId = currentUser.Id;
             user.Deleted = true;
 
-            bool tracking = _dbContext.ChangeTracker.Entries<Customer>().Any(x => x.Entity.Id == user.Id);
+            bool tracking = _dbContext.ChangeTracker.Entries<EffectiveUser>().Any(x => x.Entity.Id == user.Id);
             if (!tracking)
             {
                 _dbContext.EffectiveUsers.Update(user);

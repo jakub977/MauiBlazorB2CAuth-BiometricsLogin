@@ -31,9 +31,9 @@ public class CustomerRepository : ICustomerRepository
     public async Task<IEnumerable<Customer>> GetCustomersTaskAsyncTask(int? providerId = null)
     {
         if (providerId.HasValue)
-            return await _dbContext.Customers.Where(w => w.CreatedByProviderId == providerId.Value).OrderBy(p => p.Id).ToListAsync();
+            return await _dbContext.Customers.Include(i => i.EffectiveUserUsers.Where(w => !w.Deleted)).Where(w => w.CreatedByProviderId == providerId.Value && !w.Deleted).OrderBy(p => p.Id).ToListAsync();
         else
-            return await _dbContext.Customers.OrderBy(p => p.Id).ToListAsync();
+            return await _dbContext.Customers.Include(i => i.EffectiveUserUsers.Where(w => !w.Deleted)).Where(w => !w.Deleted).OrderBy(p => p.Id).ToListAsync();
     }
 
     /// <inheritdoc/>
@@ -324,7 +324,7 @@ public class CustomerRepository : ICustomerRepository
             user.GlobalId = _adb2cRepository.CreateUPN(user.Email);
             user.AdminComment = user.Email; // sem si uloženíme uživatelské přihlašovací jméno "do zálohy", pokud si uživatel změní email (slouží jen jako informace, přihlašování obsluhuje AD B2C)
 
-            _dbContext.Customers.Update(user);
+            _dbContext.Customers.Add(user);
 
             int result = await _dbContext.SaveChangesAsync();
             

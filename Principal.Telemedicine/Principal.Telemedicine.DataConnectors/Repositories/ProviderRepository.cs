@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Graph.Models;
 using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
+using Principal.Telemedicine.Shared.Enums;
 using Principal.Telemedicine.Shared.Models;
 
 namespace Principal.Telemedicine.DataConnectors.Repositories;
@@ -56,6 +57,8 @@ public class ProviderRepository : IProviderRepository
     public async Task<Provider?> GetProviderListDetailByIdTaskAsync(int id)
     {
         var data = await _dbContext.Providers
+            .Include(i => i.EffectiveUsers.Where(w => !w.Deleted && w.RoleMembers.Any(a => a.RoleId == (int)RoleEnum.ProviderAdmin))).ThenInclude(t => t.RoleMembers)
+            .Include(i => i.EffectiveUsers.Where(w => !w.Deleted && w.RoleMembers.Any(a => a.RoleId == (int)RoleEnum.ProviderAdmin))).ThenInclude(t => t.User)
             .Include(t => t.City)
             .Include(t => t.Picture)
             .Include(t => t.Organization)
@@ -98,10 +101,8 @@ public class ProviderRepository : IProviderRepository
                 return false;
             }
         }
-
         catch (Exception ex)
         {
-
             string errMessage = ex.Message;
             if (ex.InnerException != null)
             {
