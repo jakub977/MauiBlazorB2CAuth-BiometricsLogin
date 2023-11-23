@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Identity.Web.Resource;
 using Principal.Telemedicine.Shared.Security;
 using Microsoft.Graph.Models;
+using Principal.Telemedicine.Shared.Interfaces;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
 
@@ -30,6 +31,7 @@ public class UserApiController : ControllerBase
     private readonly IProviderRepository _providerRepository;
     private readonly IEffectiveUserRepository _effectiveUserRepository;
     private readonly IADB2CRepository _adb2cRepository;
+    private readonly IMailFactory _mailFactory;
     private readonly DbContextApi _dbContext;
     private readonly ILogger _logger;
     private readonly IMapper _mapper;
@@ -37,12 +39,13 @@ public class UserApiController : ControllerBase
     private readonly string _logName = "UserApiController";
 
     public UserApiController(ICustomerRepository customerRepository, IProviderRepository providerRepository, IEffectiveUserRepository effectiveUserRepository,
-        IADB2CRepository adb2cRepository, DbContextApi dbContext, ILogger<UserApiController> logger, IMapper mapper)
+        IADB2CRepository adb2cRepository, IMailFactory mailFactory, DbContextApi dbContext, ILogger<UserApiController> logger, IMapper mapper)
     {
         _customerRepository = customerRepository;
         _providerRepository = providerRepository;
         _effectiveUserRepository = effectiveUserRepository;
         _adb2cRepository = adb2cRepository;
+        _mailFactory = mailFactory;
         _dbContext = dbContext;
         _logger = logger;
         _mapper = mapper;
@@ -306,6 +309,7 @@ public class UserApiController : ControllerBase
             actualData.OrganizationId = user.OrganizationId;
             actualData.PersonalIdentificationNumber = user.PersonalIdentificationNumber;
             actualData.BirthIdentificationNumber = user.BirthIdentificationNumber;
+            actualData.GynecologistNote = user.GynecologistNote;
 
             if (user.Picture != null && user.Picture.IsNew)
             {
@@ -805,7 +809,8 @@ public class UserApiController : ControllerBase
                 permission.IsDeniedPermission = true;
             }
 
-            actualData.GlobalId = actualData.Email;
+            // GlobalId nastavujeme v repository
+            //actualData.GlobalId = actualData.Email;
 
             if (actualData.HealthCareInsurerId.HasValue && user.HealthCareInsurerId.GetValueOrDefault() <= 0)
                 actualData.HealthCareInsurerId = null;
@@ -1092,8 +1097,8 @@ public class UserApiController : ControllerBase
                 return new GenericResponse<int>(ret, false, -5, "User not found", "User not found by Id.");
             }
 
-            // nasravíme GlobalId na email
-            customer.GlobalId = customer.Email;
+            // nastavíme GlobalId jako UPN
+            customer.GlobalId = _adb2cRepository.CreateUPN(customer.Email);
 
             // vygenerujeme heslo
             customer.Password = PasswordGenerator.GetNewPassword();

@@ -12,8 +12,10 @@ using System.Text.Json.Serialization;
 using Principal.Telemedicine.Shared.Security;
 using Microsoft.OpenApi.Models;
 using System.IdentityModel.Tokens.Jwt;
+using Principal.Telemedicine.Shared.Firebase;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting.Internal;
+using Principal.Telemedicine.Shared.Interfaces;
 
 var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").AddJsonFile("appsettings.development.json",true).Build();
 
@@ -21,6 +23,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.TryAddSingleton<IHostEnvironment>(new HostingEnvironment { EnvironmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") });
 builder.Services.AddSecretConfiguration<DistributedRedisCacheOptions>(configuration, "secrets/secrets.json");
 builder.Services.AddSecretConfiguration<TmSecurityConfiguration>(configuration, "secrets/secrets.json");
+builder.Services.AddSecretConfiguration<FcmSettings>(configuration, "secrets/secrets.json");
+builder.Services.AddSecretConfiguration<MailSettings>(configuration, "secrets/secrets.json");
 builder.Services.AddTmMemoryCache(configuration);
 builder.Services.AddAuthentication(x=>
 {  
@@ -43,7 +47,7 @@ builder.Services.AddAuthentication(x=>
 JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
 builder.Services.AddControllers()
-    .AddJsonOptions(options => options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull )
+    .AddJsonOptions(options => options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)
     .AddXmlDataContractSerializerFormatters();
 
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
@@ -53,6 +57,10 @@ builder.Services.AddScoped<IProviderRepository, ProviderRepository>();
 builder.Services.AddScoped<IRoleMemberRepository, RoleMemberRepository>();
 builder.Services.AddScoped<IADB2CRepository, ADB2CRepository>();
 builder.Services.AddScoped<ISubjectAllowedToOrganizationRepository, SubjectAllowedToOrganizationRepository>();
+builder.Services.AddScoped<IFcmNotificationService, FcmNotificationService>();
+builder.Services.AddScoped<IAppMessageRepository, AppMessageRepository>();
+builder.Services.AddScoped<IGraphAPI, GraphAPI>();
+builder.Services.AddScoped<IMailFactory, MailFactory>();
 builder.Services.AddAutoMapper(typeof(Mapping).Assembly);
 
 builder.Services.AddEndpointsApiExplorer();
@@ -101,6 +109,7 @@ builder.Services.AddTmInfrastructure(configuration);
 builder.Services.AddSecretConfiguration<DistributedRedisCacheOptions>(configuration, "secrets/secrets.json");
 builder.Services.AddSecretConfiguration<TmSecurityConfiguration>(configuration, "secrets/secrets.json");
 builder.Services.AddSecretConfiguration<AzureAdB2C>(configuration, "secrets/secrets.json");
+builder.Services.AddSecretConfiguration<MailSettings>(configuration, "secrets/secrets.json");
 builder.Services.AddTmDistributedCache(configuration, builder.Environment.IsLocalHosted());
 var app = builder.Build();
 
