@@ -19,10 +19,11 @@ public interface IRoleRepository
     /// Vrací seznam rolí pro grid
     /// </summary>
     /// <param name="currentUser">Aktuální uživatel</param>
-    /// <param name="activeUsersOnly">Filtr - pouze aktivní role</param>
-    /// <param name="filterRoleCategoryId">Filtr - pouze vybrané kategorie role</param>
-    /// <param name="filterGlobalRoles">Filtr - pouze role vybrané dostupnosti</param>
+    /// <param name="activeRolesOnly">Filtr - pouze aktivní role</param>
     /// <param name="searchText">Filtr - vyhledání v názvu role</param>
+    /// <param name="filterRoleCategoryId">Filtr - pouze vybrané kategorie role</param>
+    /// <param name="filterAvailability">Filtr - pouze role vybrané dostupnosti</param>
+    /// <param name="roleIds">Seznam ID rolí, které chceme mít v seznamu bez ohledu na ostatní podmínky</param>
     /// <param name="showHidden">Zobrazit i smazané záznamy?</param>
     /// <param name="showSpecial">Příznak, že se jedná o uživatele v Roli Super admin nebo Správce organizace</param>
     /// <param name="order">Řazení (vyýčet: "created_asc", "created_desc", "updated_asc", "updated_desc"</param>
@@ -31,6 +32,6 @@ public interface IRoleRepository
     /// <param name="providerId">Id Poskytovatele pod kterým hledáme</param>
     /// <param name="organizationId">Id Organizace</param>
     /// <returns>Jednu stránku seznamu</returns>
-    Task<PaginatedListData<Role>> GetRolesTaskAsync(CompleteUserContract currentUser, bool activeUsersOnly, int? filterRole, int? filteGroup, string? searchText, string? order = "created_desc", int? page = 1, int? pageSize = 20, int? providerId = null);
+    Task<PaginatedListData<Role>> GetRolesForGridTaskAsync(CompleteUserContract currentUser, bool activeRolesOnly, string? searchText, int? filterRoleCategoryId, int? filterAvailability, List<int>? roleIds = null, bool showHidden = false, bool showSpecial = false, string? order = "created_desc", int? page = 1, int? pageSize = 20, int? providerId = null, int? organizationId = null);
 
 }

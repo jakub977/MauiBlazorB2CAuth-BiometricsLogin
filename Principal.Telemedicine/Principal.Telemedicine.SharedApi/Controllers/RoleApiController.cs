@@ -38,7 +38,7 @@ public class RoleApiController : ControllerBase
     /// </summary>
     /// <param name="activeRolesOnly">Filtrování - pouze aktivní role</param>
     /// <param name="filterRoleCategoryId">Filtrování - podle ID kategorie role</param>
-    /// <param name="filterGlobalRoles">Filtrování - podle dostupnosti role (zda filtrovat pouze globální role)</param>
+    /// <param name="filterAvailability">Filtrování - podle dostupnosti role</param>
     /// <param name="searchText">Filtrování - hledaný text v názvu role</param>
     /// <param name="roleIds">Seznam ID rolí, které chceme mít v seznamu bez ohledu na ostatní podmínky</param>
     /// <param name="showHidden">Zobrazit i smazané záznamy?</param>
@@ -53,12 +53,12 @@ public class RoleApiController : ControllerBase
     /// -4 = uživatel volající metodu (podle GlobalID) nenalezen</returns>
 
 
-    [Authorize]
-    [HttpGet(Name = "GetRoles")]
-    public async Task<IGenericResponse<List<RoleContract>>> GetRoles(bool activeRolesOnly, string? searchText, int? filterRoleCategoryId, bool filterGlobalRoles = false, List<int>? roleIds = null, bool showHidden = false, bool showSpecial = false, string? order = "created_desc", int? page = 1, int? pageSize = 20, int? providerId = null, int? organizationId = null)
+    //[Authorize]
+    [HttpPost(Name = "GetRolesForGrid")]
+    public async Task<IGenericResponse<List<RoleContract>>> GetRolesForGrid(bool activeRolesOnly, string? searchText, int? filterRoleCategoryId, int? filterAvailability, List<int>? roleIds = null, bool showHidden = false, bool showSpecial = false, string? order = "created_desc", int? page = 1, int? pageSize = 20, int? providerId = null, int? organizationId = null)
     {
         DateTime startTime = DateTime.Now;
-        string logHeader = _logName + ".GetRoles:";
+        string logHeader = _logName + ".GetRolesForGrid:";
         // kontrola na vstupní data
         CompleteUserContract? currentUser = HttpContext.GetTmUser();
         if (currentUser == null)
@@ -66,26 +66,29 @@ public class RoleApiController : ControllerBase
             _logger.LogWarning("{0} Current User not found", logHeader);
             return new GenericResponse<List<RoleContract>>(null, false, -4, "Current user not found", "User not found by GlobalId.");
         }
-        var query = _roleRepository.ListOfAllRoles;
 
         try
         {
             List<RoleContract> data = new List<RoleContract>();
 
-            PaginatedListData<Customer> resultData = await _roleRepository.GetCustomersTaskAsync(currentUser, activeRolesOnly, filterRole, filterGroup, searchText, order, page, pageSize, providerId);
+            PaginatedListData<Role> resultData = await _roleRepository.GetRolesForGridTaskAsync(currentUser, activeRolesOnly, searchText, filterRoleCategoryId, filterAvailability, roleIds, showHidden, showSpecial, order, page, pageSize, providerId, organizationId);
 
             TimeSpan timeMiddle = DateTime.Now - startTime;
 
-            foreach (var item in resultData)
-            {
-                data.Add(item.ConvertToCompleteUserContract(false, false, false, false, true));
-            }
+            //item je Role - potřebuju přidat položku z Role do RoleContract
+            //foreach (var item in resultData)
+            //{
+            //    data.Add(item.ConvertToCompleteUserContract(false, false, false, false, true));
+            //}
+
+            // z kontraktu do nekontraktu
+            var mappedRoleContract = new RoleContract();
+            mappedRoleContract = _mapper.Map<RoleContract>(resultData);
 
             TimeSpan timeEnd = DateTime.Now - startTime;
             _logger.LogInformation("{0} Returning data - page: {1}, records: {2}, TotalRecords: {3}, TotalPages: {4}, duration: {5}, middle: {6}", logHeader, resultData.ActualPage, resultData.Count, resultData.TotalRecords, resultData.TotalPages, timeEnd, timeMiddle);
 
             return new GenericResponse<List<RoleContract>>(data, true, 0, null, null, resultData.TotalRecords);
-
         }
 
         catch (Exception ex)

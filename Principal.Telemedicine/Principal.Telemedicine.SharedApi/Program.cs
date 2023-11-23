@@ -57,6 +57,7 @@ builder.Services.AddScoped<IADB2CRepository, ADB2CRepository>();
 builder.Services.AddScoped<ISubjectAllowedToOrganizationRepository, SubjectAllowedToOrganizationRepository>();
 builder.Services.AddScoped<IFcmNotificationService, FcmNotificationService>();
 builder.Services.AddScoped<IAppMessageRepository, AppMessageRepository>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddAutoMapper(typeof(Mapping).Assembly);
 
 builder.Services.AddEndpointsApiExplorer();
