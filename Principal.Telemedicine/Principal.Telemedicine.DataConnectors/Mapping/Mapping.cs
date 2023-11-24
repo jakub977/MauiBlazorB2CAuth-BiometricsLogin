@@ -65,6 +65,7 @@ public class Mapping : Profile
         CreateMap<UserPermission, UserPermissionContract>();
         CreateMap<EffectiveUser, EffectiveUserContract>();
         CreateMap<EffectiveUser, EffectiveUserProviderContract>();
+        CreateMap<EffectiveUser, EffectiveUserNoProviderContract>();
         CreateMap<GenderType, GenderTypeContract>();
         CreateMap<HealthCareInsurer, HealthCareInsurerContract>();
         CreateMap<PasswordFormatType, PasswordFormatTypeContract>();
@@ -92,6 +93,7 @@ public class Mapping : Profile
            .ForMember(x => x.PasswordFormatTypeId, opt => opt.Ignore());
 
         CreateMap<EffectiveUserContract, EffectiveUser>();
+        CreateMap<EffectiveUserNoProviderContract, EffectiveUser>();
         CreateMap<UserPermissionContract, UserPermission>();
         CreateMap<PictureContract, Picture>();
         CreateMap<MediaStorageContract, MediaStorage>();

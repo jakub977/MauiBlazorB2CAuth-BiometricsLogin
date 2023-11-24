@@ -11,15 +11,22 @@ public interface IADB2CRepository
     /// Metoda aktualizuje existujícího uživatele 
     /// </summary>
     /// <param name="customer">Customer</param>
-    /// <returns>Výsledek uložení true / false</returns>
-    Task<bool> UpdateUserAsyncTask(Customer customer);
+    /// <returns>1 - update se povedl nebo:
+    /// -1 = globální chyba
+    /// -15 = uživatel je nový, nemá UserId > 0
+    /// -16 = uživatel nenalezen v AD B2C
+    /// -17 = existuje více uživatelů v AD B2C</returns>
+    Task<int> UpdateUserAsyncTask(Customer customer);
 
     /// <summary>
     /// Metoda založí nového uživatele 
     /// </summary>
     /// <param name="customer">Customer</param>
-    /// <returns>Výsledek uložení true / false</returns>
-    Task<bool> InsertUserAsyncTask(Customer customer);
+    /// <returns>1 - založení se se povedlo nebo:
+    /// -1 = globální chyba
+    /// -18 = uživatel již existuje v AD B2C
+    /// -19 = uživatel se stejným emailem již existuje v AD B2C</returns>
+    Task<int> InsertUserAsyncTask(Customer customer);
 
     /// <summary>
     /// Metoda smaže uživatele
@@ -56,6 +63,5 @@ public interface IADB2CRepository
     /// </summary>
     /// <returns>Aplikační doménu</returns>
     string? GetApplicationDomain();
-
 }
 

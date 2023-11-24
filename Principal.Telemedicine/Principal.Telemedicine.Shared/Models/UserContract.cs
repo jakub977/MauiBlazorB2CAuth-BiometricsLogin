@@ -285,5 +285,7 @@ namespace Principal.Telemedicine.Shared.Models;
         /// </summary>
         public string? AppInstanceToken { get; set; }
 
+    public virtual PictureContract? PictureObject { get; set; }
+
 }
 

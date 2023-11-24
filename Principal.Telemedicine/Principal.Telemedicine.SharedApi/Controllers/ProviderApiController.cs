@@ -57,54 +57,177 @@ public class ProviderApiController : ControllerBase
     /// <summary>
     /// Vrátí poskytovatele
     /// </summary>
-    /// <param name="providerId"> Id požadovaného poskytovatele</param>
-    /// <returns>Objekt uživatele</returns>
+    /// <param name="providerId">Id požadovaného poskytovatele</param>
+    /// <returns>GenericResponse s parametrem "success" TRUE a objektem "ProviderContract" nebo FALSE a případně chybu:
+    /// -1 = obecná chyba
+    /// -2 = neplatné ProviderId
+    /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
+    /// </returns>
+    [Authorize]
     [HttpGet(Name = "GetProvider")]
-    public async Task<IActionResult> GetProvider(int providerId)
+    public async Task<IGenericResponse<ProviderContract>> GetProvider(int providerId)
     {
+        DateTime startTime = DateTime.Now;
+        string logHeader = _logName + ".GetProvider:";
+        ProviderContract? provider = null;
 
+        //Aktualni uživatel
+        CompleteUserContract? currentUser = HttpContext.GetTmUser();
+        if (currentUser == null)
+        {
+            _logger.LogWarning("{0} Current User not found", logHeader);
+            return new GenericResponse<ProviderContract>(provider, false, -4, "Current user not found", "User not found by GlobalId.");
+        }
+
+        // kontrola na vstupní data
         if (providerId <= 0)
         {
-            return BadRequest();
+            _logger.LogWarning("{0} Invalid ProviderId: {1}", logHeader, providerId);
+             return new GenericResponse<ProviderContract>(provider, false, -2, "Invalid ProviderId", "ProviderId value must be greater then '0'.");
         }
 
         try
         {
-            var mappedProvider = new ProviderContract();
+            Provider? data = await _providerRepository.GetProviderByIdTaskAsync(providerId);
 
-            var provider = await _providerRepository.GetProviderByIdTaskAsync(providerId);
+            if (data != null)
+            {
+                provider = data.ConvertToProviderContract(withAllowedSubjects: true);
+            }
 
-            var effectiveUsers = await _effectiveUserRepository.GetEffectiveUsersByProviderIdTaskAsync(providerId);
+            TimeSpan endTime = DateTime.Now - startTime;
 
-            mappedProvider = _mapper.Map<ProviderContract>(provider);
+            _logger.LogInformation("{0} Data found, duration: {1}", logHeader, endTime);
 
-            return Ok(mappedProvider);
-
+            return new GenericResponse<ProviderContract>(provider, true, 0);
         }
-
         catch (Exception ex)
         {
-            _logger.LogError(ex.Message);
-            return StatusCode(StatusCodes.Status500InternalServerError);
+            _logger.LogError("{0} {1}", logHeader, ex.Message);
+            return new GenericResponse<ProviderContract>(provider, false, -1, ex.Message);
         }
     }
 
+    /// <summary>
+    /// Vrátí zíkladní údaje poskytovatele pro detail v listu
+    /// </summary>
+    /// <param name="providerId">Id požadovaného poskytovatele</param>
+    /// <returns>GenericResponse s parametrem "success" TRUE a objektem "ProviderContract" nebo FALSE a případně chybu:
+    /// -1 = obecná chyba
+    /// -2 = neplatné ProviderId
+    /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
+    /// </returns>
+    [Authorize]
+    [HttpGet(Name = "GetProviderListDetail")]
+    public async Task<IGenericResponse<ProviderContract>> GetProviderListDetail(int providerId)
+    {
+        DateTime startTime = DateTime.Now;
+        string logHeader = _logName + ".GetProviderListDetail:";
+        ProviderContract? provider = null;
+
+        //Aktualni uživatel
+        CompleteUserContract? currentUser = HttpContext.GetTmUser();
+        if (currentUser == null)
+        {
+            _logger.LogWarning("{0} Current User not found", logHeader);
+            return new GenericResponse<ProviderContract>(provider, false, -4, "Current user not found", "User not found by GlobalId.");
+        }
+
+        // kontrola na vstupní data
+        if (providerId <= 0)
+        {
+            _logger.LogWarning("{0} Invalid ProviderId: {1}", logHeader, providerId);
+            return new GenericResponse<ProviderContract>(provider, false, -2, "Invalid ProviderId", "ProviderId value must be greater then '0'.");
+        }
+
+        try
+        {
+            Provider? data = await _providerRepository.GetProviderListDetailByIdTaskAsync(providerId);
+
+            if (data != null)
+            {
+                provider = data.ConvertToProviderContract(true, true, false, true);
+            }
+
+            TimeSpan endTime = DateTime.Now - startTime;
+
+            _logger.LogInformation("{0} Data found, duration: {1}", logHeader, endTime);
+
+            return new GenericResponse<ProviderContract>(provider, true, 0);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("{0} {1}", logHeader, ex.Message);
+            return new GenericResponse<ProviderContract>(provider, false, -1, ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Vrací seznam Poskytovatelů, buď pro grid nebo pro DropdownList
+    /// </summary>
+    /// <param name="fullData">Příznak, zda vracíme data pro grid (TRUE) nebo pro DropdownList (FALSE)</param>
+    /// <param name="organizationId">Id organizace</param>
+    /// <returns>GenericResponse s parametrem "success" TRUE a objektem "List<ProviderContract>" nebo FALSE a případně chybu:
+    /// -1 = obecná chyba
+    /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
+    /// </returns>
+    [Authorize]
+    [HttpGet(Name = "GetProviders")]
+    public async Task<IGenericResponse<List<ProviderContract>>> GetProviders(bool fullData = true, int? organizationId = null)
+    {
+        DateTime startTime = DateTime.Now;
+        string logHeader = _logName + ".GetProviders:";
+        List<ProviderContract> data = new List<ProviderContract>();
+
+        //Aktualni uživatel
+        CompleteUserContract? currentUser = HttpContext.GetTmUser();
+        if (currentUser == null)
+        {
+            _logger.LogWarning("{0} Current User not found", logHeader);
+            return new GenericResponse<List<ProviderContract>>(data, false, -4, "Current user not found", "User not found by GlobalId.");
+        }
+
+        try
+        {
+            var providers = await _providerRepository.GetProvidersTaskAsync(fullData, organizationId);
+
+            if (providers != null)
+            {
+                if (fullData)
+                    data = providers.Select(s => s.ConvertToProviderContract()).ToList();
+                else
+                    data = providers.Select(s => s.ConvertToProviderContract(false, false, false, false)).ToList();
+            }
+
+            TimeSpan endTime = DateTime.Now - startTime;
+
+            _logger.LogInformation("{0} Data found, duration: {1}", logHeader, endTime);
+
+            return new GenericResponse<List<ProviderContract>>(data, true, 0, records: data.Count);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("{0} {1}", logHeader, ex.Message);
+            return new GenericResponse<List<ProviderContract>>(data, false, -1, ex.Message);
+        }
+    }
 
     /// <summary>
     /// Uloží nového poskytovatele
     /// </summary>
     /// <param name="providerContract"> objekt ProviderContract</param>
-    /// <returns>GenericResponse s parametrem "success" TRUE nebo FALSE a případně chybu:
+    /// <returns>GenericResponse s parametrem "success" TRUE a objektem "ProviderContract" nebo FALSE a případně chybu:
     /// -1 = obecná chyba
     /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
+    /// -7 = poskytovatele se nepodařilo uložit
+    /// </returns>
     [Authorize]
     [HttpPost(Name = "InsertProvider")]
-    public async Task<IGenericResponse<bool>> InsertProvider([FromBody] ProviderContract? providerContract)
+    public async Task<IGenericResponse<ProviderContract>> InsertProvider([FromBody] ProviderContract? providerContract)
     {
         string logHeader = _logName + ".InsertProvider:";
         bool ret = false;
         DateTime startTime = DateTime.Now;
-        using var tran = await _dbContext.Database.BeginTransactionAsync();
 
         try
         {
@@ -115,9 +238,8 @@ public class ProviderApiController : ControllerBase
             CompleteUserContract? currentUser = HttpContext.GetTmUser();
             if (currentUser == null)
             {
-                tran.Rollback();
                 _logger.LogWarning($"{logHeader} Current User not found");
-                return new GenericResponse<bool>(ret, false, -4, "Current user not found", "Current user not found by GlobalId.");
+                return new GenericResponse<ProviderContract>(providerContract, false, -4, "Current user not found", "Current user not found by GlobalId.");
             }
 
             mappedProvider.CreatedByCustomerId = currentUser.Id;
@@ -130,11 +252,13 @@ public class ProviderApiController : ControllerBase
                 mappedProvider.Picture.Active = true;
             }
 
+            int organizationId = currentUser.OrganizationId == null ? default(int) : currentUser.OrganizationId.Value;
+            var allSubjectsAllowedToOrganization = await _subjectAllowedToOrganizationRepository.GetSubjectsAllowedToOrganizationsByOrganizationIdAsyncTask(organizationId);
+
             //povolené moduly
-            foreach (var permission in providerContract.Permission)
+            foreach (var permission in providerContract.Permissions)
             {
-                int organizationId = currentUser.OrganizationId == null ? default(int) : currentUser.OrganizationId.Value;
-                var subjectAllowedToOrganization = await _subjectAllowedToOrganizationRepository.GetSubjectAllowedToOrganizationsBySubjectAndOrganizationIdAsyncTask(permission.SubjectId, organizationId);
+                SubjectAllowedToOrganization? subjectAllowedToOrganization = allSubjectsAllowedToOrganization.Where(w => w.SubjectId == permission.SubjectId).FirstOrDefault();
 
                 if (subjectAllowedToOrganization != null)
                 {
@@ -153,29 +277,25 @@ public class ProviderApiController : ControllerBase
                 }
             }
 
-            ret = await _providerRepository.InsertProviderTaskAsync(mappedProvider);
+            ret = await _providerRepository.InsertProviderTaskAsync(currentUser, mappedProvider);
             TimeSpan timeEnd = DateTime.Now - startTime;
 
             if (!ret)
             {
-                tran.Rollback();
                 _logger.LogWarning($"{logHeader} Provider '{mappedProvider.Name}', ID: {mappedProvider.Id} was not inserted, duration: {timeEnd}");
-                return new GenericResponse<bool>(ret, false, -1, "Provider was not updated", "Error when updating provider.");
+                return new GenericResponse<ProviderContract>(providerContract, false, -7, "Provider was not updated", "Error when updating provider.");
             }
-
             else
             {
-                tran.Commit();
+                providerContract.Id = mappedProvider.Id;
                 _logger.LogInformation($"{logHeader} Provider '{mappedProvider.Name}', ID: {mappedProvider.Id} was successfully inserted, duration: {timeEnd}");
-                return new GenericResponse<bool>(ret, true, 0);
+                return new GenericResponse<ProviderContract>(providerContract, true, 0);
             }
         }
-
         catch (Exception ex)
         {
-            tran.Rollback();
             _logger.LogError("{0} {1}", logHeader, ex.Message);
-            return new GenericResponse<bool>(false, false, -1, ex.Message);
+            return new GenericResponse<ProviderContract>(providerContract, false, -1, ex.Message);
         }
 
     }
@@ -189,9 +309,11 @@ public class ProviderApiController : ControllerBase
     /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
     /// -5 = poskytovatele se nepodařilo dohledat podle ID
     /// -6 = subjekty pro organizaci se nepodařilo dohledat podle ID a OrganizationId
+    /// -8 = poskytovatele se nepodařilo uložit
+    /// </returns>
     [Authorize]
     [HttpPost(Name = "UpdateProvider")]
-    public async Task<IGenericResponse<bool>> UpdateProvider( [FromBody] ProviderContract? providerContract)
+    public async Task<IGenericResponse<bool>> UpdateProvider([FromBody] ProviderContract? providerContract)
     {
         string logHeader = _logName + ".UpdateProvider:";
         bool ret = false;
@@ -212,7 +334,7 @@ public class ProviderApiController : ControllerBase
                 return new GenericResponse<bool>(ret, false, -4, "Current user not found", "Current user not found by GlobalId.");
             }
 
-            var dbProvider = _providerRepository.GetProviderById(mappedProvider.Id);
+            var dbProvider = await _providerRepository.GetProviderByIdTaskAsync(mappedProvider.Id);
             if (dbProvider == null)
             {
                 tran.Rollback();
@@ -220,130 +342,138 @@ public class ProviderApiController : ControllerBase
                 return new GenericResponse<bool>(ret, false, -5, "Provider not found", "Provider not found by Id.");
             }
 
-            if (_providerRepository.ListOfAllProviders().Any(i => i.Id == mappedProvider.Id))
+            mappedProvider.EffectiveUsers = providerContract.AdminUsers.Select(s => new EffectiveUser()
             {
-                dbProvider.Active = mappedProvider.Active;
-                dbProvider.Deleted = false;
-                dbProvider.Name = mappedProvider.Name;
-                dbProvider.AddressLine = mappedProvider.AddressLine;
-                dbProvider.PostalCode = mappedProvider.PostalCode;
-                dbProvider.CityId = mappedProvider.CityId;
-                dbProvider.IdentificationNumber = mappedProvider.IdentificationNumber;
-                dbProvider.TaxIdentificationNumber = mappedProvider.TaxIdentificationNumber;
-                dbProvider.UpdatedByCustomerId = currentUser.Id;
-                dbProvider.UpdateDateUtc = DateTime.UtcNow;
+                Active = s.Active,
+                Deleted = s.Deleted,
+                Id = s.Id,
+                UserId = s.UserId,
+                ProviderId = s.ProviderId
+            }).ToList();
 
-                if (mappedProvider.Picture != null && mappedProvider.Picture.MediaStorage != null)
+            dbProvider.Active = mappedProvider.Active;
+            dbProvider.Deleted = false;
+            dbProvider.Name = mappedProvider.Name;
+            dbProvider.AddressLine = mappedProvider.AddressLine;
+            dbProvider.PostalCode = mappedProvider.PostalCode;
+            dbProvider.CityId = mappedProvider.CityId;
+            dbProvider.IdentificationNumber = mappedProvider.IdentificationNumber;
+            dbProvider.TaxIdentificationNumber = mappedProvider.TaxIdentificationNumber;
+            dbProvider.UpdatedByCustomerId = currentUser.Id;
+            dbProvider.UpdateDateUtc = DateTime.UtcNow;
+
+            if (mappedProvider.Picture != null && mappedProvider.Picture.MediaStorage != null)
+            {
+                // aktualizace obsahu
+                if (dbProvider.Picture != null && dbProvider.Picture.Id > 0 && dbProvider.Picture.Id == mappedProvider.Picture.Id)
                 {
-                    // aktualizace obsahu
-                    if (dbProvider.Picture != null && dbProvider.Picture.Id > 0 && dbProvider.Picture.Id == mappedProvider.Picture.Id)
+                    if (mappedProvider.Picture.IsNew)
                     {
-                        if (mappedProvider.Picture.IsNew)
-                        {
-                            dbProvider.Picture.MediaStorage.Data = mappedProvider.Picture.MediaStorage.Data;
-                            dbProvider.Picture.UpdatedByCustomerId = currentUser.Id;
-                            dbProvider.Picture.UpdatedOnUtc = DateTime.UtcNow;
-                            dbProvider.Picture.Active = true;
-                        }
-                    }
-                    else
-                    {
-                        dbProvider.Picture = mappedProvider.Picture;
-                        dbProvider.Picture.CreatedByCustomerId = currentUser.Id;
-                        dbProvider.Picture.CreatedDateUtc = DateTime.UtcNow;
+                        dbProvider.Picture.MediaStorage.Data = mappedProvider.Picture.MediaStorage.Data;
+                        dbProvider.Picture.UpdatedByCustomerId = currentUser.Id;
+                        dbProvider.Picture.UpdatedOnUtc = DateTime.UtcNow;
                         dbProvider.Picture.Active = true;
                     }
                 }
                 else
-                    dbProvider.Picture = null;
-
-
-                List<int> existingSubjectIds = new List<int>();
-                List<int> selectedSubjectIds = providerContract.Permission.GroupBy(x => x.SubjectId)
-                    .Select(grp => grp.Key).ToList();
-
-                foreach (var selectedSubjectId in selectedSubjectIds)
                 {
-                    int organizationId = currentUser.OrganizationId == null ? default(int) : currentUser.OrganizationId.Value;
-
-                    var subjectAllowedToOrganization = await _subjectAllowedToOrganizationRepository.GetSubjectAllowedToOrganizationsBySubjectAndOrganizationIdAsyncTask(selectedSubjectId, organizationId);
-
-                    // TODO dočasný kód - založení subjektů pro organizaci
-                    if (subjectAllowedToOrganization == null)
-                    {
-                        tran.Rollback();
-                        _logger.LogWarning($"{logHeader} Subjects allowed to organization not found");
-                        return new GenericResponse<bool>(ret, false, -6, "Subjects allowed to organization not found", "Subjects allowed to organization not found by Id.");
-                    }
-
-                    // kontrola na existenci přiřazeného modulu/subjektu
-                    var dbSubjectAllowedToProvider = dbProvider.SubjectAllowedToProviders
-                        .FirstOrDefault(w => w.SubjectAllowedToOrganizationId == subjectAllowedToOrganization.Id
-                                             && w.ProviderId == mappedProvider.Id);
-
-                    // modul existuje, aktualizuji si Id pro pozdější mazání a pokračuji dál
-                    if (dbSubjectAllowedToProvider != null)
-                    {
-                        existingSubjectIds.Add(dbSubjectAllowedToProvider.Id);
-                        // dříve smazané právo, obnovuji ho
-                        if (dbSubjectAllowedToProvider.Deleted)
-                        {
-                            dbSubjectAllowedToProvider.Deleted = false;
-                            dbSubjectAllowedToProvider.Active = true;
-                            dbSubjectAllowedToProvider.UpdateDateUtc = DateTime.UtcNow;
-                            dbSubjectAllowedToProvider.UpdatedByCustomerId = currentUser.Id;
-                        }
-                        continue;
-                    }
-
-                    // nový záznam
-                    var subjectAllowedToProvider = new SubjectAllowedToProvider
-                    {
-                        CreatedByCustomerId = currentUser.Id,
-                        CreatedDateUtc = DateTime.UtcNow,
-                        Active = true,
-                        SubjectAllowedToOrganizationId = subjectAllowedToOrganization.Id,
-                        ProviderId = mappedProvider.Id
-                    };
-                    dbProvider.SubjectAllowedToProviders.Add(subjectAllowedToProvider);
-                }
-
-                // promažeme odebraná práva
-                var allowedSubjectsToDelete = dbProvider.SubjectAllowedToProviders
-                    .Where(w => !existingSubjectIds.Contains(w.Id) && !w.Deleted && w.Id > 0)
-                    .ToList();
-
-                // projdeme existující nesmazané a smažeme je
-                foreach (var allowedSubjectToDelete in allowedSubjectsToDelete)
-                {
-                    allowedSubjectToDelete.Deleted = true;
-                    allowedSubjectToDelete.UpdateDateUtc = DateTime.UtcNow;
-                    allowedSubjectToDelete.UpdatedByCustomerId = currentUser.Id;
-                }
-
-                // uložení administrátorů
-                SetProviderAdminUsers(currentUser, mappedProvider);
-                ret = await _providerRepository.UpdateProviderTaskAsync(dbProvider, tran, true);
-
-                TimeSpan timeEnd = DateTime.Now - startTime;
-
-                if (!ret)
-                {
-                    tran.Rollback();
-                    _logger.LogWarning($"{logHeader} Provider '{dbProvider.Name}', ID: {dbProvider.Id} was not updated, duration: {timeEnd}");
-                    return new GenericResponse<bool>(ret, false, -1, "Provider was not updated", "Error when updating provider.");
-                }
-
-                else
-                {
-                    tran.Commit();
-                    _logger.LogInformation($"{logHeader} Provider '{dbProvider.Name}', ID: {dbProvider.Id} was successfully updated, duration: {timeEnd}");
-                    return new GenericResponse<bool>(ret, true, 0);
+                    dbProvider.Picture = mappedProvider.Picture;
+                    dbProvider.Picture.CreatedByCustomerId = currentUser.Id;
+                    dbProvider.Picture.CreatedDateUtc = DateTime.UtcNow;
+                    dbProvider.Picture.Active = true;
                 }
             }
+            else
+                dbProvider.Picture = null;
 
-            tran.Commit();
-            return new GenericResponse<bool>(ret, true, 0);
+
+            List<int> existingSubjectIds = new List<int>();
+            List<int> selectedSubjectIds = providerContract.Permissions.GroupBy(x => x.SubjectId)
+                .Select(grp => grp.Key).ToList();
+
+            int organizationId = currentUser.OrganizationId == null ? default(int) : currentUser.OrganizationId.Value;
+
+            var allSubjectsAllowedToOrganization = await _subjectAllowedToOrganizationRepository.GetSubjectsAllowedToOrganizationsByOrganizationIdAsyncTask(organizationId);
+
+            foreach (var selectedSubjectId in selectedSubjectIds)
+            {
+                SubjectAllowedToOrganization? subjectAllowedToOrganization = allSubjectsAllowedToOrganization.Where(w => w.SubjectId == selectedSubjectId).FirstOrDefault();
+
+                // TODO dočasný kód - založení subjektů pro organizaci
+                if (subjectAllowedToOrganization == null)
+                {
+                    tran.Rollback();
+                    _logger.LogWarning($"{logHeader} Subjects allowed to organization not found");
+                    return new GenericResponse<bool>(ret, false, -6, "Subjects allowed to organization not found", "Subjects allowed to organization not found by Id.");
+                }
+
+                // kontrola na existenci přiřazeného modulu/subjektu
+                var dbSubjectAllowedToProvider = dbProvider.SubjectAllowedToProviders
+                    .FirstOrDefault(w => w.SubjectAllowedToOrganizationId == subjectAllowedToOrganization.Id
+                                         && w.ProviderId == mappedProvider.Id);
+
+                // modul existuje, aktualizuji si Id pro pozdější mazání a pokračuji dál
+                if (dbSubjectAllowedToProvider != null)
+                {
+                    existingSubjectIds.Add(dbSubjectAllowedToProvider.Id);
+                    // dříve smazané právo, obnovuji ho
+                    if (dbSubjectAllowedToProvider.Deleted)
+                    {
+                        dbSubjectAllowedToProvider.Deleted = false;
+                        dbSubjectAllowedToProvider.Active = true;
+                        dbSubjectAllowedToProvider.UpdateDateUtc = DateTime.UtcNow;
+                        dbSubjectAllowedToProvider.UpdatedByCustomerId = currentUser.Id;
+                    }
+                    continue;
+                }
+
+                // nový záznam
+                var subjectAllowedToProvider = new SubjectAllowedToProvider
+                {
+                    CreatedByCustomerId = currentUser.Id,
+                    CreatedDateUtc = DateTime.UtcNow,
+                    Active = true,
+                    SubjectAllowedToOrganizationId = subjectAllowedToOrganization.Id,
+                    ProviderId = mappedProvider.Id
+                };
+                dbProvider.SubjectAllowedToProviders.Add(subjectAllowedToProvider);
+            }
+
+            TimeSpan timeMiddle = DateTime.Now - startTime;
+
+            // promažeme odebraná práva
+            var allowedSubjectsToDelete = dbProvider.SubjectAllowedToProviders
+                .Where(w => !existingSubjectIds.Contains(w.Id) && !w.Deleted && w.Id > 0)
+                .ToList();
+
+            // projdeme existující nesmazané a smažeme je
+            foreach (var allowedSubjectToDelete in allowedSubjectsToDelete)
+            {
+                allowedSubjectToDelete.Deleted = true;
+                allowedSubjectToDelete.UpdateDateUtc = DateTime.UtcNow;
+                allowedSubjectToDelete.UpdatedByCustomerId = currentUser.Id;
+            }
+
+            // uložení administrátorů
+            SetProviderAdminUsers(currentUser, mappedProvider);
+
+            ret = await _providerRepository.UpdateProviderTaskAsync(currentUser, dbProvider);
+
+            TimeSpan timeEnd = DateTime.Now - startTime;
+
+            if (!ret)
+            {
+                tran.Rollback();
+                _logger.LogWarning($"{logHeader} Provider '{dbProvider.Name}', ID: {dbProvider.Id} was not updated, duration: {timeEnd}, middle: {timeMiddle}");
+                return new GenericResponse<bool>(ret, false, -8, "Provider was not updated", "Error when updating provider.");
+            }
+
+            else
+            {
+                tran.Commit();
+                _logger.LogInformation($"{logHeader} Provider '{dbProvider.Name}', ID: {dbProvider.Id} was successfully updated, duration: {timeEnd}, middle: {timeMiddle}");
+                return new GenericResponse<bool>(ret, true, 0);
+            }
         }
         catch (Exception ex)
         {
@@ -357,16 +487,17 @@ public class ProviderApiController : ControllerBase
     /// <summary>
     /// Smaže poskytovatele včetně jeho vazeb na efektivní uživatele
     /// </summary>
-    /// <param name="providerContract"> objekt Providera</param>
+    /// <param name="providerId">Id Providera</param>
     /// <returns>GenericResponse s parametrem "success" TRUE nebo FALSE a případně chybu:
     /// -1 = obecná chyba
-    /// -3 = chybí GlobalId
+    /// -2 = neplatné ProviderId
     /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
     /// -5 = poskytovatele se nepodařilo dohledat podle ID
+    /// -9 = poskytovatele se nepodařilo smazat
     /// </returns>
     [Authorize]
-    [HttpPost(Name = "DeleteProvider")]
-    public async Task<IGenericResponse<bool>> DeleteProvider([FromBody] ProviderContract? providerContract)
+    [HttpGet(Name = "DeleteProvider")]
+    public async Task<IGenericResponse<bool>> DeleteProvider(int providerId)
     {
         string logHeader = _logName + ".DeleteProvider:";
         bool ret = false;
@@ -384,96 +515,86 @@ public class ProviderApiController : ControllerBase
                 return new GenericResponse<bool>(ret, false, -4, "Current user not found", "Current user not found by GlobalId.");
             }
 
-            var mappedProvider = new Provider();
-            mappedProvider = _mapper.Map<Provider>(providerContract);
+            if (providerId <= 0)
+            {
+                _logger.LogWarning("{0} Invalid ProviderId: {1}", logHeader, providerId);
+                return new GenericResponse<bool>(ret, false, -2, "Invalid ProviderId", "ProviderId value must be greater then '0'.");
+            }
 
-            var dbProvider = _providerRepository.GetProviderById(mappedProvider.Id);
+            var dbProvider = await _providerRepository.GetProviderByIdTaskAsync(providerId);
             if (dbProvider == null)
             {
                 tran.Rollback();
-                _logger.LogWarning("{0} Provider not found", logHeader);
+                _logger.LogWarning("{0} Provider not found, Id: {0}", logHeader, providerId);
                 return new GenericResponse<bool>(ret, false, -5, "Provider not found", "Provider not found by Id.");
             }
 
-            if (_providerRepository.ListOfAllProviders().Any(i => i.Id == mappedProvider.Id))
-            {
-                dbProvider.Deleted = true;
-                dbProvider.Active = false;
-                ret = await _providerRepository.UpdateProviderTaskAsync(dbProvider, tran, true);
-                TimeSpan timeEnd = DateTime.Now - startTime;
+            dbProvider.Deleted = true;
+            dbProvider.Active = false;
 
-                if (!ret)
+            // odstranění vazby uživatelů na smazaného poskytovatele
+            foreach (var providerEffectiveUser in dbProvider.EffectiveUsers)
+            {
+                providerEffectiveUser.Deleted = true;
+                providerEffectiveUser.UpdateDateUtc = DateTime.UtcNow;
+                providerEffectiveUser.UpdatedByCustomerId = currentUser.Id;
+            }
+
+            ret = await _providerRepository.UpdateProviderTaskAsync(currentUser, dbProvider);
+            TimeSpan timeEnd = DateTime.Now - startTime;
+
+            if (!ret)
+            {
+                tran.Rollback();
+                _logger.LogWarning($"{logHeader} Provider '{dbProvider.Name}', Id: {dbProvider.Id} was not deleted, duration: {timeEnd}");
+                return new GenericResponse<bool>(ret, false, -9, "Provider was not deleted", "Error when deleting provider.");
+            }
+
+            
+            // odstranění vazby u uživatele
+            var users = await _customerRepository.GetCustomersTaskAsyncTask(dbProvider.Id);
+
+            // projdeme uživatele, pokud uživatel nemá vazbu na jiného poskytovatele, tak ho smažeme
+            foreach (var usr in users)
+            {
+                usr.Deleted = true;
+                if (usr.EffectiveUserUsers.Count > 0)
+                {
+                    var anotherEF = usr.EffectiveUserUsers.FirstOrDefault(f => !f.Deleted && f.ProviderId != dbProvider.Id);
+                    if (anotherEF != null)
+                    {
+                        // našli jsme vazbu na jiného poskytovatele, tak ho nastavíme
+                        usr.CreatedByProviderId = anotherEF.ProviderId;
+                        usr.Deleted = false;
+                    }
+                }
+
+                // super admin nebo správce organizace nebude smazán, jen odebereme vazbu na poskytovatele
+                if (usr.IsSuperAdminAccount || usr.IsOrganizationAdminAccount)
+                {
+                    usr.Deleted = false;
+                    usr.CreatedByProviderId = null;
+                }
+
+                usr.UpdateDateUtc = DateTime.UtcNow;
+                usr.UpdatedByCustomerId = currentUser.Id;
+
+                int retUser = await _customerRepository.UpdateCustomerTaskAsync(currentUser, usr, true, tran, true);
+
+                timeEnd = DateTime.Now - startTime;
+
+                if (retUser != 1)
                 {
                     tran.Rollback();
-                    _logger.LogWarning($"{logHeader} Provider '{dbProvider.Name}', Id: {dbProvider.Id} was not updated, duration: {timeEnd}");
-                    return new GenericResponse<bool>(ret, false, -1, "Provider was not updated", "Error when deleting provider.");
-                }
-
-                // odstranění vazby uživatelů na smazaného poskytovatele
-                var providerEffectiveUsers = _effectiveUserRepository.GetEffectiveUsersByOrganizationId(mappedProvider.OrganizationId).Where(p => p.Provider.Id == mappedProvider.Id).ToList();
-
-                foreach (var providerEffectiveUser in providerEffectiveUsers)
-                {
-                    providerEffectiveUser.Deleted = true;
-                    providerEffectiveUser.UpdateDateUtc = DateTime.UtcNow;
-                    providerEffectiveUser.UpdatedByCustomerId = currentUser.Id;
-                    ret = await _effectiveUserRepository.UpdateEffectiveUserTaskAsync(currentUser, providerEffectiveUser);
-                    timeEnd = DateTime.Now - startTime;
-                    if (!ret)
-                    {
-                        tran.Rollback();
-                        _logger.LogWarning($"{logHeader} Effective user was not updated, ID: {providerEffectiveUser.Id}, duration: {timeEnd}");
-                        return new GenericResponse<bool>(ret, false, -1, "Effective user was not updated", "Error when deleting provider.");
-                    }
-                }
-                // odstranění vazby u uživatele
-                var users = await _customerRepository.GetCustomersTaskAsyncTask(mappedProvider.Id);
-                users = users.Where(w => !w.Deleted);
-                // projdeme uživatele, pokud uživatel nemá vazbu na jiného poskytovatele, tak ho smažeme
-                foreach (var usr in users)
-                {
-                    usr.Deleted = true;
-                    if (usr.EffectiveUserUsers.Count > 0)
-                    {
-                        var anotherEF = usr.EffectiveUserUsers.FirstOrDefault(f => !f.Deleted && f.ProviderId != mappedProvider.Id);
-                        if (anotherEF != null)
-                        {
-                            // našli jsme vazbu na jiného poskytovatele, tak ho nastavíme
-                            usr.CreatedByProviderId = anotherEF.ProviderId;
-                            usr.Deleted = false;
-                        }
-                    }
-
-                    // super admin nebo správce organizace nebude smazán, jen odebereme vazbu na poskytovatele
-                    if (usr.IsSuperAdminAccount || usr.IsOrganizationAdminAccount) //usr.IsGlobalAdmin() || usr.IsOrganizationAdmin()
-                    {
-                        usr.Deleted = false;
-                        usr.CreatedByProviderId = null;
-                    }
-
-                    usr.UpdateDateUtc = DateTime.UtcNow;
-                    usr.UpdatedByCustomerId = currentUser.Id;
-
-                    ret = await _customerRepository.UpdateCustomerTaskAsync(currentUser, usr, true, tran, true);
-
-                    timeEnd = DateTime.Now - startTime;
-
-                    if (!ret)
-                    {
-                        tran.Rollback();
-                        _logger.LogWarning($"{logHeader} User '{usr.FriendlyName}', Email: '{usr.Email}', Id: {usr.Id} was not updated, duration: {timeEnd}");
-                        return new GenericResponse<bool>(ret, false, -1, "User was not updated", "Error when deleting user.");
-                    }
-
-                    else
-                    {
-                        tran.Commit();
-                        _logger.LogInformation($"{logHeader} User '{usr.FriendlyName}', Email: '{usr.Email}', Id: {usr.Id} was successfully updated, duration: {timeEnd}");
-                        return new GenericResponse<bool>(ret, true, 0);
-                    }
+                    _logger.LogWarning($"{logHeader} User '{usr.FriendlyName}', Email: '{usr.Email}', Id: {usr.Id} was not deleted from Provider '{dbProvider.Name}', Id: {dbProvider.Id}, duration: {timeEnd}");
+                    return new GenericResponse<bool>(ret, false, -9, "Provider was not deleted", "Error when deleting user from Provider.");
                 }
             }
+            
+            ret = true;
+
             tran.Commit();
+            _logger.LogInformation($"{logHeader} Provider '{dbProvider.Name}', Id: {dbProvider.Id} was successfully deleted, duration: {timeEnd}");
             return new GenericResponse<bool>(ret, true, 0);
         }
         catch (Exception ex)
@@ -484,12 +605,17 @@ public class ProviderApiController : ControllerBase
         }
     }
 
-    private void SetProviderAdminUsers(CompleteUserContract customer, Provider provider)
+    /// <summary>
+    /// Obsluha efektivních uživatelů v roli Správce poskytovatele u Poskytovatele
+    /// </summary>
+    /// <param name="customer">Aktuální uživatel</param>
+    /// <param name="provider">Poskytovatel</param>
+    private async void SetProviderAdminUsers(CompleteUserContract customer, Provider provider)
     {
-        var providerAdminsOfProvider = _effectiveUserRepository.GetEffectiveUsersByOrganizationId(provider.OrganizationId).Where(p => p.Provider.Id == provider.Id && p.RoleMembers.Any(r => r.RoleId == (int)RoleEnum.ProviderAdmin && !r.Deleted)).ToList();
-
         // všichni SP za danou organizaci
         var providerAdminsOfOrganization = _effectiveUserRepository.GetEffectiveUsersByOrganizationId(provider.OrganizationId).Where(p => p.RoleMembers.Any(r => r.RoleId == (int)RoleEnum.ProviderAdmin && r.Active.Value && !r.Deleted)).ToList();
+
+        var providerAdminsOfProvider = providerAdminsOfOrganization.Where(p => p.Provider.Id == provider.Id).ToList();
 
         foreach (var effectiveAdminUser in provider.EffectiveUsers)
         {
@@ -506,7 +632,17 @@ public class ProviderApiController : ControllerBase
                 if (existingEffectiveAdminUser != null)
                 {
                     // zkusíme, jestli máme EF uživatele pro daného Poskytovatele
-                    EffectiveUser? existingEffectiveProviderUser = _effectiveUserRepository.GetEffectiveUsersByOrganizationId(provider.OrganizationId).Where(p => p.Provider.Id == provider.Id && p.UserId == effectiveAdminUser.UserId).FirstOrDefault();
+                    EffectiveUser? existingEffectiveProviderUser = providerAdminsOfOrganization.Where(p => p.Provider.Id == provider.Id && p.UserId == effectiveAdminUser.UserId).FirstOrDefault();
+
+                    // přidání role Správce poskytovatele
+                    var roleM = new RoleMember
+                    {
+                        Active = true,
+                        CreatedByCustomerId = customer.Id,
+                        CreatedDateUtc = DateTime.UtcNow,
+                        Deleted = false,
+                        RoleId = (int)RoleEnum.ProviderAdmin
+                    };
 
                     if (existingEffectiveProviderUser == null)
                     {
@@ -520,8 +656,12 @@ public class ProviderApiController : ControllerBase
                             UserId = existingEffectiveAdminUser.UserId,
                             ProviderId = provider.Id,
                         };
+
+                        roleM.EffectiveUserId = existingEffectiveProviderUser.Id;
+
+                        existingEffectiveProviderUser.RoleMembers.Add(roleM);
                         // přidání EF
-                        _effectiveUserRepository.InsertEffectiveUserTaskAsync(customer, existingEffectiveProviderUser);
+                        _effectiveUserRepository.InsertEffectiveUser(customer, existingEffectiveProviderUser);
                     }
                     else
                     {
@@ -531,33 +671,11 @@ public class ProviderApiController : ControllerBase
                             existingEffectiveProviderUser.Active = true;
                             existingEffectiveProviderUser.UpdatedByCustomerId = customer.Id;
                             existingEffectiveProviderUser.UpdateDateUtc = DateTime.UtcNow;
-                            _effectiveUserRepository.UpdateEffectiveUserTaskAsync(customer, existingEffectiveProviderUser);
+                            roleM.EffectiveUserId = existingEffectiveProviderUser.Id;
+                            existingEffectiveProviderUser.RoleMembers.Add(roleM);
+                            await _effectiveUserRepository.UpdateEffectiveUserTaskAsync(customer, existingEffectiveProviderUser);
                         }
                     }
-
-                    // přidání role Správce poskytovatele
-                    _roleMemberRepository.InsertRoleMemberTaskAsync(new RoleMember
-                    {
-                        Active = true,
-                        CreatedByCustomerId = customer.Id,
-                        CreatedDateUtc = DateTime.UtcNow,
-                        Deleted = false,
-                        EffectiveUserId = existingEffectiveProviderUser.Id,
-                        RoleId = (int)RoleEnum.ProviderAdmin
-                    });
-                }
-            }
-            // aktualizace administrátora
-            else
-            {
-                var roleMember = _roleMemberRepository.GetAllRoleMembers()
-                    .FirstOrDefault(rm => rm.EffectiveUserId == effectiveAdminUser.Id
-                                 && rm.RoleId == (int)RoleEnum.ProviderAdmin);
-
-                if (roleMember != null)
-                {
-                    roleMember.UpdateDateUtc = DateTime.UtcNow;
-                    roleMember.UpdatedByCustomerId = customer.Id;
                 }
             }
         }
@@ -570,26 +688,26 @@ public class ProviderApiController : ControllerBase
         // projdeme existující nesmazané a smažeme je
         foreach (var effectiveAdminUserToDelete in effectiveAdminUsersToDelete)
         {
-            var roleMembers = _roleMemberRepository.GetAllRoleMembers()
-                .Where(rm => rm.EffectiveUserId == effectiveAdminUserToDelete.Id);
-
             // seznam rolí SP
-            var adminRoleMembers = roleMembers.Where(rm => rm.RoleId == (int)RoleEnum.ProviderAdmin);
+            var roleMembers = effectiveAdminUserToDelete.RoleMembers
+                .Where(rm => rm.RoleId == (int)RoleEnum.ProviderAdmin);
 
             // odebereme roli SP
-            foreach (var roleMember in adminRoleMembers)
+            foreach (var roleMember in roleMembers)
             {
-                _roleMemberRepository.DeleteRoleMemberTaskAsync(roleMember);
+                roleMember.Deleted = true;
+                roleMember.UpdateDateUtc = DateTime.UtcNow;
+                roleMember.UpdatedByCustomerId = customer.Id;
             }
 
-            // nemá jiné role u tohoto poskytovatele než roli SP, znaktivníme ho
+            // nemá jiné role u tohoto poskytovatele než roli SP, zneaktivníme ho a smažeme
             if (!roleMembers.Any(a => a.RoleId != (int)RoleEnum.ProviderAdmin))
             {
                 effectiveAdminUserToDelete.Active = false;
-                effectiveAdminUserToDelete.UpdatedByCustomerId = customer.Id;
-                effectiveAdminUserToDelete.UpdateDateUtc = DateTime.UtcNow;
-                _effectiveUserRepository.UpdateEffectiveUserTaskAsync(customer, effectiveAdminUserToDelete);
+                effectiveAdminUserToDelete.Deleted = true;
             }
+
+            _effectiveUserRepository.UpdateEffectiveUser(customer, effectiveAdminUserToDelete);
         }
     }
 }

@@ -11,7 +11,7 @@ namespace Principal.Telemedicine.DataConnectors.Repositories;
 public interface ICustomerRepository
 {
     /// <summary>
-    /// Metoda vrací všechny uživatele.
+    /// Metoda vrací všechny nesmazané uživatele včetně Efektivní uživatelů.
     /// </summary>
     /// <param name="providerId">Id Poskytovatele, který uživatele vytvořil</param>
     /// <returns>Seznam uživatelů</returns>
@@ -76,16 +76,25 @@ public interface ICustomerRepository
     /// <param name="ignoreADB2C">Příznak, že se má ignorovat volání ADB2C (default FALSE)</param>
     /// <param name="tran">Aktuální DB transakce (default NULL)</param>
     /// <param name="dontManageTran">Příznak, zda se v metodě mají ignorovat transakční příkazy (default FALSE)</param>
-    /// <returns>true / false</returns>
-    Task<bool> UpdateCustomerTaskAsync(CompleteUserContract currentUser, Customer user, bool? ignoreADB2C = false, IDbContextTransaction? tran = null, bool dontManageTran = false);
+    /// <returns>1 - update se povedl nebo:
+    /// -1 = globální chyba
+    /// -14 = uživatele se nepodařilo uložit
+    /// -15 = uživatele se nepodařilo uložit v AD B2C
+    /// -16 = uživatel nenalezen v AD B2C
+    /// -17 = existuje více shodných uživatelů v AD B2C</returns>
+    Task<int> UpdateCustomerTaskAsync(CompleteUserContract currentUser, Customer user, bool? ignoreADB2C = false, IDbContextTransaction? tran = null, bool dontManageTran = false);
 
     /// <summary>
     /// Metoda založí nového Customera včetně založení v ADB2C
     /// </summary>
     /// <param name="currentUser">Aktuální uživatel</param>
     /// <param name="user">Customer</param>
-    /// <returns>true / false</returns>
-    Task<bool> InsertCustomerTaskAsync(CompleteUserContract currentUser, Customer user);
+    /// <returns>1 - update se povedl nebo:
+    /// -1 = globální chyba
+    /// -6 = uživatele se nepodařilo založit v DB
+    /// -18 = uživatel již existuje v AD B2C
+    /// -19 = uživatel se stejným emailem již existuje v AD B2C</returns>
+    Task<int> InsertCustomerTaskAsync(CompleteUserContract currentUser, Customer user);
 
     /// <summary>
     /// Označí užvatele za smazaného a smaže ho z ADB2C
