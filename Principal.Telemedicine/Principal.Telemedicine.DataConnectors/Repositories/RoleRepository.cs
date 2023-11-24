@@ -86,12 +86,10 @@ public class RoleRepository : IRoleRepository
 
         query = GetQueryAccordingUserRole(query, currentUser, organizationId, providerId, showSpecial);
 
-        if (roleIds != null)
+        if (roleIds != null && roleIds[0] != 0)
         {
             var otherRoles = ListOfAllRoles().Where(w => roleIds.Contains(w.Id));
-            //todo: zde padá! proč?
             query = query.Concat(otherRoles);
-            var jsonRoleIdsQuery = JsonConvert.SerializeObject(query.ToArray());
         }
         // řazení
         switch (order)
@@ -111,7 +109,7 @@ public class RoleRepository : IRoleRepository
             default:
                 break;
         }
-        var json = JsonConvert.SerializeObject(query.ToArray());
+
         return await PaginatedListData<Role>.CreateAsync(query, page ?? 1, pageSize ?? 20);
     }
 

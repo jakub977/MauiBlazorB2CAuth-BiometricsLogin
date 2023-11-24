@@ -75,15 +75,10 @@ public class RoleApiController : ControllerBase
 
             TimeSpan timeMiddle = DateTime.Now - startTime;
 
-            //item je Role - potřebuju přidat položku z Role do RoleContract
-            //foreach (var item in resultData)
-            //{
-            //    data.Add(item.ConvertToCompleteUserContract(false, false, false, false, true));
-            //}
-
-            // z kontraktu do nekontraktu
-            var mappedRoleContract = new RoleContract();
-            mappedRoleContract = _mapper.Map<RoleContract>(resultData);
+            foreach (var item in resultData)
+            {
+                data.Add(item.ConvertToRoleContract());
+            }
 
             TimeSpan timeEnd = DateTime.Now - startTime;
             _logger.LogInformation("{0} Returning data - page: {1}, records: {2}, TotalRecords: {3}, TotalPages: {4}, duration: {5}, middle: {6}", logHeader, resultData.ActualPage, resultData.Count, resultData.TotalRecords, resultData.TotalPages, timeEnd, timeMiddle);
