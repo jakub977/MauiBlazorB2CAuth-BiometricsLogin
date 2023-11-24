@@ -4,6 +4,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Graph.Models;
 using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
+using Principal.Telemedicine.Shared.Enums;
+using Principal.Telemedicine.Shared.Models;
 
 namespace Principal.Telemedicine.DataConnectors.Repositories;
 
@@ -22,36 +24,61 @@ public class ProviderRepository : IProviderRepository
     }
 
     /// <inheritdoc/>
-    public async Task<IEnumerable<Provider>> GetProvidersTaskAsync()
+    public async Task<IEnumerable<Provider>> GetProvidersTaskAsync(bool fullData = true, int? organizationId = null)
     {
-        var data = await _dbContext.Providers.Include(i => i.EffectiveUsers).Include(i => i.City).OrderBy(p => p.Id).ToListAsync();
 
-        return data;
+        if (fullData)
+            if (organizationId.HasValue && organizationId.Value > 0)
+                return await _dbContext.Providers.Where(w => !w.Deleted && organizationId == organizationId.Value).Include(i => i.EffectiveUsers.Where(w => !w.Deleted)).ThenInclude(t => t.RoleMembers).ThenInclude(t => t.Role).Include(i => i.City).Include(i => i.Picture).Include(t => t.Organization).Include(i => i.EffectiveUsers.Where(w => !w.Deleted)).ThenInclude(t => t.User).OrderBy(p => p.Id).ToListAsync();
+            else
+                return await _dbContext.Providers.Where(w => !w.Deleted).Include(i => i.EffectiveUsers.Where(w => !w.Deleted)).ThenInclude(t => t.RoleMembers).ThenInclude(t => t.Role).Include(i => i.City).Include(i => i.Picture).Include(t => t.Organization).Include(i => i.EffectiveUsers.Where(w => !w.Deleted)).ThenInclude(t => t.User).OrderBy(p => p.Id).ToListAsync();
+        else
+            if (organizationId.HasValue && organizationId.Value > 0)
+                return await _dbContext.Providers.Where(w => !w.Deleted && organizationId == organizationId.Value).Include(i => i.City).Include(t => t.Organization).OrderBy(p => p.Id).ToListAsync();
+            else
+                return await _dbContext.Providers.Where(w => !w.Deleted).Include(i => i.City).Include(t => t.Organization).OrderBy(p => p.Id).ToListAsync();
     }
 
     /// <inheritdoc/>
     public async Task<Provider?> GetProviderByIdTaskAsync(int id)
     {
-        var data = await _dbContext.Providers.Include(i => i.EffectiveUsers).ThenInclude(t => t.RoleMembers)
+        var data = await _dbContext.Providers.Include(i => i.EffectiveUsers.Where(w => !w.Deleted)).ThenInclude(t => t.RoleMembers).ThenInclude(t => t.Role)
+            .Include(i => i.EffectiveUsers.Where(w => !w.Deleted)).ThenInclude(t => t.User).ThenInclude(t => t.Picture)
+            .Include(t => t.City)
+            .Include(t => t.Picture)
+            .Include(t => t.Organization)
+            .Include(t => t.SubjectAllowedToProviders.Where(w => !w.Deleted)).ThenInclude(t => t.SubjectAllowedToOrganization).ThenInclude(t => t.Subject).ThenInclude(t => t.ParentSubject)
             .Where(p => p.Id == id).FirstOrDefaultAsync();
 
         return data;
     }
 
     /// <inheritdoc/>
-    public async Task<bool> UpdateProviderTaskAsync(Provider provider, IDbContextTransaction? tran = null, bool dontManageTran = false)
+    public async Task<Provider?> GetProviderListDetailByIdTaskAsync(int id)
+    {
+        var data = await _dbContext.Providers
+            .Include(i => i.EffectiveUsers.Where(w => !w.Deleted && w.RoleMembers.Any(a => a.RoleId == (int)RoleEnum.ProviderAdmin))).ThenInclude(t => t.RoleMembers)
+            .Include(i => i.EffectiveUsers.Where(w => !w.Deleted && w.RoleMembers.Any(a => a.RoleId == (int)RoleEnum.ProviderAdmin))).ThenInclude(t => t.User)
+            .Include(t => t.City)
+            .Include(t => t.Picture)
+            .Include(t => t.Organization)
+            .Include(t => t.SubjectAllowedToProviders.Where(w => !w.Deleted)).ThenInclude(t => t.SubjectAllowedToOrganization).ThenInclude(t => t.Subject).ThenInclude(t => t.ParentSubject)
+            .Where(p => p.Id == id).FirstOrDefaultAsync();
+
+        return data;
+    }
+
+    /// <inheritdoc/>
+    public async Task<bool> UpdateProviderTaskAsync(CompleteUserContract currentUser, Provider provider)
     {
         bool ret = false;
         DateTime startTime = DateTime.Now;
         string logHeader = _logName + ".UpdateProviderTaskAsync:";
-        if (tran == null && !dontManageTran)
-        {
-            tran = await _dbContext.Database.BeginTransactionAsync();
-        }
 
         try
         {
             provider.UpdateDateUtc = DateTime.UtcNow;
+            provider.UpdatedByCustomerId = currentUser.Id;
 
             bool tracking = _dbContext.ChangeTracker.Entries<Provider>().Any(x => x.Entity.Id == provider.Id);
             if (!tracking)
@@ -64,25 +91,18 @@ public class ProviderRepository : IProviderRepository
 
 
             if (result != 0)
-                {
-                    if (!dontManageTran)
-                        tran.Commit();
-                    _logger.LogDebug($"{logHeader} Provider '{provider.Name}', Id: {provider.Id} updated succesfully, duration: {timeEnd}");
-                    return true;
-                }
-                else
-                {
-                    if (!dontManageTran)
-                        tran.Rollback();
-                    _logger.LogWarning($"{logHeader} Provider '{provider.Name}', Id: {provider.Id} was not updated, duration: {timeEnd}");
-                    return false;
-                }           
+            {
+                _logger.LogDebug($"{logHeader} Provider '{provider.Name}', Id: {provider.Id} updated succesfully, duration: {timeEnd}");
+                return true;
+            }
+            else
+            {
+                _logger.LogWarning($"{logHeader} Provider '{provider.Name}', Id: {provider.Id} was not updated, duration: {timeEnd}");
+                return false;
+            }
         }
-
         catch (Exception ex)
         {
-            if (!dontManageTran)
-                tran.Rollback();
             string errMessage = ex.Message;
             if (ex.InnerException != null)
             {
@@ -90,15 +110,16 @@ public class ProviderRepository : IProviderRepository
             }
             _logger.LogError($"{logHeader} Provider '{provider.Name}', Id: {provider.Id} was not updated, Error: {errMessage}");
         }
-        if (!dontManageTran)
-            tran.Dispose();
+
         return ret;
     }
 
     /// <inheritdoc/>
-    public async Task<bool> InsertProviderTaskAsync(Provider provider)
+    public async Task<bool> InsertProviderTaskAsync(CompleteUserContract currentUser, Provider provider)
     {
         bool ret = false;
+
+        provider.CreatedByCustomerId = currentUser.Id;
 
         _dbContext.Providers.Add(provider);
         int result = await _dbContext.SaveChangesAsync();
@@ -109,12 +130,11 @@ public class ProviderRepository : IProviderRepository
     }
 
     /// <inheritdoc/>
-    public async Task<bool> DeleteProviderTaskAsync(Customer currentUser, Provider provider)
+    public async Task<bool> DeleteProviderTaskAsync(CompleteUserContract currentUser, Provider provider)
     {
         bool ret = false;
         string logHeader = _logName + ".DeleteProviderTaskAsync:";
         DateTime startTime = DateTime.Now;
-        using var tran = await _dbContext.Database.BeginTransactionAsync();
 
         try
         {
@@ -130,25 +150,20 @@ public class ProviderRepository : IProviderRepository
 
             int result = await _dbContext.SaveChangesAsync();
 
-
             TimeSpan timeEnd = DateTime.Now - startTime;
             if (result != 0)
             {
-                tran.Commit();
                 _logger.LogDebug($"{logHeader} Provider '{provider.Name}', Id: {provider.Id} deleted succesfully, duration: {timeEnd}");
                 ret = true;
             }
             else
             {
-                tran.Rollback();
                 _logger.LogWarning($"{logHeader} Provider '{provider.Name}', Id: {provider.Id} was not deleted, duration: {timeEnd}");
                 ret = false;
             }
-            
         }
         catch (Exception ex)
         {
-            tran.Rollback();
             string errMessage = ex.Message;
             if (ex.InnerException != null)
             {
@@ -159,6 +174,7 @@ public class ProviderRepository : IProviderRepository
 
         return ret;
     }
+
     public Provider? GetProviderById(int providerId)
     {
         if (providerId < 1)
@@ -168,6 +184,7 @@ public class ProviderRepository : IProviderRepository
             .Include(c => c.Organization)
             .Include(c => c.Picture).DefaultIfEmpty()
             .Include(c => c.City).DefaultIfEmpty()
+            .Include(c => c.SubjectAllowedToProviders).DefaultIfEmpty()
             .FirstOrDefault(d => d.Id == providerId);
     }
 

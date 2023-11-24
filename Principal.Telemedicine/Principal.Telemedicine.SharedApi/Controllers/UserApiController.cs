@@ -226,10 +226,14 @@ public class UserApiController : ControllerBase
     /// -2 = neplatné UserId
     /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
     /// -5 = uživatele se nepodařilo dohledat podle ID
-    /// -11 = uživatel se stejným emailem existuje
-    /// -12 = uživatel se stejným tel. číslem existuje
-    /// -13 = uživatel se stejným PersonalIdentificationNumber existuje
-    /// -14 = uživatel se stejným GlobalID existuje
+    /// -10 = uživatel se stejným emailem existuje
+    /// -11 = uživatel se stejným tel. číslem existuje
+    /// -12 = uživatel se stejným PersonalIdentificationNumber existuje
+    /// -13 = uživatel se stejným GlobalID existuje
+    /// -14 = uživatele se nepodařilo uložit
+    /// -15 = uživatele se nepodařilo uložit v AD B2C
+    /// -16 = uživatel nenalezen v AD B2C
+    /// -17 = existuje více shodných uživatelů v AD B2C
     /// </returns>
     [Authorize]
     [HttpPost(Name = "UpdateUser")]
@@ -516,10 +520,7 @@ public class UserApiController : ControllerBase
                         if (!provider.Active.GetValueOrDefault())
                         {
                             provider.Active = true;
-                            provider.UpdateDateUtc = DateTime.UtcNow;
-                            provider.UpdatedByCustomerId = currentUser.Id;
-
-                            await _providerRepository.UpdateProviderTaskAsync(provider, null);
+                            await _providerRepository.UpdateProviderTaskAsync(currentUser, provider);
                         }
                     }
             }
@@ -647,17 +648,17 @@ public class UserApiController : ControllerBase
 
             #endregion
 
-            bool ret = await _customerRepository.UpdateCustomerTaskAsync(currentUser, actualData, ignoreADB2C: null, tran);
+            int ret = await _customerRepository.UpdateCustomerTaskAsync(currentUser, actualData, ignoreADB2C: null, tran);
             TimeSpan timeEnd = DateTime.Now - startTime;
-            if (ret)
+            if (ret == 1)
             {
                 _logger.LogInformation("{0} User '{1}', Email: '{2}', Id: {3} updated succesfully, duration: {4}", logHeader, actualData.FriendlyName, actualData.Email, actualData.Id, timeEnd);
-                return new GenericResponse<bool>(true, ret, 0);
+                return new GenericResponse<bool>(true, true, 0);
             }
             else
             {
                 _logger.LogWarning("{0} User was not updated, Name: {1}, ID: {2}, Email: {3}, duration: {4}", logHeader, user.FriendlyName, user.Id, user.Email, timeEnd);
-                return new GenericResponse<bool>(false, false, -1, "User was not updated", "Error when updating user.");
+                return new GenericResponse<bool>(false, false, ret, "User was not updated", "Error when updating user.");
             }
         }
         catch (Exception ex)
@@ -676,19 +677,21 @@ public class UserApiController : ControllerBase
     /// -1 = obecná chyba
     /// -2 = neplatné UserId
     /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
-    /// -6 = uživatele se nepodařilo založit v DB nebo ADB2C
+    /// -6 = uživatele se nepodařilo založit v DB
     /// -7 = chyby při konverzi dat uživatele
-    /// -11 = uživatel se stejným emailem existuje
-    /// -12 = uživatel se stejným tel. číslem existuje
-    /// -13 = uživatel se stejným PersonalIdentificationNumber existuje
-    /// -14 = uživatel se stejným GlobalID existuje
+    /// -10 = uživatel se stejným emailem existuje
+    /// -11 = uživatel se stejným tel. číslem existuje
+    /// -12 = uživatel se stejným PersonalIdentificationNumber existuje
+    /// -13 = uživatel se stejným GlobalID existuje
+    /// -18 = uživatel již existuje v AD B2C
+    /// -19 = uživatel se stejným emailem již existuje v AD B2C
+    /// -30 = email s uživatelským heslem se nepodařilo odeslat
     /// </returns>
     [Authorize]
     [HttpPost(Name = "InsertUser")]
     public async Task<IGenericResponse<CompleteUserContract>> InsertUser(CompleteUserContract user)
     {
         string logHeader = _logName + ".InsertUser:";
-        bool ret = false;
         bool isProviderAdmin = false;
         DateTime startTime = DateTime.Now;
 
@@ -782,9 +785,7 @@ public class UserApiController : ControllerBase
                         if (!provider.Active.GetValueOrDefault())
                         {
                             provider.Active = true;
-                            provider.UpdateDateUtc = DateTime.UtcNow;
-                            provider.UpdatedByCustomerId = currentUser.Id;
-                            await _providerRepository.UpdateProviderTaskAsync(provider, null);
+                            await _providerRepository.UpdateProviderTaskAsync(currentUser, provider);
                         }
                     }
             }
@@ -815,23 +816,32 @@ public class UserApiController : ControllerBase
             if (actualData.HealthCareInsurerId.HasValue && user.HealthCareInsurerId.GetValueOrDefault() <= 0)
                 actualData.HealthCareInsurerId = null;
 
-            // pokud nemáme heslo, tak ho vygenerujeme
-            if (string.IsNullOrEmpty(actualData.Password))
-                actualData.Password = PasswordGenerator.GetNewPassword();
+            // vygenerujeme heslo
+            string newPassword = PasswordGenerator.GetNewPassword();
+            actualData.Password = ADB2CRepository.Base64Encode(newPassword);
 
-            ret = await _customerRepository.InsertCustomerTaskAsync(currentUser, actualData);
+            int ret = await _customerRepository.InsertCustomerTaskAsync(currentUser, actualData);
 
             TimeSpan timeEnd = DateTime.Now - startTime;
-            if (ret)
+            if (ret == 1)
             {
                 user = _mapper.Map<CompleteUserContract>(actualData);
-                _logger.LogInformation("{0} User '{1}', Email: '{2}', Id: {3} created succesfully, duration: {4}", logHeader, actualData.FriendlyName, actualData.Email, actualData.Id, timeEnd);
+
+                bool emailRet = await SendEmailWithPassword(actualData, newPassword);
+                if (emailRet)
+                {
+                    _logger.LogInformation("{0} User '{1}', Email: '{2}', Id: {3} created succesfully, duration: {4}", logHeader, actualData.FriendlyName, actualData.Email, actualData.Id, timeEnd);
+                }
+                else
+                {
+                    _logger.LogWarning("{0} User '{1}', Email: '{2}', Id: {3} created succesfully, but email with password was not sent, duration: {4}", logHeader, actualData.FriendlyName, actualData.Email, actualData.Id, timeEnd);
+                }
                 return new GenericResponse<CompleteUserContract>(user, true, user.Id);
             }
             else
             {
                 _logger.LogWarning("{0} User was not created, Name: {1} ID: {2} Email: {3}, duration: {4}", logHeader, user.FriendlyName, user.Id, user.Email, timeEnd);
-                return new GenericResponse<CompleteUserContract>(null, false,-6, "User was not created", "Error when inserting new user into DB or ADB2C.");
+                return new GenericResponse<CompleteUserContract>(null, false, ret, "User was not created", "Error when inserting new user into DB or ADB2C.");
             }
         }
         catch (Exception ex)
@@ -1061,7 +1071,10 @@ public class UserApiController : ControllerBase
     /// -2 = neplatné UserId
     /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
     /// -5 = uživatel nebyl nalezen v DB
-    /// -6 = uživatele se nepodařilo založit v ADB2C nebo aktualizovat DB
+    /// -14 = uživatele se nepodařilo uložit
+    /// -18 = uživatel již existuje v AD B2C
+    /// -19 = uživatel se stejným emailem již existuje v AD B2C
+    /// -30 = email s uživatelským heslem se nepodařilo odeslat
     /// </returns>
     [Authorize]
     [HttpGet(Name = "InsertUserInADB2C")]
@@ -1099,46 +1112,149 @@ public class UserApiController : ControllerBase
 
             // nastavíme GlobalId jako UPN
             customer.GlobalId = _adb2cRepository.CreateUPN(customer.Email);
+            customer.AdminComment = customer.Email;
 
-            // vygenerujeme heslo
-            customer.Password = PasswordGenerator.GetNewPassword();
+            // vygenerujeme heslo            
+            string newPassword = PasswordGenerator.GetNewPassword();
+            customer.Password = ADB2CRepository.Base64Encode(newPassword);
 
             // založíme uživatele v ADB2C
-            bool created = await _adb2cRepository.InsertUserAsyncTask(customer);
+            ret = await _adb2cRepository.InsertUserAsyncTask(customer);
 
             TimeSpan timeEnd = DateTime.Now - startTime;
 
-            if (created)
+            if (ret == 1)
             {
                 // aktualizujeme uživatele v DB
-                created = await _customerRepository.UpdateCustomerTaskAsync(currentUser, customer, true);
+                ret = await _customerRepository.UpdateCustomerTaskAsync(currentUser, customer, true);
             }
             else
             {
-                ret = 0;
                 _logger.LogWarning("{0} User was not created, Name: {1} ID: {2} Email: {3}, duration: {4}", logHeader, customer.FriendlyName, customer.Id, customer.Email, timeEnd);
-                return new GenericResponse<int>(ret, false, -6, "User was not created", "Error when inserting new user into ADB2C.");
+                return new GenericResponse<int>(ret, false, ret, "User was not created", "Error when inserting new user into ADB2C.");
             }
 
             timeEnd = DateTime.Now - startTime;
 
-            if (created)
+            if (ret == 1)
             {
-                ret = 1;
-                _logger.LogInformation("{0} User '{1}', Email: '{2}', Id: {3} created succesfully, duration: {4}", logHeader, customer.FriendlyName, customer.Email, customer.Id, timeEnd);
+                bool emailRet = await SendEmailWithPassword(customer, newPassword);
+                if (emailRet)
+                    _logger.LogInformation("{0} User '{1}', Email: '{2}', Id: {3} created succesfully, duration: {4}", logHeader, customer.FriendlyName, customer.Email, customer.Id, timeEnd);
+                else
+                {
+                    ret = -30;
+                    _logger.LogWarning("{0} User '{1}', Email: '{2}', Id: {3} created succesfully, but email with password was not sent, duration: {4}", logHeader, customer.FriendlyName, customer.Email, customer.Id, timeEnd);
+                }
                 return new GenericResponse<int>(ret, true, 0);
             }
             else
             {
-                ret = 0;
                 _logger.LogWarning("{0} User was created in ADB2C but not updated in DB, Name: {1} ID: {2} Email: {3}, duration: {4}", logHeader, customer.FriendlyName, customer.Id, customer.Email, timeEnd);
-                return new GenericResponse<int>(ret, false, -6, "User was not created", "Error when updating user in DB.");
+                return new GenericResponse<int>(ret, false, ret, "User was not created", "Error when updating user in DB.");
             }
         }
         catch (Exception ex)
         {
             _logger.LogError("{0} {1}", logHeader, ex.Message);
             return new GenericResponse<int>(ret, false, -1, ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Metoda nastaví nové heslo v ADB2C a pošle uživateli email
+    /// Smaže uživatele v AD B2C a vytvoří ho znovu, změna hesla v AD B2C totiž není možná
+    /// </summary>
+    /// <param name="userId">ID uživatele</param>
+    /// <returns>GenericResponse s parametrem "INT" 1 (OK) nebo případně chybu:
+    /// -1 = obecná chyba
+    /// -2 = neplatné UserId
+    /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
+    /// -5 = uživatel nebyl nalezen v DB
+    /// -14 = uživatele se nepodařilo uložit
+    /// -31 = nepodařilo se uložit nové heslo
+    /// -32 = email s uživatelským heslem se nepodařilo odeslat
+    /// </returns>
+    [Authorize]
+    [HttpGet(Name = "SetNewPassword")]
+    public async Task<IGenericResponse<bool>> SetNewPassword(int userId)
+    {
+        string logHeader = _logName + ".SetNewPassword:";
+        int ret = -1;
+
+        DateTime startTime = DateTime.Now;
+        try
+        {
+            // kontrola na vstupní data
+            if (userId <= 0)
+            {
+                _logger.LogWarning("{0} Invalid UserId: {1}", logHeader, userId);
+                return new GenericResponse<bool>(false, false, -2, "Invalid UserId", "UserId value must be greater then '0'.");
+            }
+
+            // dotáhneme si aktuálního uživatele
+            CompleteUserContract? currentUser = HttpContext.GetTmUser();
+            if (currentUser == null)
+            {
+                _logger.LogWarning("{0} Current User not found", logHeader);
+                return new GenericResponse<bool>(false, false, -4, "Current user not found", "Current user not found by GlobalId.");
+            }
+
+            // dotáhneme si uživatele
+            Customer? customer = await _customerRepository.GetCustomerByIdTaskAsync(userId);
+            if (customer == null)
+            {
+                _logger.LogWarning("{0} User not found, Id: {1}", logHeader, userId);
+                return new GenericResponse<bool>(false, false, -5, "User not found", "User not found by Id.");
+            }
+
+            // vygenerujeme heslo            
+            string newPassword = PasswordGenerator.GetNewPassword();
+            customer.Password = ADB2CRepository.Base64Encode(newPassword);
+
+            // nejprve uživatele smažeme v ADB2C
+            bool delRet = await _adb2cRepository.DeleteUserAsyncTask(customer);
+            // pak ho znovu založíme v ADB2C
+            int insRet = await _adb2cRepository.InsertUserAsyncTask(customer);
+
+            TimeSpan timeEnd = DateTime.Now - startTime;
+
+            if (insRet == 1)
+            {
+                // aktualizujeme uživatele v DB
+                ret = await _customerRepository.UpdateCustomerTaskAsync(currentUser, customer, true);
+            }
+            else
+            {
+                ret = -31;
+                _logger.LogWarning("{0} User new password was not set, Name: {1} ID: {2} Email: {3}, duration: {4}", logHeader, customer.FriendlyName, customer.Id, customer.Email, timeEnd);
+                return new GenericResponse<bool>(false, false, ret, "User password was not created", "Error when setting new user password in ADB2C.");
+            }
+
+            timeEnd = DateTime.Now - startTime;
+
+            if (ret == 1)
+            {
+                bool emailRet = await SendEmailWithPassword(customer, newPassword);
+                if (emailRet)
+                    _logger.LogInformation("{0} User '{1}', Email: '{2}', Id: {3} new password created succesfully, duration: {4}", logHeader, customer.FriendlyName, customer.Email, customer.Id, timeEnd);
+                else
+                {
+                    ret = -32;
+                    _logger.LogWarning("{0} User '{1}', Email: '{2}', Id: {3} New password created succesfully, but email with password was not sent, duration: {4}", logHeader, customer.FriendlyName, customer.Email, customer.Id, timeEnd);
+                }
+                return new GenericResponse<bool>(true, true, ret);
+            }
+            else
+            {
+                _logger.LogWarning("{0} New user password was created in ADB2C but not updated in DB, Name: {1} ID: {2} Email: {3}, duration: {4}", logHeader, customer.FriendlyName, customer.Id, customer.Email, timeEnd);
+                return new GenericResponse<bool>(false, false, ret, "New user password was crated in ADB2C but not updated in DB", "Error when updating user in DB.");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("{0} {1}", logHeader, ex.Message);
+            return new GenericResponse<bool>(false, false, -1, ex.Message);
         }
     }
 
@@ -1153,45 +1269,51 @@ public class UserApiController : ControllerBase
     /// -3 = uživatel volající metodu (podle GlobalID) nenalezen
     /// -4 = nepodařilo se uložit data
     /// </returns>
+    [Authorize]
     [HttpGet(Name = "CreateOrUpdateAppInstanceToken")]
-    public async Task<IGenericResponse<bool>> CreateOrUpdateAppInstanceToken(string globalId, string appInstanceToken)
+    public async Task<IGenericResponse<bool>> CreateOrUpdateAppInstanceToken(string appInstanceToken)
     {
 
         string logHeader = _logName + ".CreateOrUpdateAppInstanceToken:";
 
-        if (string.IsNullOrEmpty(globalId) || string.IsNullOrEmpty(appInstanceToken))
+        if (string.IsNullOrEmpty(appInstanceToken))
         {
-            _logger.LogWarning($"{logHeader} Invalid globalId or appInstanceToken, globalID: {globalId}, appInstanceToken: {appInstanceToken}");
-            return new GenericResponse<bool>(false, false, -2, "Invalid globalId or appInstanceToken", "");
+            _logger.LogWarning($"{logHeader} Invalid appInstanceToken, appInstanceToken: {appInstanceToken}");
+            return new GenericResponse<bool>(false, false, -2, "Invalid appInstanceToken", "");
+        }
+
+        CompleteUserContract? currentUser = HttpContext.GetTmUser();
+        if (currentUser == null)
+        {
+            _logger.LogWarning("{0} Current User not found", logHeader);
+            return new GenericResponse<bool>(false, false, -4, "Current user not found", "User not found");
         }
 
         try
         {
-            Customer? user = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);
+            Customer? user = await _customerRepository.GetCustomerByGlobalIdTaskAsync(currentUser.GlobalId);
             if (user == null)
             {
-                _logger.LogWarning($"{logHeader} Current User not found, globalID: {globalId}");
+                _logger.LogWarning($"{logHeader} Current User not found, globalID: {currentUser.GlobalId}");
                 return new GenericResponse<bool>(false, false, -3, "Current User not found", "");
             }
 
             user.AppInstanceToken = appInstanceToken;
 
-            // PŠ - Nevím, jestli tady známe uživatele z HTTP contextu?
-            // Tak použiju nalezeného pro informaci to tom, kdo záznam akualizoval
             CompleteUserContract actualUser = new CompleteUserContract();
             actualUser.Id = user.Id;
 
-            bool updated = await _customerRepository.UpdateCustomerTaskAsync(actualUser, user, true);
+            int updated = await _customerRepository.UpdateCustomerTaskAsync(actualUser, user, true);
 
-            if (updated)
+            if (updated == 1)
             {
                 _logger.LogInformation($"{logHeader} AppInstanceToken has been updated successfully for UserId: {user.Id}");
-                return new GenericResponse<bool>(updated, true, 0);
+                return new GenericResponse<bool>(true, true, 0);
             }
             else
             {
                 _logger.LogWarning($"{logHeader} AppInstanceToken update has failed for UserId: {user.Id}");
-                return new GenericResponse<bool>(updated, true, -4, "AppInstanceToken update has failed", "");
+                return new GenericResponse<bool>(false, false, -4, "AppInstanceToken update has failed", "");
             }
 
         }
@@ -1264,6 +1386,52 @@ public class UserApiController : ControllerBase
             _logger.LogError($"{logHeader} {ex.Message}");
             return new GenericResponse<bool>(false, false, -1, ex.Message);
         }
+    }
+
+    /// <summary>
+    /// Odešle email s přihlašovacími údaji
+    /// </summary>
+    /// <param name="customer">Uživatel</param>
+    /// <param name="password">Heslo</param>
+    /// <returns>treu / false</returns>
+    private async Task<bool> SendEmailWithPassword(Customer customer, string password)
+    {
+        if (customer == null || string.IsNullOrEmpty(customer.Email) || string.IsNullOrEmpty(customer.GlobalId) || string.IsNullOrEmpty(password))
+            return false;
+
+        string userName = GetEmailFromUPN(customer.GlobalId);
+
+        string txt = "Dobrý den," + Environment.NewLine + Environment.NewLine + "Vaše nové přihlašovací údaje do aplikace Vanda jsou: " + Environment.NewLine + Environment.NewLine + "jméno: {0} " + Environment.NewLine + Environment.NewLine + "heslo: {1}";
+
+        return await _mailFactory.SendEmailAsyncTask(customer.Email, "Nové přihlašovací údaje", string.Format(txt, userName, password));
+    }
+
+    /// <summary>
+    /// Vrátí email zakódovaný v UPN
+    /// </summary>
+    /// <param name="upn">UPN</param>
+    /// <returns>email</returns>
+    private string GetEmailFromUPN(string upn)
+    {
+        string temp = string.Empty;
+
+        try
+        {
+            upn = upn.Substring(0, upn.IndexOf("@"));
+            temp = upn.Replace("__", "==");
+            return ADB2CRepository.Base64Decode(temp);
+        }
+        catch (Exception ex)
+        {
+            string errMessage = ex.Message;
+            if (ex.InnerException != null)
+            {
+                errMessage += " " + ex.InnerException.Message;
+            }
+            _logger.LogError($"GetEmailFromUPN returned: User with upn: '{upn}', Error: {errMessage}");
+        }
+
+        return temp;
     }
 }
 

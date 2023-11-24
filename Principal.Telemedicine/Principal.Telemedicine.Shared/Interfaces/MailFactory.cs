@@ -72,7 +72,7 @@ public class MailFactory : IMailFactory
                 string sendMailResponseContent = await sendMailResponse.Content.ReadAsStringAsync();
                 if (sendMailResponse.IsSuccessStatusCode)
                 {
-                    _logger.LogDebug($"{logHeader} AD returned: OK, email to user: '{recipientsEmail}' sent succesfully");
+                    _logger.LogInformation($"{logHeader} AD returned: OK, email to user: '{recipientsEmail}' sent succesfully");
                     result = true;
                 }
                 else

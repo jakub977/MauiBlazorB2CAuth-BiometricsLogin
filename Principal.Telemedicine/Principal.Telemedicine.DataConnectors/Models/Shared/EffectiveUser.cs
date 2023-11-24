@@ -104,8 +104,9 @@ public partial class EffectiveUser
     /// Skupiny ve kterých je EffectiveUser nás u Poskytovatelů nezajímají, pouze Role
     /// </summary>
     /// <param name="roles">Seznam RoleMemberProviderContract</param>
+    /// <param name="withRole">Chceme data včetně objektu Role?</param>
     /// <returns>EffectiveUserProviderContract</returns>
-    public EffectiveUserProviderContract ConvertToEffectiveUserProviderContract(ICollection<RoleMemberProviderContract>? roles = null)
+    public EffectiveUserProviderContract ConvertToEffectiveUserProviderContract(ICollection<RoleMemberProviderContract>? roles = null, bool withRole = true)
     {
         EffectiveUserProviderContract data = new EffectiveUserProviderContract();
         data.UserId = this.UserId;
@@ -117,8 +118,88 @@ public partial class EffectiveUser
         data.Deleted = this.Deleted;   
         data.UpdateDateUtc = this.UpdateDateUtc;
         data.UpdatedByCustomerId = this.UpdatedByCustomerId;
+        data.UserObject = new UserContract()
+        {
+            Id = User.Id,
+            Active = User.Active.GetValueOrDefault(),
+            Deleted = User.Deleted,
+            FirstName = User.FirstName,
+            LastName = User.LastName,
+            Birthdate = User.Birthdate,
+            CityId = User.CityId,
+            Email = User.Email,
+            BirthIdentificationNumber = User.BirthIdentificationNumber,
+            FriendlyName = User.FriendlyName,
+            AddressLine = User.AddressLine,
+            GenderTypeId = User.GenderTypeId,
+            GlobalId = User.GlobalId,
+            HealthCareInsurerId = User.HealthCareInsurerId,
+            IsOrganizationAdminAccount = User.IsOrganizationAdminAccount,
+            IsProviderAdminAccount = User.IsProviderAdminAccount,
+            IsRiskPatient = User.IsRiskPatient,
+            IsSuperAdminAccount = User.IsSuperAdminAccount,
+            IsSystemAccount = User.IsSystemAccount,
+            OrganizationId = User.OrganizationId,
+            CreatedByProviderId = User.CreatedByProviderId,
+            TelephoneNumber = User.TelephoneNumber,
+            TelephoneNumber2 = User.TelephoneNumber2,
+            TitleAfter = User.TitleAfter,
+            TitleBefore = User.TitleBefore,
+            Street = User.Street,
+            PostalCode = User.PostalCode,
+            CreatedByCustomerId = User.CreatedByCustomerId,
+            CreatedDateUtc = User.CreatedDateUtc,
+            UpdateDateUtc = User.UpdateDateUtc,
+            UpdatedByCustomerId = User.UpdatedByCustomerId,
+            PublicIdentifier = User.PublicIdentifier,
+            PersonalIdentificationNumber = User.PersonalIdentificationNumber,
+            AdminComment = User.AdminComment,
+            AppInstanceToken = User.AppInstanceToken,
+            HealthCareInsurerCode = User.HealthCareInsurerCode,
+            Note = User.Note,
+            Password = User.Password,
+            PictureId = User.PictureId,
+            PictureObject = User.PictureId != null && User.Picture != null ? User.Picture.ConvertToPictureContract() : null
+        };
+        
         if (roles != null)
             data.RoleMembers = roles;
+        else
+        {
+            if (withRole) {
+                data.RoleMembers = RoleMembers.Select(s => new RoleMemberProviderContract()
+                {
+                    Active = s.Active.GetValueOrDefault(),
+                    Id = s.Id,
+                    CreatedByCustomerId = s.CreatedByCustomerId,
+                    CreatedDateUtc = s.CreatedDateUtc,
+                    Deleted = s.Deleted,
+                    DirectUserId = s.DirectUserId,
+                    EffectiveUserId = s.EffectiveUserId,
+                    RoleId = s.RoleId,
+                    Role = s.Role.ConvertToRoleProviderContract(s.Role.ParentRole?.ConvertToRoleProviderContract()),
+                    UpdateDateUtc = s.UpdateDateUtc,
+                    UpdatedByCustomerId = s.UpdatedByCustomerId
+                }).ToList(); 
+            }
+            else
+            {
+                data.RoleMembers = RoleMembers.Select(s => new RoleMemberProviderContract()
+                {
+                    Active = s.Active.GetValueOrDefault(),
+                    Id = s.Id,
+                    CreatedByCustomerId = s.CreatedByCustomerId,
+                    CreatedDateUtc = s.CreatedDateUtc,
+                    Deleted = s.Deleted,
+                    DirectUserId = s.DirectUserId,
+                    EffectiveUserId = s.EffectiveUserId,
+                    RoleId = s.RoleId,
+                    UpdateDateUtc = s.UpdateDateUtc,
+                    UpdatedByCustomerId = s.UpdatedByCustomerId
+                }).ToList();
+            }
+        }
+        
 
         return data;
     }

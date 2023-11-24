@@ -13,8 +13,10 @@ public interface IProviderRepository
     /// <summary>
     /// Metoda vrací všechny poskytovatele.
     /// </summary>
+    /// <param name="fullData">Příznak, zda vracet seznam včetně Efektivních uživatelů s vazbou na role a obrázky nebo jen data z tabulky Provider</param>
+    /// <param name="organizationId">Id organizace</param>
     /// <returns>Seznam poskytovatelů</returns>
-    Task<IEnumerable<Provider>> GetProvidersTaskAsync();
+    Task<IEnumerable<Provider>> GetProvidersTaskAsync(bool fullData = true, int? organizationId = null);
 
     /// <summary>
     /// Metoda vrací konkrétního poskytovatele na základě id.
@@ -24,28 +26,35 @@ public interface IProviderRepository
     Task<Provider?> GetProviderByIdTaskAsync(int id);
 
     /// <summary>
+    /// Metoda vrací detail poskytovatele pro list.
+    /// </summary>
+    /// <param name="id">ID poskytovatele</param>
+    /// <returns>Konkrétní poskytovatel</returns>
+    Task<Provider?> GetProviderListDetailByIdTaskAsync(int id);
+
+    /// <summary>
     /// Metoda aktualizuje poskytovatele
     /// </summary>
+    /// <param name="currentUser">Aktuální uživatel</param>
     /// <param name="provider">Poskytovatel</param>
-    /// /// <param name="tran">Aktuální DB transakce (default NULL)</param>
-    /// <param name="dontManageTran">Příznak, zda se v metodě mají ignorovat transakční příkazy (default FALSE)</param>
     /// <returns>true / false</returns>
-    Task<bool> UpdateProviderTaskAsync(Provider provider, IDbContextTransaction? tran = null, bool dontManageTran = false);
+    Task<bool> UpdateProviderTaskAsync(CompleteUserContract currentUser, Provider provider);
 
     /// <summary>
     /// Metoda vytvoří poskytovatele
     /// </summary>
+    /// <param name="currentUser">Aktuální uživatel</param>
     /// <param name="provider">Poskytovatel</param>
     /// <returns>true / false</returns>
-    Task<bool> InsertProviderTaskAsync(Provider provider);
+    Task<bool> InsertProviderTaskAsync(CompleteUserContract currentUser, Provider provider);
 
     /// <summary>
     /// Metoda odstraní poskytovatele
     /// </summary>
-    /// <param name="provider">Poskytovatel</param>
     /// <param name="currentUser">Aktuální uživatel</param>
+    /// <param name="provider">Poskytovatel</param>
     /// <returns>true / false</returns>
-    Task<bool> DeleteProviderTaskAsync(Customer currentUser, Provider provider);
+    Task<bool> DeleteProviderTaskAsync(CompleteUserContract currentUser, Provider provider);
 
     /// <summary>
     /// Metoda vrací všechny poskytovatele

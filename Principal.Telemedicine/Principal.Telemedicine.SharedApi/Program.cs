@@ -17,13 +17,19 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting.Internal;
 using Principal.Telemedicine.Shared.Interfaces;
 
-var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").AddJsonFile("appsettings.development.json",true).Build();
+var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+
+#if DEBUG
+    configuration = new ConfigurationBuilder().AddJsonFile("appsettings.development.json", true).Build();
+#endif
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.TryAddSingleton<IHostEnvironment>(new HostingEnvironment { EnvironmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") });
+builder.Services.AddTmDistributedCache(configuration, builder.Environment.IsLocalHosted());
 builder.Services.AddSecretConfiguration<DistributedRedisCacheOptions>(configuration, "secrets/secrets.json");
 builder.Services.AddSecretConfiguration<TmSecurityConfiguration>(configuration, "secrets/secrets.json");
 builder.Services.AddSecretConfiguration<FcmSettings>(configuration, "secrets/secrets.json");
+builder.Services.AddSecretConfiguration<AzureAdB2C>(configuration, "secrets/secrets.json");
 builder.Services.AddSecretConfiguration<MailSettings>(configuration, "secrets/secrets.json");
 builder.Services.AddTmMemoryCache(configuration);
 builder.Services.AddAuthentication(x=>
@@ -94,23 +100,15 @@ builder.Services.AddSwaggerGen(config =>
             new List<string>()
           }
         });
-   // config.OperationFilter<RequiredHeaderParameter>();
 });
 
 builder.Services.AddDbContext<DbContextApi>(options => options.UseLazyLoadingProxies().EnableSensitiveDataLogging().
 UseSqlServer(builder.Configuration.GetConnectionString("MAIN_DB")));
 
-
-
 builder.Services.AddLogging(configuration);
 
-
 builder.Services.AddTmInfrastructure(configuration);
-builder.Services.AddSecretConfiguration<DistributedRedisCacheOptions>(configuration, "secrets/secrets.json");
-builder.Services.AddSecretConfiguration<TmSecurityConfiguration>(configuration, "secrets/secrets.json");
-builder.Services.AddSecretConfiguration<AzureAdB2C>(configuration, "secrets/secrets.json");
-builder.Services.AddSecretConfiguration<MailSettings>(configuration, "secrets/secrets.json");
-builder.Services.AddTmDistributedCache(configuration, builder.Environment.IsLocalHosted());
+
 var app = builder.Build();
 
 if (app.Environment.IsLocalHosted())
