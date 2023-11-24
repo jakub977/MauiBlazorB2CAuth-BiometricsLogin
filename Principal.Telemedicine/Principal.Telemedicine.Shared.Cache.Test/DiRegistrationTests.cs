@@ -22,7 +22,7 @@ public class DiRegistrationTests
         var hostBuilder = new HostBuilder().UseEnvironment("local")
             .ConfigureServices((context, services) =>
             {
-                services.AddSecretConfiguration<DistributedRedisCacheOptions>(configuration, "secrets/secrets.json");
+                services.AddSecretConfiguration<DistributedRedisCacheOptions>(configuration, "secured/secrets.json");
                 services.AddTmDistributedCache(configuration, true);
                 services.AddTmMemoryCache(configuration);
             });
