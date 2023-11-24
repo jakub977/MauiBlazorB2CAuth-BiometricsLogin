@@ -63,6 +63,5 @@ public interface IADB2CRepository
     /// </summary>
     /// <returns>Aplikační doménu</returns>
     string? GetApplicationDomain();
-
 }
 

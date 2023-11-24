@@ -78,10 +78,10 @@ public interface ICustomerRepository
     /// <param name="dontManageTran">Příznak, zda se v metodě mají ignorovat transakční příkazy (default FALSE)</param>
     /// <returns>1 - update se povedl nebo:
     /// -1 = globální chyba
-    /// -14 = uživatel se stejným tel. číslem existuje
-    /// -15 = uživatel se stejným PersonalIdentificationNumber existuje
-    /// -16 = uživatel se stejným GlobalID existuje
-    /// -17 = existuje více uživatelů v AD B2C</returns>
+    /// -14 = uživatele se nepodařilo uložit
+    /// -15 = uživatele se nepodařilo uložit v AD B2C
+    /// -16 = uživatel nenalezen v AD B2C
+    /// -17 = existuje více shodných uživatelů v AD B2C</returns>
     Task<int> UpdateCustomerTaskAsync(CompleteUserContract currentUser, Customer user, bool? ignoreADB2C = false, IDbContextTransaction? tran = null, bool dontManageTran = false);
 
     /// <summary>

@@ -252,27 +252,24 @@ public class CustomerRepository : ICustomerRepository
 
             int result = await _dbContext.SaveChangesAsync();
 
+            if (result == 0)
+            {
+                if (!dontManageTran)
+                    tran.Rollback();
+                _logger.LogWarning("{0} User '{1}', Email: '{2}', Id: {3} was not updated", logHeader, user.FriendlyName, user.Email, user.Id);
+                return -14;
+            }
+
             if (ignoreADB2C == true)
             {
-                if (result != 0)
-                {
                     if (!dontManageTran)
                         tran.Commit();
                     _logger.LogDebug("{0} User '{1}', Email: '{2}', Id: {3} updated succesfully", logHeader, user.FriendlyName, user.Email, user.Id);
                     return 1;
-                }
-                else
-                {
-                    if (!dontManageTran)
-                        tran.Rollback();
-                    _logger.LogWarning("{0} User '{1}', Email: '{2}', Id: {3} was not updated", logHeader, user.FriendlyName, user.Email, user.Id);
-                    return -14;
-                }
             }
             else
             {
-                if (result != 0)
-                    ret = await _adb2cRepository.UpdateUserAsyncTask(user);
+                ret = await _adb2cRepository.UpdateUserAsyncTask(user);
 
                 if (ret == 1)
                 {
@@ -327,7 +324,7 @@ public class CustomerRepository : ICustomerRepository
             _dbContext.Customers.Add(user);
 
             int result = await _dbContext.SaveChangesAsync();
-            
+
             if (result != 0)
                 ret = await _adb2cRepository.InsertUserAsyncTask(user);
             else

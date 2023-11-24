@@ -105,8 +105,8 @@ public class ADB2CRepository : IADB2CRepository
 
         try
         {
-            // UPN ukládáme jako email převedený na Base64 + aplikační doména
-            string searchedUPN = CreateUPN(customer.Email);
+            // UPN je vždy generováno v globalId (jako email převedený na Base64 + aplikační doména)
+            string searchedUPN = customer.GlobalId;
 
             // kontrola na existující účet
             var result = await GetClient().Users.GetAsync(requestConfiguration =>
@@ -134,7 +134,7 @@ public class ADB2CRepository : IADB2CRepository
             userNew.PasswordPolicies = "DisablePasswordExpiration";
             userNew.PasswordProfile = new PasswordProfile();
             userNew.PasswordProfile.ForceChangePasswordNextSignIn = true;
-            userNew.PasswordProfile.Password = customer.Password;
+            userNew.PasswordProfile.Password = Base64Decode(customer.Password);
 
             userNew.UserPrincipalName = searchedUPN;
 
@@ -157,6 +157,9 @@ public class ADB2CRepository : IADB2CRepository
             }
 
             if (errMessage.Contains("proxyAddresses already exists"))
+                ret = -19;
+
+            if (errMessage.Contains("userPrincipalName already exists"))
                 ret = -19;
 
             _logger.LogError("{0} ADB2C returned: User: '{0}', Error: {1}", logHeader, customer.Email, errMessage);
@@ -320,6 +323,32 @@ public class ADB2CRepository : IADB2CRepository
         return _applicationDomain;
     }
 
+    /// <summary>
+    /// Převede text na Base64 řetězec
+    /// </summary>
+    /// <param name="text">Text k převodu</param>
+    /// <returns>Base64</returns>
+    public static string Base64Encode(string? text)
+    {
+        if (string.IsNullOrEmpty(text))
+            return "";
+        var textBytes = System.Text.Encoding.UTF8.GetBytes(text);
+        return System.Convert.ToBase64String(textBytes);
+    }
+
+    /// <summary>
+    /// Převede Base64 řetězec na text
+    /// </summary>
+    /// <param name="base64">Base64 řetězec</param>
+    /// <returns>Text</returns>
+    public static string Base64Decode(string? base64)
+    {
+        if (string.IsNullOrEmpty(base64))
+            return "";
+        var base64Bytes = System.Convert.FromBase64String(base64);
+        return System.Text.Encoding.UTF8.GetString(base64Bytes);
+    }
+
     #region Private methods
 
     /// <summary>
@@ -331,28 +360,6 @@ public class ADB2CRepository : IADB2CRepository
         var scopes = new[] { "https://graph.microsoft.com/.default" };
         var clientSecretCredential = new ClientSecretCredential(_tenantId, _clientId, _clientSecret);
         return new GraphServiceClient(clientSecretCredential, scopes);
-    }
-
-    /// <summary>
-    /// Převede text na Base64 řetězec
-    /// </summary>
-    /// <param name="text">Taxt k převodu</param>
-    /// <returns>Base64</returns>
-    private static string Base64Encode(string text)
-    {
-        var textBytes = System.Text.Encoding.UTF8.GetBytes(text);
-        return System.Convert.ToBase64String(textBytes);
-    }
-
-    /// <summary>
-    /// Převede Base64 řetězec na test
-    /// </summary>
-    /// <param name="base64">Base64 řetězec</param>
-    /// <returns>Txext</returns>
-    private static string Base64Decode(string base64)
-    {
-        var base64Bytes = System.Convert.FromBase64String(base64);
-        return System.Text.Encoding.UTF8.GetString(base64Bytes);
     }
 
     /// <summary>
