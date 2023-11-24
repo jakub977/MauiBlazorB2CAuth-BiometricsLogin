@@ -1153,31 +1153,37 @@ public class UserApiController : ControllerBase
     /// -3 = uživatel volající metodu (podle GlobalID) nenalezen
     /// -4 = nepodařilo se uložit data
     /// </returns>
+    [Authorize]
     [HttpGet(Name = "CreateOrUpdateAppInstanceToken")]
-    public async Task<IGenericResponse<bool>> CreateOrUpdateAppInstanceToken(string globalId, string appInstanceToken)
+    public async Task<IGenericResponse<bool>> CreateOrUpdateAppInstanceToken(string appInstanceToken)
     {
 
         string logHeader = _logName + ".CreateOrUpdateAppInstanceToken:";
 
-        if (string.IsNullOrEmpty(globalId) || string.IsNullOrEmpty(appInstanceToken))
+        if (string.IsNullOrEmpty(appInstanceToken))
         {
-            _logger.LogWarning($"{logHeader} Invalid globalId or appInstanceToken, globalID: {globalId}, appInstanceToken: {appInstanceToken}");
-            return new GenericResponse<bool>(false, false, -2, "Invalid globalId or appInstanceToken", "");
+            _logger.LogWarning($"{logHeader} Invalid appInstanceToken, appInstanceToken: {appInstanceToken}");
+            return new GenericResponse<bool>(false, false, -2, "Invalid appInstanceToken", "");
+        }
+
+        CompleteUserContract? currentUser = HttpContext.GetTmUser();
+        if (currentUser == null)
+        {
+            _logger.LogWarning("{0} Current User not found", logHeader);
+            return new GenericResponse<bool>(false, false, -4, "Current user not found", "User not found");
         }
 
         try
         {
-            Customer? user = await _customerRepository.GetCustomerByGlobalIdTaskAsync(globalId);
+            Customer? user = await _customerRepository.GetCustomerByGlobalIdTaskAsync(currentUser.GlobalId);
             if (user == null)
             {
-                _logger.LogWarning($"{logHeader} Current User not found, globalID: {globalId}");
+                _logger.LogWarning($"{logHeader} Current User not found, globalID: {currentUser.GlobalId}");
                 return new GenericResponse<bool>(false, false, -3, "Current User not found", "");
             }
 
             user.AppInstanceToken = appInstanceToken;
 
-            // PŠ - Nevím, jestli tady známe uživatele z HTTP contextu?
-            // Tak použiju nalezeného pro informaci to tom, kdo záznam akualizoval
             CompleteUserContract actualUser = new CompleteUserContract();
             actualUser.Id = user.Id;
 
