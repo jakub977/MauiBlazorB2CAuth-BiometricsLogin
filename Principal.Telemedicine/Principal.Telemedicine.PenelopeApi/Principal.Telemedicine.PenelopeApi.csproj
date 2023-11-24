@@ -8,11 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="Secrets\secrets.json" />
+    <Content Remove="secured\secrets.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Secrets\secrets.json">
+    <None Include="secured\secrets.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
