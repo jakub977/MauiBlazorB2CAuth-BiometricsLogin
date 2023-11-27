@@ -31,9 +31,9 @@ public class CustomerRepository : ICustomerRepository
     public async Task<IEnumerable<Customer>> GetCustomersTaskAsyncTask(int? providerId = null)
     {
         if (providerId.HasValue)
-            return await _dbContext.Customers.Where(w => w.CreatedByProviderId == providerId.Value).OrderBy(p => p.Id).ToListAsync();
+            return await _dbContext.Customers.Include(i => i.EffectiveUserUsers.Where(w => !w.Deleted)).Where(w => w.CreatedByProviderId == providerId.Value && !w.Deleted).OrderBy(p => p.Id).ToListAsync();
         else
-            return await _dbContext.Customers.OrderBy(p => p.Id).ToListAsync();
+            return await _dbContext.Customers.Include(i => i.EffectiveUserUsers.Where(w => !w.Deleted)).Where(w => !w.Deleted).OrderBy(p => p.Id).ToListAsync();
     }
 
     /// <inheritdoc/>
@@ -190,8 +190,8 @@ public class CustomerRepository : ICustomerRepository
             if (providerId.HasValue)
             {
                 query = activeUsersOnly
-                    ? query.Where(w => !w.RoleMemberDirectUsers.Any(a => a.Active.Value && !a.Deleted) && w.EffectiveUserUsers.Count > 0 && w.EffectiveUserUsers.Any(a => a.ProviderId == providerId && a.Active.Value && !a.Deleted))
-                    : query.Where(w => (!w.RoleMemberDirectUsers.Any(a => a.Active.Value && !a.Deleted) && w.EffectiveUserUsers.Count > 0 && w.EffectiveUserUsers.Any(a => a.ProviderId == providerId && !a.Deleted))
+                    ? query.Where(w => w.Active.Value && !w.Deleted && !w.RoleMemberDirectUsers.Any(a => a.Active.Value && !a.Deleted) && w.EffectiveUserUsers.Count > 0 && w.EffectiveUserUsers.Any(a => a.ProviderId == providerId && a.Active.Value && !a.Deleted))
+                    : query.Where(w => !w.Deleted && (!w.RoleMemberDirectUsers.Any(a => a.Active.Value && !a.Deleted) && w.EffectiveUserUsers.Count > 0 && w.EffectiveUserUsers.Any(a => a.ProviderId == providerId && !a.Deleted))
                     || (!w.RoleMemberDirectUsers.Any(r => r.Active.Value && !r.Deleted) && !w.EffectiveUserUsers.Any(a => !a.Deleted) && w.CreatedByProviderId.HasValue && w.CreatedByProviderId == providerId) // uživatel bez role
                     );
             }
@@ -199,8 +199,8 @@ public class CustomerRepository : ICustomerRepository
             {
                 // může vidět jen sebe
                 query = activeUsersOnly
-                    ? query.Where(w => w.Active.Value && w.Id == currentUser.Id)
-                    : query.Where(w => w.Id == currentUser.Id);
+                    ? query.Where(w => w.Active.Value && !w.Deleted && w.Id == currentUser.Id)
+                    : query.Where(w => !w.Deleted && w.Id == currentUser.Id);
             }
         }
 
@@ -227,9 +227,9 @@ public class CustomerRepository : ICustomerRepository
     }
 
     /// <inheritdoc/>
-    public async Task<bool> UpdateCustomerTaskAsync(CompleteUserContract currentUser, Customer user, bool? ignoreADB2C = false, IDbContextTransaction? tran = null, bool dontManageTran = false)
+    public async Task<int> UpdateCustomerTaskAsync(CompleteUserContract currentUser, Customer user, bool? ignoreADB2C = false, IDbContextTransaction? tran = null, bool dontManageTran = false)
     {
-        bool ret = false;
+        int ret = -1;
         string logHeader = _logName + ".InsertCustomerTaskAsync:";
 
         if (tran == null && !dontManageTran)
@@ -252,29 +252,26 @@ public class CustomerRepository : ICustomerRepository
 
             int result = await _dbContext.SaveChangesAsync();
 
+            if (result == 0)
+            {
+                if (!dontManageTran)
+                    tran.Rollback();
+                _logger.LogWarning("{0} User '{1}', Email: '{2}', Id: {3} was not updated", logHeader, user.FriendlyName, user.Email, user.Id);
+                return -14;
+            }
+
             if (ignoreADB2C == true)
             {
-                if (result != 0)
-                {
                     if (!dontManageTran)
                         tran.Commit();
                     _logger.LogDebug("{0} User '{1}', Email: '{2}', Id: {3} updated succesfully", logHeader, user.FriendlyName, user.Email, user.Id);
-                    return true;
-                }
-                else
-                {
-                    if (!dontManageTran)
-                        tran.Rollback();
-                    _logger.LogWarning("{0} User '{1}', Email: '{2}', Id: {3} was not updated", logHeader, user.FriendlyName, user.Email, user.Id);
-                    return false;
-                }
+                    return 1;
             }
             else
             {
-                if (result != 0)
-                    ret = await _adb2cRepository.UpdateUserAsyncTask(user);
+                ret = await _adb2cRepository.UpdateUserAsyncTask(user);
 
-                if (ret)
+                if (ret == 1)
                 {
                     if (!dontManageTran)
                         tran.Commit();
@@ -309,9 +306,9 @@ public class CustomerRepository : ICustomerRepository
     }
 
     /// <inheritdoc/>
-    public async Task<bool> InsertCustomerTaskAsync(CompleteUserContract currentUser, Customer user)
+    public async Task<int> InsertCustomerTaskAsync(CompleteUserContract currentUser, Customer user)
     {
-        bool ret = false;
+        int ret = -1;
         string logHeader = _logName + ".InsertCustomerTaskAsync:";
         DateTime startTime = DateTime.Now;
 
@@ -324,19 +321,21 @@ public class CustomerRepository : ICustomerRepository
             user.GlobalId = _adb2cRepository.CreateUPN(user.Email);
             user.AdminComment = user.Email; // sem si uloženíme uživatelské přihlašovací jméno "do zálohy", pokud si uživatel změní email (slouží jen jako informace, přihlašování obsluhuje AD B2C)
 
-            _dbContext.Customers.Update(user);
+            _dbContext.Customers.Add(user);
 
             int result = await _dbContext.SaveChangesAsync();
-            TimeSpan end1 = DateTime.Now - startTime;
-            _logger.LogInformation("{0} Saved to DB: {1}", logHeader, end1);
+
             if (result != 0)
                 ret = await _adb2cRepository.InsertUserAsyncTask(user);
+            else
+                ret = -6;
 
             TimeSpan timeEnd = DateTime.Now - startTime;
 
-            if (ret)
+            if (ret == 1)
             {
                 tran.Commit();
+                ret = user.Id;
                 _logger.LogInformation("{0} User '{1}', Email: '{2}', Id: {3} created succesfully, duration: {4}", logHeader, user.FriendlyName, user.Email, user.Id, timeEnd);
             }
             else

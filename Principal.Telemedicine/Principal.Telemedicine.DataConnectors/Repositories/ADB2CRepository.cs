@@ -1,6 +1,4 @@
 ﻿using Azure.Identity;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Graph;
@@ -16,6 +14,7 @@ public class ADB2CRepository : IADB2CRepository
 
     private readonly ILogger _logger;
     private readonly AzureAdB2C _adB2C;
+    private readonly MailSettings _mailSettings;
 
     private string? _tenantId = "";
     private string? _clientId = "";
@@ -24,8 +23,8 @@ public class ADB2CRepository : IADB2CRepository
     private string? _applicationDomain = "";
     private bool _allowWebApiToBeAuthorizedByACL = false;
     private readonly string _logName = "ADB2CRepository";
-                            
-    public ADB2CRepository(ILogger<ADB2CRepository> logger, IOptions<AzureAdB2C> adB2C)
+
+    public ADB2CRepository(ILogger<ADB2CRepository> logger, IOptions<AzureAdB2C> adB2C, IOptions<MailSettings> mailSettings)
     {
         _logger = logger;
         _adB2C = adB2C.Value;
@@ -35,19 +34,20 @@ public class ADB2CRepository : IADB2CRepository
         _extensionClientId = _adB2C.B2cExtensionAppClientId;
         _applicationDomain = _adB2C.B2CApplicationDomain;
         _allowWebApiToBeAuthorizedByACL = _adB2C.AllowWebApiToBeAuthorizedByACL;
+        _mailSettings = mailSettings.Value;
     }
 
     /// <inheritdoc/>
-    public async Task<bool> UpdateUserAsyncTask(Customer customer)
+    public async Task<int> UpdateUserAsyncTask(Customer customer)
     {
-        bool ret = false;
+        int ret = -1;
         string logHeader = _logName + ".UpdateUserAsyncTask:";
         try
         {
             if (customer.Id <= 0)
             {
                 _logger.LogWarning("{0} Can't update user UPN '{1}' and Id {2} - user is new", logHeader, customer.GlobalId, customer.Id);
-                return ret;
+                return -15;
             }
 
             // kontrola na existující účet
@@ -60,13 +60,13 @@ public class ADB2CRepository : IADB2CRepository
             if (result == null || result.Value == null || result.Value.Count == 0)
             {
                 _logger.LogWarning("{0} ADB2C returned: User UPN '{0}' not found", logHeader, customer.GlobalId);
-                return ret;
+                return -16;
             }
 
-            if (result.Value.Count > 1)
+            if (result.Value.Count > 1) // k tomuto zřejme nedojde pokud hledáme podle UPN
             {
                 _logger.LogWarning("{0} ADB2C returned: User UPN '{0}' exists more than once: {1}", logHeader, customer.GlobalId, result.Value.Count);
-                return ret;
+                return -17;
             }
 
             User userFound = result.Value[0];
@@ -80,7 +80,7 @@ public class ADB2CRepository : IADB2CRepository
                 userFound.City = customer.City.Name;
 
             await GetClient().Users[$"{userFound.Id}"].PatchAsync(userFound);
-            ret = true;
+            ret = 1;
 
             _logger.LogDebug("{0} ADB2C returned: OK, user '{0}', UPN: '{1}', Id: {2} updated succesfully", logHeader, customer.FriendlyName, customer.GlobalId, customer.Id);
         }
@@ -98,15 +98,15 @@ public class ADB2CRepository : IADB2CRepository
     }
 
     /// <inheritdoc/>
-    public async Task<bool> InsertUserAsyncTask(Customer customer)
+    public async Task<int> InsertUserAsyncTask(Customer customer)
     {
-        bool ret = false;
+        int ret = -1;
         string logHeader = _logName + ".InsertUserAsyncTask:";
 
         try
         {
-            // UPN ukládáme jako email převedený na Base64 + aplikační doména
-            string searchedUPN = CreateUPN(customer.Email);
+            // UPN je vždy generováno v globalId (jako email převedený na Base64 + aplikační doména)
+            string searchedUPN = customer.GlobalId;
 
             // kontrola na existující účet
             var result = await GetClient().Users.GetAsync(requestConfiguration =>
@@ -118,7 +118,7 @@ public class ADB2CRepository : IADB2CRepository
             if (result != null && result.Value != null && result?.Value?.Count > 0)
             {
                 _logger.LogWarning("{0} ADB2C returned: User with email '{0}' already exists", logHeader, customer.Email);
-                return ret;
+                return -18;
             }
 
             User userNew = new User();
@@ -134,7 +134,7 @@ public class ADB2CRepository : IADB2CRepository
             userNew.PasswordPolicies = "DisablePasswordExpiration";
             userNew.PasswordProfile = new PasswordProfile();
             userNew.PasswordProfile.ForceChangePasswordNextSignIn = true;
-            userNew.PasswordProfile.Password = customer.Password;
+            userNew.PasswordProfile.Password = Base64Decode(customer.Password);
 
             userNew.UserPrincipalName = searchedUPN;
 
@@ -144,7 +144,7 @@ public class ADB2CRepository : IADB2CRepository
             };
 
             var createdUser = await GetClient().Users.PostAsync(userNew);
-            ret = true;
+            ret = 1;
 
             _logger.LogDebug("{0} ADB2C returned: OK, user '{0}', Email: '{1}', Id: {2} created succesfully", logHeader, customer.FriendlyName, customer.Email, customer.Id);
         }
@@ -155,6 +155,13 @@ public class ADB2CRepository : IADB2CRepository
             {
                 errMessage += " " + ex.InnerException.Message;
             }
+
+            if (errMessage.Contains("proxyAddresses already exists"))
+                ret = -19;
+
+            if (errMessage.Contains("userPrincipalName already exists"))
+                ret = -19;
+
             _logger.LogError("{0} ADB2C returned: User: '{0}', Error: {1}", logHeader, customer.Email, errMessage);
         }
 
@@ -269,89 +276,6 @@ public class ADB2CRepository : IADB2CRepository
     }
 
     /// <inheritdoc/>
-    public async Task<bool> SendEmailAsyncTask(string recipientsEmail, string messageBody, string messageTitle)
-    {
-        bool ret = false;
-        string logHeader = _logName + ".SendEmailAsyncTask:";
-        try
-        {
-            // UPN ukládáme jako email převedený na Base64 + aplikační doména
-            string searchedUPN = CreateUPN(recipientsEmail);
-
-            // kontrola na existující účet
-            var result = await GetClient().Users.GetAsync(requestConfiguration =>
-            {
-                requestConfiguration.QueryParameters.Select = new string[] { "id", "createdDateTime", "displayName" };
-                requestConfiguration.QueryParameters.Filter = $"userPrincipalName eq '{searchedUPN}'";
-            });
-
-            if (result == null || result.Value == null || result.Value.Count == 0)
-            {
-                _logger.LogWarning("{0} ADB2C returned: User with email '{0}' not found", logHeader, recipientsEmail);
-                return ret;
-            }
-
-            if (result.Value.Count > 1)
-            {
-                _logger.LogWarning("{0} ADB2C returned: User with email '{0}' exists more than once: {1}", logHeader, recipientsEmail, result.Value.Count);
-                return ret;
-            }
-
-           //     Microsoft.Graph.Users.Item.SendMail.SendMailPostRequestBody requestbody = new()
-           //     {
-           //         Message = new Message ()
-           //         {
-           //             Subject = messageTitle,
-           //             Body = new ItemBody
-           //             {
-           //                 ContentType = BodyType.Text,
-           //                 Content = messageBody
-           //             },
-           //             ToRecipients = new List<Recipient>()
-           //             {
-           //                 new Recipient
-           //                 {
-           //                     EmailAddress = new EmailAddress
-           //                     {
-           //                         Address = recipientsEmail
-           //                     }
-           //                 }
-           //             }
-            
-           //         },
-
-           //         SaveToSentItems = false
-           //     };
-
-
-           // string objectId = "476d377e-27fc-41ef-ba6c-be2079e0df2a";
-
-
-           //await GetClient().Users[objectId].
-           //     SendMail.PostAsync(requestbody,
-           //     requestConfiguration =>
-           //     {
-           //         requestConfiguration.Headers.Add("Prefer", "outlook.body-content-type=\"text\"");
-           //     });
-
-            ret = true; 
-
-            _logger.LogDebug($"{logHeader} ADB2C returned: OK, Email to User: '{recipientsEmail}' sent succesfully");
-        }
-        catch (Exception ex)
-        {
-            string errMessage = ex.Message;
-            if (ex.InnerException != null)
-            {
-                errMessage += " " + ex.InnerException.Message;
-            }
-            _logger.LogError($"{logHeader} ADB2C returned: User: '{recipientsEmail}', Error: {errMessage}");
-        }
-
-        return ret;
-    }
-
-    /// <inheritdoc/>
     public async Task<int> CheckUserAsyncTask(Customer customer)
     {
         int ret = -1;
@@ -369,7 +293,7 @@ public class ADB2CRepository : IADB2CRepository
             // existuje účet
             if (result != null && result.Value != null && result?.Value?.Count > 0)
                 ret = 1;
-            else 
+            else
                 ret = 0;
 
             _logger.LogDebug("{0} ADB2C returned: {0}, user '{1}', Email: '{2}', Id: {3}", logHeader, ret, customer.FriendlyName, customer.Email, customer.Id);
@@ -399,6 +323,32 @@ public class ADB2CRepository : IADB2CRepository
         return _applicationDomain;
     }
 
+    /// <summary>
+    /// Převede text na Base64 řetězec
+    /// </summary>
+    /// <param name="text">Text k převodu</param>
+    /// <returns>Base64</returns>
+    public static string Base64Encode(string? text)
+    {
+        if (string.IsNullOrEmpty(text))
+            return "";
+        var textBytes = System.Text.Encoding.UTF8.GetBytes(text);
+        return System.Convert.ToBase64String(textBytes);
+    }
+
+    /// <summary>
+    /// Převede Base64 řetězec na text
+    /// </summary>
+    /// <param name="base64">Base64 řetězec</param>
+    /// <returns>Text</returns>
+    public static string Base64Decode(string? base64)
+    {
+        if (string.IsNullOrEmpty(base64))
+            return "";
+        var base64Bytes = System.Convert.FromBase64String(base64);
+        return System.Text.Encoding.UTF8.GetString(base64Bytes);
+    }
+
     #region Private methods
 
     /// <summary>
@@ -410,28 +360,6 @@ public class ADB2CRepository : IADB2CRepository
         var scopes = new[] { "https://graph.microsoft.com/.default" };
         var clientSecretCredential = new ClientSecretCredential(_tenantId, _clientId, _clientSecret);
         return new GraphServiceClient(clientSecretCredential, scopes);
-    }
-
-    /// <summary>
-    /// Převede text na Base64 řetězec
-    /// </summary>
-    /// <param name="text">Taxt k převodu</param>
-    /// <returns>Base64</returns>
-    private static string Base64Encode(string text)
-    {
-        var textBytes = System.Text.Encoding.UTF8.GetBytes(text);
-        return System.Convert.ToBase64String(textBytes);
-    }
-
-    /// <summary>
-    /// Převede Base64 řetězec na test
-    /// </summary>
-    /// <param name="base64">Base64 řetězec</param>
-    /// <returns>Txext</returns>
-    private static string Base64Decode(string base64)
-    {
-        var base64Bytes = System.Convert.FromBase64String(base64);
-        return System.Text.Encoding.UTF8.GetString(base64Bytes);
     }
 
     /// <summary>

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Principal.Telemedicine.Shared.Models;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Principal.Telemedicine.DataConnectors.Models.Shared;
@@ -103,4 +104,28 @@ public partial class SubjectAllowedToOrganization
     [ForeignKey("UpdatedByCustomerId")]
     [InverseProperty("SubjectAllowedToOrganizationUpdatedByCustomers")]
     public virtual Customer? UpdatedByCustomer { get; set; }
+
+    /// <summary>
+    /// Vrátí SubjectAllowedToOrganizationContract z SubjectAllowedToOrganization
+    /// </summary>
+    /// <returns>SubjectAllowedToOrganizationContract</returns>
+    public SubjectAllowedToOrganizationContract ConvertToSubjectAllowedToOrganizationContract()
+    {
+        SubjectAllowedToOrganizationContract data = new SubjectAllowedToOrganizationContract();
+
+        data.Active = Active.GetValueOrDefault();
+        data.AllowedFromDateUtc = AllowedFromDateUtc;
+        data.AllowedToDateUtc = AllowedToDateUtc;
+        data.CreatedByCustomerId = CreatedByCustomerId;
+        data.CreatedDateUtc = CreatedDateUtc;
+        data.Deleted = Deleted;
+        data.Id = Id;
+        data.OrganizationId = OrganizationId;
+        data.SubjectId = SubjectId;
+        data.SubjectObject = Subject.ConvertToSubjectContract();
+        data.UpdateDateUtc = UpdateDateUtc;
+        data.UpdatedByCustomerId = UpdatedByCustomerId;
+
+        return data;
+    }
 }

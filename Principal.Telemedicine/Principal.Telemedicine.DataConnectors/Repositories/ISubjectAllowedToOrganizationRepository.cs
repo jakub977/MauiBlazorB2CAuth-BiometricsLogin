@@ -15,6 +15,13 @@ public interface ISubjectAllowedToOrganizationRepository
     Task<IEnumerable<SubjectAllowedToOrganization>> GetSubjectsAllowedToOrganizationsAsyncTask();
 
     /// <summary>
+    /// Metoda vrací všechny moduly danné organizace.
+    /// </summary>
+    /// <param name="organizationId">ID organizace</param>
+    /// <returns>Seznam modulů</returns>
+    Task<IEnumerable<SubjectAllowedToOrganization>> GetSubjectsAllowedToOrganizationsByOrganizationIdAsyncTask(int organizationId);
+
+    /// <summary>
     /// Metoda vrací konkrétního moduly organizace na základě id a subjectId.
     /// </summary>
     /// <param name="organizationId">ID organizace</param>
