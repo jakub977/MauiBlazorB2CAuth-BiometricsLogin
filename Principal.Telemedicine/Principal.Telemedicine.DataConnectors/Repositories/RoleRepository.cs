@@ -113,6 +113,24 @@ public class RoleRepository : IRoleRepository
         return await PaginatedListData<Role>.CreateAsync(query, page ?? 1, pageSize ?? 20);
     }
 
+    /// <inheritdoc/>
+    public async Task<List<Role>> GetRolesForDropdownListTaskAsync(CompleteUserContract currentUser, int providerId)
+    {
+        DateTime startTime = DateTime.Now;
+        IQueryable<Role> query = _dbContext.Roles.Include(c => c.ParentRole)
+            .Include(c => c.Organization)
+            .Include(c => c.Provider)
+            .Include(c => c.RolePermissions.Where(w => !w.Deleted)).ThenInclude(rp => rp.Permission).ThenInclude(p => p.Subject).ThenInclude(p => p.ParentSubject)
+            .Include(c => c.RoleCategoryCombination)
+            .Include(c => c.RoleMembers.Where(w => !w.Deleted))
+            .DefaultIfEmpty().AsQueryable();
+
+        query = query.Where(c => !c.Deleted);
+        query = GetQueryAccordingUserRole(query, currentUser, currentUser.OrganizationId, providerId);
+        query = query.OrderBy(o => o.Name);
+
+        return query.ToList();
+    }
     /// <summary>
     /// Poskládá výsledný dotaz s ohledem na zařazení aktuálního uživatele do rolí
     /// </summary>

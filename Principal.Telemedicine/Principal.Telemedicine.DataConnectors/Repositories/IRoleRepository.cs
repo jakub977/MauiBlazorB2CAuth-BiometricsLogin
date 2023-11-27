@@ -34,4 +34,13 @@ public interface IRoleRepository
     /// <returns>Jednu stránku seznamu</returns>
     Task<PaginatedListData<Role>> GetRolesForGridTaskAsync(CompleteUserContract currentUser, bool activeRolesOnly, string? searchText, int? filterRoleCategoryId, int? filterAvailability, List<int>? roleIds = null, bool showHidden = false, bool showSpecial = false, string? order = "created_desc", int? page = 1, int? pageSize = 20, int? providerId = null, int? organizationId = null);
 
+    /// <summary>
+    /// Vrací seznam rolí pro dropdown list
+    /// </summary>
+    /// <param name="currentUser">Aktuální uživatel</param>
+    /// <param name="providerId">Id Poskytovatele pod kterým hledáme</param>
+    /// <returns>Seznam rolí</returns>
+    Task<List<Role>> GetRolesForDropdownListTaskAsync(CompleteUserContract currentUser, int providerId);
+
+
 }
