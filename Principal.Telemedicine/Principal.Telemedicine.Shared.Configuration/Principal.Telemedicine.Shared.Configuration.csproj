@@ -20,10 +20,4 @@
     <PackageReference Include="System.IO.FileSystem.AccessControl" Version="6.0.0-preview.5.21301.5" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="secured\secrets.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>

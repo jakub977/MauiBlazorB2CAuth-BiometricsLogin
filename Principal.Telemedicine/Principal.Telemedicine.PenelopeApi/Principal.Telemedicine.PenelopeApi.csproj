@@ -30,7 +30,6 @@
     <ProjectReference Include="..\Principal.Telemedicine.DataConnectors\Principal.Telemedicine.DataConnectors.csproj" />
     <ProjectReference Include="..\Principal.Telemedicine.Shared.Cache\Principal.Telemedicine.Shared.Cache.csproj" />
     <ProjectReference Include="..\Principal.Telemedicine.Shared.Security\Principal.Telemedicine.Shared.Security.csproj" />
-    <ProjectReference Include="..\Principal.Telemedicine.SharedApi\Principal.Telemedicine.SharedApi.csproj" />
   </ItemGroup>
 
   <ItemGroup>

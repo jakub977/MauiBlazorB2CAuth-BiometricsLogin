@@ -11,6 +11,7 @@ using Principal.Telemedicine.Shared.Api;
 using Principal.Telemedicine.Shared.Models;
 using Principal.Telemedicine.Shared.Security;
 using Principal.Telemedicine.Shared.Firebase;
+using Principal.Telemedicine.Shared.Infrastructure;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
 
@@ -24,15 +25,14 @@ public class PatientValuesApiController : ControllerBase
 
     private readonly DbContextApi _dbContext;
     private readonly ILogger _logger;
-    private readonly FcmNotificationApiController _fcmNotificationApiController;
+
 
     private readonly string _logName = "PatientValuesApiController";
 
-    public PatientValuesApiController(ILogger<PatientValuesApiController> logger, DbContextApi dbContext, FcmNotificationApiController fcmNotificationApiController)
+    public PatientValuesApiController(ILogger<PatientValuesApiController> logger, DbContextApi dbContext)
     {
         _dbContext = dbContext;
         _logger = logger;
-        _fcmNotificationApiController = fcmNotificationApiController;
     }
 
     /// <summary>
@@ -511,8 +511,8 @@ public class PatientValuesApiController : ControllerBase
             fcmNotificationRequest.AppMessageContentTypeEnum = AppMessageContentTypeEnum.P_SCHED_01;
             fcmNotificationRequest.UserGlobalId = currentUser.GlobalId;
             fcmNotificationRequest.NotifyAllUsers = false;
-            
-            await _fcmNotificationApiController.NotifyUser(fcmNotificationRequest);
+
+           
 
             return new GenericResponse<int>(procedureResult, true, 0);
 
