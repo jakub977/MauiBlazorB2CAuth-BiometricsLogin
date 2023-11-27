@@ -265,7 +265,16 @@ public class UserApiController : ControllerBase
                 return new GenericResponse<bool>(false, false, -5, "User not found", "User not found by Id.");
             }
 
-            int checkRet = await _customerRepository.CheckIfUserExists(currentUser, actualData);
+            Customer userToCheck = new Customer();
+            userToCheck.Id = user.Id;
+            userToCheck.Email = user.Email;
+            userToCheck.TelephoneNumber = user.TelephoneNumber;
+            userToCheck.TelephoneNumber2 = user.TelephoneNumber2;
+            userToCheck.GlobalId = user.GlobalId;
+            userToCheck.PersonalIdentificationNumber = user.PersonalIdentificationNumber;
+            userToCheck.FriendlyName = user.FriendlyName;
+
+            int checkRet = await _customerRepository.CheckIfUserExists(currentUser, userToCheck);
             if (checkRet < 0)
             {
                 _logger.LogWarning("{0} User already exists", logHeader);
