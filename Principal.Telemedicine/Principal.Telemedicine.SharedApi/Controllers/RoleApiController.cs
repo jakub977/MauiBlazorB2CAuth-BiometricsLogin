@@ -125,11 +125,10 @@ public class RoleApiController : ControllerBase
 
             TimeSpan timeMiddle = DateTime.Now - startTime;
 
-            //foreach (Role item in roleList)
-            //{
-            //    data.Add(item.ConvertToRoleContract());
-            //}
-            data = roleList.Select(s => s.ConvertToRoleContract);
+            foreach (Role item in roleList)
+            {
+                data.Add(item.ConvertToRoleContract());
+            }
 
             TimeSpan timeEnd = DateTime.Now - startTime;
             _logger.LogInformation($"{logHeader} Returning data - records: {roleList.Count},duration: {timeEnd}, middle: {timeMiddle}", logHeader, roleList.Count, timeEnd, timeMiddle);
