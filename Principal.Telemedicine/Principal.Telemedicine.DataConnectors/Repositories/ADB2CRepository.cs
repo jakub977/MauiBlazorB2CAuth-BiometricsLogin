@@ -349,25 +349,12 @@ public class ADB2CRepository : IADB2CRepository
         return System.Text.Encoding.UTF8.GetString(base64Bytes);
     }
 
-    #region Private methods
-
-    /// <summary>
-    /// Vytvoří Graph klienta
-    /// </summary>
-    /// <returns>Graph klient</returns>
-    private GraphServiceClient GetClient()
-    {
-        var scopes = new[] { "https://graph.microsoft.com/.default" };
-        var clientSecretCredential = new ClientSecretCredential(_tenantId, _clientId, _clientSecret);
-        return new GraphServiceClient(clientSecretCredential, scopes);
-    }
-
     /// <summary>
     /// Vrátí email zakódovaný v UPN
     /// </summary>
     /// <param name="upn">UPN</param>
     /// <returns>email</returns>
-    private string GetEmailFromUPN(string upn)
+    public string GetEmailFromUPN(string upn)
     {
         string temp = string.Empty;
 
@@ -390,6 +377,34 @@ public class ADB2CRepository : IADB2CRepository
 
         return temp;
 
+    }
+
+    /// <summary>
+    /// Kontrola, zda globalId má formát UPN
+    /// </summary>
+    /// <param name="globalId">GlobalId</param>
+    /// <returns>true / false</returns>
+    public bool CheckGlobalId(string globalId)
+    {
+        string applicationDomain = "@" + _applicationDomain;
+
+        if (globalId.EndsWith(applicationDomain))
+            return true;
+
+        return false;
+    }
+
+    #region Private methods
+
+    /// <summary>
+    /// Vytvoří Graph klienta
+    /// </summary>
+    /// <returns>Graph klient</returns>
+    private GraphServiceClient GetClient()
+    {
+        var scopes = new[] { "https://graph.microsoft.com/.default" };
+        var clientSecretCredential = new ClientSecretCredential(_tenantId, _clientId, _clientSecret);
+        return new GraphServiceClient(clientSecretCredential, scopes);
     }
 
     #endregion
