@@ -361,10 +361,9 @@ public class ADB2CRepository : IADB2CRepository
         try
         {
             string? applicationDomain = _applicationDomain;
-            temp = upn.Replace($"@{applicationDomain}", "").Replace("__", "==");
+            temp = upn.Replace($"@{applicationDomain}", "").Replace("_", "=");
             return Base64Decode(temp);
         }
-
         catch (Exception ex)
         {
             string errMessage = ex.Message;
