@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Principal.Telemedicine.DataConnectors.Contexts;
@@ -13,7 +14,6 @@ namespace Principal.Telemedicine.SharedApi.Controllers;
 /// Api metody pro zpracování požadavku na notifikaci a komunikaci s FCM
 /// </summary>
 [Route("api/[controller]/[action]")]
-[ApiController]
 public class FcmNotificationApiController : ControllerBase
 {
     private readonly DbContextApi _dbContext;

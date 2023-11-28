@@ -11,7 +11,6 @@ using Principal.Telemedicine.Shared.Api;
 using Principal.Telemedicine.Shared.Models;
 using Principal.Telemedicine.Shared.Security;
 using Principal.Telemedicine.Shared.Firebase;
-using Principal.Telemedicine.Shared.Infrastructure;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
 
@@ -25,14 +24,16 @@ public class PatientValuesApiController : ControllerBase
 
     private readonly DbContextApi _dbContext;
     private readonly ILogger _logger;
+    private readonly HttpClient _client;
 
 
     private readonly string _logName = "PatientValuesApiController";
 
-    public PatientValuesApiController(ILogger<PatientValuesApiController> logger, DbContextApi dbContext)
+    public PatientValuesApiController(ILogger<PatientValuesApiController> logger, DbContextApi dbContext, HttpClient client)
     {
         _dbContext = dbContext;
         _logger = logger;
+        _client = client;
     }
 
     /// <summary>
@@ -512,7 +513,13 @@ public class PatientValuesApiController : ControllerBase
             fcmNotificationRequest.UserGlobalId = currentUser.GlobalId;
             fcmNotificationRequest.NotifyAllUsers = false;
 
-           
+            _client.BaseAddress = new Uri("https://tm-api-shared-pene-test.azurewebsites.net");
+            var response = await _client.PostAsJsonAsync("api/FcmNotificationApiController/NotifyUser", fcmNotificationRequest);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return new GenericResponse<int>(returnValue, false, -2, "Notification process hs failed");
+            }
 
             return new GenericResponse<int>(procedureResult, true, 0);
 

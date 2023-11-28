@@ -20,7 +20,7 @@ using Principal.Telemedicine.Shared.Interfaces;
 var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 
 #if DEBUG
-    configuration = new ConfigurationBuilder().AddJsonFile("appsettings.development.json", true).Build();
+configuration = new ConfigurationBuilder().AddJsonFile("appsettings.development.json", true).Build();
 #endif
 
 var builder = WebApplication.CreateBuilder(args);
