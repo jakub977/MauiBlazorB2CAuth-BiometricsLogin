@@ -40,7 +40,7 @@ public class ProviderApiController : ControllerBase
     private readonly string _logName = "ProviderApiController";
 
     public ProviderApiController(ICustomerRepository customerRepository, IProviderRepository providerRepository, IEffectiveUserRepository effectiveUserRepository, ISubjectAllowedToOrganizationRepository subjectAllowedToOrganizationRepository,
-        IRoleMemberRepository roleMemberRepository, IConfiguration configuration, IADB2CRepository adb2cRepository, DbContextApi dbContext, ILogger<UserApiController> logger, IMapper mapper)
+        IRoleMemberRepository roleMemberRepository, IConfiguration configuration, IADB2CRepository adb2cRepository, DbContextApi dbContext, ILogger<ProviderApiController> logger, IMapper mapper)
     {
         _customerRepository = customerRepository;
         _providerRepository = providerRepository;
