@@ -42,7 +42,6 @@ public class RoleApiController : ControllerBase
     /// <param name="filterRoleCategoryId">Filtrování - podle ID kategorie role</param>
     /// <param name="filterAvailability">Filtrování - podle dostupnosti role</param>
     /// <param name="searchText">Filtrování - hledaný text v názvu role</param>
-    /// <param name="roleIds">Seznam ID rolí, které chceme mít v seznamu bez ohledu na ostatní podmínky</param>
     /// <param name="showHidden">Zobrazit i smazané záznamy?</param>
     /// <param name="showSpecial">Příznak, že se jedná o uživatele v Roli Super admin nebo Správce organizace</param>
     /// <param name="order">Řazení</param>
@@ -55,11 +54,11 @@ public class RoleApiController : ControllerBase
     /// -4 = uživatel volající metodu (podle GlobalID) nenalezen</returns>
 
     [Authorize]
-    [HttpPost(Name = "GetRolesForGrid")]
-    public async Task<IGenericResponse<List<RoleContract>>> GetRolesForGrid(bool activeRolesOnly, string? searchText, int? filterRoleCategoryId, int? filterAvailability, List<int>? roleIds = null, bool showHidden = false, bool showSpecial = false, string? order = "created_desc", int? page = 1, int? pageSize = 20, int? providerId = null, int? organizationId = null)
+    [HttpGet(Name = "GetRoles")]
+    public async Task<IGenericResponse<List<RoleContract>>> GetRoles(bool activeRolesOnly, string? searchText, int? filterRoleCategoryId, int? filterAvailability, bool showHidden = false, bool showSpecial = false, string? order = "created_desc", int? page = 1, int? pageSize = 20, int? providerId = null, int? organizationId = null)
     {
         DateTime startTime = DateTime.Now;
-        string logHeader = _logName + ".GetRolesForGrid:";
+        string logHeader = _logName + ".GetRoles:";
         // kontrola na vstupní data
         CompleteUserContract? currentUser = HttpContext.GetTmUser();
         if (currentUser == null)
@@ -72,7 +71,7 @@ public class RoleApiController : ControllerBase
         {
             List<RoleContract> data = new List<RoleContract>();
 
-            PaginatedListData<Role> resultData = await _roleRepository.GetRolesForGridTaskAsync(currentUser, activeRolesOnly, searchText, filterRoleCategoryId, filterAvailability, roleIds, showHidden, showSpecial, order, page, pageSize, providerId, organizationId);
+            PaginatedListData<Role> resultData = await _roleRepository.GetRolesForGridTaskAsync(currentUser, activeRolesOnly, searchText, filterRoleCategoryId, filterAvailability, showHidden, showSpecial, order, page, pageSize, providerId, organizationId);
 
             TimeSpan timeMiddle = DateTime.Now - startTime;
 
@@ -104,11 +103,11 @@ public class RoleApiController : ControllerBase
     /// -4 = uživatel volající metodu (podle GlobalID) nenalezen</returns>
 
     [Authorize]
-    [HttpPost(Name = "GetRoles")]
-    public async Task<IGenericResponse<List<RoleContract>>> GetRoles(int providerId)
+    [HttpGet(Name = "GetRolesForDropdown")]
+    public async Task<IGenericResponse<List<RoleContract>>> GetRolesForDropdown(int providerId, [FromQuery] List<int>? roleIds = null)
     {
         DateTime startTime = DateTime.Now;
-        string logHeader = _logName + ".GetRoles:";
+        string logHeader = _logName + ".GetRolesForDropdown:";
         // kontrola na vstupní data
         CompleteUserContract? currentUser = HttpContext.GetTmUser();
         if (currentUser == null)
@@ -119,16 +118,19 @@ public class RoleApiController : ControllerBase
 
         try
         {
+            //roleIds, IEnumerable, místo foreache select!
             List<RoleContract> data = new List<RoleContract>();
 
-            List<Role> roleList = await _roleRepository.GetRolesForDropdownListTaskAsync(currentUser, providerId);
+            List<Role> roleList = (List<Role>)await _roleRepository.GetRolesForDropdownListTaskAsync(currentUser, providerId, roleIds);
 
             TimeSpan timeMiddle = DateTime.Now - startTime;
 
-            foreach (Role item in roleList)
-            {
-                data.Add(item.ConvertToRoleContract());
-            }
+            //foreach (Role item in roleList)
+            //{
+            //    data.Add(item.ConvertToRoleContract(false, false, false, false));
+            //}
+
+             data = roleList.Select(s => s.ConvertToRoleContract);
 
             TimeSpan timeEnd = DateTime.Now - startTime;
             _logger.LogInformation($"{logHeader} Returning data - records: {roleList.Count},duration: {timeEnd}, middle: {timeMiddle}", logHeader, roleList.Count, timeEnd, timeMiddle);

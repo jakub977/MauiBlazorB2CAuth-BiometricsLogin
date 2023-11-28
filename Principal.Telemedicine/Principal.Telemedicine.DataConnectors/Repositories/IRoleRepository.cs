@@ -23,7 +23,6 @@ public interface IRoleRepository
     /// <param name="searchText">Filtr - vyhledání v názvu role</param>
     /// <param name="filterRoleCategoryId">Filtr - pouze vybrané kategorie role</param>
     /// <param name="filterAvailability">Filtr - pouze role vybrané dostupnosti</param>
-    /// <param name="roleIds">Seznam ID rolí, které chceme mít v seznamu bez ohledu na ostatní podmínky</param>
     /// <param name="showHidden">Zobrazit i smazané záznamy?</param>
     /// <param name="showSpecial">Příznak, že se jedná o uživatele v Roli Super admin nebo Správce organizace</param>
     /// <param name="order">Řazení (vyýčet: "created_asc", "created_desc", "updated_asc", "updated_desc"</param>
@@ -32,15 +31,16 @@ public interface IRoleRepository
     /// <param name="providerId">Id Poskytovatele pod kterým hledáme</param>
     /// <param name="organizationId">Id Organizace</param>
     /// <returns>Jednu stránku seznamu</returns>
-    Task<PaginatedListData<Role>> GetRolesForGridTaskAsync(CompleteUserContract currentUser, bool activeRolesOnly, string? searchText, int? filterRoleCategoryId, int? filterAvailability, List<int>? roleIds = null, bool showHidden = false, bool showSpecial = false, string? order = "created_desc", int? page = 1, int? pageSize = 20, int? providerId = null, int? organizationId = null);
+    Task<PaginatedListData<Role>> GetRolesForGridTaskAsync(CompleteUserContract currentUser, bool activeRolesOnly, string? searchText, int? filterRoleCategoryId, int? filterAvailability, bool showHidden = false, bool showSpecial = false, string? order = "created_desc", int? page = 1, int? pageSize = 20, int? providerId = null, int? organizationId = null);
 
     /// <summary>
     /// Vrací seznam rolí pro dropdown list
     /// </summary>
     /// <param name="currentUser">Aktuální uživatel</param>
     /// <param name="providerId">Id Poskytovatele pod kterým hledáme</param>
+    /// <param name="roleIds">Seznam ID rolí, které chceme mít v seznamu bez ohledu na ostatní podmínky</param>
     /// <returns>Seznam rolí</returns>
-    Task<List<Role>> GetRolesForDropdownListTaskAsync(CompleteUserContract currentUser, int providerId);
+    Task<IEnumerable<Role>> GetRolesForDropdownListTaskAsync(CompleteUserContract currentUser, int providerId, List<int>? roleIds);
 
 
 }

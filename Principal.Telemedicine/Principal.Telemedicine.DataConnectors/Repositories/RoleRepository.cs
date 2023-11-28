@@ -43,16 +43,17 @@ public class RoleRepository : IRoleRepository
     }
 
     /// <inheritdoc/>
-    public async Task<PaginatedListData<Role>> GetRolesForGridTaskAsync(CompleteUserContract currentUser, bool activeRolesOnly, string? searchText, int? filterRoleCategoryId, int? filterAvailability, List<int>? roleIds = null, bool showHidden = false, bool showSpecial = false, string? order = "created_desc", int? page = 1, int? pageSize = 20, int? providerId = null, int? organizationId = null)
+    public async Task<PaginatedListData<Role>> GetRolesForGridTaskAsync(CompleteUserContract currentUser, bool activeRolesOnly, string? searchText, int? filterRoleCategoryId, int? filterAvailability, bool showHidden = false, bool showSpecial = false, string? order = "created_desc", int? page = 1, int? pageSize = 20, int? providerId = null, int? organizationId = null)
     {
-        IQueryable<Role> query = _dbContext.Roles.Include(c => c.CreatedByCustomer)
-            .Include(c => c.UpdatedByCustomer)
+        DateTime startTime = DateTime.Now;
+        IQueryable<Role> query = _dbContext.Roles.Include(c => c.ParentRole)
             .Include(c => c.Organization)
             .Include(c => c.Provider)
+            .Include(c => c.RolePermissions.Where(w => !w.Deleted)).ThenInclude(rp => rp.Permission).ThenInclude(p => p.Subject).ThenInclude(p => p.ParentSubject)
             .Include(c => c.RoleCategoryCombination)
-            .Include(c => c.RoleMembers).ThenInclude(m => m.EffectiveUser).ThenInclude(e => e.User)
-            .DefaultIfEmpty().AsQueryable();
+            .Include(c => c.RoleMembers.Where(w => !w.Deleted)).AsSplitQuery().DefaultIfEmpty().AsQueryable();
 
+        TimeSpan timeMiddle = DateTime.Now - startTime;
         // filtrování smazaných záznamů
         if (!showHidden)
             query = query.Where(a => !a.Deleted);
@@ -86,11 +87,6 @@ public class RoleRepository : IRoleRepository
 
         query = GetQueryAccordingUserRole(query, currentUser, organizationId, providerId, showSpecial);
 
-        if (roleIds != null && roleIds[0] != 0)
-        {
-            var otherRoles = ListOfAllRoles().Where(w => roleIds.Contains(w.Id));
-            query = query.Concat(otherRoles);
-        }
         // řazení
         switch (order)
         {
@@ -110,26 +106,32 @@ public class RoleRepository : IRoleRepository
                 break;
         }
 
+        TimeSpan timeEnd = DateTime.Now - startTime;
+
         return await PaginatedListData<Role>.CreateAsync(query, page ?? 1, pageSize ?? 20);
     }
 
     /// <inheritdoc/>
-    public async Task<List<Role>> GetRolesForDropdownListTaskAsync(CompleteUserContract currentUser, int providerId)
+    public async Task<IEnumerable<Role>> GetRolesForDropdownListTaskAsync(CompleteUserContract currentUser, int providerId, List<int>? roleIds)
     {
         DateTime startTime = DateTime.Now;
-        IQueryable<Role> query = _dbContext.Roles.Include(c => c.ParentRole)
+        var query = _dbContext.Roles.Include(c => c.ParentRole)
             .Include(c => c.Organization)
             .Include(c => c.Provider)
-            .Include(c => c.RolePermissions.Where(w => !w.Deleted)).ThenInclude(rp => rp.Permission).ThenInclude(p => p.Subject).ThenInclude(p => p.ParentSubject)
+            .Include(c => c.ParentRole)
             .Include(c => c.RoleCategoryCombination)
-            .Include(c => c.RoleMembers.Where(w => !w.Deleted))
-            .DefaultIfEmpty().AsQueryable();
+            .AsSplitQuery().DefaultIfEmpty().AsQueryable();
 
         query = query.Where(c => !c.Deleted);
         query = GetQueryAccordingUserRole(query, currentUser, currentUser.OrganizationId, providerId);
-        query = query.OrderBy(o => o.Name);
 
-        return query.ToList();
+        if (roleIds.Count > 0 && roleIds != null)
+        {
+            var otherRoles = ListOfAllRoles().Where(w => roleIds.Contains(w.Id));
+            query = query.Concat(otherRoles);
+        }
+
+        return await query.OrderBy(o => o.Name).ToListAsync();
     }
     /// <summary>
     /// Poskládá výsledný dotaz s ohledem na zařazení aktuálního uživatele do rolí
