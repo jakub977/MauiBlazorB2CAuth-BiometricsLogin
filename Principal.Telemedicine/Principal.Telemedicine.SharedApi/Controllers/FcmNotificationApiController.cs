@@ -26,7 +26,7 @@ public class FcmNotificationApiController : ControllerBase
 
     private readonly string _logName = "FcmNotificationApiController";
 
-    public FcmNotificationApiController(DbContextApi dbContext, ILogger<UserApiController> logger, IFcmNotificationService fcmNotificationService, ICustomerRepository customerRepository, IAppMessageRepository appMessageRepository)
+    public FcmNotificationApiController(DbContextApi dbContext, ILogger<FcmNotificationApiController> logger, IFcmNotificationService fcmNotificationService, ICustomerRepository customerRepository, IAppMessageRepository appMessageRepository)
     {
         _dbContext = dbContext;
         _logger = logger;

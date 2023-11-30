@@ -265,7 +265,16 @@ public class UserApiController : ControllerBase
                 return new GenericResponse<bool>(false, false, -5, "User not found", "User not found by Id.");
             }
 
-            int checkRet = await _customerRepository.CheckIfUserExists(currentUser, actualData);
+            Customer userToCheck = new Customer();
+            userToCheck.Id = user.Id;
+            userToCheck.Email = user.Email;
+            userToCheck.TelephoneNumber = user.TelephoneNumber;
+            userToCheck.TelephoneNumber2 = user.TelephoneNumber2;
+            userToCheck.GlobalId = user.GlobalId;
+            userToCheck.PersonalIdentificationNumber = user.PersonalIdentificationNumber;
+            userToCheck.FriendlyName = user.FriendlyName;
+
+            int checkRet = await _customerRepository.CheckIfUserExists(currentUser, userToCheck);
             if (checkRet < 0)
             {
                 _logger.LogWarning("{0} User already exists", logHeader);
@@ -1048,7 +1057,27 @@ public class UserApiController : ControllerBase
                 return new GenericResponse<int>(ret, false, -5, "User not found", "User not found by Id.");
             }
 
+            // kontrola, zda má uživatel GlobalId ve správném formátu -> UPN z AD B2C
+            string upn = _adb2cRepository.CreateUPN(customer.Email);
+            bool validGlobalID = _adb2cRepository.CheckGlobalId(customer.GlobalId);
+            bool updateCustomer = false;
+            if (customer.GlobalId != upn && !validGlobalID)
+            {
+                updateCustomer = true;
+                customer.GlobalId = upn;
+            }
+
             ret = await _adb2cRepository.CheckUserAsyncTask(customer);
+
+            // pokud uživatel existuje v AD B2C, ale měl špatné GlobalId, tak uložím správné
+            if (updateCustomer && ret == 1)
+            {
+                int updUsr = await _customerRepository.UpdateCustomerTaskAsync(currentUser, customer, true);
+                if (updUsr < 0) 
+                {
+                    _logger.LogWarning("{0} User '{1}', Email: '{2}', Id: {3}, Updating user with new GlobalId returned: {4}", logHeader, customer.FriendlyName, customer.Email, customer.Id, updUsr);
+                }
+            }
 
             TimeSpan timeEnd = DateTime.Now - startTime;
             _logger.LogInformation("{0} User '{1}', Email: '{2}', Id: {3}, returned: {4}, duration: {5}", logHeader, customer.FriendlyName, customer.Email, customer.Id, ret, timeEnd);
@@ -1399,39 +1428,11 @@ public class UserApiController : ControllerBase
         if (customer == null || string.IsNullOrEmpty(customer.Email) || string.IsNullOrEmpty(customer.GlobalId) || string.IsNullOrEmpty(password))
             return false;
 
-        string userName = GetEmailFromUPN(customer.GlobalId);
+        string userName = _adb2cRepository.GetEmailFromUPN(customer.GlobalId);
 
         string txt = "Dobrý den," + Environment.NewLine + Environment.NewLine + "Vaše nové přihlašovací údaje do aplikace Vanda jsou: " + Environment.NewLine + Environment.NewLine + "jméno: {0} " + Environment.NewLine + Environment.NewLine + "heslo: {1}";
 
         return await _mailFactory.SendEmailAsyncTask(customer.Email, "Nové přihlašovací údaje", string.Format(txt, userName, password));
-    }
-
-    /// <summary>
-    /// Vrátí email zakódovaný v UPN
-    /// </summary>
-    /// <param name="upn">UPN</param>
-    /// <returns>email</returns>
-    private string GetEmailFromUPN(string upn)
-    {
-        string temp = string.Empty;
-
-        try
-        {
-            upn = upn.Substring(0, upn.IndexOf("@"));
-            temp = upn.Replace("__", "==");
-            return ADB2CRepository.Base64Decode(temp);
-        }
-        catch (Exception ex)
-        {
-            string errMessage = ex.Message;
-            if (ex.InnerException != null)
-            {
-                errMessage += " " + ex.InnerException.Message;
-            }
-            _logger.LogError($"GetEmailFromUPN returned: User with upn: '{upn}', Error: {errMessage}");
-        }
-
-        return temp;
     }
 }
 

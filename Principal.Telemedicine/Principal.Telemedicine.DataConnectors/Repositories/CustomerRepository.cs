@@ -191,8 +191,8 @@ public class CustomerRepository : ICustomerRepository
             {
                 query = activeUsersOnly
                     ? query.Where(w => w.Active.Value && !w.Deleted && !w.RoleMemberDirectUsers.Any(a => a.Active.Value && !a.Deleted) && w.EffectiveUserUsers.Count > 0 && w.EffectiveUserUsers.Any(a => a.ProviderId == providerId && a.Active.Value && !a.Deleted))
-                    : query.Where(w => !w.Deleted && (!w.RoleMemberDirectUsers.Any(a => a.Active.Value && !a.Deleted) && w.EffectiveUserUsers.Count > 0 && w.EffectiveUserUsers.Any(a => a.ProviderId == providerId && !a.Deleted))
-                    || (!w.RoleMemberDirectUsers.Any(r => r.Active.Value && !r.Deleted) && !w.EffectiveUserUsers.Any(a => !a.Deleted) && w.CreatedByProviderId.HasValue && w.CreatedByProviderId == providerId) // uživatel bez role
+                    : query.Where(w => !w.Deleted && (!w.RoleMemberDirectUsers.Any(a => a.Active.Value && !a.Deleted) && w.EffectiveUserUsers.Count > 0 && w.EffectiveUserUsers.Any(a => a.ProviderId == providerId && !a.Deleted)
+                    || (!w.RoleMemberDirectUsers.Any(r => r.Active.Value && !r.Deleted) && !w.EffectiveUserUsers.Any(a => !a.Deleted) && w.CreatedByProviderId.HasValue && w.CreatedByProviderId == providerId)) // uživatel bez role
                     );
             }
             else

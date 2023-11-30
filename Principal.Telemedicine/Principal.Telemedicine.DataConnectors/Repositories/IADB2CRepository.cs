@@ -63,5 +63,19 @@ public interface IADB2CRepository
     /// </summary>
     /// <returns>Aplikační doménu</returns>
     string? GetApplicationDomain();
+
+    /// <summary>
+    /// Vrátí email zakódovaný v UPN
+    /// </summary>
+    /// <param name="upn">UPN</param>
+    /// <returns>email</returns>
+    string GetEmailFromUPN(string upn);
+
+    /// <summary>
+    /// Kontrola, zda globalId má formát UPN
+    /// </summary>
+    /// <param name="globalId">GlobalId</param>
+    /// <returns>true / false</returns>
+    bool CheckGlobalId(string globalId);
 }
 

@@ -21,7 +21,7 @@ public class MailFactory : IMailFactory
     }
 
     /// <inheritdoc/>
-    public async Task<bool> SendEmailAsyncTask(string recipientsEmail, string messageBody, string messageSubject)
+    public async Task<bool> SendEmailAsyncTask(string recipientsEmail, string messageSubject, string messageBody)
     {
         bool ret = false;
         string logHeader = _logName + ".SendEmailAsyncTask:";
@@ -54,7 +54,7 @@ public class MailFactory : IMailFactory
                 //sending email
                 string sendMailEndpoint = $"https://graph.microsoft.com/v1.0/users/{_mailSettings.ObjectId}/sendMail";
 
-                var jsonMessage = _graphAPI.GetEmailRequestBody(recipientsEmail, messageBody, messageSubject);
+                var jsonMessage = _graphAPI.GetEmailRequestBody(recipientsEmail, messageSubject, messageBody);
 
                 if (jsonMessage == null)
                 {
