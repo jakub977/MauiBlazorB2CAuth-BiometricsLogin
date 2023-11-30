@@ -18,13 +18,18 @@ public class FcmNotificationService : IFcmNotificationService
     {
         _fcmSettings = fcmSettings.Value;
 
-        var app = FirebaseApp.Create(new AppOptions()
-        {
-            Credential = GoogleCredential.FromJson(_fcmSettings.JsonServiceKey).CreateScoped(_fcmSettings.Scope),
-            ProjectId = _fcmSettings.ApplicationIdentifier,
-            ServiceAccountId = _fcmSettings.ServiceAccountId,
+        var app = FirebaseApp.DefaultInstance;
 
-        });
+        if (FirebaseApp.DefaultInstance == null)
+        {
+            app = FirebaseApp.Create(new AppOptions()
+            {
+                Credential = GoogleCredential.FromJson(_fcmSettings.JsonServiceKey).CreateScoped(_fcmSettings.Scope),
+                ProjectId = _fcmSettings.ApplicationIdentifier,
+                ServiceAccountId = _fcmSettings.ServiceAccountId,
+
+            });
+        }
 
         _messaging = FirebaseMessaging.GetMessaging(app);
     }

@@ -20,8 +20,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="7.0.10" />
     <PackageReference Include="Microsoft.Identity.Web" Version="2.15.5" />
-    <PackageReference Include="Principal.Telemedicine.Shared.Configuration" Version="1.6.0-CI-20231114-141600" />
-    <PackageReference Include="Principal.Telemedicine.Shared.Infrastructure" Version="1.3.0-CI-20231114-142017" />
+    <PackageReference Include="Principal.Telemedicine.Shared.Configuration" Version="1.6.0-CI-20231124-122900" />
     <PackageReference Include="Principal.Telemedicine.Shared.Logging" Version="2.3.0-CI-20231114-141353" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
@@ -29,8 +28,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Principal.Telemedicine.DataConnectors\Principal.Telemedicine.DataConnectors.csproj" />
     <ProjectReference Include="..\Principal.Telemedicine.Shared.Cache\Principal.Telemedicine.Shared.Cache.csproj" />
+    <ProjectReference Include="..\Principal.Telemedicine.Shared.Infrastructure\Principal.Telemedicine.Shared.Infrastructure.csproj" />
     <ProjectReference Include="..\Principal.Telemedicine.Shared.Security\Principal.Telemedicine.Shared.Security.csproj" />
-    <ProjectReference Include="..\Principal.Telemedicine.SharedApi\Principal.Telemedicine.SharedApi.csproj" />
   </ItemGroup>
 
   <ItemGroup>

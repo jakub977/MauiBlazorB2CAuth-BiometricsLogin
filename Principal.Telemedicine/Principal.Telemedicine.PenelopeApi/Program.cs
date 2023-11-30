@@ -12,7 +12,6 @@ using Principal.Telemedicine.Shared.Logging;
 using Principal.Telemedicine.Shared.Cache;
 using Principal.Telemedicine.Shared.Firebase;
 using Principal.Telemedicine.Shared.Security;
-using Principal.Telemedicine.SharedApi.Controllers;
 using Principal.Telemedicine.DataConnectors.Repositories;
 
 var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
@@ -24,7 +23,6 @@ builder.Services.AddSecretConfiguration<DistributedRedisCacheOptions>(configurat
 builder.Services.AddSecretConfiguration<TmSecurityConfiguration>(configuration, "secured/secrets.json");
 builder.Services.AddSecretConfiguration<FcmSettings>(configuration, "secured/secrets.json");
 
-builder.Services.AddScoped<FcmNotificationApiController>();
 builder.Services.AddScoped<IFcmNotificationService, FcmNotificationService>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IADB2CRepository, ADB2CRepository>();

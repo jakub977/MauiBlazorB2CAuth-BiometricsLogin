@@ -24,15 +24,16 @@ public class PatientValuesApiController : ControllerBase
 
     private readonly DbContextApi _dbContext;
     private readonly ILogger _logger;
-    private readonly FcmNotificationApiController _fcmNotificationApiController;
+    private readonly HttpClient _client;
+
 
     private readonly string _logName = "PatientValuesApiController";
 
-    public PatientValuesApiController(ILogger<PatientValuesApiController> logger, DbContextApi dbContext, FcmNotificationApiController fcmNotificationApiController)
+    public PatientValuesApiController(ILogger<PatientValuesApiController> logger, DbContextApi dbContext, HttpClient client)
     {
         _dbContext = dbContext;
         _logger = logger;
-        _fcmNotificationApiController = fcmNotificationApiController;
+        _client = client;
     }
 
     /// <summary>
@@ -511,8 +512,14 @@ public class PatientValuesApiController : ControllerBase
             fcmNotificationRequest.AppMessageContentTypeEnum = AppMessageContentTypeEnum.P_SCHED_01;
             fcmNotificationRequest.UserGlobalId = currentUser.GlobalId;
             fcmNotificationRequest.NotifyAllUsers = false;
-            
-            await _fcmNotificationApiController.NotifyUser(fcmNotificationRequest);
+
+            _client.BaseAddress = new Uri("https://tm-api-shared-pene-test.azurewebsites.net");
+            var response = await _client.PostAsJsonAsync("api/FcmNotificationApiController/NotifyUser", fcmNotificationRequest);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return new GenericResponse<int>(returnValue, false, -2, "Notification process hs failed");
+            }
 
             return new GenericResponse<int>(procedureResult, true, 0);
 

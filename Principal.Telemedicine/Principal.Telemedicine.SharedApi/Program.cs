@@ -20,7 +20,7 @@ using Principal.Telemedicine.Shared.Interfaces;
 var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 
 #if DEBUG
-    configuration = new ConfigurationBuilder().AddJsonFile("appsettings.development.json", true).Build();
+configuration = new ConfigurationBuilder().AddJsonFile("appsettings.development.json", true).Build();
 #endif
 
 var builder = WebApplication.CreateBuilder(args);
@@ -67,6 +67,7 @@ builder.Services.AddScoped<IFcmNotificationService, FcmNotificationService>();
 builder.Services.AddScoped<IAppMessageRepository, AppMessageRepository>();
 builder.Services.AddScoped<IGraphAPI, GraphAPI>();
 builder.Services.AddScoped<IMailFactory, MailFactory>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddAutoMapper(typeof(Mapping).Assembly);
 
 builder.Services.AddEndpointsApiExplorer();

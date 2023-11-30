@@ -148,6 +148,7 @@ public class FcmNotificationApiController : ControllerBase
 
             return new GenericResponse<bool>(true, true, 0);
         }
+
         catch (Exception ex)
         {
             _logger.LogError($"{logHeader} {ex.Message}");
