@@ -43,10 +43,10 @@ public class RoleRepository : IRoleRepository
     }
 
     /// <inheritdoc/>
-    public async Task<PaginatedListData<Role>> GetRolesForGridTaskAsync(CompleteUserContract currentUser, bool activeRolesOnly, string? searchText, int? filterRoleCategoryId, int? filterAvailability, bool showHidden = false, bool showSpecial = false, string? order = "created_desc", int? page = 1, int? pageSize = 20, int? providerId = null, int? organizationId = null)
+    public async Task<IEnumerable<Role>> GetRolesForGridTaskAsync(CompleteUserContract currentUser, bool activeRolesOnly, string? searchText, int? filterRoleCategoryId, int? filterAvailability, bool showHidden = false, bool showSpecial = false, string? order = "created_desc", int? providerId = null, int? organizationId = null)
     {
         DateTime startTime = DateTime.Now;
-        IQueryable<Role> query = _dbContext.Roles.Include(c => c.ParentRole)
+        var query = _dbContext.Roles.Include(c => c.ParentRole)
             .Include(c => c.Organization)
             .Include(c => c.Provider)
             .Include(c => c.RolePermissions.Where(w => !w.Deleted)).ThenInclude(rp => rp.Permission).ThenInclude(p => p.Subject).ThenInclude(p => p.ParentSubject)
@@ -108,7 +108,7 @@ public class RoleRepository : IRoleRepository
 
         TimeSpan timeEnd = DateTime.Now - startTime;
 
-        return await PaginatedListData<Role>.CreateAsync(query, page ?? 1, pageSize ?? 20);
+        return await query.ToListAsync();
     }
 
     /// <inheritdoc/>

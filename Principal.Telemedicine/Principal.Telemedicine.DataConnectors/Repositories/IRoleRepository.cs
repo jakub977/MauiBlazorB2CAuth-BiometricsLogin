@@ -31,7 +31,7 @@ public interface IRoleRepository
     /// <param name="providerId">Id Poskytovatele pod kterým hledáme</param>
     /// <param name="organizationId">Id Organizace</param>
     /// <returns>Jednu stránku seznamu</returns>
-    Task<PaginatedListData<Role>> GetRolesForGridTaskAsync(CompleteUserContract currentUser, bool activeRolesOnly, string? searchText, int? filterRoleCategoryId, int? filterAvailability, bool showHidden = false, bool showSpecial = false, string? order = "created_desc", int? page = 1, int? pageSize = 20, int? providerId = null, int? organizationId = null);
+    Task<IEnumerable<Role>> GetRolesForGridTaskAsync(CompleteUserContract currentUser, bool activeRolesOnly, string? searchText, int? filterRoleCategoryId, int? filterAvailability, bool showHidden = false, bool showSpecial = false, string? order = "created_desc", int? providerId = null, int? organizationId = null);
 
     /// <summary>
     /// Vrací seznam rolí pro dropdown list

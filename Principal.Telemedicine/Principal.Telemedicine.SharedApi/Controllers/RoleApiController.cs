@@ -36,7 +36,7 @@ public class RoleApiController : ControllerBase
         _roleRepository = roleRepository;
     }
     /// <summary>
-    /// Vrátí seznam rolí pro Kendo grid
+    /// Vrátí seznam rolí (pro Kendo grid)
     /// </summary>
     /// <param name="activeRolesOnly">Filtrování - pouze aktivní role</param>
     /// <param name="filterRoleCategoryId">Filtrování - podle ID kategorie role</param>
@@ -45,8 +45,6 @@ public class RoleApiController : ControllerBase
     /// <param name="showHidden">Zobrazit i smazané záznamy?</param>
     /// <param name="showSpecial">Příznak, že se jedná o uživatele v Roli Super admin nebo Správce organizace</param>
     /// <param name="order">Řazení</param>
-    /// <param name="page">Požadovaná stránka</param>
-    /// <param name="pageSize">Počet záznamů na stránce</param>
     /// <param name="providerId">Id Poskytovatele</param>
     /// <param name="organizationId">Id Organizace</param>
     /// <returns>GenericResponse s parametrem "success" a seznamem RoleContract nebo chybu:
@@ -55,8 +53,8 @@ public class RoleApiController : ControllerBase
 
     [Authorize]
     [HttpGet(Name = "GetRoles")]
-    public async Task<IGenericResponse<List<RoleContract>>> GetRoles(bool activeRolesOnly, string? searchText, int? filterRoleCategoryId, int? filterAvailability, bool showHidden = false, bool showSpecial = false, string? order = "created_desc", int? page = 1, int? pageSize = 20, int? providerId = null, int? organizationId = null)
-    {
+    public async Task<IGenericResponse<List<RoleContract>>> GetRoles(bool activeRolesOnly, string? searchText, int? filterRoleCategoryId, int? filterAvailability, bool showHidden = false, bool showSpecial = false, string? order = "created_desc", int? providerId = null, int? organizationId = null)
+     {
         DateTime startTime = DateTime.Now;
         string logHeader = _logName + ".GetRoles:";
         // kontrola na vstupní data
@@ -71,7 +69,7 @@ public class RoleApiController : ControllerBase
         {
             List<RoleContract> data = new List<RoleContract>();
 
-            PaginatedListData<Role> resultData = await _roleRepository.GetRolesForGridTaskAsync(currentUser, activeRolesOnly, searchText, filterRoleCategoryId, filterAvailability, showHidden, showSpecial, order, page, pageSize, providerId, organizationId);
+            List<Role> resultData = (List<Role>)await _roleRepository.GetRolesForGridTaskAsync(currentUser, activeRolesOnly, searchText, filterRoleCategoryId, filterAvailability, showHidden, showSpecial, order, providerId, organizationId);
 
             TimeSpan timeMiddle = DateTime.Now - startTime;
 
@@ -81,9 +79,9 @@ public class RoleApiController : ControllerBase
             }
 
             TimeSpan timeEnd = DateTime.Now - startTime;
-            _logger.LogInformation("{0} Returning data - page: {1}, records: {2}, TotalRecords: {3}, TotalPages: {4}, duration: {5}, middle: {6}", logHeader, resultData.ActualPage, resultData.Count, resultData.TotalRecords, resultData.TotalPages, timeEnd, timeMiddle);
+            _logger.LogInformation($"{logHeader} Returning data - records: {resultData.Count}, duration: {timeEnd}, middle: {timeMiddle}");
 
-            return new GenericResponse<List<RoleContract>>(data, true, 0, null, null, resultData.TotalRecords);
+            return new GenericResponse<List<RoleContract>>(data, true, 0, null, null, resultData.Count);
         }
 
         catch (Exception ex)
@@ -94,7 +92,7 @@ public class RoleApiController : ControllerBase
     }
 
     /// <summary>
-    /// Vrátí seznam rolí
+    /// Vrátí seznam rolí pro drodown
     /// </summary>
     /// <param name="providerId">Id Poskytovatele</param>
     /// <param name="organizationId">Id Organizace</param>
@@ -118,22 +116,18 @@ public class RoleApiController : ControllerBase
 
         try
         {
-            //roleIds, IEnumerable, místo foreache select!
             List<RoleContract> data = new List<RoleContract>();
-
             List<Role> roleList = (List<Role>)await _roleRepository.GetRolesForDropdownListTaskAsync(currentUser, providerId, roleIds);
 
             TimeSpan timeMiddle = DateTime.Now - startTime;
 
-            //foreach (Role item in roleList)
-            //{
-            //    data.Add(item.ConvertToRoleContract(false, false, false, false));
-            //}
-
-             data = roleList.Select(s => s.ConvertToRoleContract);
+            foreach (Role item in roleList)
+            {
+                data.Add(item.ConvertToRoleContract(false, false, false, false));
+            }
 
             TimeSpan timeEnd = DateTime.Now - startTime;
-            _logger.LogInformation($"{logHeader} Returning data - records: {roleList.Count},duration: {timeEnd}, middle: {timeMiddle}", logHeader, roleList.Count, timeEnd, timeMiddle);
+            _logger.LogInformation($"{logHeader} Returning data - records: {roleList.Count}, duration: {timeEnd}, middle: {timeMiddle}");
 
             return new GenericResponse<List<RoleContract>>(data, true, 0, null, null, roleList.Count);
         }
