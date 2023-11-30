@@ -42,5 +42,7 @@ public interface IRoleRepository
     /// <returns>Seznam rolí</returns>
     Task<IEnumerable<Role>> GetRolesForDropdownListTaskAsync(CompleteUserContract currentUser, int providerId, List<int>? roleIds);
 
+    Task<int> InsertRoleTaskAsync(CompleteUserContract currentUser, Role role)
+
 
 }

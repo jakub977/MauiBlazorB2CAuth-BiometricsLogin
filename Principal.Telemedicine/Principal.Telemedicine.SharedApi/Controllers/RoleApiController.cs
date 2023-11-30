@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Graph.Models;
 using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
@@ -9,6 +10,7 @@ using Principal.Telemedicine.DataConnectors.Utils;
 using Principal.Telemedicine.Shared.Api;
 using Principal.Telemedicine.Shared.Models;
 using Principal.Telemedicine.Shared.Security;
+using StackExchange.Redis;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
@@ -69,7 +71,7 @@ public class RoleApiController : ControllerBase
         {
             List<RoleContract> data = new List<RoleContract>();
 
-            List<Role> resultData = (List<Role>)await _roleRepository.GetRolesForGridTaskAsync(currentUser, activeRolesOnly, searchText, filterRoleCategoryId, filterAvailability, showHidden, showSpecial, order, providerId, organizationId);
+            List<DataConnectors.Models.Shared.Role> resultData = (List<DataConnectors.Models.Shared.Role>)await _roleRepository.GetRolesForGridTaskAsync(currentUser, activeRolesOnly, searchText, filterRoleCategoryId, filterAvailability, showHidden, showSpecial, order, providerId, organizationId);
 
             TimeSpan timeMiddle = DateTime.Now - startTime;
 
@@ -117,11 +119,11 @@ public class RoleApiController : ControllerBase
         try
         {
             List<RoleContract> data = new List<RoleContract>();
-            List<Role> roleList = (List<Role>)await _roleRepository.GetRolesForDropdownListTaskAsync(currentUser, providerId, roleIds);
+            List<DataConnectors.Models.Shared.Role> roleList = (List<DataConnectors.Models.Shared.Role>)await _roleRepository.GetRolesForDropdownListTaskAsync(currentUser, providerId, roleIds);
 
             TimeSpan timeMiddle = DateTime.Now - startTime;
 
-            foreach (Role item in roleList)
+            foreach (DataConnectors.Models.Shared.Role item in roleList)
             {
                 data.Add(item.ConvertToRoleContract(false, false, false, false));
             }
@@ -137,5 +139,98 @@ public class RoleApiController : ControllerBase
             _logger.LogError("{0} {1}", logHeader, ex.Message);
             return new GenericResponse<List<RoleContract>>(null, false, -1, ex.Message);
         }
+    }
+
+    /// <summary>
+    /// Uloží novou roli
+    /// </summary>
+    /// <param name="roleContract"> objekt RoleContract</param>
+    /// <returns>GenericResponse s parametrem "success" TRUE a objektem "ProviderContract" nebo FALSE a případně chybu:
+    /// -1 = obecná chyba
+    /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
+    /// -7 = poskytovatele se nepodařilo uložit
+    /// </returns>
+    [Authorize]
+    [HttpPost(Name = "InsertRole")]
+    public async Task<IGenericResponse<ProviderContract>> InsertRole([FromBody] RoleContract? roleContract, bool createClone)
+    {
+        string logHeader = _logName + ".InsertRole:";
+        bool ret = false;
+        DateTime startTime = DateTime.Now;
+
+        try
+        {
+            // kontrola na vstupní data
+            var mappedRole = new DataConnectors.Models.Shared.Role();
+            mappedRole = _mapper.Map<DataConnectors.Models.Shared.Role>(roleContract);
+
+            CompleteUserContract? currentUser = HttpContext.GetTmUser();
+            if (currentUser == null)
+            {
+                _logger.LogWarning($"{logHeader} Current User not found");
+                return new GenericResponse<RoleContract>(roleContract, false, -4, "Current user not found", "Current user not found by GlobalId.");
+            }
+
+            DataConnectors.Models.Shared.Role actualRole = null;
+            List<DataConnectors.Models.Shared.Permission> existingRecords = new List<DataConnectors.Models.Shared.Permission>();
+
+            if (mappedRole == null)
+            {
+               _logger.LogWarning($"{logHeader}: Role is NULL, CustomerId {currentUser.Id}");
+                return new GenericResponse<RoleContract>(roleContract, false, -4, "Role is NULL", "Role is NULL");
+            }
+
+
+                actualRole = mappedRole;
+                actualRole.Active = true;
+                actualRole.Deleted = false;
+                actualRole.CreatedByCustomerId = currentUser.Id;
+
+                foreach (DataConnectors.Models.Shared.RolePermission item in actualRole.RolePermissions)
+                {
+                    // nový záznam
+                    item.CreatedByCustomerId = currentUser.Id;
+                    item.CreatedDateUtc = DateTime.UtcNow;
+                    item.Deleted = false;
+                    item.Active = true;
+                }
+
+              ret = await InsertRole(actualRole);
+
+            if (!ret)
+            {
+                _logger.LogWarning($"{logHeader} Provider '{mappedRole.Name}', ID: {mappedRole.Id} was not inserted, duration: {timeMiddle}");
+                return new GenericResponse<RoleContract>(roleContract, false, -7, "Role was not inserted", "Error when inserting role.");
+            }
+            else
+            {
+                roleContract.Id = mappedRole.Id;
+                _logger.LogInformation($"{logHeader} Role '{mappedRole.Name}', ID: {mappedRole.Id} was successfully inserted, duration: {timeEnd}");
+            }
+
+            // chceme kolovat roli?
+            if (createClone)
+                ret = await InsertNewRole(actualRole.Id);
+
+            TimeSpan timeEnd = DateTime.Now - startTime;
+
+            if (!ret)
+            {
+                _logger.LogWarning($"{logHeader} Role '{mappedRole.Name}', ID: {mappedRole.Id} was not inserted, duration: {timeEnd}");
+                return new GenericResponse<RoleContract>(roleContract, false, -7, "Provider was not updated", "Error when updating provider.");
+            }
+            else
+            {
+                roleContract.Id = mappedRole.Id;
+                _logger.LogInformation($"{logHeader} Role '{mappedRole.Name}', ID: {mappedRole.Id} was successfully inserted, duration: {timeEnd}");
+                return new GenericResponse<RoleContract>(roleContract, true, 0);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("{0} {1}", logHeader, ex.Message);
+            return new GenericResponse<RoleContract>(roleContract, false, -1, ex.Message);
+        }
+
     }
 }

@@ -208,4 +208,64 @@ public class RoleRepository : IRoleRepository
 
         return query;
     }
+
+    /// <inheritdoc/>
+    public async Task<int> InsertRoleTaskAsync(CompleteUserContract currentUser, Role role)
+    {
+        int ret = -1;
+        string logHeader = _logName + ".InsertRoleTaskAsync:";
+        DateTime startTime = DateTime.Now;
+        Role actualRole = null;
+        List<Models.Shared.Permission> existingRecords = new List<Models.Shared.Permission>();
+
+        using var tran = await _dbContext.Database.BeginTransactionAsync();
+
+        try
+        {
+            actualRole = role;
+            actualRole.Active = true;
+            actualRole.Deleted = false;
+            actualRole.CreatedByCustomerId = currentUser.Id;
+            actualRole.CreatedDateUtc = DateTime.UtcNow;
+
+            foreach (Models.Shared.RolePermission item in actualRole.RolePermissions)
+            {
+                // nový záznam
+                item.CreatedByCustomerId = currentUser.Id;
+                item.CreatedDateUtc = DateTime.UtcNow;
+                item.Deleted = false;
+                item.Active = true;
+            }
+           
+            _dbContext.Roles.Add(actualRole);
+
+            int result = await _dbContext.SaveChangesAsync();
+
+            TimeSpan timeEnd = DateTime.Now - startTime;
+
+            if (result == 1)
+            {
+                tran.Commit();
+                ret = actualRole.Id;
+                _logger.LogInformation($"{logHeader} Role '{actualRole.Name}', Id: {actualRole.Id} created succesfully, duration: {timeEnd}");
+            }
+            else
+            {
+                tran.Rollback();
+                _logger.LogWarning($"{logHeader} Role '{actualRole.Name}', Id: {actualRole.Id} was not created, duration: {timeEnd}");
+            }
+        }
+        catch (Exception ex)
+        {
+            tran.Rollback();
+            string errMessage = ex.Message;
+            if (ex.InnerException != null)
+            {
+                errMessage += " " + ex.InnerException.Message;
+            }
+            _logger.LogError($"{logHeader} Role '{actualRole.Name}', Id: {actualRole.Id} was not created, Error: {errMessage}");
+        }
+
+        return ret;
+    }
 }
