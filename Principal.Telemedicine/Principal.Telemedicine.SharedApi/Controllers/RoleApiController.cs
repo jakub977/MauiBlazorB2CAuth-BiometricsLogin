@@ -28,7 +28,7 @@ public class RoleApiController : ControllerBase
     private readonly string _logName = "RoleApiController";
 
 
-    public RoleApiController(DbContextApi dbContext, ILogger<UserApiController> logger, IMapper mapper, IRoleRepository roleRepository)
+    public RoleApiController(DbContextApi dbContext, ILogger<RoleApiController> logger, IMapper mapper, IRoleRepository roleRepository)
     {
         _dbContext = dbContext;
         _logger = logger;
