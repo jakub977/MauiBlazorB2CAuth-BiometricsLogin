@@ -1,5 +1,4 @@
 ﻿using Principal.Telemedicine.DataConnectors.Models.Shared;
-using Principal.Telemedicine.DataConnectors.Utils;
 using Principal.Telemedicine.Shared.Models;
 
 namespace Principal.Telemedicine.DataConnectors.Repositories;
@@ -14,6 +13,13 @@ public interface IRoleRepository
     /// </summary>
     /// <returns>Seznam členů rolí</returns>
     IQueryable<Role> ListOfAllRoles();
+
+    /// <summary>
+    /// Metoda vrací konkrétní roli na základě id.
+    /// </summary>
+    /// <param name="id">ID role</param>
+    /// <returns>Konkrétní rolel</returns>
+    Task<Role?> GetRoleByIdTaskAsync(int id);
 
     /// <summary>
     /// Vrací seznam rolí pro grid
@@ -42,7 +48,30 @@ public interface IRoleRepository
     /// <returns>Seznam rolí</returns>
     Task<IEnumerable<Role>> GetRolesForDropdownListTaskAsync(CompleteUserContract currentUser, int providerId, List<int>? roleIds);
 
-    Task<int> InsertRoleTaskAsync(CompleteUserContract currentUser, Role role)
+    /// <summary>
+    /// Zakládá roli a její práva
+    /// </summary>
+    /// <param name="currentUser">Aktuální uživatel</param>
+    /// <param name="role">Role</param> 
+    /// <param name="cloneRole"> bool identifikátor zda spustit proceduru pro klonování role</param>
+    /// <returns>1 - update se povedl nebo:
+    /// -1 = globální chyba
+    /// -6 = roli se nepodařilo založit v DB
+    /// -7 = roli se nepodařilo naklonovat
+    Task<int> InsertRoleTaskAsync(CompleteUserContract currentUser, Role role, bool cloneRole);
+
+    /// <summary>
+    /// Updatuje roli a její práva
+    /// </summary>
+    /// <param name="currentUser">Aktuální uživatel</param>
+    /// <param name="dbRole">Role z dedikované db dohledaná dle Id</param> 
+    /// <param name="editedRole">nově editovaná aktuální role</param> 
+    /// <param name="cloneRole"> bool identifikátor zda spustit proceduru pro klonování role</param>
+    /// <returns>1 - update se povedl nebo:
+    /// -1 = globální chyba
+    /// -6 = roli se nepodařilo updatovat v DB
+    /// -7 = roli se nepodařilo naklonovat
+    Task<int> UpdateRoleTaskAsync(CompleteUserContract currentUser, Role dbRole, Role editedRole, bool cloneRole);
 
 
 }

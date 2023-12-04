@@ -1,20 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.Graph.Models;
-using Microsoft.Graph.Models.ExternalConnectors;
-using Microsoft.Graph.Models.Security;
-using Newtonsoft.Json;
 using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.DataConnectors.Extensions;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
-using Principal.Telemedicine.DataConnectors.Utils;
 using Principal.Telemedicine.Shared.Enums;
 using Principal.Telemedicine.Shared.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data.Common;
+using System.Data;
 
 namespace Principal.Telemedicine.DataConnectors.Repositories;
 
@@ -40,6 +33,20 @@ public class RoleRepository : IRoleRepository
             .Include(c => c.RoleCategoryCombination)
             .Include(c => c.RoleMembers).ThenInclude(m => m.EffectiveUser).ThenInclude(e => e.User)
             .DefaultIfEmpty();
+    }
+
+    /// <inheritdoc/>
+    public async Task<Role?> GetRoleByIdTaskAsync(int id)
+    {
+        var data = await _dbContext.Roles.Include(c => c.CreatedByCustomer)
+            .Include(c => c.UpdatedByCustomer)
+            .Include(c => c.Organization)
+            .Include(c => c.Provider)
+            .Include(c => c.RoleCategoryCombination)
+            .Include(c => c.RoleMembers).ThenInclude(m => m.EffectiveUser).ThenInclude(e => e.User)
+            .Where(c => c.Id == id).FirstOrDefaultAsync();
+
+        return data;
     }
 
     /// <inheritdoc/>
@@ -210,13 +217,12 @@ public class RoleRepository : IRoleRepository
     }
 
     /// <inheritdoc/>
-    public async Task<int> InsertRoleTaskAsync(CompleteUserContract currentUser, Role role)
+    public async Task<int> InsertRoleTaskAsync(CompleteUserContract currentUser, Role role, bool cloneRole)
     {
         int ret = -1;
         string logHeader = _logName + ".InsertRoleTaskAsync:";
         DateTime startTime = DateTime.Now;
         Role actualRole = null;
-        List<Models.Shared.Permission> existingRecords = new List<Models.Shared.Permission>();
 
         using var tran = await _dbContext.Database.BeginTransactionAsync();
 
@@ -228,7 +234,7 @@ public class RoleRepository : IRoleRepository
             actualRole.CreatedByCustomerId = currentUser.Id;
             actualRole.CreatedDateUtc = DateTime.UtcNow;
 
-            foreach (Models.Shared.RolePermission item in actualRole.RolePermissions)
+            foreach (RolePermission item in actualRole.RolePermissions)
             {
                 // nový záznam
                 item.CreatedByCustomerId = currentUser.Id;
@@ -252,7 +258,19 @@ public class RoleRepository : IRoleRepository
             else
             {
                 tran.Rollback();
+                ret = -6;
                 _logger.LogWarning($"{logHeader} Role '{actualRole.Name}', Id: {actualRole.Id} was not created, duration: {timeEnd}");
+            }
+
+            if (cloneRole)
+            {
+                bool cloneSuccess = await CloneRole(actualRole.Id);
+                if (!cloneSuccess)
+                {
+                    tran.Rollback();
+                    ret = -7;
+                    _logger.LogWarning($"{logHeader} Role '{actualRole.Name}', Id: {actualRole.Id} was not cloned, duration: {timeEnd}");
+                }
             }
         }
         catch (Exception ex)
@@ -267,5 +285,144 @@ public class RoleRepository : IRoleRepository
         }
 
         return ret;
+    }
+
+    /// <inheritdoc/>
+    public async Task<int> UpdateRoleTaskAsync(CompleteUserContract currentUser, Role dbRole, Role editedRole, bool cloneRole)
+    {
+        int ret = -1;
+        string logHeader = _logName + ".UpdateRoleTaskAsync:";
+        DateTime startTime = DateTime.Now;
+
+        using var tran = await _dbContext.Database.BeginTransactionAsync();
+
+        try
+        {
+            dbRole.Active = editedRole.Active;
+            dbRole.Name = editedRole.Name;
+            dbRole.ProviderId = editedRole.ProviderId;
+            dbRole.RoleCategoryCombinationId = editedRole.RoleCategoryCombinationId;
+            dbRole.ParentRoleId = editedRole.ParentRoleId;
+            dbRole.UpdatedByCustomerId = currentUser.Id;
+            dbRole.UpdateDateUtc = DateTime.UtcNow;
+
+            // nová a existující práva
+            foreach (RolePermission item in editedRole.RolePermissions)
+            {
+                // dohledáme existující oprávnění
+                var existingPermission = dbRole.RolePermissions.Where(w => w.PermissionId == item.PermissionId).FirstOrDefault();
+                if (existingPermission != null)
+                {
+                    existingPermission.UpdatedByCustomerId = currentUser.Id;
+                    existingPermission.UpdateDateUtc = DateTime.UtcNow;
+                    existingPermission.Deleted = false;
+                    existingPermission.Active = true;
+                }
+                else
+                {
+                    // nové oprávnění
+                    item.CreatedByCustomerId = currentUser.Id;
+                    item.CreatedDateUtc = DateTime.UtcNow;
+                    item.Deleted = false;
+                    item.Active = true;
+                    dbRole.RolePermissions.Add(item);
+                }
+            }
+
+            // odebraná oprávnění označíme jako smazaná
+            foreach (RolePermission item in dbRole.RolePermissions)
+            {
+                if (editedRole.RolePermissions.Any(a => a.PermissionId == item.PermissionId))
+                    continue;
+
+                item.Deleted = true;
+                item.UpdatedByCustomerId = currentUser.Id;
+                item.UpdateDateUtc = DateTime.UtcNow;
+            }
+
+            _dbContext.Roles.Add(dbRole);
+
+            int result = await _dbContext.SaveChangesAsync();
+
+            TimeSpan timeEnd = DateTime.Now - startTime;
+
+            if (result == 1)
+            {
+                tran.Commit();
+                ret = dbRole.Id;
+                _logger.LogInformation($"{logHeader} Role '{dbRole.Name}', Id: {dbRole.Id} updated succesfully, duration: {timeEnd}");
+            }
+            else
+            {
+                tran.Rollback();
+                ret = -6;
+                _logger.LogWarning($"{logHeader} Role '{dbRole.Name}', Id: {dbRole.Id} was not updated, duration: {timeEnd}");
+            }
+
+            if (cloneRole)
+            {
+                bool cloneSuccess = await CloneRole(dbRole.Id);
+                if (!cloneSuccess)
+                {
+                    tran.Rollback();
+                    ret = -7;
+                    _logger.LogWarning($"{logHeader} Role '{dbRole.Name}', Id: {dbRole.Id} was not cloned while updating, duration: {timeEnd}");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            tran.Rollback();
+            string errMessage = ex.Message;
+            if (ex.InnerException != null)
+            {
+                errMessage += " " + ex.InnerException.Message;
+            }
+            _logger.LogError($"{logHeader} Role '{dbRole.Name}', Id: {dbRole.Id} was not updated, Error: {errMessage}");
+        }
+
+        return ret;
+    }
+
+    /// <summary>
+    /// Založí klony role procedurou v DB
+    /// </summary>
+    /// <param name="Id">Id nové role</param>
+    private async Task<bool> CloneRole(int Id)
+    {
+        bool result = false;
+        string logHeader = _logName + ".CloneRole:";
+
+        try
+        {
+            object[] parameters = new object[2];
+            DbParameter parId = new SqlParameter("roleId", SqlDbType.Int);
+            parId.IsNullable = true;
+            parId.Value = Id;
+            parId.Direction = ParameterDirection.Input;
+
+            DbParameter parProviderId = new SqlParameter("providerId", SqlDbType.Int);
+            parProviderId.IsNullable = true;
+            parProviderId.Value = DBNull.Value;
+            parProviderId.Direction = ParameterDirection.Input;
+
+            parameters[0] = parId;
+            parameters[1] = parProviderId;
+
+            await _dbContext.Database.ExecuteSqlRawAsync($"dbo.sp_CloneRole @roleId, @providerId", parameters);
+            result = true;
+        }
+        
+        catch (Exception ex)
+        {
+            string errMessage = ex.Message;
+            if (ex.InnerException != null)
+            {
+                errMessage += " " + ex.InnerException.Message;
+            }
+            _logger.LogWarning($"{logHeader} Stored procedure dbo.sp_CloneRole has failed. Error: {errMessage}");
+        }
+
+        return result;
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Graph.Models;
+using Microsoft.Kiota.Abstractions;
 using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
 using Principal.Telemedicine.DataConnectors.Repositories;
@@ -11,6 +12,8 @@ using Principal.Telemedicine.Shared.Api;
 using Principal.Telemedicine.Shared.Models;
 using Principal.Telemedicine.Shared.Security;
 using StackExchange.Redis;
+using System;
+using System.Data;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
@@ -83,6 +86,7 @@ public class RoleApiController : ControllerBase
             TimeSpan timeEnd = DateTime.Now - startTime;
             _logger.LogInformation($"{logHeader} Returning data - records: {resultData.Count}, duration: {timeEnd}, middle: {timeMiddle}");
 
+
             return new GenericResponse<List<RoleContract>>(data, true, 0, null, null, resultData.Count);
         }
 
@@ -145,17 +149,19 @@ public class RoleApiController : ControllerBase
     /// Uloží novou roli
     /// </summary>
     /// <param name="roleContract"> objekt RoleContract</param>
-    /// <returns>GenericResponse s parametrem "success" TRUE a objektem "ProviderContract" nebo FALSE a případně chybu:
+    /// <param name="createClone"> bool identifikátor zda spustit proceduru pro klonování role</param>
+    /// <returns>GenericResponse s parametrem "success" TRUE a objektem "RoleContract" nebo FALSE a případně chybu:
     /// -1 = obecná chyba
     /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
-    /// -7 = poskytovatele se nepodařilo uložit
+    /// -6 = roli se nepodařilo uložit
+    /// -7 = roli se nepodařilo naklonovat
     /// </returns>
     [Authorize]
     [HttpPost(Name = "InsertRole")]
-    public async Task<IGenericResponse<ProviderContract>> InsertRole([FromBody] RoleContract? roleContract, bool createClone)
+    public async Task<IGenericResponse<RoleContract>> InsertRole([FromBody] RoleContract? roleContract, bool createClone)
     {
         string logHeader = _logName + ".InsertRole:";
-        bool ret = false;
+        int ret;
         DateTime startTime = DateTime.Now;
 
         try
@@ -171,65 +177,94 @@ public class RoleApiController : ControllerBase
                 return new GenericResponse<RoleContract>(roleContract, false, -4, "Current user not found", "Current user not found by GlobalId.");
             }
 
-            DataConnectors.Models.Shared.Role actualRole = null;
-            List<DataConnectors.Models.Shared.Permission> existingRecords = new List<DataConnectors.Models.Shared.Permission>();
-
             if (mappedRole == null)
             {
-               _logger.LogWarning($"{logHeader}: Role is NULL, CustomerId {currentUser.Id}");
+                _logger.LogWarning($"{logHeader}: Role is NULL, CustomerId {currentUser.Id}");
                 return new GenericResponse<RoleContract>(roleContract, false, -4, "Role is NULL", "Role is NULL");
             }
-
-
-                actualRole = mappedRole;
-                actualRole.Active = true;
-                actualRole.Deleted = false;
-                actualRole.CreatedByCustomerId = currentUser.Id;
-
-                foreach (DataConnectors.Models.Shared.RolePermission item in actualRole.RolePermissions)
-                {
-                    // nový záznam
-                    item.CreatedByCustomerId = currentUser.Id;
-                    item.CreatedDateUtc = DateTime.UtcNow;
-                    item.Deleted = false;
-                    item.Active = true;
-                }
-
-              ret = await InsertRole(actualRole);
-
-            if (!ret)
-            {
-                _logger.LogWarning($"{logHeader} Provider '{mappedRole.Name}', ID: {mappedRole.Id} was not inserted, duration: {timeMiddle}");
-                return new GenericResponse<RoleContract>(roleContract, false, -7, "Role was not inserted", "Error when inserting role.");
-            }
-            else
-            {
-                roleContract.Id = mappedRole.Id;
-                _logger.LogInformation($"{logHeader} Role '{mappedRole.Name}', ID: {mappedRole.Id} was successfully inserted, duration: {timeEnd}");
-            }
-
-            // chceme kolovat roli?
-            if (createClone)
-                ret = await InsertNewRole(actualRole.Id);
+            TimeSpan timeMiddle = DateTime.Now - startTime;
+            ret = await _roleRepository.InsertRoleTaskAsync(currentUser, mappedRole, createClone);
 
             TimeSpan timeEnd = DateTime.Now - startTime;
-
-            if (!ret)
+            if (ret != 1)
             {
                 _logger.LogWarning($"{logHeader} Role '{mappedRole.Name}', ID: {mappedRole.Id} was not inserted, duration: {timeEnd}");
-                return new GenericResponse<RoleContract>(roleContract, false, -7, "Provider was not updated", "Error when updating provider.");
+                return new GenericResponse<RoleContract>(roleContract, false, ret, "Role was not inserted", "Error when inserting role.");
             }
-            else
-            {
-                roleContract.Id = mappedRole.Id;
-                _logger.LogInformation($"{logHeader} Role '{mappedRole.Name}', ID: {mappedRole.Id} was successfully inserted, duration: {timeEnd}");
-                return new GenericResponse<RoleContract>(roleContract, true, 0);
-            }
+ 
+            roleContract.Id = mappedRole.Id;
+            _logger.LogInformation($"{logHeader} Role '{mappedRole.Name}', ID: {mappedRole.Id} was successfully inserted, duration: {timeEnd}");
+
+            return new GenericResponse<RoleContract>(roleContract, true, 0, null, null);
         }
         catch (Exception ex)
         {
             _logger.LogError("{0} {1}", logHeader, ex.Message);
             return new GenericResponse<RoleContract>(roleContract, false, -1, ex.Message);
+        }
+
+    }
+
+    /// <summary>
+    /// Updatuje roli
+    /// </summary>
+    /// <param name="roleContract"> objekt RoleContract</param>
+    /// <returns>GenericResponse s parametrem "success" TRUE nebo FALSE a případně chybu:
+    /// -1 = obecná chyba
+    /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
+    /// -5 = roli se nepodařilo dohledat podle ID
+    /// -6 = subjekty pro organizaci se nepodařilo dohledat podle ID a OrganizationId
+    /// -8 = roli se nepodařilo updatovat
+    /// </returns>
+    [Authorize]
+    [HttpPost(Name = "UpdateRole")]
+    public async Task<IGenericResponse<bool>> UpdateRole([FromBody] RoleContract? roleContract, bool createClone)
+    {
+        string logHeader = _logName + ".UpdateRole:";
+        bool ret = false;
+        DateTime startTime = DateTime.Now;
+        using var tran = await _dbContext.Database.BeginTransactionAsync();
+
+        //todo: sjednotit chybové hlášky!!! 
+
+        try
+        {
+            // kontrola na vstupní data
+            var mappedRole = new DataConnectors.Models.Shared.Role();
+            mappedRole = _mapper.Map<DataConnectors.Models.Shared.Role>(roleContract);
+
+            CompleteUserContract? currentUser = HttpContext.GetTmUser();
+            if (currentUser == null)
+            {
+                tran.Rollback();
+                _logger.LogWarning($"{logHeader} Current User not found");
+                return new GenericResponse<bool>(ret, false, -4, "Current user not found", "Current user not found by GlobalId.");
+            }
+
+            var dbRole = await _roleRepository.GetRoleByIdTaskAsync(mappedRole.Id);
+            if (dbRole == null)
+            {
+                tran.Rollback();
+                _logger.LogWarning($"{logHeader} Role not found");
+                return new GenericResponse<bool>(ret, false, -5, "Role not found", "Role not found by Id.");
+            }
+
+            int update = await _roleRepository.UpdateRoleTaskAsync(currentUser, dbRole, mappedRole, createClone);
+            TimeSpan timeEnd = DateTime.Now - startTime;
+            if (update != 1)
+            {
+                _logger.LogWarning($"{logHeader} Role '{mappedRole.Name}', ID: {mappedRole.Id} was not inserted, duration: {timeEnd}");
+                return new GenericResponse<bool>(ret, false, -6, "Role was not inserted", "Error when inserting role.");
+            }
+
+            _logger.LogInformation($"{logHeader} Role '{mappedRole.Name}', ID: {mappedRole.Id} was successfully updated, duration: {timeEnd}");
+
+            return new GenericResponse<bool>(ret, true, 0, null, null);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("{0} {1}", logHeader, ex.Message);
+            return new GenericResponse<bool>(ret, false, -1, ex.Message);
         }
 
     }
