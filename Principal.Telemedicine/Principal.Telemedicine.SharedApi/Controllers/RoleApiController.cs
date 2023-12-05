@@ -153,6 +153,7 @@ public class RoleApiController : ControllerBase
     /// <returns>GenericResponse s parametrem "success" TRUE a objektem "RoleContract" nebo FALSE a případně chybu:
     /// -1 = obecná chyba
     /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
+    /// -5 = roli se nepodařilo dohledat dle ID
     /// -6 = roli se nepodařilo uložit
     /// -7 = roli se nepodařilo naklonovat
     /// </returns>
@@ -163,6 +164,7 @@ public class RoleApiController : ControllerBase
         string logHeader = _logName + ".InsertRole:";
         int ret;
         DateTime startTime = DateTime.Now;
+        using var tran = await _dbContext.Database.BeginTransactionAsync();
 
         try
         {
@@ -173,28 +175,47 @@ public class RoleApiController : ControllerBase
             CompleteUserContract? currentUser = HttpContext.GetTmUser();
             if (currentUser == null)
             {
+                tran.Rollback();
                 _logger.LogWarning($"{logHeader} Current User not found");
                 return new GenericResponse<RoleContract>(roleContract, false, -4, "Current user not found", "Current user not found by GlobalId.");
             }
 
             if (mappedRole == null)
             {
+                tran.Rollback();
                 _logger.LogWarning($"{logHeader}: Role is NULL, CustomerId {currentUser.Id}");
-                return new GenericResponse<RoleContract>(roleContract, false, -4, "Role is NULL", "Role is NULL");
+                return new GenericResponse<RoleContract>(roleContract, false, -5, "Role is NULL", "Role is NULL");
             }
+            
+            ret = await _roleRepository.InsertRoleTaskAsync(currentUser, mappedRole);
             TimeSpan timeMiddle = DateTime.Now - startTime;
-            ret = await _roleRepository.InsertRoleTaskAsync(currentUser, mappedRole, createClone);
-
-            TimeSpan timeEnd = DateTime.Now - startTime;
-            if (ret != 1)
+            
+            if (ret <= -1)
             {
-                _logger.LogWarning($"{logHeader} Role '{mappedRole.Name}', ID: {mappedRole.Id} was not inserted, duration: {timeEnd}");
+                tran.Rollback();
+                _logger.LogWarning($"{logHeader} Role '{mappedRole.Name}', ID: {mappedRole.Id} was not inserted, duration: {timeMiddle}");
                 return new GenericResponse<RoleContract>(roleContract, false, ret, "Role was not inserted", "Error when inserting role.");
             }
  
             roleContract.Id = mappedRole.Id;
-            _logger.LogInformation($"{logHeader} Role '{mappedRole.Name}', ID: {mappedRole.Id} was successfully inserted, duration: {timeEnd}");
+            _logger.LogInformation($"{logHeader} Role '{mappedRole.Name}', ID: {mappedRole.Id} was successfully inserted, duration: {timeMiddle}");
 
+            if (createClone)
+            {
+                bool cloneSuccees = false;
+                
+                cloneSuccees = await _roleRepository.CloneRole(mappedRole.Id);
+                TimeSpan timeEnd = DateTime.Now - startTime;
+                if (!cloneSuccees)
+                {
+                    tran.Rollback();
+                    _logger.LogWarning($"{logHeader} Role '{mappedRole.Name}', ID: {mappedRole.Id} was not cloned, duration: {timeEnd}");
+                    return new GenericResponse<RoleContract>(roleContract, false, -7, "Role was not cloned", "Error when cloning role.");
+                }
+                _logger.LogInformation($"{logHeader} Role '{mappedRole.Name}', ID: {mappedRole.Id} was successfully cloned, duration: {timeEnd}");
+            }
+
+            tran.Commit();
             return new GenericResponse<RoleContract>(roleContract, true, 0, null, null);
         }
         catch (Exception ex)
@@ -213,8 +234,8 @@ public class RoleApiController : ControllerBase
     /// -1 = obecná chyba
     /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
     /// -5 = roli se nepodařilo dohledat podle ID
-    /// -6 = subjekty pro organizaci se nepodařilo dohledat podle ID a OrganizationId
-    /// -8 = roli se nepodařilo updatovat
+    /// -6 = roli se nepodařilo updatovat
+    /// -7 = roli se nepodařilo naklonovat
     /// </returns>
     [Authorize]
     [HttpPost(Name = "UpdateRole")]
@@ -223,9 +244,7 @@ public class RoleApiController : ControllerBase
         string logHeader = _logName + ".UpdateRole:";
         bool ret = false;
         DateTime startTime = DateTime.Now;
-        using var tran = await _dbContext.Database.BeginTransactionAsync();
-
-        //todo: sjednotit chybové hlášky!!! 
+        using var tran = await _dbContext.Database.BeginTransactionAsync(); 
 
         try
         {
@@ -249,16 +268,31 @@ public class RoleApiController : ControllerBase
                 return new GenericResponse<bool>(ret, false, -5, "Role not found", "Role not found by Id.");
             }
 
-            int update = await _roleRepository.UpdateRoleTaskAsync(currentUser, dbRole, mappedRole, createClone);
+            int update = await _roleRepository.UpdateRoleTaskAsync(currentUser, dbRole, mappedRole);
             TimeSpan timeEnd = DateTime.Now - startTime;
-            if (update != 1)
+            if (update <= -1)
             {
-                _logger.LogWarning($"{logHeader} Role '{mappedRole.Name}', ID: {mappedRole.Id} was not inserted, duration: {timeEnd}");
-                return new GenericResponse<bool>(ret, false, -6, "Role was not inserted", "Error when inserting role.");
+                tran.Rollback();
+                _logger.LogWarning($"{logHeader} Role '{mappedRole.Name}', ID: {mappedRole.Id} was not updated, duration: {timeEnd}");
+                return new GenericResponse<bool>(ret, false, -6, "Role was not updated", "Error when updating role.");
             }
 
             _logger.LogInformation($"{logHeader} Role '{mappedRole.Name}', ID: {mappedRole.Id} was successfully updated, duration: {timeEnd}");
 
+            if (createClone)
+            {
+                bool cloneSuccees = false;
+                cloneSuccees = await _roleRepository.CloneRole(mappedRole.Id);
+                if (!cloneSuccees)
+                {
+                    tran.Rollback();
+                    _logger.LogWarning($"{logHeader} Role '{mappedRole.Name}', ID: {mappedRole.Id} was not cloned, duration: {timeEnd}");
+                    return new GenericResponse<bool>(ret, false, -7, "Role was not cloned", "Error when cloning role.");
+                }
+                _logger.LogInformation($"{logHeader} Role '{mappedRole.Name}', ID: {mappedRole.Id} was successfully cloned, duration: {timeEnd}");
+            }
+
+            tran.Commit();
             return new GenericResponse<bool>(ret, true, 0, null, null);
         }
         catch (Exception ex)

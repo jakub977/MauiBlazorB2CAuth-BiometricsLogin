@@ -217,15 +217,12 @@ public class RoleRepository : IRoleRepository
     }
 
     /// <inheritdoc/>
-    public async Task<int> InsertRoleTaskAsync(CompleteUserContract currentUser, Role role, bool cloneRole)
+    public async Task<int> InsertRoleTaskAsync(CompleteUserContract currentUser, Role role)
     {
         int ret = -1;
         string logHeader = _logName + ".InsertRoleTaskAsync:";
         DateTime startTime = DateTime.Now;
         Role actualRole = null;
-
-        using var tran = await _dbContext.Database.BeginTransactionAsync();
-
         try
         {
             actualRole = role;
@@ -249,33 +246,20 @@ public class RoleRepository : IRoleRepository
 
             TimeSpan timeEnd = DateTime.Now - startTime;
 
-            if (result == 1)
+            if (result != 0)
             {
-                tran.Commit();
                 ret = actualRole.Id;
                 _logger.LogInformation($"{logHeader} Role '{actualRole.Name}', Id: {actualRole.Id} created succesfully, duration: {timeEnd}");
             }
             else
             {
-                tran.Rollback();
                 ret = -6;
                 _logger.LogWarning($"{logHeader} Role '{actualRole.Name}', Id: {actualRole.Id} was not created, duration: {timeEnd}");
-            }
-
-            if (cloneRole)
-            {
-                bool cloneSuccess = await CloneRole(actualRole.Id);
-                if (!cloneSuccess)
-                {
-                    tran.Rollback();
-                    ret = -7;
-                    _logger.LogWarning($"{logHeader} Role '{actualRole.Name}', Id: {actualRole.Id} was not cloned, duration: {timeEnd}");
-                }
+                return ret;
             }
         }
         catch (Exception ex)
         {
-            tran.Rollback();
             string errMessage = ex.Message;
             if (ex.InnerException != null)
             {
@@ -288,13 +272,11 @@ public class RoleRepository : IRoleRepository
     }
 
     /// <inheritdoc/>
-    public async Task<int> UpdateRoleTaskAsync(CompleteUserContract currentUser, Role dbRole, Role editedRole, bool cloneRole)
+    public async Task<int> UpdateRoleTaskAsync(CompleteUserContract currentUser, Role dbRole, Role editedRole)
     {
         int ret = -1;
         string logHeader = _logName + ".UpdateRoleTaskAsync:";
         DateTime startTime = DateTime.Now;
-
-        using var tran = await _dbContext.Database.BeginTransactionAsync();
 
         try
         {
@@ -340,39 +322,25 @@ public class RoleRepository : IRoleRepository
                 item.UpdateDateUtc = DateTime.UtcNow;
             }
 
-            _dbContext.Roles.Add(dbRole);
+            _dbContext.Roles.Update(dbRole);
 
             int result = await _dbContext.SaveChangesAsync();
 
             TimeSpan timeEnd = DateTime.Now - startTime;
 
-            if (result == 1)
+            if (result != 0)
             {
-                tran.Commit();
                 ret = dbRole.Id;
                 _logger.LogInformation($"{logHeader} Role '{dbRole.Name}', Id: {dbRole.Id} updated succesfully, duration: {timeEnd}");
             }
             else
             {
-                tran.Rollback();
                 ret = -6;
                 _logger.LogWarning($"{logHeader} Role '{dbRole.Name}', Id: {dbRole.Id} was not updated, duration: {timeEnd}");
-            }
-
-            if (cloneRole)
-            {
-                bool cloneSuccess = await CloneRole(dbRole.Id);
-                if (!cloneSuccess)
-                {
-                    tran.Rollback();
-                    ret = -7;
-                    _logger.LogWarning($"{logHeader} Role '{dbRole.Name}', Id: {dbRole.Id} was not cloned while updating, duration: {timeEnd}");
-                }
             }
         }
         catch (Exception ex)
         {
-            tran.Rollback();
             string errMessage = ex.Message;
             if (ex.InnerException != null)
             {
@@ -384,11 +352,8 @@ public class RoleRepository : IRoleRepository
         return ret;
     }
 
-    /// <summary>
-    /// Založí klony role procedurou v DB
-    /// </summary>
-    /// <param name="Id">Id nové role</param>
-    private async Task<bool> CloneRole(int Id)
+    /// <inheritdoc/>
+    public async Task<bool> CloneRole(int roleId)
     {
         bool result = false;
         string logHeader = _logName + ".CloneRole:";
@@ -398,7 +363,7 @@ public class RoleRepository : IRoleRepository
             object[] parameters = new object[2];
             DbParameter parId = new SqlParameter("roleId", SqlDbType.Int);
             parId.IsNullable = true;
-            parId.Value = Id;
+            parId.Value = roleId;
             parId.Direction = ParameterDirection.Input;
 
             DbParameter parProviderId = new SqlParameter("providerId", SqlDbType.Int);

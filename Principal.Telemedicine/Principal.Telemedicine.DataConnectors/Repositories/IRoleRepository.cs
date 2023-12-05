@@ -53,12 +53,11 @@ public interface IRoleRepository
     /// </summary>
     /// <param name="currentUser">Aktuální uživatel</param>
     /// <param name="role">Role</param> 
-    /// <param name="cloneRole"> bool identifikátor zda spustit proceduru pro klonování role</param>
     /// <returns>1 - update se povedl nebo:
     /// -1 = globální chyba
     /// -6 = roli se nepodařilo založit v DB
     /// -7 = roli se nepodařilo naklonovat
-    Task<int> InsertRoleTaskAsync(CompleteUserContract currentUser, Role role, bool cloneRole);
+    Task<int> InsertRoleTaskAsync(CompleteUserContract currentUser, Role role);
 
     /// <summary>
     /// Updatuje roli a její práva
@@ -66,12 +65,17 @@ public interface IRoleRepository
     /// <param name="currentUser">Aktuální uživatel</param>
     /// <param name="dbRole">Role z dedikované db dohledaná dle Id</param> 
     /// <param name="editedRole">nově editovaná aktuální role</param> 
-    /// <param name="cloneRole"> bool identifikátor zda spustit proceduru pro klonování role</param>
     /// <returns>1 - update se povedl nebo:
     /// -1 = globální chyba
     /// -6 = roli se nepodařilo updatovat v DB
     /// -7 = roli se nepodařilo naklonovat
-    Task<int> UpdateRoleTaskAsync(CompleteUserContract currentUser, Role dbRole, Role editedRole, bool cloneRole);
+    Task<int> UpdateRoleTaskAsync(CompleteUserContract currentUser, Role dbRole, Role editedRole);
+
+    /// <summary>
+    /// Založí klony role procedurou v DB
+    /// </summary>
+    /// <param name="roleId">Id nové role</param>
+    Task<bool> CloneRole(int roleId);
 
 
 }
