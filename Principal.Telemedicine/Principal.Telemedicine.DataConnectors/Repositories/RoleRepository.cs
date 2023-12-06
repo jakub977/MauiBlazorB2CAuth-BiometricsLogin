@@ -8,6 +8,7 @@ using Principal.Telemedicine.Shared.Enums;
 using Principal.Telemedicine.Shared.Models;
 using System.Data.Common;
 using System.Data;
+using Microsoft.Graph.Models.TermStore;
 
 namespace Principal.Telemedicine.DataConnectors.Repositories;
 
@@ -386,6 +387,57 @@ public class RoleRepository : IRoleRepository
                 errMessage += " " + ex.InnerException.Message;
             }
             _logger.LogWarning($"{logHeader} Stored procedure dbo.sp_CloneRole has failed. Error: {errMessage}");
+        }
+
+        return result;
+    }
+
+    /// <inheritdoc/>
+    public async Task<bool> DeleteRoleTaskAsync(CompleteUserContract currentUser, Role role)
+    {
+        bool result = false;
+        string logHeader = _logName + ".DeleteRoleTaskAsync:";
+        DateTime startTime = DateTime.Now;
+
+        try
+        {
+            foreach (RoleMember member in role.RoleMembers.Where(w => !w.Deleted))
+            {
+                member.Deleted = true;
+                member.UpdateDateUtc = DateTime.UtcNow;
+                member.UpdatedByCustomerId = currentUser.Id;
+            }
+
+            role.Deleted = true;
+            role.UpdatedByCustomerId = currentUser.Id;
+            role.UpdateDateUtc = DateTime.UtcNow;
+
+            _dbContext.Roles.Update(role);
+
+            int dbResult = await _dbContext.SaveChangesAsync();
+
+            TimeSpan timeEnd = DateTime.Now - startTime;
+
+            if (dbResult != 0)
+            {
+                result = true;
+                _logger.LogInformation($"{logHeader} Role '{role.Name}', Id: {role.Id} deleted succesfully, duration: {timeEnd}");
+            }
+            else
+            {
+                result = false;
+                _logger.LogWarning($"{logHeader} Role '{role.Name}', Id: {role.Id} was not deleted, duration: {timeEnd}");
+            }
+        }
+
+        catch (Exception ex)
+        {
+            string errMessage = ex.Message;
+            if (ex.InnerException != null)
+            {
+                errMessage += " " + ex.InnerException.Message;
+            }
+            _logger.LogError($"{logHeader} Role '{role.Name}', Id: {role.Id} was not updated, Error: {errMessage}");
         }
 
         return result;

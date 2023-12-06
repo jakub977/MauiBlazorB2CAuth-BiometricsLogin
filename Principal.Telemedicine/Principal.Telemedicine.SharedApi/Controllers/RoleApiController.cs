@@ -302,4 +302,126 @@ public class RoleApiController : ControllerBase
         }
 
     }
+
+    /// <summary>
+    /// Smaže roli
+    /// </summary>
+    /// <param name="roleId">Id Role</param>
+    /// <returns>GenericResponse s parametrem "success" TRUE nebo FALSE a případně chybu:
+    /// -1 = obecná chyba
+    /// -2 = neplatné RoleId
+    /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
+    /// -5 = roli se nepodařilo dohledat dle ID
+    /// -6 = roli se nepodařilo smazat
+    [Authorize]
+    [HttpGet(Name = "DeleteRole")]
+    public async Task<IGenericResponse<bool>> DeleteRole (int roleId)
+    {
+        string logHeader = _logName + ".DeleteRole:";
+        bool ret = false;
+        DateTime startTime = DateTime.Now;
+
+        using var tran = await _dbContext.Database.BeginTransactionAsync();
+        try
+        {
+            // kontrola na vstupní data
+            CompleteUserContract? currentUser = HttpContext.GetTmUser();
+            if (currentUser == null)
+            {
+                tran.Rollback();
+                _logger.LogWarning("{0} Current User not found", logHeader);
+                return new GenericResponse<bool>(ret, false, -4, "Current user not found", "Current user not found by GlobalId.");
+            }
+
+            if (roleId <= 0)
+            {
+                _logger.LogWarning("{0} Invalid RoleId: {1}", logHeader, roleId);
+                return new GenericResponse<bool>(ret, false, -2, "Invalid RoleId", "RoleId value must be greater then '0'.");
+            }
+ 
+            var dbRole = await _roleRepository.GetRoleByIdTaskAsync(roleId);
+            if (dbRole == null)
+            {
+                tran.Rollback();
+                _logger.LogWarning($"{logHeader} Role not found");
+                return new GenericResponse<bool>(ret, false, -5, "Role not found", "Role not found by Id.");
+            }
+
+            bool delete = await _roleRepository.DeleteRoleTaskAsync(currentUser, dbRole);
+            TimeSpan timeEnd = DateTime.Now - startTime;
+            if (!delete)
+            {
+                tran.Rollback();
+                _logger.LogWarning($"{logHeader} Role '{dbRole.Name}', ID: {dbRole.Id} was not deleted, duration: {timeEnd}");
+                return new GenericResponse<bool>(ret, false, -6, "Role was not deleted", "Error when deleting role.");
+            }
+
+            ret = true;
+            tran.Commit();
+            _logger.LogInformation($"{logHeader} Role '{dbRole.Name}', Id: {dbRole.Id} was successfully deleted, duration: {timeEnd}");
+
+            return new GenericResponse<bool>(ret, true, 0);
+        }
+        catch (Exception ex)
+        {
+            tran.Rollback();
+            _logger.LogError("{0} {1}", logHeader, ex.Message);
+            return new GenericResponse<bool>(false, false, -1, ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Vrátí roli
+    /// </summary>
+    /// <param name="roleId">Id požadovaného poskytovatele</param>
+    /// <returns>GenericResponse s parametrem "success" TRUE a objektem "RoleContract" nebo FALSE a případně chybu:
+    /// -1 = obecná chyba
+    /// -2 = neplatné RoleId
+    /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
+    /// </returns>
+    [Authorize]
+    [HttpGet(Name = "GetRole")]
+    public async Task<IGenericResponse<RoleContract>> GetRole(int roleId)
+    {
+        DateTime startTime = DateTime.Now;
+        string logHeader = _logName + ".GetRole:";
+        RoleContract? role = null;
+
+        //Aktualni uživatel
+        CompleteUserContract? currentUser = HttpContext.GetTmUser();
+        if (currentUser == null)
+        {
+            _logger.LogWarning("{0} Current User not found", logHeader);
+            return new GenericResponse<RoleContract>(role, false, -4, "Current user not found", "User not found by GlobalId.");
+        }
+
+        // kontrola na vstupní data
+        if (roleId <= 0)
+        {
+            _logger.LogWarning("{0} Invalid RoleId: {1}", logHeader, roleId);
+            return new GenericResponse<RoleContract>(role, false, -2, "Invalid RoleId", "RoleId value must be greater then '0'.");
+        }
+
+        try
+        {
+            DataConnectors.Models.Shared.Role? data = await _roleRepository.GetRoleByIdTaskAsync(roleId);
+
+            if (data != null)
+            {
+                role = data.ConvertToRoleContract();
+            }
+
+            TimeSpan endTime = DateTime.Now - startTime;
+
+            _logger.LogInformation("{0} Data found, duration: {1}", logHeader, endTime);
+
+            return new GenericResponse<RoleContract>(role, true, 0);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("{0} {1}", logHeader, ex.Message);
+            return new GenericResponse<RoleContract>(role, false, -1, ex.Message);
+        }
+    }
+
 }

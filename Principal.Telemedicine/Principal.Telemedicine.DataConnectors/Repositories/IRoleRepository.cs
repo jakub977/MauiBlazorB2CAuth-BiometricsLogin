@@ -77,5 +77,13 @@ public interface IRoleRepository
     /// <param name="roleId">Id nové role</param>
     Task<bool> CloneRole(int roleId);
 
+    /// <summary>
+    /// Metoda odstraní roli
+    /// </summary>
+    /// <param name="currentUser">Aktuální uživatel</param>
+    /// <param name="role">Role</param>
+    /// <returns>true / false</returns>
+    Task<bool> DeleteRoleTaskAsync(CompleteUserContract currentUser, Role role);
+
 
 }
