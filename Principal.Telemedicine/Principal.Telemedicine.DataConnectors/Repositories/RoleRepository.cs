@@ -9,6 +9,7 @@ using Principal.Telemedicine.Shared.Models;
 using System.Data.Common;
 using System.Data;
 using Microsoft.Graph.Models.TermStore;
+using Microsoft.Graph.Models;
 
 namespace Principal.Telemedicine.DataConnectors.Repositories;
 
@@ -223,16 +224,16 @@ public class RoleRepository : IRoleRepository
         int ret = -1;
         string logHeader = _logName + ".InsertRoleTaskAsync:";
         DateTime startTime = DateTime.Now;
-        Role actualRole = null;
+        
         try
         {
-            actualRole = role;
+            Role actualRole = role;
             actualRole.Active = true;
             actualRole.Deleted = false;
             actualRole.CreatedByCustomerId = currentUser.Id;
             actualRole.CreatedDateUtc = DateTime.UtcNow;
 
-            foreach (RolePermission item in actualRole.RolePermissions)
+            foreach (Models.Shared.RolePermission item in actualRole.RolePermissions)
             {
                 // nový záznam
                 item.CreatedByCustomerId = currentUser.Id;
@@ -266,7 +267,7 @@ public class RoleRepository : IRoleRepository
             {
                 errMessage += " " + ex.InnerException.Message;
             }
-            _logger.LogError($"{logHeader} Role '{actualRole.Name}', Id: {actualRole.Id} was not created, Error: {errMessage}");
+            _logger.LogError($"{logHeader} Role '{role.Name}', Id: {role.Id} was not created, Error: {errMessage}");
         }
 
         return ret;
@@ -290,7 +291,7 @@ public class RoleRepository : IRoleRepository
             dbRole.UpdateDateUtc = DateTime.UtcNow;
 
             // nová a existující práva
-            foreach (RolePermission item in editedRole.RolePermissions)
+            foreach (Models.Shared.RolePermission item in editedRole.RolePermissions)
             {
                 // dohledáme existující oprávnění
                 var existingPermission = dbRole.RolePermissions.Where(w => w.PermissionId == item.PermissionId).FirstOrDefault();
@@ -313,7 +314,7 @@ public class RoleRepository : IRoleRepository
             }
 
             // odebraná oprávnění označíme jako smazaná
-            foreach (RolePermission item in dbRole.RolePermissions)
+            foreach (Models.Shared.RolePermission item in dbRole.RolePermissions)
             {
                 if (editedRole.RolePermissions.Any(a => a.PermissionId == item.PermissionId))
                     continue;
@@ -323,7 +324,11 @@ public class RoleRepository : IRoleRepository
                 item.UpdateDateUtc = DateTime.UtcNow;
             }
 
-            _dbContext.Roles.Update(dbRole);
+            bool tracking = _dbContext.ChangeTracker.Entries<Role>().Any(x => x.Entity.Id == dbRole.Id);
+            if (!tracking)
+            {
+                _dbContext.Roles.Update(dbRole);
+            }
 
             int result = await _dbContext.SaveChangesAsync();
 
@@ -412,7 +417,11 @@ public class RoleRepository : IRoleRepository
             role.UpdatedByCustomerId = currentUser.Id;
             role.UpdateDateUtc = DateTime.UtcNow;
 
-            _dbContext.Roles.Update(role);
+            bool tracking = _dbContext.ChangeTracker.Entries<Role>().Any(x => x.Entity.Id == role.Id);
+            if (!tracking)
+            {
+                _dbContext.Roles.Update(role);
+            }
 
             int dbResult = await _dbContext.SaveChangesAsync();
 

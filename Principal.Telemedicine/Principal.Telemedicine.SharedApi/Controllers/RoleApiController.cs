@@ -321,14 +321,12 @@ public class RoleApiController : ControllerBase
         bool ret = false;
         DateTime startTime = DateTime.Now;
 
-        using var tran = await _dbContext.Database.BeginTransactionAsync();
         try
         {
             // kontrola na vstupní data
             CompleteUserContract? currentUser = HttpContext.GetTmUser();
             if (currentUser == null)
             {
-                tran.Rollback();
                 _logger.LogWarning("{0} Current User not found", logHeader);
                 return new GenericResponse<bool>(ret, false, -4, "Current user not found", "Current user not found by GlobalId.");
             }
@@ -342,7 +340,6 @@ public class RoleApiController : ControllerBase
             var dbRole = await _roleRepository.GetRoleByIdTaskAsync(roleId);
             if (dbRole == null)
             {
-                tran.Rollback();
                 _logger.LogWarning($"{logHeader} Role not found");
                 return new GenericResponse<bool>(ret, false, -5, "Role not found", "Role not found by Id.");
             }
@@ -351,20 +348,17 @@ public class RoleApiController : ControllerBase
             TimeSpan timeEnd = DateTime.Now - startTime;
             if (!delete)
             {
-                tran.Rollback();
                 _logger.LogWarning($"{logHeader} Role '{dbRole.Name}', ID: {dbRole.Id} was not deleted, duration: {timeEnd}");
                 return new GenericResponse<bool>(ret, false, -6, "Role was not deleted", "Error when deleting role.");
             }
 
             ret = true;
-            tran.Commit();
             _logger.LogInformation($"{logHeader} Role '{dbRole.Name}', Id: {dbRole.Id} was successfully deleted, duration: {timeEnd}");
 
             return new GenericResponse<bool>(ret, true, 0);
         }
         catch (Exception ex)
         {
-            tran.Rollback();
             _logger.LogError("{0} {1}", logHeader, ex.Message);
             return new GenericResponse<bool>(false, false, -1, ex.Message);
         }
