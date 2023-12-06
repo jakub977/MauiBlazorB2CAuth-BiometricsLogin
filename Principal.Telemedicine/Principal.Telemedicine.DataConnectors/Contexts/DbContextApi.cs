@@ -124,6 +124,8 @@ public partial class DbContextApi : DbContext
 
     public virtual DbSet<MediaStorage> MediaStorages { get; set; }
 
+    public virtual DbSet<LocaleStringResource> LocaleStringResources { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         var configuration = new ConfigurationBuilder()
@@ -953,6 +955,20 @@ public partial class DbContextApi : DbContext
             entity.Property(e => e.Id).HasComment("Primary identifier of a multimedia");
             entity.Property(e => e.Data).HasComment("Binary data of a multimedia");
         });
+
+        modelBuilder.Entity<LocaleStringResource>(entity =>
+        {
+            entity.ToTable("LocaleStringResource", tb => tb.HasComment("Table of LocaleStringResources"));
+
+            entity.Property(e => e.Id).HasComment("Primary identifier");
+            entity.Property(e => e.LanguageId);
+            entity.Property(e => e.ResourceName);
+            entity.Property(e => e.ResourceValue);
+            entity.Property(e => e.IsFromPlugin);
+            entity.Property(e => e.IsTouched);
+
+        });
+
         modelBuilder.Entity<Log>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK_dbo.Log");
