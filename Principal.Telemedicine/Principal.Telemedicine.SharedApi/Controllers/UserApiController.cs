@@ -17,6 +17,7 @@ using Microsoft.Identity.Web.Resource;
 using Principal.Telemedicine.Shared.Security;
 using Microsoft.Graph.Models;
 using Principal.Telemedicine.Shared.Interfaces;
+using System.Globalization;
 
 namespace Principal.Telemedicine.SharedApi.Controllers;
 
@@ -31,6 +32,7 @@ public class UserApiController : ControllerBase
     private readonly IProviderRepository _providerRepository;
     private readonly IEffectiveUserRepository _effectiveUserRepository;
     private readonly IADB2CRepository _adb2cRepository;
+    private readonly ILocaleStringResourceRepository _localeStringResourceRepository;
     private readonly IMailFactory _mailFactory;
     private readonly DbContextApi _dbContext;
     private readonly ILogger _logger;
@@ -39,7 +41,7 @@ public class UserApiController : ControllerBase
     private readonly string _logName = "UserApiController";
 
     public UserApiController(ICustomerRepository customerRepository, IProviderRepository providerRepository, IEffectiveUserRepository effectiveUserRepository,
-        IADB2CRepository adb2cRepository, IMailFactory mailFactory, DbContextApi dbContext, ILogger<UserApiController> logger, IMapper mapper)
+        IADB2CRepository adb2cRepository, IMailFactory mailFactory, DbContextApi dbContext, ILogger<UserApiController> logger, IMapper mapper, ILocaleStringResourceRepository localeStringResourceRepository)
     {
         _customerRepository = customerRepository;
         _providerRepository = providerRepository;
@@ -49,6 +51,7 @@ public class UserApiController : ControllerBase
         _dbContext = dbContext;
         _logger = logger;
         _mapper = mapper;
+        _localeStringResourceRepository = localeStringResourceRepository;
     }
 
     /// <summary>
@@ -1428,11 +1431,22 @@ public class UserApiController : ControllerBase
         if (customer == null || string.IsNullOrEmpty(customer.Email) || string.IsNullOrEmpty(customer.GlobalId) || string.IsNullOrEmpty(password))
             return false;
 
+        string emailSubject = await _localeStringResourceRepository.GetLocaleStringResourceValueByNameAsync("Web.UserManagement.User.PasswordEmailSubject", 2);
+        string emailTextTitle = await _localeStringResourceRepository.GetLocaleStringResourceValueByNameAsync("Web.UserManagement.User.PasswordEmailTitle", 2);
+        string emailTextBody = await _localeStringResourceRepository.GetLocaleStringResourceValueByNameAsync("Web.UserManagement.User.PasswordEmailBody", 2);
+        string emailTextName = await _localeStringResourceRepository.GetLocaleStringResourceValueByNameAsync("Web.UserManagement.User.PasswordEmailName", 2);
+        string emailTextPassword = await _localeStringResourceRepository.GetLocaleStringResourceValueByNameAsync("Web.UserManagement.User.PasswordEmailPassword", 2);
+        string emailTextEnd = await _localeStringResourceRepository.GetLocaleStringResourceValueByNameAsync("Web.UserManagement.User.PasswordEmailEnd", 2);
+
         string userName = _adb2cRepository.GetEmailFromUPN(customer.GlobalId);
 
-        string txt = "Dobrý den," + Environment.NewLine + Environment.NewLine + "Vaše nové přihlašovací údaje do aplikace Vanda jsou: " + Environment.NewLine + Environment.NewLine + "jméno: {0} " + Environment.NewLine + Environment.NewLine + "heslo: {1}";
+        string txt = emailTextTitle + Environment.NewLine + Environment.NewLine 
+            + emailTextBody + Environment.NewLine + Environment.NewLine 
+            + emailTextName + " {0} " + Environment.NewLine + Environment.NewLine 
+            + emailTextPassword + " {1}" + Environment.NewLine + Environment.NewLine 
+            + emailTextEnd;
 
-        return await _mailFactory.SendEmailAsyncTask(customer.Email, "Nové přihlašovací údaje", string.Format(txt, userName, password));
+        return await _mailFactory.SendEmailAsyncTask(customer.Email, emailSubject, string.Format(txt, userName, password));
     }
 }
 

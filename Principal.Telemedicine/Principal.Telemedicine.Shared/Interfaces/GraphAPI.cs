@@ -74,13 +74,34 @@ public class GraphAPI: IGraphAPI
         string logHeader = _logName + ".GetAccessTokenAsync:";
         string accessToken = string.Empty;
         string tokenEndpoint = $"https://login.microsoftonline.com/{tenantId}/oauth2/v2.0/token";
+        string errorText = "GraphAPI returned error: ";
+        JsonElement accessTokenJSON;
+        JsonElement errorJSON;
 
         try
         {
              HttpResponseMessage response = await client.PostAsync(tokenEndpoint, requestContent);
             string responseContent = await response.Content.ReadAsStringAsync();
             var tokenResponse = JsonSerializer.Deserialize<JsonElement>(responseContent);
-            accessToken = tokenResponse.GetProperty("access_token").GetString();
+            
+            if (!tokenResponse.TryGetProperty("access_token", out accessTokenJSON))
+            {
+                // vrácena chyba
+                if (tokenResponse.TryGetProperty("error", out errorJSON))
+                {
+                    errorText += errorJSON.ToString() + " ";
+                }
+
+                if (tokenResponse.TryGetProperty("error_description", out errorJSON))
+                {
+                    errorText += ", " + errorJSON.ToString();
+                }
+
+                _logger.LogWarning($"{logHeader} {errorText}");
+                return accessToken;
+            }
+
+            accessToken = accessTokenJSON.ToString();
 
             _logger.LogDebug($"{logHeader} AD returned: OK, token returned succesfully");
         }

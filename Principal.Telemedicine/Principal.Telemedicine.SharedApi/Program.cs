@@ -16,6 +16,7 @@ using Principal.Telemedicine.Shared.Firebase;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting.Internal;
 using Principal.Telemedicine.Shared.Interfaces;
+using Principal.Telemedicine.DataConnectors.Models.Shared;
 
 var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 
@@ -68,6 +69,7 @@ builder.Services.AddScoped<IAppMessageRepository, AppMessageRepository>();
 builder.Services.AddScoped<IGraphAPI, GraphAPI>();
 builder.Services.AddScoped<IMailFactory, MailFactory>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<ILocaleStringResourceRepository, LocaleStringResourceRepository>();
 builder.Services.AddAutoMapper(typeof(Mapping).Assembly);
 
 builder.Services.AddEndpointsApiExplorer();

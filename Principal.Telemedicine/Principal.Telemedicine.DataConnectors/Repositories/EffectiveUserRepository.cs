@@ -15,7 +15,7 @@ public class EffectiveUserRepository : IEffectiveUserRepository
 
     private readonly DbContextApi _dbContext;
     private readonly ILogger _logger;
-    private readonly string _logName = "CustomerRepository";
+    private readonly string _logName = "EffectiveUserRepository";
 
     public EffectiveUserRepository(DbContextApi dbContext, ILogger<EffectiveUserRepository> logger)
     {
