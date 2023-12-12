@@ -371,6 +371,7 @@ public class CustomerRepository : ICustomerRepository
             user.UpdateDateUtc = DateTime.UtcNow;
             user.UpdatedByCustomerId = currentUser.Id;
             user.Deleted = true;
+            user.GlobalId = user.GlobalId + "_deleted_" + user.UpdateDateUtc.ToString("s");
 
             bool tracking = _dbContext.ChangeTracker.Entries<Customer>().Any(x => x.Entity.Id == user.Id);
             if (!tracking)

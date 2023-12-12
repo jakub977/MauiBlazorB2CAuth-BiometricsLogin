@@ -835,7 +835,7 @@ public class UserApiController : ControllerBase
             int ret = await _customerRepository.InsertCustomerTaskAsync(currentUser, actualData);
 
             TimeSpan timeEnd = DateTime.Now - startTime;
-            if (ret == 1)
+            if (ret > 0)
             {
                 user = _mapper.Map<CompleteUserContract>(actualData);
 
