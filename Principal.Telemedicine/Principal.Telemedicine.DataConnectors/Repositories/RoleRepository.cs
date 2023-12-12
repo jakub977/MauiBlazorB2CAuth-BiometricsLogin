@@ -1,20 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.Graph.Models;
-using Microsoft.Graph.Models.ExternalConnectors;
-using Microsoft.Graph.Models.Security;
-using Newtonsoft.Json;
 using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.DataConnectors.Extensions;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
-using Principal.Telemedicine.DataConnectors.Utils;
 using Principal.Telemedicine.Shared.Enums;
 using Principal.Telemedicine.Shared.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data.Common;
+using System.Data;
+using Microsoft.Graph.Models.TermStore;
+using Microsoft.Graph.Models;
 
 namespace Principal.Telemedicine.DataConnectors.Repositories;
 
@@ -40,6 +35,20 @@ public class RoleRepository : IRoleRepository
             .Include(c => c.RoleCategoryCombination)
             .Include(c => c.RoleMembers).ThenInclude(m => m.EffectiveUser).ThenInclude(e => e.User)
             .DefaultIfEmpty();
+    }
+
+    /// <inheritdoc/>
+    public async Task<Role?> GetRoleByIdTaskAsync(int id)
+    {
+        var data = await _dbContext.Roles.Include(c => c.CreatedByCustomer)
+            .Include(c => c.UpdatedByCustomer)
+            .Include(c => c.Organization)
+            .Include(c => c.Provider)
+            .Include(c => c.RoleCategoryCombination)
+            .Include(c => c.RoleMembers).ThenInclude(m => m.EffectiveUser).ThenInclude(e => e.User)
+            .Where(c => c.Id == id).FirstOrDefaultAsync();
+
+        return data;
     }
 
     /// <inheritdoc/>
@@ -207,5 +216,239 @@ public class RoleRepository : IRoleRepository
         }
 
         return query;
+    }
+
+    /// <inheritdoc/>
+    public async Task<int> InsertRoleTaskAsync(CompleteUserContract currentUser, Role role)
+    {
+        int ret = -1;
+        string logHeader = _logName + ".InsertRoleTaskAsync:";
+        DateTime startTime = DateTime.Now;
+        
+        try
+        {
+            Role actualRole = role;
+            actualRole.Active = true;
+            actualRole.Deleted = false;
+            actualRole.CreatedByCustomerId = currentUser.Id;
+            actualRole.CreatedDateUtc = DateTime.UtcNow;
+
+            foreach (Models.Shared.RolePermission item in actualRole.RolePermissions)
+            {
+                // nový záznam
+                item.CreatedByCustomerId = currentUser.Id;
+                item.CreatedDateUtc = DateTime.UtcNow;
+                item.Deleted = false;
+                item.Active = true;
+            }
+           
+            _dbContext.Roles.Add(actualRole);
+
+            int result = await _dbContext.SaveChangesAsync();
+
+            TimeSpan timeEnd = DateTime.Now - startTime;
+
+            if (result != 0)
+            {
+                ret = actualRole.Id;
+                _logger.LogInformation($"{logHeader} Role '{actualRole.Name}', Id: {actualRole.Id} created succesfully, duration: {timeEnd}");
+            }
+            else
+            {
+                ret = -6;
+                _logger.LogWarning($"{logHeader} Role '{actualRole.Name}', Id: {actualRole.Id} was not created, duration: {timeEnd}");
+                return ret;
+            }
+        }
+        catch (Exception ex)
+        {
+            string errMessage = ex.Message;
+            if (ex.InnerException != null)
+            {
+                errMessage += " " + ex.InnerException.Message;
+            }
+            _logger.LogError($"{logHeader} Role '{role.Name}', Id: {role.Id} was not created, Error: {errMessage}");
+        }
+
+        return ret;
+    }
+
+    /// <inheritdoc/>
+    public async Task<int> UpdateRoleTaskAsync(CompleteUserContract currentUser, Role dbRole, Role editedRole)
+    {
+        int ret = -1;
+        string logHeader = _logName + ".UpdateRoleTaskAsync:";
+        DateTime startTime = DateTime.Now;
+
+        try
+        {
+            dbRole.Active = editedRole.Active;
+            dbRole.Name = editedRole.Name;
+            dbRole.ProviderId = editedRole.ProviderId;
+            dbRole.RoleCategoryCombinationId = editedRole.RoleCategoryCombinationId;
+            dbRole.ParentRoleId = editedRole.ParentRoleId;
+            dbRole.UpdatedByCustomerId = currentUser.Id;
+            dbRole.UpdateDateUtc = DateTime.UtcNow;
+
+            // nová a existující práva
+            foreach (Models.Shared.RolePermission item in editedRole.RolePermissions)
+            {
+                // dohledáme existující oprávnění
+                var existingPermission = dbRole.RolePermissions.Where(w => w.PermissionId == item.PermissionId).FirstOrDefault();
+                if (existingPermission != null)
+                {
+                    existingPermission.UpdatedByCustomerId = currentUser.Id;
+                    existingPermission.UpdateDateUtc = DateTime.UtcNow;
+                    existingPermission.Deleted = false;
+                    existingPermission.Active = true;
+                }
+                else
+                {
+                    // nové oprávnění
+                    item.CreatedByCustomerId = currentUser.Id;
+                    item.CreatedDateUtc = DateTime.UtcNow;
+                    item.Deleted = false;
+                    item.Active = true;
+                    dbRole.RolePermissions.Add(item);
+                }
+            }
+
+            // odebraná oprávnění označíme jako smazaná
+            foreach (Models.Shared.RolePermission item in dbRole.RolePermissions)
+            {
+                if (editedRole.RolePermissions.Any(a => a.PermissionId == item.PermissionId))
+                    continue;
+
+                item.Deleted = true;
+                item.UpdatedByCustomerId = currentUser.Id;
+                item.UpdateDateUtc = DateTime.UtcNow;
+            }
+
+            bool tracking = _dbContext.ChangeTracker.Entries<Role>().Any(x => x.Entity.Id == dbRole.Id);
+            if (!tracking)
+            {
+                _dbContext.Roles.Update(dbRole);
+            }
+
+            int result = await _dbContext.SaveChangesAsync();
+
+            TimeSpan timeEnd = DateTime.Now - startTime;
+
+            if (result != 0)
+            {
+                ret = dbRole.Id;
+                _logger.LogInformation($"{logHeader} Role '{dbRole.Name}', Id: {dbRole.Id} updated succesfully, duration: {timeEnd}");
+            }
+            else
+            {
+                ret = -6;
+                _logger.LogWarning($"{logHeader} Role '{dbRole.Name}', Id: {dbRole.Id} was not updated, duration: {timeEnd}");
+            }
+        }
+        catch (Exception ex)
+        {
+            string errMessage = ex.Message;
+            if (ex.InnerException != null)
+            {
+                errMessage += " " + ex.InnerException.Message;
+            }
+            _logger.LogError($"{logHeader} Role '{dbRole.Name}', Id: {dbRole.Id} was not updated, Error: {errMessage}");
+        }
+
+        return ret;
+    }
+
+    /// <inheritdoc/>
+    public async Task<bool> CloneRole(int roleId)
+    {
+        bool result = false;
+        string logHeader = _logName + ".CloneRole:";
+
+        try
+        {
+            object[] parameters = new object[2];
+            DbParameter parId = new SqlParameter("roleId", SqlDbType.Int);
+            parId.IsNullable = true;
+            parId.Value = roleId;
+            parId.Direction = ParameterDirection.Input;
+
+            DbParameter parProviderId = new SqlParameter("providerId", SqlDbType.Int);
+            parProviderId.IsNullable = true;
+            parProviderId.Value = DBNull.Value;
+            parProviderId.Direction = ParameterDirection.Input;
+
+            parameters[0] = parId;
+            parameters[1] = parProviderId;
+
+            await _dbContext.Database.ExecuteSqlRawAsync($"dbo.sp_CloneRole @roleId, @providerId", parameters);
+            result = true;
+        }
+        
+        catch (Exception ex)
+        {
+            string errMessage = ex.Message;
+            if (ex.InnerException != null)
+            {
+                errMessage += " " + ex.InnerException.Message;
+            }
+            _logger.LogWarning($"{logHeader} Stored procedure dbo.sp_CloneRole has failed. Error: {errMessage}");
+        }
+
+        return result;
+    }
+
+    /// <inheritdoc/>
+    public async Task<bool> DeleteRoleTaskAsync(CompleteUserContract currentUser, Role role)
+    {
+        bool result = false;
+        string logHeader = _logName + ".DeleteRoleTaskAsync:";
+        DateTime startTime = DateTime.Now;
+
+        try
+        {
+            foreach (RoleMember member in role.RoleMembers.Where(w => !w.Deleted))
+            {
+                member.Deleted = true;
+                member.UpdateDateUtc = DateTime.UtcNow;
+                member.UpdatedByCustomerId = currentUser.Id;
+            }
+
+            role.Deleted = true;
+            role.UpdatedByCustomerId = currentUser.Id;
+            role.UpdateDateUtc = DateTime.UtcNow;
+
+            bool tracking = _dbContext.ChangeTracker.Entries<Role>().Any(x => x.Entity.Id == role.Id);
+            if (!tracking)
+            {
+                _dbContext.Roles.Update(role);
+            }
+
+            int dbResult = await _dbContext.SaveChangesAsync();
+
+            TimeSpan timeEnd = DateTime.Now - startTime;
+
+            if (dbResult != 0)
+            {
+                result = true;
+                _logger.LogInformation($"{logHeader} Role '{role.Name}', Id: {role.Id} deleted succesfully, duration: {timeEnd}");
+            }
+            else
+            {
+                result = false;
+                _logger.LogWarning($"{logHeader} Role '{role.Name}', Id: {role.Id} was not deleted, duration: {timeEnd}");
+            }
+        }
+
+        catch (Exception ex)
+        {
+            string errMessage = ex.Message;
+            if (ex.InnerException != null)
+            {
+                errMessage += " " + ex.InnerException.Message;
+            }
+            _logger.LogError($"{logHeader} Role '{role.Name}', Id: {role.Id} was not updated, Error: {errMessage}");
+        }
+
+        return result;
     }
 }
