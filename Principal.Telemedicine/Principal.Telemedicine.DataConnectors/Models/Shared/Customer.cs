@@ -675,6 +675,11 @@ public partial class Customer
     public string? GynecologistNote { get; set; }
 
     /// <summary>
+    /// Language Id
+    /// </summary>
+    public int LanguageId { get; set; }
+
+    /// <summary>
     /// Vrátí CompleteUserContract z Customer
     /// </summary>
     /// <param name="onlyCustomerData">Příznak, zda chceme vrátit pouze data z tabulky Customer, bez Rolí, Efektivních uživatelů a zakázaných oprávnění (default FALSE)</param>
@@ -710,7 +715,7 @@ public partial class Customer
         data.FirstName = FirstName;
         data.FriendlyName = FriendlyName;
         data.GenderTypeId = GenderTypeId;
-
+        data.LanguageId = LanguageId;
         
 
         data.GlobalId = GlobalId;

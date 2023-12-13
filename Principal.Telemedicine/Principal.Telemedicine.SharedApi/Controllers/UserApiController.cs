@@ -1431,12 +1431,12 @@ public class UserApiController : ControllerBase
         if (customer == null || string.IsNullOrEmpty(customer.Email) || string.IsNullOrEmpty(customer.GlobalId) || string.IsNullOrEmpty(password))
             return false;
 
-        string emailSubject = await _localeStringResourceRepository.GetLocaleStringResourceValueByNameAsync("Web.UserManagement.User.PasswordEmailSubject", 2);
-        string emailTextTitle = await _localeStringResourceRepository.GetLocaleStringResourceValueByNameAsync("Web.UserManagement.User.PasswordEmailTitle", 2);
-        string emailTextBody = await _localeStringResourceRepository.GetLocaleStringResourceValueByNameAsync("Web.UserManagement.User.PasswordEmailBody", 2);
-        string emailTextName = await _localeStringResourceRepository.GetLocaleStringResourceValueByNameAsync("Web.UserManagement.User.PasswordEmailName", 2);
-        string emailTextPassword = await _localeStringResourceRepository.GetLocaleStringResourceValueByNameAsync("Web.UserManagement.User.PasswordEmailPassword", 2);
-        string emailTextEnd = await _localeStringResourceRepository.GetLocaleStringResourceValueByNameAsync("Web.UserManagement.User.PasswordEmailEnd", 2);
+        string emailSubject = await _localeStringResourceRepository.GetLocaleStringResourceValueByNameAsync("Web.UserManagement.User.PasswordEmailSubject", customer.LanguageId);
+        string emailTextTitle = await _localeStringResourceRepository.GetLocaleStringResourceValueByNameAsync("Web.UserManagement.User.PasswordEmailTitle", customer.LanguageId);
+        string emailTextBody = await _localeStringResourceRepository.GetLocaleStringResourceValueByNameAsync("Web.UserManagement.User.PasswordEmailBody", customer.LanguageId);
+        string emailTextName = await _localeStringResourceRepository.GetLocaleStringResourceValueByNameAsync("Web.UserManagement.User.PasswordEmailName", customer.LanguageId);
+        string emailTextPassword = await _localeStringResourceRepository.GetLocaleStringResourceValueByNameAsync("Web.UserManagement.User.PasswordEmailPassword", customer.LanguageId);
+        string emailTextEnd = await _localeStringResourceRepository.GetLocaleStringResourceValueByNameAsync("Web.UserManagement.User.PasswordEmailEnd", customer.LanguageId);
 
         string userName = _adb2cRepository.GetEmailFromUPN(customer.GlobalId);
 
