@@ -89,7 +89,7 @@ public interface ICustomerRepository
     /// </summary>
     /// <param name="currentUser">Aktuální uživatel</param>
     /// <param name="user">Customer</param>
-    /// <returns>1 - update se povedl nebo:
+    /// <returns>Id uživatele (Id > 0) - založení se povedlo nebo:
     /// -1 = globální chyba
     /// -6 = uživatele se nepodařilo založit v DB
     /// -18 = uživatel již existuje v AD B2C
