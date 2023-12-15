@@ -346,4 +346,9 @@ public class CompleteUserContract
     /// </summary>
     public string? GynecologistNote { get; set; }
 
+    /// <summary>
+    /// Language Id
+    /// </summary>
+    public int LanguageId { get; set; }
+
 }
