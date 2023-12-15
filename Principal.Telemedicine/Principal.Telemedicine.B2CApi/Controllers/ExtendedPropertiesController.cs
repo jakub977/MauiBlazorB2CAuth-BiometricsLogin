@@ -37,7 +37,7 @@ public class ExtendedPropertiesController : ControllerBase
     /// <returns></returns>
     [HttpPost]
     [Route("AddExtendedProperties")]
-    public async Task<IActionResult> AddExtendedProperties() 
+    public async Task<IActionResult> AddExtendedProperties()
     {
         try
         {
@@ -73,7 +73,7 @@ public class ExtendedPropertiesController : ControllerBase
 
             if (data.email == null)
             {
-                string objectId = Convert.ToString(data.objectId);
+               string objectId = Convert.ToString(data.objectId); 
 
                 Customer? customer = new Customer();
                 customer = await _adb2cRepository.GetUserByObjectIdAsyncTask(objectId);
@@ -85,7 +85,7 @@ public class ExtendedPropertiesController : ControllerBase
 
                 email = customer.Email;
             }
-            else email = Convert.ToString(data.email);
+            //else email = Convert.ToString(data.email);
 
             List<ExtendedPropertiesDataModel> dbResult = new List<ExtendedPropertiesDataModel>();
 
