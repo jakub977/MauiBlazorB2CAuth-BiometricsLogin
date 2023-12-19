@@ -85,7 +85,7 @@ public class ExtendedPropertiesController : ControllerBase
 
                 email = customer.Email;
             }
-            //else email = Convert.ToString(data.email);
+            else email = Convert.ToString(data.email);
 
             List<ExtendedPropertiesDataModel> dbResult = new List<ExtendedPropertiesDataModel>();
 
