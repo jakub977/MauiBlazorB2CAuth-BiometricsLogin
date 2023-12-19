@@ -1001,6 +1001,10 @@ public class UserApiController : ControllerBase
 
             if (ret)
             {
+                // nastavíme neplatné GlobalId u smazaného uživatele.
+                customer.GlobalId = customer.GlobalId + "_deleted_" + customer.UpdateDateUtc.ToString();
+                await _customerRepository.UpdateCustomerTaskAsync(currentUser, customer, true);
+
                 _logger.LogInformation("{0} User '{1}', Email: '{2}', Id: {3} deleted succesfully, duration: {4}", logHeader, customer.FriendlyName, customer.Email, customer.Id, timeEnd);
                 return new GenericResponse<bool>(ret, true, 0);
             }
