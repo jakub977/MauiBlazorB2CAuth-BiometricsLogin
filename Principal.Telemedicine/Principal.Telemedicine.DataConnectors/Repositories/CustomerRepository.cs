@@ -230,7 +230,7 @@ public class CustomerRepository : ICustomerRepository
     public async Task<int> UpdateCustomerTaskAsync(CompleteUserContract currentUser, Customer user, bool? ignoreADB2C = false, IDbContextTransaction? tran = null, bool dontManageTran = false)
     {
         int ret = -1;
-        string logHeader = _logName + ".InsertCustomerTaskAsync:";
+        string logHeader = _logName + ".UpdateCustomerTaskAsync:";
 
         if (tran == null && !dontManageTran)
             tran = await _dbContext.Database.BeginTransactionAsync();
@@ -371,7 +371,7 @@ public class CustomerRepository : ICustomerRepository
             user.UpdateDateUtc = DateTime.UtcNow;
             user.UpdatedByCustomerId = currentUser.Id;
             user.Deleted = true;
-            user.GlobalId = user.GlobalId + "_deleted_" + user.UpdateDateUtc.ToString();
+            //user.GlobalId = user.GlobalId + "_deleted_" + user.UpdateDateUtc.ToString();
 
             bool tracking = _dbContext.ChangeTracker.Entries<Customer>().Any(x => x.Entity.Id == user.Id);
             if (!tracking)

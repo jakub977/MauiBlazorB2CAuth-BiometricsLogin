@@ -18,7 +18,7 @@ builder.Services.TryAddSingleton<IHostEnvironment>(new HostingEnvironment { Envi
 var secretFilePath = "Secured/secrets.json";
 
 builder.Services.AddDbContext<DbContextApi>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("VANDA_TEST")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("MAIN_DB")));
 builder.Services.AddLogging(configuration);
 builder.Services.AddScoped<IADB2CRepository, ADB2CRepository>();
 
