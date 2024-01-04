@@ -76,13 +76,14 @@ public interface ICustomerRepository
     /// <param name="ignoreADB2C">Příznak, že se má ignorovat volání ADB2C (default FALSE)</param>
     /// <param name="tran">Aktuální DB transakce (default NULL)</param>
     /// <param name="dontManageTran">Příznak, zda se v metodě mají ignorovat transakční příkazy (default FALSE)</param>
+    /// <param name="checkGlobalId">Příznak, zda se má kontrolovat formát GlobalId. Nastavuje se False při mazání uživatele</param>
     /// <returns>1 - update se povedl nebo:
     /// -1 = globální chyba
     /// -14 = uživatele se nepodařilo uložit
     /// -15 = uživatele se nepodařilo uložit v AD B2C
     /// -16 = uživatel nenalezen v AD B2C
     /// -17 = existuje více shodných uživatelů v AD B2C</returns>
-    Task<int> UpdateCustomerTaskAsync(CompleteUserContract currentUser, Customer user, bool? ignoreADB2C = false, IDbContextTransaction? tran = null, bool dontManageTran = false);
+    Task<int> UpdateCustomerTaskAsync(CompleteUserContract currentUser, Customer user, bool? ignoreADB2C = false, IDbContextTransaction? tran = null, bool dontManageTran = false, bool checkGlobalId = true);
 
     /// <summary>
     /// Metoda založí nového Customera včetně založení v ADB2C
