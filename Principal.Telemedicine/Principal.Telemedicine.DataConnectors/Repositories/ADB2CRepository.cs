@@ -5,6 +5,7 @@ using Microsoft.Graph;
 using Microsoft.Graph.Models;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
 using Principal.Telemedicine.Shared.Configuration;
+using Tavis.UriTemplates;
 
 namespace Principal.Telemedicine.DataConnectors.Repositories;
 
@@ -176,6 +177,13 @@ public class ADB2CRepository : IADB2CRepository
 
         try
         {
+            bool isGoogleAccount = false;
+            bool upnAccountDeleted = false;
+
+            string email = GetEmailFromUPN(customer.GlobalId);
+            if (!string.IsNullOrEmpty(email) && email.EndsWith("@gmail.com") )
+                isGoogleAccount = true;
+
             // kontrola na existující účet
             var result = await GetClient().Users.GetAsync(requestConfiguration =>
             {
@@ -185,7 +193,21 @@ public class ADB2CRepository : IADB2CRepository
 
             if (result == null || result.Value == null || result?.Value?.Count != 1)
             {
-                _logger.LogWarning("{0} ADB2C returned: User with UPN '{0}' not found", logHeader, customer.GlobalId);
+                // podle UPN jsme ho nenašli, zkusíme mazat podle emailu
+                if (isGoogleAccount)
+                {
+                    ret = await DeleteUserByOtherEmail(email);
+                    if (ret)
+                    {
+                        _logger.LogDebug("{0} ADB2C returned: OK, user '{1}', email: '{2}', Id: {3} deleted succesfully", logHeader, customer.FriendlyName, email, customer.Id);
+                        return ret;
+                    }
+                    
+                    _logger.LogWarning("{0} ADB2C returned: User with email '{1}' not found", logHeader, email);
+                    return ret;
+                }
+             
+                _logger.LogWarning("{0} ADB2C returned: User with UPN '{1}' not found", logHeader, customer.GlobalId);
                 return ret;
             }
 
@@ -194,10 +216,28 @@ public class ADB2CRepository : IADB2CRepository
             if (userId != null)
             {
                 await GetClient().Users[userId].DeleteAsync();
+                upnAccountDeleted = true;
                 ret = true;
             }
 
-            _logger.LogDebug("{0} ADB2C returned: OK, user '{0}', UPN: '{1}', Id: {2} deleted succesfully", logHeader, customer.FriendlyName, customer.GlobalId, customer.Id);
+            if (isGoogleAccount)
+            {
+                // smažeme i druhý účet vytvořený při registaci při přihlášení přes Google účet
+                ret = await DeleteUserByOtherEmail(email);
+
+                if (!ret)
+                {
+                    if (upnAccountDeleted)
+                        ret = true;
+                    else
+                    {
+                        _logger.LogWarning("{0} ADB2C returned: User with UPN '{1}' and email '{2}' not found", logHeader, customer.GlobalId, email);
+                        return ret;
+                    }
+                }
+            }
+
+            _logger.LogDebug("{0} ADB2C returned: OK, user '{1}', UPN: '{2}', Id: {3} deleted succesfully", logHeader, customer.FriendlyName, customer.GlobalId, customer.Id);
         }
         catch (Exception ex)
         {
@@ -206,7 +246,7 @@ public class ADB2CRepository : IADB2CRepository
             {
                 errMessage += " " + ex.InnerException.Message;
             }
-            _logger.LogError("{0} ADB2C returned: User: '{0}', Error: {1}", logHeader, customer.Email, errMessage);
+            _logger.LogError("{0} ADB2C returned: User: '{1}', Error: {2}", logHeader, customer.Email, errMessage);
         }
 
         return ret;
@@ -404,6 +444,35 @@ public class ADB2CRepository : IADB2CRepository
         var scopes = new[] { "https://graph.microsoft.com/.default" };
         var clientSecretCredential = new ClientSecretCredential(_tenantId, _clientId, _clientSecret);
         return new GraphServiceClient(clientSecretCredential, scopes);
+    }
+
+    /// <summary>
+    /// Smaže uživatele z AD B2C podle "ostatních emailů"
+    /// </summary>
+    /// <param name="email">Email mazaného účtu</param>
+    /// <returns>true / false</returns>
+    private async Task<bool> DeleteUserByOtherEmail(string email)
+    {
+        bool ret = false;
+
+        var result = await GetClient().Users.GetAsync(requestConfiguration =>
+        {
+            requestConfiguration.QueryParameters.Select = new string[] { "id", "createdDateTime", "displayName" };
+            requestConfiguration.QueryParameters.Filter = $"OtherMails/any (c:c eq '{email}')";
+        });
+
+        if (result != null && result.Value != null & result?.Value?.Count > 0)
+        {
+            string? userId = result?.Value[0].Id;
+
+            if (userId != null)
+            {
+                await GetClient().Users[userId].DeleteAsync();
+                ret = true;
+            }
+        }
+
+        return ret;
     }
 
     #endregion

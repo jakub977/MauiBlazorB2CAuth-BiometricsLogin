@@ -227,7 +227,7 @@ public class CustomerRepository : ICustomerRepository
     }
 
     /// <inheritdoc/>
-    public async Task<int> UpdateCustomerTaskAsync(CompleteUserContract currentUser, Customer user, bool? ignoreADB2C = false, IDbContextTransaction? tran = null, bool dontManageTran = false)
+    public async Task<int> UpdateCustomerTaskAsync(CompleteUserContract currentUser, Customer user, bool? ignoreADB2C = false, IDbContextTransaction? tran = null, bool dontManageTran = false, bool checkGlobalId = true)
     {
         int ret = -1;
         string logHeader = _logName + ".UpdateCustomerTaskAsync:";
@@ -241,7 +241,7 @@ public class CustomerRepository : ICustomerRepository
             user.UpdatedByCustomerId = currentUser.Id;
 
             // kontrola, pokud stávající uživatel nemá GlobalId ve formátu UPN
-            if (!user.GlobalId.ToLower().EndsWith(_adb2cRepository.GetApplicationDomain().ToLower()))
+            if (checkGlobalId && !user.GlobalId.ToLower().EndsWith(_adb2cRepository.GetApplicationDomain().ToLower()))
                 user.GlobalId = _adb2cRepository.CreateUPN(user.Email);
 
             bool tracking = _dbContext.ChangeTracker.Entries<Customer>().Any(x => x.Entity.Id == user.Id);
