@@ -448,7 +448,7 @@ public class CustomerRepository : ICustomerRepository
         // KONTROLY
         // seznam exitujících uživatelů, kteří mají stejné klíčové hodnoty
         List<Customer> checkedUsers = await _dbContext.Customers.Where(w => w.Id != user.Id && (
-        w.Email == user.Email || w.TelephoneNumber == user.TelephoneNumber || w.TelephoneNumber2 == user.TelephoneNumber || (!string.IsNullOrEmpty(user.GlobalId) && user.GlobalId == w.GlobalId)
+        w.Email == user.Email || (!string.IsNullOrEmpty(user.TelephoneNumber) && w.TelephoneNumber == user.TelephoneNumber) || (!string.IsNullOrEmpty(user.TelephoneNumber) && w.TelephoneNumber2 == user.TelephoneNumber) || (!string.IsNullOrEmpty(user.GlobalId) && user.GlobalId == w.GlobalId)
         || (!string.IsNullOrEmpty(user.TelephoneNumber2) && user.TelephoneNumber2 == w.TelephoneNumber))
         ).ToListAsync();
 
