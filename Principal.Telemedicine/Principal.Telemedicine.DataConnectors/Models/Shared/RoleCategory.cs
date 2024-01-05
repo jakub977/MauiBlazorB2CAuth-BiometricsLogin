@@ -55,6 +55,9 @@ public partial class RoleCategory
     [StringLength(200)]
     public string Name { get; set; } = null!;
 
+    [StringLength(200)]
+    public string? lsrName { get; set; }
+
     /// <summary>
     /// Detailed description of a category
     /// </summary>
@@ -96,6 +99,7 @@ public partial class RoleCategory
         data.Description = Description;
         data.Id = Id;
         data.Name = Name;
+        data.lsrName = lsrName;
         data.UpdateDateUtc = UpdateDateUtc;
         data.UpdatedByCustomerId = UpdatedByCustomerId;
 

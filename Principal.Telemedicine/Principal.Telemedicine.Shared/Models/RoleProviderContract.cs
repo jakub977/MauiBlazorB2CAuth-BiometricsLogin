@@ -64,6 +64,8 @@ public class RoleProviderContract
     /// </summary>
     public string? Description { get; set; }
 
+    public string? lsrName { get; set; }
+
     /// <summary>
     /// Link to dbo.Role as a parent role, i.e. reference to original role
     /// </summary>
