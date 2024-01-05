@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Principal.Telemedicine.DataConnectors.Contexts;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
+using Principal.Telemedicine.Shared.Models;
 
 namespace Principal.Telemedicine.DataConnectors.Repositories;
 
@@ -46,6 +47,69 @@ public class LocaleStringResourceRepository : ILocaleStringResourceRepository
         }
 
         return data.ResourceValue ?? ret;
+    }
+
+    /// <inheritdoc/>
+    public async Task<bool> UpdateLocaleStringResourceAsync(LocaleStringResource localeStringResource)
+    {
+        bool ret = false;
+
+        bool tracking = _dbContext.ChangeTracker.Entries<LocaleStringResource>().Any(x => x.Entity.Id == localeStringResource.Id);
+        if (!tracking)
+        {
+            _dbContext.LocaleStringResources.Update(localeStringResource);
+        }
+
+        int result = await _dbContext.SaveChangesAsync();
+        if (result != 0)
+            ret = true;
+
+        return ret;
+    }
+
+    /// <inheritdoc/>
+    public bool UpdateLocaleStringResource(LocaleStringResource localeStringResource)
+    {
+        bool ret = false;
+
+        bool tracking = _dbContext.ChangeTracker.Entries<LocaleStringResource>().Any(x => x.Entity.Id == localeStringResource.Id);
+        if (!tracking)
+        {
+            _dbContext.LocaleStringResources.Update(localeStringResource);
+        }
+
+        int result = _dbContext.SaveChanges();
+        if (result != 0)
+            ret = true;
+
+        return ret;
+    }
+
+    /// <inheritdoc/>
+    public async Task<bool> InsertLocaleStringResourceAsync(LocaleStringResource localeStringResource)
+    {
+        bool ret = false;
+
+        _dbContext.LocaleStringResources.Add(localeStringResource);
+
+        int result = await _dbContext.SaveChangesAsync();
+        if (result != 0)
+            ret = true;
+
+        return ret;
+    }
+
+    /// <inheritdoc/>
+    public bool InsertLocaleStringResource(LocaleStringResource localeStringResource)
+    {
+        bool ret = false;
+
+        _dbContext.LocaleStringResources.Add(localeStringResource);
+        int result = _dbContext.SaveChanges();
+        if (result != 0)
+            ret = true;
+
+        return ret;
     }
 }
 

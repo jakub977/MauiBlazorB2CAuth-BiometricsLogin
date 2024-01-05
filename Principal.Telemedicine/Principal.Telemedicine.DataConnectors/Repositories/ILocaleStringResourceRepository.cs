@@ -22,5 +22,33 @@ public interface ILocaleStringResourceRepository
     /// <param name="languageId">Id jazyka</param>
     /// <returns>Hodnotu jazykového řetězce</returns>
     Task<string> GetLocaleStringResourceValueByNameAsync(string name, int languageId);
+
+    /// <summary>
+    /// Metoda aktualizuje LocaleStringResource
+    /// </summary>
+    /// <param name="LocaleStringResource">objekt LocaleStringResource</param>
+    /// <returns>true / false</returns>
+    Task<bool> UpdateLocaleStringResourceAsync(LocaleStringResource localeStringResource);
+
+    /// <summary>
+    /// Metoda aktualizuje LocaleStringResource
+    /// </summary>
+    /// <param name="LocaleStringResource">objekt LocaleStringResource</param>
+    /// <returns>true / false</returns>
+    bool UpdateLocaleStringResource(LocaleStringResource localeStringResource);
+
+    /// <summary>
+    /// Metoda zakládá nový LocaleStringResource
+    /// </summary>
+    /// <param name="LocaleStringResource">objekt LocaleStringResource</param>
+    /// <returns>true / false</returns>
+    Task<bool> InsertLocaleStringResourceAsync(LocaleStringResource localeStringResource);
+
+    /// <summary>
+    /// Metoda zakládá nový LocaleStringResource
+    /// </summary>
+    /// <param name="LocaleStringResource">objekt LocaleStringResource</param>
+    /// <returns>true / false</returns>
+    bool InsertLocaleStringResource(LocaleStringResource localeStringResource);
 }
 

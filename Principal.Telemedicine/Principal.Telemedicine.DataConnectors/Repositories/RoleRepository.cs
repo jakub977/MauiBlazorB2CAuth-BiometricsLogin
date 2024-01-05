@@ -10,6 +10,7 @@ using System.Data.Common;
 using System.Data;
 using Microsoft.Graph.Models.TermStore;
 using Microsoft.Graph.Models;
+using Principal.Telemedicine.Shared.Configuration;
 
 namespace Principal.Telemedicine.DataConnectors.Repositories;
 
@@ -18,12 +19,14 @@ public class RoleRepository : IRoleRepository
 {
     private readonly DbContextApi _dbContext;
     private readonly ILogger _logger;
+    private readonly ILocaleStringResourceRepository _localeStringResourceRepository;
     private readonly string _logName = "RoleRepository";
 
-    public RoleRepository(DbContextApi dbContext, ILogger<RoleRepository> logger)
+    public RoleRepository(DbContextApi dbContext, ILogger<RoleRepository> logger, ILocaleStringResourceRepository localeStringResourceRepository)
     {
         _dbContext = dbContext;
         _logger = logger;
+        _localeStringResourceRepository = localeStringResourceRepository;
     }
 
     public IQueryable<Role> ListOfAllRoles()
@@ -228,6 +231,7 @@ public class RoleRepository : IRoleRepository
         try
         {
             Role actualRole = role;
+
             actualRole.Active = true;
             actualRole.Deleted = false;
             actualRole.CreatedByCustomerId = currentUser.Id;
@@ -241,25 +245,54 @@ public class RoleRepository : IRoleRepository
                 item.Deleted = false;
                 item.Active = true;
             }
-           
+
             _dbContext.Roles.Add(actualRole);
 
             int result = await _dbContext.SaveChangesAsync();
+
+            TimeSpan timeMiddle = DateTime.Now - startTime;
+
+            if (result != 0)
+            {
+                ret = actualRole.Id;
+                _logger.LogInformation($"{logHeader} Role '{actualRole.Name}', Id: {actualRole.Id} created succesfully, duration: {timeMiddle}");
+            }
+            else
+            {
+                ret = -6;
+                _logger.LogWarning($"{logHeader} Role '{actualRole.Name}', Id: {actualRole.Id} was not created, duration: {timeMiddle}");
+                return ret;
+            }
+
+
+            actualRole.lsrName = "Web.UserManagement.Roles.Data.RoleName_" + actualRole.Id;
+
+            _dbContext.Roles.Update(actualRole);
+            result = await _dbContext.SaveChangesAsync();
 
             TimeSpan timeEnd = DateTime.Now - startTime;
 
             if (result != 0)
             {
                 ret = actualRole.Id;
-                _logger.LogInformation($"{logHeader} Role '{actualRole.Name}', Id: {actualRole.Id} created succesfully, duration: {timeEnd}");
+                _logger.LogInformation($"{logHeader} Role '{actualRole.Name}', Id: {actualRole.Id} updated succesfully, duration: {timeEnd}");
             }
             else
             {
                 ret = -6;
-                _logger.LogWarning($"{logHeader} Role '{actualRole.Name}', Id: {actualRole.Id} was not created, duration: {timeEnd}");
+                _logger.LogWarning($"{logHeader} Role '{actualRole.Name}', Id: {actualRole.Id} was not updated, duration: {timeEnd}");
                 return ret;
             }
+
+            // úprava jazykové verze
+            LocaleStringResource resourceRoleName = new LocaleStringResource();
+            resourceRoleName.LanguageId = currentUser.LanguageId;
+            resourceRoleName.ResourceName = actualRole.lsrName;
+            resourceRoleName.ResourceValue = role.Name;
+            _localeStringResourceRepository.InsertLocaleStringResource(resourceRoleName);
+               
         }
+            
         catch (Exception ex)
         {
             string errMessage = ex.Message;
@@ -289,6 +322,10 @@ public class RoleRepository : IRoleRepository
             dbRole.ParentRoleId = editedRole.ParentRoleId;
             dbRole.UpdatedByCustomerId = currentUser.Id;
             dbRole.UpdateDateUtc = DateTime.UtcNow;
+            dbRole.lsrName = editedRole.lsrName;
+
+            if(string.IsNullOrEmpty(dbRole.lsrName))
+                dbRole.lsrName = "Web.UserManagement.Roles.Data.RoleName_" + dbRole.Id;
 
             // nová a existující práva
             foreach (Models.Shared.RolePermission item in editedRole.RolePermissions)
@@ -343,6 +380,25 @@ public class RoleRepository : IRoleRepository
             {
                 ret = -6;
                 _logger.LogWarning($"{logHeader} Role '{dbRole.Name}', Id: {dbRole.Id} was not updated, duration: {timeEnd}");
+            }
+
+            // úprava jazykové verze
+            LocaleStringResource resourceRoleName = await _localeStringResourceRepository.GetLocaleStringResourceByNameAsync(dbRole.lsrName, currentUser.LanguageId);
+            if (resourceRoleName == null)
+            {
+                resourceRoleName = new LocaleStringResource();
+                resourceRoleName.LanguageId = currentUser.LanguageId;
+                resourceRoleName.ResourceName = dbRole.lsrName;
+                resourceRoleName.ResourceValue = dbRole.Name;
+                _localeStringResourceRepository.InsertLocaleStringResource(resourceRoleName);
+            }
+            else
+            {
+                if (resourceRoleName.ResourceValue != dbRole.Name)
+                {
+                    resourceRoleName.ResourceValue = dbRole.Name;
+                    _localeStringResourceRepository.UpdateLocaleStringResource(resourceRoleName);
+                }
             }
         }
         catch (Exception ex)
