@@ -64,6 +64,8 @@ public class RoleContract
     /// </summary>
     public string Name { get; set; } = null!;
 
+    public string? lsrName { get; set; }
+
     /// <summary>
     /// Detailed description of a role
     /// </summary>

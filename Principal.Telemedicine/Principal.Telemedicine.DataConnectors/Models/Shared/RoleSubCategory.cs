@@ -54,6 +54,9 @@ public partial class RoleSubCategory
     [StringLength(200)]
     public string Name { get; set; } = null!;
 
+    [StringLength(200)]
+    public string? lsrName { get; set; }
+
     /// <summary>
     /// Detailed description of a subcategory
     /// </summary>

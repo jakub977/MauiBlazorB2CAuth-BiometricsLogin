@@ -70,6 +70,9 @@ public partial class Role
     [StringLength(200)]
     public string Name { get; set; } = null!;
 
+    [StringLength(200)]
+    public string? lsrName { get; set; }
+
     /// <summary>
     /// Detailed description of a role
     /// </summary>
@@ -165,6 +168,7 @@ public partial class Role
         data.OrganizationId = this.OrganizationId;
         data.ParentRoleId = this.ParentRoleId;
         data.Name = this.Name;
+        data.lsrName = this.lsrName;
         data.Description = this.Description;
        
         if (parent != null)
@@ -193,6 +197,7 @@ public partial class Role
         data.Id = Id;
         data.IsGlobal = IsGlobal;
         data.Name = Name;
+        data.lsrName = lsrName;
         data.OrganizationId = OrganizationId;
 
         data.ParentRoleId = ParentRoleId;
