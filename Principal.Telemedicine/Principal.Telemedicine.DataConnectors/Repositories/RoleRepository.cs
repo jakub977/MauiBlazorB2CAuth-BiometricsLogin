@@ -264,23 +264,22 @@ public class RoleRepository : IRoleRepository
                 return ret;
             }
 
-
             actualRole.lsrName = "Web.UserManagement.Roles.Data.RoleName_" + actualRole.Id;
 
             _dbContext.Roles.Update(actualRole);
             result = await _dbContext.SaveChangesAsync();
 
-            TimeSpan timeEnd = DateTime.Now - startTime;
+            TimeSpan timeSave = DateTime.Now - startTime;
 
             if (result != 0)
             {
                 ret = actualRole.Id;
-                _logger.LogInformation($"{logHeader} Role '{actualRole.Name}', Id: {actualRole.Id} updated succesfully, duration: {timeEnd}");
+                _logger.LogInformation($"{logHeader} Role '{actualRole.Name}', Id: {actualRole.Id} updated succesfully, duration: {timeSave}");
             }
             else
             {
                 ret = -6;
-                _logger.LogWarning($"{logHeader} Role '{actualRole.Name}', Id: {actualRole.Id} was not updated, duration: {timeEnd}");
+                _logger.LogWarning($"{logHeader} Role '{actualRole.Name}', Id: {actualRole.Id} was not updated, duration: {timeSave}");
                 return ret;
             }
 
@@ -289,8 +288,17 @@ public class RoleRepository : IRoleRepository
             resourceRoleName.LanguageId = currentUser.LanguageId;
             resourceRoleName.ResourceName = actualRole.lsrName;
             resourceRoleName.ResourceValue = role.Name;
-            _localeStringResourceRepository.InsertLocaleStringResource(resourceRoleName);
-               
+            bool insertLSR = _localeStringResourceRepository.InsertLocaleStringResource(resourceRoleName);
+            TimeSpan timeEnd = DateTime.Now - startTime;
+
+            if (!insertLSR)
+            {
+                ret = -6;
+                _logger.LogWarning($"{logHeader} Local string resource '{actualRole.lsrName}' was not inserted, duration: {timeEnd}");
+                return ret;
+            }
+
+            _logger.LogInformation($"{logHeader} Local string resource '{resourceRoleName.ResourceName}', Id: {resourceRoleName.Id} updated succesfully, duration: {timeEnd}");
         }
             
         catch (Exception ex)
@@ -369,17 +377,17 @@ public class RoleRepository : IRoleRepository
 
             int result = await _dbContext.SaveChangesAsync();
 
-            TimeSpan timeEnd = DateTime.Now - startTime;
+            TimeSpan timeSave = DateTime.Now - startTime;
 
             if (result != 0)
             {
                 ret = dbRole.Id;
-                _logger.LogInformation($"{logHeader} Role '{dbRole.Name}', Id: {dbRole.Id} updated succesfully, duration: {timeEnd}");
+                _logger.LogInformation($"{logHeader} Role '{dbRole.Name}', Id: {dbRole.Id} updated succesfully, duration: {timeSave}");
             }
             else
             {
                 ret = -6;
-                _logger.LogWarning($"{logHeader} Role '{dbRole.Name}', Id: {dbRole.Id} was not updated, duration: {timeEnd}");
+                _logger.LogWarning($"{logHeader} Role '{dbRole.Name}', Id: {dbRole.Id} was not updated, duration: {timeSave}");
             }
 
             // úprava jazykové verze
@@ -390,14 +398,32 @@ public class RoleRepository : IRoleRepository
                 resourceRoleName.LanguageId = currentUser.LanguageId;
                 resourceRoleName.ResourceName = dbRole.lsrName;
                 resourceRoleName.ResourceValue = dbRole.Name;
-                _localeStringResourceRepository.InsertLocaleStringResource(resourceRoleName);
+                bool insertLSR = _localeStringResourceRepository.InsertLocaleStringResource(resourceRoleName);
+                TimeSpan timeInsert = DateTime.Now - startTime;
+
+                if (!insertLSR)
+                {
+                    ret = -6;
+                    _logger.LogWarning($"{logHeader} Local string resource '{resourceRoleName.ResourceName}' was not inserted, duration: {timeInsert}");
+                    return ret;
+                }
+
+                _logger.LogInformation($"{logHeader} Local string resource '{resourceRoleName.ResourceName}', Id: {resourceRoleName.Id} updated succesfully, duration: {timeInsert}");
             }
             else
             {
                 if (resourceRoleName.ResourceValue != dbRole.Name)
                 {
                     resourceRoleName.ResourceValue = dbRole.Name;
-                    _localeStringResourceRepository.UpdateLocaleStringResource(resourceRoleName);
+                    bool updateLSR = _localeStringResourceRepository.UpdateLocaleStringResource(resourceRoleName);
+                    TimeSpan timeUpdate = DateTime.Now - startTime;
+                    if (!updateLSR)
+                    {
+                        ret = -6;
+                        _logger.LogWarning($"{logHeader} Local string resource '{resourceRoleName.ResourceName}' was not updated, duration: {timeUpdate}");
+                        return ret;
+                    }
+                    _logger.LogInformation($"{logHeader} Local string resource '{resourceRoleName.ResourceName}', Id: {resourceRoleName.Id} updated succesfully, duration: {timeUpdate}");
                 }
             }
         }
