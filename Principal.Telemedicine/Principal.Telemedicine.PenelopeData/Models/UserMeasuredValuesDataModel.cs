@@ -23,11 +23,11 @@ public class UserMeasuredValuesDataModel
     /// Current measured value
     /// </summary>
     [JsonPropertyName("MeasuredValue")]
-    public string MeasuredValue { get; set; }
+    public string? MeasuredValue { get; set; }
 
     /// <summary>
     /// Link to dbo.PhysiologicalDataCreationType as a way the value was obtained
     /// </summary>
     [JsonPropertyName("PhysiologicalDataCreationTypeId")]
-    public int PhysiologicalDataCreationTypeId { get; set; }
+    public int? PhysiologicalDataCreationTypeId { get; set; }
 }
