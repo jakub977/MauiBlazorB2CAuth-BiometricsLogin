@@ -221,6 +221,72 @@ public class UserApiController : ControllerBase
     }
 
     /// <summary>
+    /// Uloží informaci o úspěšném příhlášení uživatele a případně změní jazyk 
+    /// </summary>
+    /// <param name="userId">ID uživatele</param>
+    /// <param name="lastLogin">Datum a čas přihlášení v UTC</param>
+    /// <param name="languageId">Zvolený jazyk uživatele</param>
+    /// <returns>GenericResponse s parametrem "success" TRUE nebo FALSE a případně chybu:
+    /// -1 = obecná chyba
+    /// -2 = neplatné UserId
+    /// -4 = uživatel volající metodu (podle GlobalID) nenalezen
+    /// -5 = uživatele se nepodařilo dohledat podle ID
+    /// -14 = uživatele se nepodařilo uložit
+    /// </returns>
+    [Authorize]
+    [HttpPost(Name = "UpdateUserLogin")]
+    public async Task<IGenericResponse<bool>> UpdateUserLogin(int userId, DateTime lastLogin, int? languageId = null)
+    {
+        string logHeader = _logName + ".UpdateUserLogin:";
+        DateTime startTime = DateTime.Now;
+        try
+        {
+            // kontrola na vstupní data
+            if (userId <= 0)
+            {
+                _logger.LogWarning("{0} Invalid UserId: {1}", logHeader, userId);
+                return new GenericResponse<bool>(false, false, -2, "Invalid UserId", "UserId value must be greater then '0'.");
+            }
+
+            CompleteUserContract? currentUser = HttpContext.GetTmUser();
+            if (currentUser == null)
+            {
+                _logger.LogWarning("{0} Current User not found", logHeader);
+                return new GenericResponse<bool>(false, false, -4, "Current user not found", "User not found by GlobalId.");
+            }
+
+            Customer? actualData = await _customerRepository.GetCustomerByIdOnlyForUpdateTaskAsync(userId);
+            if (actualData == null)
+            {
+                _logger.LogWarning("{0} User not found, ID: {1}", logHeader, userId);
+                return new GenericResponse<bool>(false, false, -5, "User not found", "User not found by Id.");
+            }
+
+            actualData.LastActivityDateUtc = lastLogin;
+            if (languageId != null && languageId.Value > 0)
+                actualData.LanguageId = languageId.Value;
+
+            int ret = await _customerRepository.UpdateCustomerTaskAsync(currentUser, actualData, ignoreADB2C: true);
+            TimeSpan timeEnd = DateTime.Now - startTime;
+            if (ret == 1)
+            {
+                _logger.LogInformation("{0} User '{1}', Email: '{2}', Id: {3} updated succesfully, duration: {4}", logHeader, actualData.FriendlyName, actualData.Email, actualData.Id, timeEnd);
+                return new GenericResponse<bool>(true, true, 0);
+            }
+            else
+            {
+                _logger.LogWarning("{0} User was not updated, Name: {1}, ID: {2}, Email: {3}, duration: {4}", logHeader, actualData.FriendlyName, actualData.Id, actualData.Email, timeEnd);
+                return new GenericResponse<bool>(false, false, ret, "User was not updated", "Error when updating user.");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("{0} {1}", logHeader, ex.Message);
+            return new GenericResponse<bool>(false, false, -1, ex.Message);
+        }
+    }
+
+    /// <summary>
     /// Uloží změny uživatele
     /// </summary>
     /// <param name="user">Objekt uživatele</param>
