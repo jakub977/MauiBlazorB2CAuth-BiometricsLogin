@@ -21,10 +21,6 @@ using Microsoft.AspNetCore.Builder;
 
 var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 
-#if DEBUG
-configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development 2.json", true).Build();
-#endif
-
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.TryAddSingleton<IHostEnvironment>(new HostingEnvironment { EnvironmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") });
 builder.Services.AddSecretConfiguration<DistributedRedisCacheOptions>(configuration, "secured/secrets.json");
