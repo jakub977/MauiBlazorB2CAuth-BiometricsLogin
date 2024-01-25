@@ -25,7 +25,7 @@ public class UserMeasuredValuesDataModel
     [JsonPropertyName("MeasuredValue")]
     public string? MeasuredValue { get; set; }
 
-    /// <summary>
+    /// <summary> 
     /// Link to dbo.PhysiologicalDataCreationType as a way the value was obtained
     /// </summary>
     [JsonPropertyName("PhysiologicalDataCreationTypeId")]
