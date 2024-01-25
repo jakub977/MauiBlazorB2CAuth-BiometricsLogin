@@ -17,17 +17,14 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting.Internal;
 using Principal.Telemedicine.Shared.Interfaces;
 using Principal.Telemedicine.DataConnectors.Models.Shared;
+using Microsoft.AspNetCore.Builder;
 
 var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 
-#if DEBUG
-configuration = new ConfigurationBuilder().AddJsonFile("appsettings.development.json", true).Build();
-#endif
-
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.TryAddSingleton<IHostEnvironment>(new HostingEnvironment { EnvironmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") });
-builder.Services.AddTmDistributedCache(configuration, builder.Environment.IsLocalHosted());
 builder.Services.AddSecretConfiguration<DistributedRedisCacheOptions>(configuration, "secured/secrets.json");
+builder.Services.AddTmDistributedCache(configuration, builder.Environment.IsLocalHosted());
 builder.Services.AddSecretConfiguration<TmSecurityConfiguration>(configuration, "secured/secrets.json");
 builder.Services.AddSecretConfiguration<FcmSettings>(configuration, "secured/secrets.json");
 builder.Services.AddSecretConfiguration<AzureAdB2C>(configuration, "secured/secrets.json");

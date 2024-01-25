@@ -150,6 +150,7 @@ public class RoleApiController : ControllerBase
     /// </summary>
     /// <param name="roleContract"> objekt RoleContract</param>
     /// <param name="createClone"> bool identifikátor zda spustit proceduru pro klonování role</param>
+    ///<param name="languageId"> identifikátor vybraného jazyka</param>
     /// <returns>GenericResponse s parametrem "success" TRUE a objektem "RoleContract" nebo FALSE a případně chybu:
     /// -1 = obecná chyba
     /// -4 = uživatel volající metodu (podle GlobalID) nenalezen

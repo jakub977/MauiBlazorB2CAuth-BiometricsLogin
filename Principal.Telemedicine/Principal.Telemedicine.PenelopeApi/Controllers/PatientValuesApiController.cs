@@ -216,7 +216,7 @@ public class PatientValuesApiController : ControllerBase
             LanguageCodeEnum lce = Enum.Parse<LanguageCodeEnum>(preferredLanguageCode);
             int languageId = (int)lce;
             
-            var userMeasuredValues = await _dbContext.UserMeasuredValuesDataModels.FromSql($"dbo.sp_GetLastUserMeasuredValue @userGlobalId = {currentUser.GlobalId}, @LanguageId = {languageId} ").AsNoTracking().ToListAsync();
+            var userMeasuredValues = await _dbContext.UserMeasuredValuesDataModels.FromSql($"dbo.sp_GetLastUserMeasuredValue @userGlobalId = {currentUser.GlobalId}, @languageId = {languageId} ").AsNoTracking().ToListAsync();
 
             if (!userMeasuredValues.Any())
             {
