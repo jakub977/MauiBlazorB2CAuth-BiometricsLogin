@@ -1,0 +1,33 @@
+﻿﻿@using Microsoft.Extensions.Configuration
+@using MsalAuthInMauiBlazor.MsalClient
+@inherits LayoutComponentBase
+@inject IPCAWrapper _pcaWrapper;
+@inject IConfiguration _configuration;
+
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

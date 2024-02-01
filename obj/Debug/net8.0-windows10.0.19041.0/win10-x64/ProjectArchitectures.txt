@@ -1,0 +1,1 @@
+C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorB2CAuth\MsalAuthInMauiBlazor\MsalAuthInMauiBlazor.csproj;x64

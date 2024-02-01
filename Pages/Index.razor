@@ -1,0 +1,56 @@
+﻿@page "/"
+
+@using Microsoft.AspNetCore.Authorization
+@inject AuthenticationStateProvider _auth;
+
+
+
+
+@if (Globals.IsLoading)
+{
+    <div class="loading-spinner" style="@($"display: { (Globals.IsLoading ? "flex" : "none") }")">
+        <div class="spinner"></div>
+    </div>
+}
+else
+{
+    <AuthorizeView>
+        <Authorized>
+            @if (name != null)
+            {
+                <p>Hello, @name.Value! </p>
+            }
+            else
+            {
+                <p>Hello! </p>
+            }
+            <p>Welcome to your new app with B2C authentication.</p>
+        </Authorized>
+
+        <NotAuthorized>
+            You are not authorized to see main page. Log in!
+        </NotAuthorized>
+    </AuthorizeView>
+}
+
+
+
+
+@code {
+    private Claim? name { get; set; }
+
+
+    // Methods
+
+    protected override async Task OnInitializedAsync()
+    {
+        Globals.IsLoading = true;
+
+        await Task.Delay(500);
+
+        var authState = await _auth.GetAuthenticationStateAsync();
+        name = authState.User.Claims.FirstOrDefault(x => x.Type == "name");
+
+        Globals.IsLoading = false;
+    }
+}

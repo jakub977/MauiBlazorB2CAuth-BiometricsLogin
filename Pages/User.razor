@@ -1,0 +1,170 @@
+﻿@page "/user"
+
+@inject AuthenticationStateProvider _auth;
+@using System.IdentityModel.Tokens.Jwt
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+
+
+
+
+
+@if (Globals.IsLoading)
+{
+    <div class="loading-spinner" style="@($"display: { (Globals.IsLoading ? "flex" : "none") }")">
+        <div class="spinner"></div>
+    </div>
+}
+else
+{
+    <AuthorizeView>
+        <Authorized>
+            <h2 class="mt-4">Claims:</h2>
+
+
+            <p>
+                @if (jsonToken != null)
+                {
+                    // Access the claims from the payload
+                    var name = jsonToken.Claims.FirstOrDefault(claim => claim.Type == "name")?.Value;
+                    var user = jsonToken.Claims.FirstOrDefault(claim => claim.Type == "name")?.Type;
+
+                    var emails = jsonToken.Claims.FirstOrDefault(claim => claim.Type == "emails")?.Value;
+                    var email = jsonToken.Claims.FirstOrDefault(claim => claim.Type == "emails")?.Type;
+
+                    if (name != null || emails != null)
+                    {
+                    <p>@user:  @name</p>
+
+                    <p>@email:  @emails</p>
+                    }
+                }
+            </p>
+
+
+
+            <h2 class="mt-4">Access token:</h2>
+
+            <p>
+                @if (displayText != null && displayText.Length <= 30)
+                {
+                    <span>@displayText</span>
+                }
+                else if (displayText != null && showFullString)
+                {
+                    <span @onclick="ToggleHideString" style="cursor: pointer;width:100%; word-wrap:break-word; display:inline-block;">@displayText <button class="btn btn-sm fw-bold text-info">Hide</button></span>
+                }
+                else if (displayText != null)
+                {
+                    <span @onclick="ToggleFullString" style="cursor: pointer;">@displayText?.Substring(0, 30)... <button class="btn btn-sm fw-bold text-info">Show all</button></span>
+                }
+            </p>
+
+            <h2 class="mt-4">Access token claims:</h2>
+
+            @foreach (var claim in GetAccessTokenClaims())
+            {
+                <p>@(claim.Key): @claim.Value.ToString()</p>
+            }
+
+            @if (Globals.AccessToken != null)
+            {
+                <h2>Access token expires</h2>
+
+                <p>Current time: <span id="current-time">@DateTimeOffset.Now</span></p>
+                <p id="access-token-expires">Expires: @Globals.Expires</p>
+
+                <h2>Access token granted scopes (as reported by the API)</h2>
+
+                @foreach (var scope in Globals.GrantedScopes)
+                {
+                    <p>Scope: @scope</p>
+                }
+            }
+        </Authorized>
+
+        <NotAuthorized>
+            You are not authorized to see user details. Log in!
+        </NotAuthorized>
+    </AuthorizeView>
+}
+
+
+
+
+
+@code {
+    private JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
+
+    private JwtSecurityToken jsonToken = new JwtSecurityToken();
+
+    private bool showFullString = false;
+
+    private string? displayText { get; set; }
+
+
+
+    // Methods.
+
+    private void ToggleFullString()
+    {
+        showFullString = true;
+    }
+
+    private void ToggleHideString()
+    {
+        showFullString = false;
+    }
+
+
+    protected IDictionary<string, object> GetAccessTokenClaims()
+    {
+        try
+        {
+            if (Globals.AccessToken == null)
+            {
+                return new Dictionary<string, object>();
+            }
+
+            // header.payload.signature
+            var payload = Globals.AccessToken.Split(".")[1];
+            var base64Payload = payload.Replace('-', '+').Replace('_', '/')
+                .PadRight(payload.Length + (4 - payload.Length % 4) % 4, '=');
+
+            return JsonSerializer.Deserialize<IDictionary<string, object>>(Convert.FromBase64String(base64Payload));
+        }
+        catch (Exception ex)
+        {
+            return new Dictionary<string, object>();
+        }
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        Globals.IsLoading = true;
+
+        await Task.Delay(500);
+
+        try
+        {
+            if (handler != null)
+            {
+                jsonToken = handler.ReadToken(Globals.AccessToken) as JwtSecurityToken;
+            }
+
+            if (Globals.AccessToken != null)
+            {
+                displayText = Globals.AccessToken;
+            }
+        }
+        catch (Exception ex)
+        {
+            var x = ex;
+        }
+
+        Globals.IsLoading = false;
+    }
+}
