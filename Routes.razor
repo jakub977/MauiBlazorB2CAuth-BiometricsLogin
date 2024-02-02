@@ -3,11 +3,13 @@
     <Router AppAssembly="@typeof(MauiProgram).Assembly">
         <Found Context="routeData">
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
-@*                 <Authorizing>
-                    Loading...
+                <Authorizing>
+                    <div class="loading-spinner" style="@($"display: { (Globals.IsLoading ? "flex" : "none") }")">
+                        <div class="spinner"></div>
+                    </div>
                 </Authorizing>
-                <NotAuthorized>
-                    You are not authorized. Log in!
+                @* <NotAuthorized>
+                You are not authorized. Log in!
                 </NotAuthorized> *@
             </AuthorizeRouteView>
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />

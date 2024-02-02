@@ -71,6 +71,11 @@ namespace MsalAuthInMauiBlazor.MsalClient
             var accounts = await PCA.GetAccountsAsync(_settings?.PolicySignUpSignIn).ConfigureAwait(false); ;
             var account = accounts.FirstOrDefault();
 
+#if IOS
+            // Hide the privacy prompt in iOS
+            var systemWebViewOptions = new SystemWebViewOptions();
+            systemWebViewOptions.iOSHidePrivacyPrompt = true;
+
             return await PCA.AcquireTokenInteractive(scopes)
                                     .WithB2CAuthority(_settings?.Authority)
                                     .WithAccount(account)
@@ -78,6 +83,18 @@ namespace MsalAuthInMauiBlazor.MsalClient
                                     .WithUseEmbeddedWebView(false)
                                     .ExecuteAsync()
                                     .ConfigureAwait(false);
+#else
+            return await PCA.AcquireTokenInteractive(scopes)
+                                    .WithB2CAuthority(_settings?.Authority)
+                                    .WithAccount(account)
+                                    .WithParentActivityOrWindow(PlatformConfig.Instance.ParentWindow)
+                                    .WithUseEmbeddedWebView(false)
+                                    .ExecuteAsync()
+                                    .ConfigureAwait(false);
+
+#endif
+
+            throw new Exception("Platform not supported.");
         }
 
         /// <summary>

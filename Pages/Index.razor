@@ -26,7 +26,7 @@ else
             }
             <p>Welcome to your new app with B2C authentication.</p>
         </Authorized>
-
+        
         <NotAuthorized>
             You are not authorized to see main page. Log in!
         </NotAuthorized>
@@ -46,10 +46,10 @@ else
     {
         Globals.IsLoading = true;
 
-        await Task.Delay(500);
-
         var authState = await _auth.GetAuthenticationStateAsync();
         name = authState.User.Claims.FirstOrDefault(x => x.Type == "name");
+
+        await Task.Delay(500);
 
         Globals.IsLoading = false;
     }

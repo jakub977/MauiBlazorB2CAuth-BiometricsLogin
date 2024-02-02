@@ -14,6 +14,40 @@
           "lib/net7.0/Blazored.LocalStorage.dll": {}
         }
       },
+      "CommunityToolkit.Maui/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "CommunityToolkit.Maui.Core": "7.0.1",
+          "Microsoft.Maui.Controls": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-android34.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-android34.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "CommunityToolkit.Maui.Core/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Core": "8.0.3",
+          "Microsoft.Maui.Essentials": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-android34.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-android34.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "GoogleGson/2.10.1.4": {
         "type": "package",
         "compile": {
@@ -2768,6 +2802,40 @@
           "lib/net7.0/Blazored.LocalStorage.dll": {}
         }
       },
+      "CommunityToolkit.Maui/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "CommunityToolkit.Maui.Core": "7.0.1",
+          "Microsoft.Maui.Controls": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-android34.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-android34.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "CommunityToolkit.Maui.Core/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Core": "8.0.3",
+          "Microsoft.Maui.Essentials": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-android34.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-android34.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "GoogleGson/2.10.1.4": {
         "type": "package",
         "compile": {
@@ -5504,6 +5572,40 @@
         },
         "runtime": {
           "lib/net7.0/Blazored.LocalStorage.dll": {}
+        }
+      },
+      "CommunityToolkit.Maui/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "CommunityToolkit.Maui.Core": "7.0.1",
+          "Microsoft.Maui.Controls": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-android34.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-android34.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "CommunityToolkit.Maui.Core/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Core": "8.0.3",
+          "Microsoft.Maui.Essentials": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-android34.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-android34.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
         }
       },
       "GoogleGson/2.10.1.4": {
@@ -8244,6 +8346,40 @@
           "lib/net7.0/Blazored.LocalStorage.dll": {}
         }
       },
+      "CommunityToolkit.Maui/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "CommunityToolkit.Maui.Core": "7.0.1",
+          "Microsoft.Maui.Controls": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-android34.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-android34.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "CommunityToolkit.Maui.Core/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Core": "8.0.3",
+          "Microsoft.Maui.Essentials": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-android34.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-android34.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "GoogleGson/2.10.1.4": {
         "type": "package",
         "compile": {
@@ -10980,6 +11116,40 @@
         },
         "runtime": {
           "lib/net7.0/Blazored.LocalStorage.dll": {}
+        }
+      },
+      "CommunityToolkit.Maui/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "CommunityToolkit.Maui.Core": "7.0.1",
+          "Microsoft.Maui.Controls": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-android34.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-android34.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "CommunityToolkit.Maui.Core/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Core": "8.0.3",
+          "Microsoft.Maui.Essentials": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-android34.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-android34.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
         }
       },
       "GoogleGson/2.10.1.4": {
@@ -13720,6 +13890,40 @@
           "lib/net7.0/Blazored.LocalStorage.dll": {}
         }
       },
+      "CommunityToolkit.Maui/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "CommunityToolkit.Maui.Core": "7.0.1",
+          "Microsoft.Maui.Controls": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-android34.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-android34.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "CommunityToolkit.Maui.Core/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Core": "8.0.3",
+          "Microsoft.Maui.Essentials": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-android34.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-android34.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "GoogleGson/2.10.1.4": {
         "type": "package",
         "compile": {
@@ -16456,6 +16660,40 @@
         },
         "runtime": {
           "lib/net7.0/Blazored.LocalStorage.dll": {}
+        }
+      },
+      "CommunityToolkit.Maui/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "CommunityToolkit.Maui.Core": "7.0.1",
+          "Microsoft.Maui.Controls": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-android34.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-android34.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "CommunityToolkit.Maui.Core/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Core": "8.0.3",
+          "Microsoft.Maui.Essentials": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-android34.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-android34.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
         }
       },
       "GoogleGson/2.10.1.4": {
@@ -19196,6 +19434,40 @@
           "lib/net7.0/Blazored.LocalStorage.dll": {}
         }
       },
+      "CommunityToolkit.Maui/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "CommunityToolkit.Maui.Core": "7.0.1",
+          "Microsoft.Maui.Controls": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-android34.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-android34.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "CommunityToolkit.Maui.Core/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Core": "8.0.3",
+          "Microsoft.Maui.Essentials": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-android34.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-android34.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "GoogleGson/2.10.1.4": {
         "type": "package",
         "compile": {
@@ -21934,6 +22206,40 @@
           "lib/net7.0/Blazored.LocalStorage.dll": {}
         }
       },
+      "CommunityToolkit.Maui/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "CommunityToolkit.Maui.Core": "7.0.1",
+          "Microsoft.Maui.Controls": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-ios17.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-ios17.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "CommunityToolkit.Maui.Core/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Core": "8.0.3",
+          "Microsoft.Maui.Essentials": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-ios17.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-ios17.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.AspNetCore.Authorization/8.0.1": {
         "type": "package",
         "dependencies": {
@@ -23118,6 +23424,40 @@
         },
         "runtime": {
           "lib/net7.0/Blazored.LocalStorage.dll": {}
+        }
+      },
+      "CommunityToolkit.Maui/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "CommunityToolkit.Maui.Core": "7.0.1",
+          "Microsoft.Maui.Controls": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-ios17.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-ios17.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "CommunityToolkit.Maui.Core/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Core": "8.0.3",
+          "Microsoft.Maui.Essentials": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-ios17.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-ios17.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
         }
       },
       "Microsoft.AspNetCore.Authorization/8.0.1": {
@@ -24445,6 +24785,40 @@
           "lib/net7.0/Blazored.LocalStorage.dll": {}
         }
       },
+      "CommunityToolkit.Maui/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "CommunityToolkit.Maui.Core": "7.0.1",
+          "Microsoft.Maui.Controls": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-ios17.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-ios17.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "CommunityToolkit.Maui.Core/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Core": "8.0.3",
+          "Microsoft.Maui.Essentials": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-ios17.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-ios17.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.AspNetCore.Authorization/8.0.1": {
         "type": "package",
         "dependencies": {
@@ -25768,6 +26142,40 @@
         },
         "runtime": {
           "lib/net7.0/Blazored.LocalStorage.dll": {}
+        }
+      },
+      "CommunityToolkit.Maui/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "CommunityToolkit.Maui.Core": "7.0.1",
+          "Microsoft.Maui.Controls": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-ios17.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-ios17.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "CommunityToolkit.Maui.Core/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Core": "8.0.3",
+          "Microsoft.Maui.Essentials": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-ios17.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-ios17.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
         }
       },
       "Microsoft.AspNetCore.Authorization/8.0.1": {
@@ -27095,6 +27503,40 @@
           "lib/net7.0/Blazored.LocalStorage.dll": {}
         }
       },
+      "CommunityToolkit.Maui/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "CommunityToolkit.Maui.Core": "7.0.1",
+          "Microsoft.Maui.Controls": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-ios17.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-ios17.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "CommunityToolkit.Maui.Core/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Core": "8.0.3",
+          "Microsoft.Maui.Essentials": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-ios17.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-ios17.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.AspNetCore.Authorization/8.0.1": {
         "type": "package",
         "dependencies": {
@@ -28418,6 +28860,40 @@
         },
         "runtime": {
           "lib/net7.0/Blazored.LocalStorage.dll": {}
+        }
+      },
+      "CommunityToolkit.Maui/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "CommunityToolkit.Maui.Core": "7.0.1",
+          "Microsoft.Maui.Controls": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-ios17.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-ios17.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "CommunityToolkit.Maui.Core/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Core": "8.0.3",
+          "Microsoft.Maui.Essentials": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-ios17.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-ios17.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
         }
       },
       "Microsoft.AspNetCore.Authorization/8.0.1": {
@@ -29745,6 +30221,40 @@
           "lib/net7.0/Blazored.LocalStorage.dll": {}
         }
       },
+      "CommunityToolkit.Maui/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "CommunityToolkit.Maui.Core": "7.0.1",
+          "Microsoft.Maui.Controls": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-ios17.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-ios17.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "CommunityToolkit.Maui.Core/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Core": "8.0.3",
+          "Microsoft.Maui.Essentials": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-ios17.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-ios17.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.AspNetCore.Authorization/8.0.1": {
         "type": "package",
         "dependencies": {
@@ -31070,6 +31580,40 @@
           "lib/net7.0/Blazored.LocalStorage.dll": {}
         }
       },
+      "CommunityToolkit.Maui/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "CommunityToolkit.Maui.Core": "7.0.1",
+          "Microsoft.Maui.Controls": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-ios17.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-ios17.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "CommunityToolkit.Maui.Core/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Core": "8.0.3",
+          "Microsoft.Maui.Essentials": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-ios17.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-ios17.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.AspNetCore.Authorization/8.0.1": {
         "type": "package",
         "dependencies": {
@@ -32376,6 +32920,40 @@
           "lib/net7.0/Blazored.LocalStorage.dll": {}
         }
       },
+      "CommunityToolkit.Maui/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "CommunityToolkit.Maui.Core": "7.0.1",
+          "Microsoft.Maui.Controls": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-maccatalyst17.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-maccatalyst17.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "CommunityToolkit.Maui.Core/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Core": "8.0.3",
+          "Microsoft.Maui.Essentials": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-maccatalyst17.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-maccatalyst17.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.AspNetCore.Authorization/8.0.1": {
         "type": "package",
         "dependencies": {
@@ -33360,6 +33938,40 @@
           "lib/net7.0/Blazored.LocalStorage.dll": {}
         }
       },
+      "CommunityToolkit.Maui/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "CommunityToolkit.Maui.Core": "7.0.1",
+          "Microsoft.Maui.Controls": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-maccatalyst17.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-maccatalyst17.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "CommunityToolkit.Maui.Core/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Core": "8.0.3",
+          "Microsoft.Maui.Essentials": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-maccatalyst17.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-maccatalyst17.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.AspNetCore.Authorization/8.0.1": {
         "type": "package",
         "dependencies": {
@@ -34336,6 +34948,40 @@
         },
         "runtime": {
           "lib/net7.0/Blazored.LocalStorage.dll": {}
+        }
+      },
+      "CommunityToolkit.Maui/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "CommunityToolkit.Maui.Core": "7.0.1",
+          "Microsoft.Maui.Controls": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-maccatalyst17.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-maccatalyst17.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "CommunityToolkit.Maui.Core/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Core": "8.0.3",
+          "Microsoft.Maui.Essentials": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-maccatalyst17.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-maccatalyst17.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
         }
       },
       "Microsoft.AspNetCore.Authorization/8.0.1": {
@@ -35316,6 +35962,40 @@
           "lib/net7.0/Blazored.LocalStorage.dll": {}
         }
       },
+      "CommunityToolkit.Maui/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "CommunityToolkit.Maui.Core": "7.0.1",
+          "Microsoft.Maui.Controls": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-maccatalyst17.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-maccatalyst17.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "CommunityToolkit.Maui.Core/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Core": "8.0.3",
+          "Microsoft.Maui.Essentials": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-maccatalyst17.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-maccatalyst17.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.AspNetCore.Authorization/8.0.1": {
         "type": "package",
         "dependencies": {
@@ -36292,6 +36972,40 @@
         },
         "runtime": {
           "lib/net7.0/Blazored.LocalStorage.dll": {}
+        }
+      },
+      "CommunityToolkit.Maui/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "CommunityToolkit.Maui.Core": "7.0.1",
+          "Microsoft.Maui.Controls": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-maccatalyst17.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-maccatalyst17.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "CommunityToolkit.Maui.Core/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Core": "8.0.3",
+          "Microsoft.Maui.Essentials": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-maccatalyst17.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-maccatalyst17.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
         }
       },
       "Microsoft.AspNetCore.Authorization/8.0.1": {
@@ -37272,6 +37986,40 @@
           "lib/net7.0/Blazored.LocalStorage.dll": {}
         }
       },
+      "CommunityToolkit.Maui/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "CommunityToolkit.Maui.Core": "7.0.1",
+          "Microsoft.Maui.Controls": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-maccatalyst17.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-maccatalyst17.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "CommunityToolkit.Maui.Core/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Core": "8.0.3",
+          "Microsoft.Maui.Essentials": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-maccatalyst17.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-maccatalyst17.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.AspNetCore.Authorization/8.0.1": {
         "type": "package",
         "dependencies": {
@@ -38248,6 +38996,40 @@
         },
         "runtime": {
           "lib/net7.0/Blazored.LocalStorage.dll": {}
+        }
+      },
+      "CommunityToolkit.Maui/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "CommunityToolkit.Maui.Core": "7.0.1",
+          "Microsoft.Maui.Controls": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-maccatalyst17.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-maccatalyst17.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "CommunityToolkit.Maui.Core/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Core": "8.0.3",
+          "Microsoft.Maui.Essentials": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-maccatalyst17.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-maccatalyst17.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
         }
       },
       "Microsoft.AspNetCore.Authorization/8.0.1": {
@@ -39228,6 +40010,40 @@
           "lib/net7.0/Blazored.LocalStorage.dll": {}
         }
       },
+      "CommunityToolkit.Maui/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "CommunityToolkit.Maui.Core": "7.0.1",
+          "Microsoft.Maui.Controls": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-maccatalyst17.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-maccatalyst17.0/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "CommunityToolkit.Maui.Core/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Core": "8.0.3",
+          "Microsoft.Maui.Essentials": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-maccatalyst17.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-maccatalyst17.0/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.AspNetCore.Authorization/8.0.1": {
         "type": "package",
         "dependencies": {
@@ -40204,6 +41020,41 @@
         },
         "runtime": {
           "lib/net7.0/Blazored.LocalStorage.dll": {}
+        }
+      },
+      "CommunityToolkit.Maui/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "CommunityToolkit.Maui.Core": "7.0.1",
+          "Microsoft.Maui.Controls": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-windows10.0.19041/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-windows10.0.19041/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "CommunityToolkit.Maui.Core/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Core": "8.0.3",
+          "Microsoft.Maui.Essentials": "8.0.3",
+          "System.Speech": "8.0.0-rc.2.23479.6"
+        },
+        "compile": {
+          "lib/net8.0-windows10.0.19041/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-windows10.0.19041/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
         }
       },
       "Microsoft.AspNetCore.Authorization/8.0.1": {
@@ -41348,6 +42199,24 @@
           "buildTransitive/netcoreapp3.1/_._": {}
         }
       },
+      "System.Speech/8.0.0-rc.2.23479.6": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/System.Speech.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0/System.Speech.dll": {}
+        },
+        "build": {
+          "buildTransitive/net6.0/_._": {}
+        },
+        "runtimeTargets": {
+          "runtimes/win/lib/net8.0/System.Speech.dll": {
+            "assetType": "runtime",
+            "rid": "win"
+          }
+        }
+      },
       "System.Text.Encodings.Web/8.0.0": {
         "type": "package",
         "compile": {
@@ -41403,6 +42272,41 @@
           "lib/net7.0/Blazored.LocalStorage.dll": {}
         }
       },
+      "CommunityToolkit.Maui/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "CommunityToolkit.Maui.Core": "7.0.1",
+          "Microsoft.Maui.Controls": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-windows10.0.19041/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-windows10.0.19041/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "CommunityToolkit.Maui.Core/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Core": "8.0.3",
+          "Microsoft.Maui.Essentials": "8.0.3",
+          "System.Speech": "8.0.0-rc.2.23479.6"
+        },
+        "compile": {
+          "lib/net8.0-windows10.0.19041/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-windows10.0.19041/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.AspNetCore.Authorization/8.0.1": {
         "type": "package",
         "dependencies": {
@@ -42487,6 +43391,18 @@
         },
         "build": {
           "buildTransitive/netcoreapp3.1/_._": {}
+        }
+      },
+      "System.Speech/8.0.0-rc.2.23479.6": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/System.Speech.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0/System.Speech.dll": {}
+        },
+        "build": {
+          "buildTransitive/net6.0/_._": {}
         }
       },
       "System.Text.Encodings.Web/8.0.0": {
@@ -42538,6 +43454,41 @@
           "lib/net7.0/Blazored.LocalStorage.dll": {}
         }
       },
+      "CommunityToolkit.Maui/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "CommunityToolkit.Maui.Core": "7.0.1",
+          "Microsoft.Maui.Controls": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-windows10.0.19041/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-windows10.0.19041/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "CommunityToolkit.Maui.Core/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Core": "8.0.3",
+          "Microsoft.Maui.Essentials": "8.0.3",
+          "System.Speech": "8.0.0-rc.2.23479.6"
+        },
+        "compile": {
+          "lib/net8.0-windows10.0.19041/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-windows10.0.19041/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.AspNetCore.Authorization/8.0.1": {
         "type": "package",
         "dependencies": {
@@ -43622,6 +44573,18 @@
         },
         "build": {
           "buildTransitive/netcoreapp3.1/_._": {}
+        }
+      },
+      "System.Speech/8.0.0-rc.2.23479.6": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/System.Speech.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0/System.Speech.dll": {}
+        },
+        "build": {
+          "buildTransitive/net6.0/_._": {}
         }
       },
       "System.Text.Encodings.Web/8.0.0": {
@@ -43673,6 +44636,41 @@
           "lib/net7.0/Blazored.LocalStorage.dll": {}
         }
       },
+      "CommunityToolkit.Maui/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "CommunityToolkit.Maui.Core": "7.0.1",
+          "Microsoft.Maui.Controls": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-windows10.0.19041/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-windows10.0.19041/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "CommunityToolkit.Maui.Core/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Core": "8.0.3",
+          "Microsoft.Maui.Essentials": "8.0.3",
+          "System.Speech": "8.0.0-rc.2.23479.6"
+        },
+        "compile": {
+          "lib/net8.0-windows10.0.19041/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-windows10.0.19041/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.AspNetCore.Authorization/8.0.1": {
         "type": "package",
         "dependencies": {
@@ -44757,6 +45755,18 @@
         },
         "build": {
           "buildTransitive/netcoreapp3.1/_._": {}
+        }
+      },
+      "System.Speech/8.0.0-rc.2.23479.6": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/System.Speech.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0/System.Speech.dll": {}
+        },
+        "build": {
+          "buildTransitive/net6.0/_._": {}
         }
       },
       "System.Text.Encodings.Web/8.0.0": {
@@ -44808,6 +45818,41 @@
           "lib/net7.0/Blazored.LocalStorage.dll": {}
         }
       },
+      "CommunityToolkit.Maui/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "CommunityToolkit.Maui.Core": "7.0.1",
+          "Microsoft.Maui.Controls": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-windows10.0.19041/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-windows10.0.19041/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "CommunityToolkit.Maui.Core/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Core": "8.0.3",
+          "Microsoft.Maui.Essentials": "8.0.3",
+          "System.Speech": "8.0.0-rc.2.23479.6"
+        },
+        "compile": {
+          "lib/net8.0-windows10.0.19041/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-windows10.0.19041/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.AspNetCore.Authorization/8.0.1": {
         "type": "package",
         "dependencies": {
@@ -45892,6 +46937,18 @@
         },
         "build": {
           "buildTransitive/netcoreapp3.1/_._": {}
+        }
+      },
+      "System.Speech/8.0.0-rc.2.23479.6": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/System.Speech.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0/System.Speech.dll": {}
+        },
+        "build": {
+          "buildTransitive/net6.0/_._": {}
         }
       },
       "System.Text.Encodings.Web/8.0.0": {
@@ -45943,6 +47000,41 @@
           "lib/net7.0/Blazored.LocalStorage.dll": {}
         }
       },
+      "CommunityToolkit.Maui/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "CommunityToolkit.Maui.Core": "7.0.1",
+          "Microsoft.Maui.Controls": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-windows10.0.19041/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-windows10.0.19041/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "CommunityToolkit.Maui.Core/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Core": "8.0.3",
+          "Microsoft.Maui.Essentials": "8.0.3",
+          "System.Speech": "8.0.0-rc.2.23479.6"
+        },
+        "compile": {
+          "lib/net8.0-windows10.0.19041/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-windows10.0.19041/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.AspNetCore.Authorization/8.0.1": {
         "type": "package",
         "dependencies": {
@@ -47027,6 +48119,18 @@
         },
         "build": {
           "buildTransitive/netcoreapp3.1/_._": {}
+        }
+      },
+      "System.Speech/8.0.0-rc.2.23479.6": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/System.Speech.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0/System.Speech.dll": {}
+        },
+        "build": {
+          "buildTransitive/net6.0/_._": {}
         }
       },
       "System.Text.Encodings.Web/8.0.0": {
@@ -47078,6 +48182,41 @@
           "lib/net7.0/Blazored.LocalStorage.dll": {}
         }
       },
+      "CommunityToolkit.Maui/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "CommunityToolkit.Maui.Core": "7.0.1",
+          "Microsoft.Maui.Controls": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-windows10.0.19041/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-windows10.0.19041/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "CommunityToolkit.Maui.Core/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Core": "8.0.3",
+          "Microsoft.Maui.Essentials": "8.0.3",
+          "System.Speech": "8.0.0-rc.2.23479.6"
+        },
+        "compile": {
+          "lib/net8.0-windows10.0.19041/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-windows10.0.19041/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.AspNetCore.Authorization/8.0.1": {
         "type": "package",
         "dependencies": {
@@ -48164,6 +49303,18 @@
           "buildTransitive/netcoreapp3.1/_._": {}
         }
       },
+      "System.Speech/8.0.0-rc.2.23479.6": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/System.Speech.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0/System.Speech.dll": {}
+        },
+        "build": {
+          "buildTransitive/net6.0/_._": {}
+        }
+      },
       "System.Text.Encodings.Web/8.0.0": {
         "type": "package",
         "compile": {
@@ -48211,6 +49362,41 @@
         },
         "runtime": {
           "lib/net7.0/Blazored.LocalStorage.dll": {}
+        }
+      },
+      "CommunityToolkit.Maui/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "CommunityToolkit.Maui.Core": "7.0.1",
+          "Microsoft.Maui.Controls": "8.0.3"
+        },
+        "compile": {
+          "lib/net8.0-windows10.0.19041/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-windows10.0.19041/CommunityToolkit.Maui.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "CommunityToolkit.Maui.Core/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Maui.Core": "8.0.3",
+          "Microsoft.Maui.Essentials": "8.0.3",
+          "System.Speech": "8.0.0-rc.2.23479.6"
+        },
+        "compile": {
+          "lib/net8.0-windows10.0.19041/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-windows10.0.19041/CommunityToolkit.Maui.Core.dll": {
+            "related": ".xml"
+          }
         }
       },
       "Microsoft.AspNetCore.Authorization/8.0.1": {
@@ -49311,6 +50497,18 @@
           "buildTransitive/netcoreapp3.1/_._": {}
         }
       },
+      "System.Speech/8.0.0-rc.2.23479.6": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/System.Speech.dll": {}
+        },
+        "runtime": {
+          "runtimes/win/lib/net8.0/System.Speech.dll": {}
+        },
+        "build": {
+          "buildTransitive/net6.0/_._": {}
+        }
+      },
       "System.Text.Encodings.Web/8.0.0": {
         "type": "package",
         "compile": {
@@ -49361,6 +50559,59 @@
         "icon.png",
         "lib/net6.0/Blazored.LocalStorage.dll",
         "lib/net7.0/Blazored.LocalStorage.dll"
+      ]
+    },
+    "CommunityToolkit.Maui/7.0.1": {
+      "sha512": "ecgi4LwhP8uMftmRdriPA9/I+BP4nDuwrW408e7cnCthMArog0W9/A50RyEP65WH/+T7nM0gUlrz4xLpmIiXRQ==",
+      "type": "package",
+      "path": "communitytoolkit.maui/7.0.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "ReadMe.txt",
+        "analyzers/dotnet/cs/CommunityToolkit.Maui.Analyzers.CodeFixes.dll",
+        "analyzers/dotnet/cs/CommunityToolkit.Maui.Analyzers.dll",
+        "analyzers/dotnet/cs/CommunityToolkit.Maui.SourceGenerators.dll",
+        "communitytoolkit.maui.7.0.1.nupkg.sha512",
+        "communitytoolkit.maui.nuspec",
+        "icon.png",
+        "lib/net8.0-android34.0/CommunityToolkit.Maui.dll",
+        "lib/net8.0-android34.0/CommunityToolkit.Maui.xml",
+        "lib/net8.0-ios17.0/CommunityToolkit.Maui.dll",
+        "lib/net8.0-ios17.0/CommunityToolkit.Maui.xml",
+        "lib/net8.0-maccatalyst17.0/CommunityToolkit.Maui.dll",
+        "lib/net8.0-maccatalyst17.0/CommunityToolkit.Maui.xml",
+        "lib/net8.0-tizen8.0/CommunityToolkit.Maui.dll",
+        "lib/net8.0-tizen8.0/CommunityToolkit.Maui.xml",
+        "lib/net8.0-windows10.0.19041/CommunityToolkit.Maui.dll",
+        "lib/net8.0-windows10.0.19041/CommunityToolkit.Maui.xml",
+        "lib/net8.0/CommunityToolkit.Maui.dll",
+        "lib/net8.0/CommunityToolkit.Maui.xml"
+      ]
+    },
+    "CommunityToolkit.Maui.Core/7.0.1": {
+      "sha512": "wHh885/5ZNo9gkFOsM/AZle1jqC1V/VxAD9PAuN0FACxdb+KOLaBkt8Jh1j9lBryWngsFvV+1D6kBz6LigKM8g==",
+      "type": "package",
+      "path": "communitytoolkit.maui.core/7.0.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "ReadMe.txt",
+        "communitytoolkit.maui.core.7.0.1.nupkg.sha512",
+        "communitytoolkit.maui.core.nuspec",
+        "icon.png",
+        "lib/net8.0-android34.0/CommunityToolkit.Maui.Core.dll",
+        "lib/net8.0-android34.0/CommunityToolkit.Maui.Core.xml",
+        "lib/net8.0-ios17.0/CommunityToolkit.Maui.Core.dll",
+        "lib/net8.0-ios17.0/CommunityToolkit.Maui.Core.xml",
+        "lib/net8.0-maccatalyst17.0/CommunityToolkit.Maui.Core.dll",
+        "lib/net8.0-maccatalyst17.0/CommunityToolkit.Maui.Core.xml",
+        "lib/net8.0-tizen8.0/CommunityToolkit.Maui.Core.dll",
+        "lib/net8.0-tizen8.0/CommunityToolkit.Maui.Core.xml",
+        "lib/net8.0-windows10.0.19041/CommunityToolkit.Maui.Core.dll",
+        "lib/net8.0-windows10.0.19041/CommunityToolkit.Maui.Core.xml",
+        "lib/net8.0/CommunityToolkit.Maui.Core.dll",
+        "lib/net8.0/CommunityToolkit.Maui.Core.xml"
       ]
     },
     "GoogleGson/2.10.1.4": {
@@ -53357,6 +54608,32 @@
         "system.security.securestring.nuspec"
       ]
     },
+    "System.Speech/8.0.0-rc.2.23479.6": {
+      "sha512": "vWd/mmQQo2vXp5aDjwi/bj9DO4MABNMZtYpRhzYBFDzvDln68eZBgW+rYMT81egXmNcnt87+6+GbpZ8GW2VJ6w==",
+      "type": "package",
+      "path": "system.speech/8.0.0-rc.2.23479.6",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "LICENSE.TXT",
+        "PACKAGE.md",
+        "THIRD-PARTY-NOTICES.TXT",
+        "buildTransitive/net6.0/_._",
+        "buildTransitive/netcoreapp2.0/System.Speech.targets",
+        "lib/net462/_._",
+        "lib/net6.0/System.Speech.dll",
+        "lib/net7.0/System.Speech.dll",
+        "lib/net8.0/System.Speech.dll",
+        "lib/netstandard2.0/System.Speech.dll",
+        "runtimes/win/lib/net6.0/System.Speech.dll",
+        "runtimes/win/lib/net7.0/System.Speech.dll",
+        "runtimes/win/lib/net8.0/System.Speech.dll",
+        "system.speech.8.0.0-rc.2.23479.6.nupkg.sha512",
+        "system.speech.nuspec",
+        "useSharedDesignerContext.txt"
+      ]
+    },
     "System.Text.Encoding/4.3.0": {
       "sha512": "BiIg+KWaSDOITze6jGQynxg64naAPtqGHBwDrLaCtixsa5bKiR8dpPOHA7ge3C0JJQizJE+sfkz1wV+BAKAYZw==",
       "type": "package",
@@ -55713,6 +56990,7 @@
   "projectFileDependencyGroups": {
     "net8.0-android34.0": [
       "Blazored.LocalStorage >= 4.4.0",
+      "CommunityToolkit.Maui >= 7.0.1",
       "Microsoft.AspNetCore.Components.Authorization >= 8.0.1",
       "Microsoft.AspNetCore.Components.WebAssembly.Authentication >= 8.0.1",
       "Microsoft.AspNetCore.Components.WebView.Maui >= 8.0.6",
@@ -55728,6 +57006,7 @@
     ],
     "net8.0-ios17.2": [
       "Blazored.LocalStorage >= 4.4.0",
+      "CommunityToolkit.Maui >= 7.0.1",
       "Microsoft.AspNetCore.Components.Authorization >= 8.0.1",
       "Microsoft.AspNetCore.Components.WebAssembly.Authentication >= 8.0.1",
       "Microsoft.AspNetCore.Components.WebView.Maui >= 8.0.6",
@@ -55743,6 +57022,7 @@
     ],
     "net8.0-maccatalyst17.2": [
       "Blazored.LocalStorage >= 4.4.0",
+      "CommunityToolkit.Maui >= 7.0.1",
       "Microsoft.AspNetCore.Components.Authorization >= 8.0.1",
       "Microsoft.AspNetCore.Components.WebAssembly.Authentication >= 8.0.1",
       "Microsoft.AspNetCore.Components.WebView.Maui >= 8.0.6",
@@ -55758,6 +57038,7 @@
     ],
     "net8.0-windows10.0.19041": [
       "Blazored.LocalStorage >= 4.4.0",
+      "CommunityToolkit.Maui >= 7.0.1",
       "Microsoft.AspNetCore.Components.Authorization >= 8.0.1",
       "Microsoft.AspNetCore.Components.WebAssembly.Authentication >= 8.0.1",
       "Microsoft.AspNetCore.Components.WebView.Maui >= 8.0.6",
@@ -55778,11 +57059,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorB2CAuth\\MsalAuthInMauiBlazor\\MsalAuthInMauiBlazor.csproj",
+      "projectUniqueName": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorB2C\\MsalAuthInMauiBlazor\\MsalAuthInMauiBlazor.csproj",
       "projectName": "MsalAuthInMauiBlazor",
-      "projectPath": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorB2CAuth\\MsalAuthInMauiBlazor\\MsalAuthInMauiBlazor.csproj",
+      "projectPath": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorB2C\\MsalAuthInMauiBlazor\\MsalAuthInMauiBlazor.csproj",
       "packagesPath": "C:\\Users\\jsanda\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorB2CAuth\\MsalAuthInMauiBlazor\\obj\\",
+      "outputPath": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorB2C\\MsalAuthInMauiBlazor\\obj\\",
       "projectStyle": "PackageReference",
       "crossTargeting": true,
       "fallbackFolders": [
@@ -55835,6 +57116,10 @@
           "Blazored.LocalStorage": {
             "target": "Package",
             "version": "[4.4.0, )"
+          },
+          "CommunityToolkit.Maui": {
+            "target": "Package",
+            "version": "[7.0.1, )"
           },
           "Microsoft.AspNetCore.Components.Authorization": {
             "target": "Package",
@@ -55915,6 +57200,10 @@
             "target": "Package",
             "version": "[4.4.0, )"
           },
+          "CommunityToolkit.Maui": {
+            "target": "Package",
+            "version": "[7.0.1, )"
+          },
           "Microsoft.AspNetCore.Components.Authorization": {
             "target": "Package",
             "version": "[8.0.1, )"
@@ -55993,6 +57282,10 @@
           "Blazored.LocalStorage": {
             "target": "Package",
             "version": "[4.4.0, )"
+          },
+          "CommunityToolkit.Maui": {
+            "target": "Package",
+            "version": "[7.0.1, )"
           },
           "Microsoft.AspNetCore.Components.Authorization": {
             "target": "Package",
@@ -56073,6 +57366,10 @@
           "Blazored.LocalStorage": {
             "target": "Package",
             "version": "[4.4.0, )"
+          },
+          "CommunityToolkit.Maui": {
+            "target": "Package",
+            "version": "[7.0.1, )"
           },
           "Microsoft.AspNetCore.Components.Authorization": {
             "target": "Package",

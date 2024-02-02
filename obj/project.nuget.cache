@@ -1,10 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "DqJn83Atwnb4bkcMneicI2GN/35u5zRy/2E3Gfm9zSp5gKIH82xVY4va4+mVWJEMZM/1I1sSAlJCWW072i9Gsw==",
+  "dgSpecHash": "7kSPsMaaBMfOQTrtTvO6hmQtXnl/ERMU//bStESaAVSrlIqxXzZYK4mNldjWxNEwvAaGl+s1o6CBkE3qAAjb1A==",
   "success": true,
-  "projectFilePath": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorB2CAuth\\MsalAuthInMauiBlazor\\MsalAuthInMauiBlazor.csproj",
+  "projectFilePath": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorB2C\\MsalAuthInMauiBlazor\\MsalAuthInMauiBlazor.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\jsanda\\.nuget\\packages\\blazored.localstorage\\4.4.0\\blazored.localstorage.4.4.0.nupkg.sha512",
+    "C:\\Users\\jsanda\\.nuget\\packages\\communitytoolkit.maui\\7.0.1\\communitytoolkit.maui.7.0.1.nupkg.sha512",
+    "C:\\Users\\jsanda\\.nuget\\packages\\communitytoolkit.maui.core\\7.0.1\\communitytoolkit.maui.core.7.0.1.nupkg.sha512",
     "C:\\Users\\jsanda\\.nuget\\packages\\googlegson\\2.10.1.4\\googlegson.2.10.1.4.nupkg.sha512",
     "C:\\Users\\jsanda\\.nuget\\packages\\microsoft.aspnetcore.authorization\\8.0.1\\microsoft.aspnetcore.authorization.8.0.1.nupkg.sha512",
     "C:\\Users\\jsanda\\.nuget\\packages\\microsoft.aspnetcore.components\\8.0.1\\microsoft.aspnetcore.components.8.0.1.nupkg.sha512",
@@ -90,6 +92,7 @@
     "C:\\Users\\jsanda\\.nuget\\packages\\system.runtime.interopservices.nfloat.internal\\6.0.1\\system.runtime.interopservices.nfloat.internal.6.0.1.nupkg.sha512",
     "C:\\Users\\jsanda\\.nuget\\packages\\system.security.cryptography.primitives\\4.3.0\\system.security.cryptography.primitives.4.3.0.nupkg.sha512",
     "C:\\Users\\jsanda\\.nuget\\packages\\system.security.securestring\\4.3.0\\system.security.securestring.4.3.0.nupkg.sha512",
+    "C:\\Users\\jsanda\\.nuget\\packages\\system.speech\\8.0.0-rc.2.23479.6\\system.speech.8.0.0-rc.2.23479.6.nupkg.sha512",
     "C:\\Users\\jsanda\\.nuget\\packages\\system.text.encoding\\4.3.0\\system.text.encoding.4.3.0.nupkg.sha512",
     "C:\\Users\\jsanda\\.nuget\\packages\\system.text.encodings.web\\8.0.0\\system.text.encodings.web.8.0.0.nupkg.sha512",
     "C:\\Users\\jsanda\\.nuget\\packages\\system.text.json\\8.0.0\\system.text.json.8.0.0.nupkg.sha512",
