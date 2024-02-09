@@ -1,10 +1,8 @@
-﻿﻿@using Microsoft.Extensions.Configuration
+﻿@using Microsoft.Extensions.Configuration
 @using MsalAuthInMauiBlazor.MsalClient
 @inherits LayoutComponentBase
 @inject IPCAWrapper _pcaWrapper;
 @inject IConfiguration _configuration;
-@using Microsoft.Maui.Controls.PlatformConfiguration;
-@using Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;
 
 
 <div class="page">
@@ -14,21 +12,52 @@
 
     <main>
         <article class="content px-4">
-            @Body
+            <CascadingValue Value="@isAndroid">
+
+                @Body
+
+            </CascadingValue>
         </article>
     </main>
 </div>
 
 
 
+
+
 @code {
+
     private bool collapseNavMenu = true;
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private bool isAndroid { get; set; } // bool variable parameter to check whether the app is running on android.
+
 
 
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Method to check whether the app is running on android or iOS.
+            if (DeviceInfo.Current.Platform == DevicePlatform.Android)
+            {
+                isAndroid = true; // Runs on Android.
+            }
+            else
+            {
+                isAndroid = false; // Runs on iOS.
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
     }
 }

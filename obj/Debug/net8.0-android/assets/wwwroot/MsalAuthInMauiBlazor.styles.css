@@ -86,11 +86,19 @@ main[b-kvvodztw51] {
 
 .navbar[b-1rjhnyollh] {
     position: fixed; /* Fix the navbar to the top */
-    top: 0; /* Position it at the top of the viewport */
+    top: 45px; /* Position it at the top of the viewport */
     width: 100%; /* Make it span the full width of the viewport */
     background-color: rgba(0, 0, 50, 1); /* Background color for the navbar */
     z-index: 1000; /* Ensure the navbar stays on top of other content */
 }
+    /* Style for Android */
+    .navbar.android[b-1rjhnyollh] {
+        position: fixed; /* Fix the navbar to the top */
+        top: 0; /* Position it at the top of the viewport */
+        width: 100%; /* Make it span the full width of the viewport */
+        background-color: rgba(0, 0, 50, 1); /* Background color for the navbar */
+        z-index: 1000; /* Ensure the navbar stays on top of other content */
+    }
 
 .navbar-brand[b-1rjhnyollh] {
     font-size: 1.1rem;
@@ -157,4 +165,8 @@ main[b-kvvodztw51] {
 .navLinkFirst[b-1rjhnyollh] {
     margin-top: 75px;
 }
+    /* Style for Android */
+    .navLinkFirst.android[b-1rjhnyollh] {
+        margin-top: 105px;
+    }
 

@@ -8,7 +8,7 @@
 @inject NavigationManager navigation;
 
 
-<div class="top-row ps-3 navbar navbar-dark">
+<div class="top-row ps-3 navbar @(isAndroid ? "android" : "") navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand mx-auto fw-bolder text-warning" href="">Maui App</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -60,6 +60,8 @@
 @code {
     // Properties
 
+    private bool isAndroid { get; set; }
+
     private bool collapseNavMenu = true;
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
@@ -88,7 +90,28 @@
 
     // Methods
 
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Method to check whether the app is running on android or iOS.
+            if (DeviceInfo.Current.Platform == DevicePlatform.Android)
+            {
+                isAndroid = true; // Runs on Android.
+            }
+            else
+            {
+                isAndroid = false; // Runs on iOS.
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+    }
+
     public string GetUsernameFromToken(string token) // Gets the username or email from the token.
+
     {
         var handler = new JwtSecurityTokenHandler();
         var jsonToken = handler.ReadToken(token) as JwtSecurityToken;
