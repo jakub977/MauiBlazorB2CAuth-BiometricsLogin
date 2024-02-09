@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "6dTS0+vKPozquCnQPQNyvmOo088B/C6P9xqBh/3lhr8=",
+  "Hash": "2q/GvJ/xKsfyN1OfGomFR4a1BnxakshlRZ0bqHXUiw8=",
   "Source": "MsalAuthInMauiBlazor",
   "BasePath": "/",
   "Mode": "Root",
@@ -10,7 +10,7 @@
     {
       "Name": "MsalAuthInMauiBlazor\\wwwroot",
       "Source": "MsalAuthInMauiBlazor",
-      "ContentRoot": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorB2CAuth\\MsalAuthInMauiBlazor\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MsalAuthInMauiBlazor\\wwwroot\\",
       "BasePath": "/",
       "Pattern": "**"
     }
@@ -36,10 +36,10 @@
       "OriginalItemSpec": "C:\\Users\\jsanda\\.nuget\\packages\\microsoft.aspnetcore.components.webassembly.authentication\\8.0.1\\staticwebassets\\AuthenticationService.js"
     },
     {
-      "Identity": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorB2CAuth\\MsalAuthInMauiBlazor\\obj\\Debug\\net8.0-ios\\iossimulator-x64\\scopedcss\\bundle\\MsalAuthInMauiBlazor.styles.css",
+      "Identity": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MsalAuthInMauiBlazor\\obj\\Debug\\net8.0-ios\\iossimulator-x64\\scopedcss\\bundle\\MsalAuthInMauiBlazor.styles.css",
       "SourceId": "MsalAuthInMauiBlazor",
       "SourceType": "Computed",
-      "ContentRoot": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorB2CAuth\\MsalAuthInMauiBlazor\\obj\\Debug\\net8.0-ios\\iossimulator-x64\\scopedcss\\bundle\\",
+      "ContentRoot": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MsalAuthInMauiBlazor\\obj\\Debug\\net8.0-ios\\iossimulator-x64\\scopedcss\\bundle\\",
       "BasePath": "/",
       "RelativePath": "MsalAuthInMauiBlazor.styles.css",
       "AssetKind": "All",
@@ -52,13 +52,13 @@
       "AssetTraitValue": "ApplicationBundle",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorB2CAuth\\MsalAuthInMauiBlazor\\obj\\Debug\\net8.0-ios\\iossimulator-x64\\scopedcss\\bundle\\MsalAuthInMauiBlazor.styles.css"
+      "OriginalItemSpec": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MsalAuthInMauiBlazor\\obj\\Debug\\net8.0-ios\\iossimulator-x64\\scopedcss\\bundle\\MsalAuthInMauiBlazor.styles.css"
     },
     {
-      "Identity": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorB2CAuth\\MsalAuthInMauiBlazor\\obj\\Debug\\net8.0-ios\\iossimulator-x64\\scopedcss\\projectbundle\\MsalAuthInMauiBlazor.bundle.scp.css",
+      "Identity": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MsalAuthInMauiBlazor\\obj\\Debug\\net8.0-ios\\iossimulator-x64\\scopedcss\\projectbundle\\MsalAuthInMauiBlazor.bundle.scp.css",
       "SourceId": "MsalAuthInMauiBlazor",
       "SourceType": "Computed",
-      "ContentRoot": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorB2CAuth\\MsalAuthInMauiBlazor\\obj\\Debug\\net8.0-ios\\iossimulator-x64\\scopedcss\\projectbundle\\",
+      "ContentRoot": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MsalAuthInMauiBlazor\\obj\\Debug\\net8.0-ios\\iossimulator-x64\\scopedcss\\projectbundle\\",
       "BasePath": "/",
       "RelativePath": "MsalAuthInMauiBlazor.bundle.scp.css",
       "AssetKind": "All",
@@ -71,13 +71,13 @@
       "AssetTraitValue": "ProjectBundle",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorB2CAuth\\MsalAuthInMauiBlazor\\obj\\Debug\\net8.0-ios\\iossimulator-x64\\scopedcss\\projectbundle\\MsalAuthInMauiBlazor.bundle.scp.css"
+      "OriginalItemSpec": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MsalAuthInMauiBlazor\\obj\\Debug\\net8.0-ios\\iossimulator-x64\\scopedcss\\projectbundle\\MsalAuthInMauiBlazor.bundle.scp.css"
     },
     {
-      "Identity": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorB2CAuth\\MsalAuthInMauiBlazor\\wwwroot\\css\\app.css",
+      "Identity": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MsalAuthInMauiBlazor\\wwwroot\\css\\app.css",
       "SourceId": "MsalAuthInMauiBlazor",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorB2CAuth\\MsalAuthInMauiBlazor\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MsalAuthInMauiBlazor\\wwwroot\\",
       "BasePath": "/",
       "RelativePath": "css/app.css",
       "AssetKind": "All",
@@ -93,10 +93,10 @@
       "OriginalItemSpec": "wwwroot\\css\\app.css"
     },
     {
-      "Identity": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorB2CAuth\\MsalAuthInMauiBlazor\\wwwroot\\css\\bootstrap\\bootstrap.min.css",
+      "Identity": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MsalAuthInMauiBlazor\\wwwroot\\css\\bootstrap\\bootstrap.min.css",
       "SourceId": "MsalAuthInMauiBlazor",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorB2CAuth\\MsalAuthInMauiBlazor\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MsalAuthInMauiBlazor\\wwwroot\\",
       "BasePath": "/",
       "RelativePath": "css/bootstrap/bootstrap.min.css",
       "AssetKind": "All",
@@ -112,10 +112,10 @@
       "OriginalItemSpec": "wwwroot\\css\\bootstrap\\bootstrap.min.css"
     },
     {
-      "Identity": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorB2CAuth\\MsalAuthInMauiBlazor\\wwwroot\\css\\bootstrap\\bootstrap.min.css.map",
+      "Identity": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MsalAuthInMauiBlazor\\wwwroot\\css\\bootstrap\\bootstrap.min.css.map",
       "SourceId": "MsalAuthInMauiBlazor",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorB2CAuth\\MsalAuthInMauiBlazor\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MsalAuthInMauiBlazor\\wwwroot\\",
       "BasePath": "/",
       "RelativePath": "css/bootstrap/bootstrap.min.css.map",
       "AssetKind": "All",
@@ -131,10 +131,10 @@
       "OriginalItemSpec": "wwwroot\\css\\bootstrap\\bootstrap.min.css.map"
     },
     {
-      "Identity": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorB2CAuth\\MsalAuthInMauiBlazor\\wwwroot\\favicon.png",
+      "Identity": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MsalAuthInMauiBlazor\\wwwroot\\favicon.png",
       "SourceId": "MsalAuthInMauiBlazor",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorB2CAuth\\MsalAuthInMauiBlazor\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MsalAuthInMauiBlazor\\wwwroot\\",
       "BasePath": "/",
       "RelativePath": "favicon.png",
       "AssetKind": "All",
@@ -150,10 +150,10 @@
       "OriginalItemSpec": "wwwroot\\favicon.png"
     },
     {
-      "Identity": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorB2CAuth\\MsalAuthInMauiBlazor\\wwwroot\\index.html",
+      "Identity": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MsalAuthInMauiBlazor\\wwwroot\\index.html",
       "SourceId": "MsalAuthInMauiBlazor",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorB2CAuth\\MsalAuthInMauiBlazor\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MsalAuthInMauiBlazor\\wwwroot\\",
       "BasePath": "/",
       "RelativePath": "index.html",
       "AssetKind": "All",

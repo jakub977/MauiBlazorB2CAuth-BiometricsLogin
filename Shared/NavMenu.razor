@@ -23,20 +23,20 @@
             @if (Globals.AccessToken != null)
             {
                 <span class="row">
-                    <h6 class="text-white fw-bold col-8 pt-3 mx-4">@GetUsernameFromToken(Globals.AccessToken)</h6>
+                    <h6 class="text-white fw-bold col-8 username pt-3 mx-4">@GetUsernameFromToken(Globals.AccessToken)</h6>
 
-                    <button class="btn btn-sm btn-danger col-auto mt-2" @onclick="OnLogoutClicked">Logout</button>
+                    <button class="btn btn btn-danger loginLogout col-auto" @onclick="OnLogoutClicked">Logout</button>
                 </span>
             }
             else
             {
                 <span>
-                    <button class="btn btn-sm btn-success float-end mt-2" @onclick="OnLoginClicked">Login</button>
+                    <button class="btn btn btn-success loginLogout float-end" @onclick="OnLoginClicked">Login</button>
                 </span>
             }
         </div>
 
-        <div class="nav-item px-3 mt-3">
+        <div class="nav-item px-3 navLinkFirst">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
                 <span class="oi oi-home" aria-hidden="true"></span> Home
             </NavLink>
@@ -82,7 +82,7 @@
     }
 
 
-    ToastDuration duration = ToastDuration.Short;
+    ToastDuration duration = ToastDuration.Long;
     public double fontSize = 16;
 
 

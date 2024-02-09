@@ -3,6 +3,8 @@
 @inherits LayoutComponentBase
 @inject IPCAWrapper _pcaWrapper;
 @inject IConfiguration _configuration;
+@using Microsoft.Maui.Controls.PlatformConfiguration;
+@using Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;
 
 
 <div class="page">
@@ -23,7 +25,6 @@
     private bool collapseNavMenu = true;
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
 
 
     private void ToggleNavMenu()

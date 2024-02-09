@@ -5,6 +5,7 @@ using MsalAuthInMauiBlazor.Data;
 using MsalAuthInMauiBlazor.MsalClient;
 using MsalAuthInMauiBlazor;
 using System.Reflection;
+using CommunityToolkit.Maui;
 
 namespace MsalAuthInMauiBlazor
 {
@@ -15,6 +16,7 @@ namespace MsalAuthInMauiBlazor
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
+                .UseMauiCommunityToolkit()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

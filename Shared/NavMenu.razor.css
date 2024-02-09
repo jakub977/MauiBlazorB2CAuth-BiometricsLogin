@@ -7,6 +7,14 @@
     background-color: rgba(0,0,0,0.4);
 }
 
+.navbar {
+    position: fixed; /* Fix the navbar to the top */
+    top: 0; /* Position it at the top of the viewport */
+    width: 100%; /* Make it span the full width of the viewport */
+    background-color: rgba(0, 0, 50, 1); /* Background color for the navbar */
+    z-index: 1000; /* Ensure the navbar stays on top of other content */
+}
+
 .navbar-brand {
     font-size: 1.1rem;
 }
@@ -60,3 +68,16 @@
         display: block;
     }
 }
+
+.username{
+    margin-top: 69px;
+}
+
+.loginLogout {
+    margin-top: 72px;
+}
+
+.navLinkFirst {
+    margin-top: 75px;
+}
+

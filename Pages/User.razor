@@ -21,7 +21,7 @@ else
 {
     <AuthorizeView>
         <Authorized>
-            <h2 class="mt-4">Claims:</h2>
+            <h2>Claims:</h2>
 
 
             <p>
@@ -71,17 +71,19 @@ else
 
             @if (Globals.AccessToken != null)
             {
-                <h2>Access token expires</h2>
+                <div style="margin-bottom: 80px">
+                    <h2>Access token expires</h2>
 
-                <p>Current time: <span id="current-time">@DateTimeOffset.Now</span></p>
-                <p id="access-token-expires">Expires: @Globals.Expires</p>
+                    <p>Current time: <span id="current-time">@DateTimeOffset.Now</span></p>
+                    <p id="access-token-expires">Expires: @Globals.Expires</p>
 
-                <h2>Access token granted scopes (as reported by the API)</h2>
+                    <h2>Access token granted scopes (as reported by the API)</h2>
 
-                @foreach (var scope in Globals.GrantedScopes)
-                {
-                    <p>Scope: @scope</p>
-                }
+                    @foreach (var scope in Globals.GrantedScopes)
+                    {
+                        <p>Scope: @scope</p>
+                    }
+                </div>
             }
         </Authorized>
 
