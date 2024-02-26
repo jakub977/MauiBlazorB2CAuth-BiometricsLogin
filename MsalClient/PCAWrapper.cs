@@ -34,7 +34,8 @@ namespace MsalAuthInMauiBlazor.MsalClient
             PCA = PublicClientApplicationBuilder
                                         .Create(_settings?.ClientId)
                                         .WithB2CAuthority(_settings?.Authority)
-#if !ANDROID
+                                        .WithIosKeychainSecurityGroup("com.microsoft.adalcache")
+#if !ANDROID && !IOS
                                         .WithRedirectUri("http://localhost")
 #endif
                                         .Build();
