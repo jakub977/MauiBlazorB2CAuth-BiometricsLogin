@@ -1,7 +1,13 @@
 ﻿@page "/"
 
+@using CommunityToolkit.Maui.Core
 @using Microsoft.AspNetCore.Authorization
+@using MsalAuthInMauiBlazor.MsalClient
+@using Plugin.Fingerprint
+@using Plugin.Fingerprint.Abstractions
 @inject AuthenticationStateProvider _auth;
+@inject NavigationManager navigation;
+@inject IPCAWrapper _pcaWrapper;
 
 
 
@@ -25,10 +31,57 @@ else
                 <p>Hello! </p>
             }
             <p>Welcome to your new app with B2C authentication.</p>
+
+
+
+
+            <!-- Log Out Modal -->
+            <div class="modal fade" id="logOutModal" tabindex="-1" role="dialog" aria-labelledby="logOutModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+
+                        <div class="modal-header fw-bolder">
+                            <h5 class="modal-title" id="logOutModalLabel"> Log out options </h5>
+                        </div>
+
+                        <div class="modal-body fw-bold fs-6">
+                            Would you like to log out and forget this account or just log out?
+                        </div>
+
+                        <div class="modal-footer">
+                            <button class="btn btn btn-danger loginLogout float-end" @onclick="OnLogoutClicked"> Logout </button>
+                            <button class="btn btn btn-warning" @onclick="OnLogoutAndForgetClicked"> Logout and forget </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
         </Authorized>
-        
+
         <NotAuthorized>
             You are not authorized to see main page. Log in!
+
+            <!-- Log In Modal -->
+            <div class="modal fade" id="logInModal" tabindex="-1" role="dialog" aria-labelledby="logInModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+
+                        <div class="modal-header fw-bolder">
+                            <h5 class="modal-title" id="logInModalLabel"> Log in to previously used account? </h5>
+                        </div>
+
+                        <div class="modal-body fw-bold fs-6">
+                            Confirm log in using biometrics or select new Log in.
+                        </div>
+
+                        <div class="modal-footer">
+                            <button class="btn btn btn-primary loginLogout float-end" @onclick="OnLoginClicked"> New Login </button>
+                            <button class="btn btn btn-success" @onclick="LoginWithBiometrics"> Login with biometric </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>         
         </NotAuthorized>
     </AuthorizeView>
 }
@@ -38,6 +91,21 @@ else
 
 @code {
     private Claim? name { get; set; }
+
+    bool _isLoggedIn = false;
+    public bool IsLoggedIn
+    {
+        get => _isLoggedIn;
+        set
+        {
+            if (_isLoggedIn == value) return;
+            _isLoggedIn = value;
+            InvokeAsync(StateHasChanged);
+        }
+    }
+
+    ToastDuration duration = ToastDuration.Long;
+    public double fontSize = 16;
 
 
     // Methods
@@ -52,5 +120,169 @@ else
         await Task.Delay(500);
 
         Globals.IsLoading = false;
+    }
+
+
+    public async void OnLoginClicked()
+    {
+        Globals.AccessToken = null; // Removes the accesToken from Globals variable, so new user can log in.
+        SecureStorage.Default.RemoveAll(); // Removes the accesToken from cache storage, so new user can log in.
+
+        IsLoggedIn = false;
+
+        Globals.IsLoading = true;
+
+        var toast = Toast.Make("You have successfully signed in!", duration, fontSize); // Creates a toast to show when login succeeds.
+
+        try
+        {
+            // Check if access token is already cached
+            string cachedToken = await SecureStorage.Default.GetAsync("accessToken");
+            if (cachedToken != null)
+            {
+                Globals.AccessToken = cachedToken;
+            }
+            else
+            {
+                // Attempt silent login, and obtain access token.
+                var result = await _pcaWrapper.AcquireTokenSilentAsync(_pcaWrapper.Scopes).ConfigureAwait(false);
+
+                // Set access token.
+                Globals.AccessToken = result?.AccessToken;
+                Globals.GrantedScopes = result?.Scopes;
+                Globals.Expires = result?.ExpiresOn;
+                Globals.Account = result?.Account;
+                if (Globals.AccessToken != null)
+                {
+                    var token = result?.AccessToken;
+                }
+            }
+            await _auth.GetAuthenticationStateAsync(); // Rechecks the Authentication state.
+
+            navigation.NavigateTo("/", true); // Forces navigation to the main page and reload.
+
+            IsLoggedIn = true;
+
+            await Task.Delay(250);
+
+            await toast.Show(); // Displays the success toaster.
+        }
+        // A MsalUiRequiredException will be thrown, if this is the first attempt to login, or after logging out.
+        catch (MsalUiRequiredException)
+        {
+            try
+            {
+                // Perform interactive login, and obtain access token.
+                var result = await _pcaWrapper.AcquireTokenInteractiveAsync(_pcaWrapper?.Scopes).ConfigureAwait(false);
+
+                // Set access token.
+                Globals.AccessToken = result?.AccessToken;
+                Globals.GrantedScopes = result?.Scopes;
+                Globals.Expires = result?.ExpiresOn;
+                Globals.Account = result?.Account;
+                if (Globals.AccessToken != null)
+                {
+                    var token = result?.AccessToken;
+
+                    await _auth.GetAuthenticationStateAsync(); // Rechecks the Authentication state.
+
+                    navigation.NavigateTo("/", true); // Forces navigation to the main page and reload.
+
+                    IsLoggedIn = true;
+
+                    await Task.Delay(250);
+
+                    await toast.Show(); // Displays the success toaster.
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
+        catch
+        {
+            IsLoggedIn = false;
+        }
+
+        Globals.IsLoading = false;
+    }
+
+    public async Task LoginWithBiometrics()
+    {
+        var isAvailable = await CrossFingerprint.Current.IsAvailableAsync();
+
+        if (isAvailable)
+        {
+            var request = new AuthenticationRequestConfiguration
+            ("Login using biometrics", "Confirm login with your biometrics")
+                {
+                    FallbackTitle = "Use PIN",
+                    AllowAlternativeAuthentication = true,
+                };
+
+            var result = await CrossFingerprint.Current.AuthenticateAsync(request);
+
+            if (result.Authenticated)
+            {
+                Globals.AccessToken = await SecureStorage.Default.GetAsync("accessToken"); // Fills the cached token to sign in a user.
+
+                await _auth.GetAuthenticationStateAsync(); // Rechecks the Authentication state.
+
+                navigation.NavigateTo("/", true); // Forces navigation to the main page and reload.
+
+                IsLoggedIn = true;
+
+                await Task.Delay(250);
+
+                var toast = Toast.Make("You have successfully signed in with biometrics!", ToastDuration.Long, 16); // Creates a toast to show when login succeeds.
+                await toast.Show(); // Displays the success toaster.
+            }
+            else
+            {
+                var toast = Toast.Make("You have NOT signed in with biometrics!", ToastDuration.Long, 16); // Creates a toast to show when login succeeds.
+                await toast.Show(); // Displays the errror toaster.
+            }
+        }
+        else
+        {
+            var toast = Toast.Make("Biometric login is not set on your phone!", ToastDuration.Long, 16); // Creates a toast to show when login succeeds.
+            await toast.Show(); // Displays the success toaster.
+        }
+    }
+
+    private void OnLogoutAndForgetClicked()
+    {
+        SecureStorage.Default.RemoveAll(); // Removes the accesToken from cache storage, so new user can log in.
+
+        OnLogoutClicked(); // Calls the method to logout from the account.
+    }
+
+    private async void OnLogoutClicked()
+    {
+        var toast = Toast.Make("You have successfully signed out from your account!", duration, fontSize); // Creates a toast to show when logout succeeds.
+
+        try
+        {
+            Globals.IsLoading = true;
+
+            await _pcaWrapper.SignOutAsync().ConfigureAwait(false);
+            IsLoggedIn = false;
+            Globals.AccessToken = null;
+
+            await _auth.GetAuthenticationStateAsync(); // Rechecks the Authentication state.
+
+            navigation.NavigateTo("/", true); // Forces navigation to the main page and reload.
+
+            await Task.Delay(500);
+
+            Globals.IsLoading = false;
+
+            await toast.Show(); // Displays the success toaster.
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
     }
 }

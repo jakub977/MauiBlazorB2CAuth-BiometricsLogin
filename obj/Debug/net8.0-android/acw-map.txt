@@ -1093,6 +1093,9 @@ microsoft.maui.devices.sensors.OrientationSensorListener;crc64f62664462a8937a9.O
 Microsoft.Maui.Graphics.Platform.PlatformGraphicsView, Microsoft.Maui.Graphics;crc643f2b18b2570eaa5a.PlatformGraphicsView
 Microsoft.Maui.Graphics.Platform.PlatformGraphicsView;crc643f2b18b2570eaa5a.PlatformGraphicsView
 microsoft.maui.graphics.platform.PlatformGraphicsView;crc643f2b18b2570eaa5a.PlatformGraphicsView
+Plugin.Fingerprint.AuthenticationHandler, Plugin.Fingerprint;crc64e6d0b84c6264ccdd.AuthenticationHandler
+Plugin.Fingerprint.AuthenticationHandler;crc64e6d0b84c6264ccdd.AuthenticationHandler
+plugin.fingerprint.AuthenticationHandler;crc64e6d0b84c6264ccdd.AuthenticationHandler
 Bumptech.Glide.Glide+IRequestOptionsFactory, Xamarin.Android.Glide;com.bumptech.glide.Glide$RequestOptionsFactory
 Bumptech.Glide.Glide.IRequestOptionsFactory;com.bumptech.glide.Glide$RequestOptionsFactory
 com.bumptech.glide.Glide$RequestOptionsFactory;com.bumptech.glide.Glide$RequestOptionsFactory
@@ -1747,6 +1750,9 @@ androidx.appcompat.widget.ResourceManagerInternal$ResourceManagerHooks;androidx.
 AndroidX.Arch.Core.Util.IFunction, Xamarin.AndroidX.Arch.Core.Common;androidx.arch.core.util.Function
 AndroidX.Arch.Core.Util.IFunction;androidx.arch.core.util.Function
 androidx.arch.core.util.Function;androidx.arch.core.util.Function
+AndroidX.Biometric.BiometricManager+IAuthenticators, Xamarin.AndroidX.Biometric;androidx.biometric.BiometricManager$Authenticators
+AndroidX.Biometric.BiometricManager.IAuthenticators;androidx.biometric.BiometricManager$Authenticators
+androidx.biometric.BiometricManager$Authenticators;androidx.biometric.BiometricManager$Authenticators
 Android.Support.Customtabs.Trusted.ITrustedWebActivityCallback, Xamarin.AndroidX.Browser;android.support.customtabs.trusted.ITrustedWebActivityCallback
 Android.Support.Customtabs.Trusted.ITrustedWebActivityCallback;android.support.customtabs.trusted.ITrustedWebActivityCallback
 android.support.customtabs.trusted.ITrustedWebActivityCallback;android.support.customtabs.trusted.ITrustedWebActivityCallback

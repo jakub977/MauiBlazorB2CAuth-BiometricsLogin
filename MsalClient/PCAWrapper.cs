@@ -3,6 +3,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Identity.Client;
+using Microsoft.Identity.Client;
 
 namespace MsalAuthInMauiBlazor.MsalClient
 {
@@ -49,13 +50,14 @@ namespace MsalAuthInMauiBlazor.MsalClient
             if (PCA == null)
                 return null;
 
+
             var accounts = await PCA.GetAccountsAsync(_settings?.PolicySignUpSignIn).ConfigureAwait(false);
             var account = accounts.FirstOrDefault();
 
             var authResult = await PCA.AcquireTokenSilent(scopes, account)
                                         .ExecuteAsync().ConfigureAwait(false);
-            return authResult;
 
+            return authResult;
         }
 
         /// <summary>
@@ -68,6 +70,7 @@ namespace MsalAuthInMauiBlazor.MsalClient
             if (PCA == null)
                 return null;
 
+
             var accounts = await PCA.GetAccountsAsync(_settings?.PolicySignUpSignIn).ConfigureAwait(false); ;
             var account = accounts.FirstOrDefault();
 
@@ -76,21 +79,33 @@ namespace MsalAuthInMauiBlazor.MsalClient
             var systemWebViewOptions = new SystemWebViewOptions();
             systemWebViewOptions.iOSHidePrivacyPrompt = true;
 
-            return await PCA.AcquireTokenInteractive(scopes)
+            var authResult = await PCA.AcquireTokenInteractive(scopes)
                                     .WithB2CAuthority(_settings?.Authority)
                                     .WithAccount(account)
                                     .WithParentActivityOrWindow(PlatformConfig.Instance.ParentWindow)
                                     .WithUseEmbeddedWebView(false)
                                     .ExecuteAsync()
                                     .ConfigureAwait(false);
+
+            // Store the access token in cache
+            await SecureStorage.Default.SetAsync("accessToken", authResult.AccessToken);
+            //AccessTokenCache[account.HomeAccountId.Identifier] = authResult.AccessToken;
+
+            return authResult;
 #else
-            return await PCA.AcquireTokenInteractive(scopes)
+            var authResult = await PCA.AcquireTokenInteractive(scopes)
                                     .WithB2CAuthority(_settings?.Authority)
                                     .WithAccount(account)
                                     .WithParentActivityOrWindow(PlatformConfig.Instance.ParentWindow)
                                     .WithUseEmbeddedWebView(false)
                                     .ExecuteAsync()
                                     .ConfigureAwait(false);
+
+            // Store the access token in cache
+            await SecureStorage.Default.SetAsync("accessToken", authResult.AccessToken);
+            //AccessTokenCache[account.HomeAccountId.Identifier] = authResult.AccessToken;
+
+            return authResult;
 
 #endif
 

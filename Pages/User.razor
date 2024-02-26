@@ -79,9 +79,12 @@ else
 
                     <h2>Access token granted scopes (as reported by the API)</h2>
 
-                    @foreach (var scope in Globals.GrantedScopes)
+                    @if (Globals.GrantedScopes != null)
                     {
-                        <p>Scope: @scope</p>
+                        @foreach (var scope in Globals.GrantedScopes)
+                        {
+                            <p>Scope: @scope</p>
+                        }
                     }
                 </div>
             }

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "7kSPsMaaBMfOQTrtTvO6hmQtXnl/ERMU//bStESaAVSrlIqxXzZYK4mNldjWxNEwvAaGl+s1o6CBkE3qAAjb1A==",
+  "dgSpecHash": "OddX3DGwPYsrIJc03mqTk1Ky1OIs/Jc/sXApun4cgKX7DJ2hrGWfyBWUqYzabN3fq8DC7wnH89m+W3JAfj61bg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorB2C\\MsalAuthInMauiBlazor\\MsalAuthInMauiBlazor.csproj",
+  "projectFilePath": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorBiometricsTest\\MsalAuthInMauiBlazor.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\jsanda\\.nuget\\packages\\blazored.localstorage\\4.4.0\\blazored.localstorage.4.4.0.nupkg.sha512",
     "C:\\Users\\jsanda\\.nuget\\packages\\communitytoolkit.maui\\7.0.1\\communitytoolkit.maui.7.0.1.nupkg.sha512",
@@ -60,6 +60,7 @@
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages\\microsoft.windows.sdk.buildtools\\10.0.22621.756\\microsoft.windows.sdk.buildtools.10.0.22621.756.nupkg.sha512",
     "C:\\Users\\jsanda\\.nuget\\packages\\microsoft.windowsappsdk\\1.3.230724000\\microsoft.windowsappsdk.1.3.230724000.nupkg.sha512",
     "C:\\Users\\jsanda\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512",
+    "C:\\Users\\jsanda\\.nuget\\packages\\plugin.fingerprint\\3.0.0-beta.1\\plugin.fingerprint.3.0.0-beta.1.nupkg.sha512",
     "C:\\Users\\jsanda\\.nuget\\packages\\runtime.any.system.globalization\\4.3.0\\runtime.any.system.globalization.4.3.0.nupkg.sha512",
     "C:\\Users\\jsanda\\.nuget\\packages\\runtime.any.system.io\\4.3.0\\runtime.any.system.io.4.3.0.nupkg.sha512",
     "C:\\Users\\jsanda\\.nuget\\packages\\runtime.any.system.reflection\\4.3.0\\runtime.any.system.reflection.4.3.0.nupkg.sha512",
@@ -111,6 +112,7 @@
     "C:\\Users\\jsanda\\.nuget\\packages\\xamarin.androidx.appcompat.appcompatresources\\1.6.1.3\\xamarin.androidx.appcompat.appcompatresources.1.6.1.3.nupkg.sha512",
     "C:\\Users\\jsanda\\.nuget\\packages\\xamarin.androidx.arch.core.common\\2.2.0.3\\xamarin.androidx.arch.core.common.2.2.0.3.nupkg.sha512",
     "C:\\Users\\jsanda\\.nuget\\packages\\xamarin.androidx.arch.core.runtime\\2.2.0.3\\xamarin.androidx.arch.core.runtime.2.2.0.3.nupkg.sha512",
+    "C:\\Users\\jsanda\\.nuget\\packages\\xamarin.androidx.biometric\\1.1.0.9\\xamarin.androidx.biometric.1.1.0.9.nupkg.sha512",
     "C:\\Users\\jsanda\\.nuget\\packages\\xamarin.androidx.browser\\1.5.0.3\\xamarin.androidx.browser.1.5.0.3.nupkg.sha512",
     "C:\\Users\\jsanda\\.nuget\\packages\\xamarin.androidx.cardview\\1.0.0.21\\xamarin.androidx.cardview.1.0.0.21.nupkg.sha512",
     "C:\\Users\\jsanda\\.nuget\\packages\\xamarin.androidx.collection\\1.2.0.9\\xamarin.androidx.collection.1.2.0.9.nupkg.sha512",

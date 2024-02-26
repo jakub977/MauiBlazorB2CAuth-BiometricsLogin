@@ -933,6 +933,22 @@
           }
         }
       },
+      "Plugin.Fingerprint/3.0.0-beta.1": {
+        "type": "package",
+        "dependencies": {
+          "Xamarin.AndroidX.Biometric": "1.1.0.9"
+        },
+        "compile": {
+          "lib/net6.0-android31.0/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-android31.0/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
       "System.IdentityModel.Tokens.Jwt/7.3.0": {
         "type": "package",
         "dependencies": {
@@ -1306,6 +1322,31 @@
         },
         "build": {
           "buildTransitive/net6.0-android31.0/Xamarin.AndroidX.Arch.Core.Runtime.targets": {}
+        }
+      },
+      "Xamarin.AndroidX.Biometric/1.1.0.9": {
+        "type": "package",
+        "dependencies": {
+          "Xamarin.AndroidX.Activity": "1.4.0.2",
+          "Xamarin.AndroidX.Annotation": "1.3.0.3",
+          "Xamarin.AndroidX.AppCompat": "1.4.1.1",
+          "Xamarin.AndroidX.Core": "1.7.0.2",
+          "Xamarin.AndroidX.Fragment": "1.4.1.1",
+          "Xamarin.AndroidX.Lifecycle.LiveData.Core": "2.4.1.1",
+          "Xamarin.AndroidX.Lifecycle.ViewModel": "2.4.1.1"
+        },
+        "compile": {
+          "lib/net6.0-android31.0/Xamarin.AndroidX.Biometric.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-android31.0/Xamarin.AndroidX.Biometric.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net6.0-android31.0/Xamarin.AndroidX.Biometric.targets": {}
         }
       },
       "Xamarin.AndroidX.Browser/1.5.0.3": {
@@ -3721,6 +3762,22 @@
           }
         }
       },
+      "Plugin.Fingerprint/3.0.0-beta.1": {
+        "type": "package",
+        "dependencies": {
+          "Xamarin.AndroidX.Biometric": "1.1.0.9"
+        },
+        "compile": {
+          "lib/net6.0-android31.0/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-android31.0/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
       "System.IdentityModel.Tokens.Jwt/7.3.0": {
         "type": "package",
         "dependencies": {
@@ -4078,6 +4135,31 @@
         },
         "build": {
           "buildTransitive/net6.0-android31.0/Xamarin.AndroidX.Arch.Core.Runtime.targets": {}
+        }
+      },
+      "Xamarin.AndroidX.Biometric/1.1.0.9": {
+        "type": "package",
+        "dependencies": {
+          "Xamarin.AndroidX.Activity": "1.4.0.2",
+          "Xamarin.AndroidX.Annotation": "1.3.0.3",
+          "Xamarin.AndroidX.AppCompat": "1.4.1.1",
+          "Xamarin.AndroidX.Core": "1.7.0.2",
+          "Xamarin.AndroidX.Fragment": "1.4.1.1",
+          "Xamarin.AndroidX.Lifecycle.LiveData.Core": "2.4.1.1",
+          "Xamarin.AndroidX.Lifecycle.ViewModel": "2.4.1.1"
+        },
+        "compile": {
+          "lib/net6.0-android31.0/Xamarin.AndroidX.Biometric.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-android31.0/Xamarin.AndroidX.Biometric.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net6.0-android31.0/Xamarin.AndroidX.Biometric.targets": {}
         }
       },
       "Xamarin.AndroidX.Browser/1.5.0.3": {
@@ -6493,6 +6575,22 @@
           }
         }
       },
+      "Plugin.Fingerprint/3.0.0-beta.1": {
+        "type": "package",
+        "dependencies": {
+          "Xamarin.AndroidX.Biometric": "1.1.0.9"
+        },
+        "compile": {
+          "lib/net6.0-android31.0/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-android31.0/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
       "System.IdentityModel.Tokens.Jwt/7.3.0": {
         "type": "package",
         "dependencies": {
@@ -6850,6 +6948,31 @@
         },
         "build": {
           "buildTransitive/net6.0-android31.0/Xamarin.AndroidX.Arch.Core.Runtime.targets": {}
+        }
+      },
+      "Xamarin.AndroidX.Biometric/1.1.0.9": {
+        "type": "package",
+        "dependencies": {
+          "Xamarin.AndroidX.Activity": "1.4.0.2",
+          "Xamarin.AndroidX.Annotation": "1.3.0.3",
+          "Xamarin.AndroidX.AppCompat": "1.4.1.1",
+          "Xamarin.AndroidX.Core": "1.7.0.2",
+          "Xamarin.AndroidX.Fragment": "1.4.1.1",
+          "Xamarin.AndroidX.Lifecycle.LiveData.Core": "2.4.1.1",
+          "Xamarin.AndroidX.Lifecycle.ViewModel": "2.4.1.1"
+        },
+        "compile": {
+          "lib/net6.0-android31.0/Xamarin.AndroidX.Biometric.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-android31.0/Xamarin.AndroidX.Biometric.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net6.0-android31.0/Xamarin.AndroidX.Biometric.targets": {}
         }
       },
       "Xamarin.AndroidX.Browser/1.5.0.3": {
@@ -9265,6 +9388,22 @@
           }
         }
       },
+      "Plugin.Fingerprint/3.0.0-beta.1": {
+        "type": "package",
+        "dependencies": {
+          "Xamarin.AndroidX.Biometric": "1.1.0.9"
+        },
+        "compile": {
+          "lib/net6.0-android31.0/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-android31.0/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
       "System.IdentityModel.Tokens.Jwt/7.3.0": {
         "type": "package",
         "dependencies": {
@@ -9622,6 +9761,31 @@
         },
         "build": {
           "buildTransitive/net6.0-android31.0/Xamarin.AndroidX.Arch.Core.Runtime.targets": {}
+        }
+      },
+      "Xamarin.AndroidX.Biometric/1.1.0.9": {
+        "type": "package",
+        "dependencies": {
+          "Xamarin.AndroidX.Activity": "1.4.0.2",
+          "Xamarin.AndroidX.Annotation": "1.3.0.3",
+          "Xamarin.AndroidX.AppCompat": "1.4.1.1",
+          "Xamarin.AndroidX.Core": "1.7.0.2",
+          "Xamarin.AndroidX.Fragment": "1.4.1.1",
+          "Xamarin.AndroidX.Lifecycle.LiveData.Core": "2.4.1.1",
+          "Xamarin.AndroidX.Lifecycle.ViewModel": "2.4.1.1"
+        },
+        "compile": {
+          "lib/net6.0-android31.0/Xamarin.AndroidX.Biometric.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-android31.0/Xamarin.AndroidX.Biometric.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net6.0-android31.0/Xamarin.AndroidX.Biometric.targets": {}
         }
       },
       "Xamarin.AndroidX.Browser/1.5.0.3": {
@@ -12037,6 +12201,22 @@
           }
         }
       },
+      "Plugin.Fingerprint/3.0.0-beta.1": {
+        "type": "package",
+        "dependencies": {
+          "Xamarin.AndroidX.Biometric": "1.1.0.9"
+        },
+        "compile": {
+          "lib/net6.0-android31.0/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-android31.0/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
       "System.IdentityModel.Tokens.Jwt/7.3.0": {
         "type": "package",
         "dependencies": {
@@ -12394,6 +12574,31 @@
         },
         "build": {
           "buildTransitive/net6.0-android31.0/Xamarin.AndroidX.Arch.Core.Runtime.targets": {}
+        }
+      },
+      "Xamarin.AndroidX.Biometric/1.1.0.9": {
+        "type": "package",
+        "dependencies": {
+          "Xamarin.AndroidX.Activity": "1.4.0.2",
+          "Xamarin.AndroidX.Annotation": "1.3.0.3",
+          "Xamarin.AndroidX.AppCompat": "1.4.1.1",
+          "Xamarin.AndroidX.Core": "1.7.0.2",
+          "Xamarin.AndroidX.Fragment": "1.4.1.1",
+          "Xamarin.AndroidX.Lifecycle.LiveData.Core": "2.4.1.1",
+          "Xamarin.AndroidX.Lifecycle.ViewModel": "2.4.1.1"
+        },
+        "compile": {
+          "lib/net6.0-android31.0/Xamarin.AndroidX.Biometric.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-android31.0/Xamarin.AndroidX.Biometric.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net6.0-android31.0/Xamarin.AndroidX.Biometric.targets": {}
         }
       },
       "Xamarin.AndroidX.Browser/1.5.0.3": {
@@ -14809,6 +15014,22 @@
           }
         }
       },
+      "Plugin.Fingerprint/3.0.0-beta.1": {
+        "type": "package",
+        "dependencies": {
+          "Xamarin.AndroidX.Biometric": "1.1.0.9"
+        },
+        "compile": {
+          "lib/net6.0-android31.0/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-android31.0/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
       "System.IdentityModel.Tokens.Jwt/7.3.0": {
         "type": "package",
         "dependencies": {
@@ -15166,6 +15387,31 @@
         },
         "build": {
           "buildTransitive/net6.0-android31.0/Xamarin.AndroidX.Arch.Core.Runtime.targets": {}
+        }
+      },
+      "Xamarin.AndroidX.Biometric/1.1.0.9": {
+        "type": "package",
+        "dependencies": {
+          "Xamarin.AndroidX.Activity": "1.4.0.2",
+          "Xamarin.AndroidX.Annotation": "1.3.0.3",
+          "Xamarin.AndroidX.AppCompat": "1.4.1.1",
+          "Xamarin.AndroidX.Core": "1.7.0.2",
+          "Xamarin.AndroidX.Fragment": "1.4.1.1",
+          "Xamarin.AndroidX.Lifecycle.LiveData.Core": "2.4.1.1",
+          "Xamarin.AndroidX.Lifecycle.ViewModel": "2.4.1.1"
+        },
+        "compile": {
+          "lib/net6.0-android31.0/Xamarin.AndroidX.Biometric.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-android31.0/Xamarin.AndroidX.Biometric.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net6.0-android31.0/Xamarin.AndroidX.Biometric.targets": {}
         }
       },
       "Xamarin.AndroidX.Browser/1.5.0.3": {
@@ -17581,6 +17827,22 @@
           }
         }
       },
+      "Plugin.Fingerprint/3.0.0-beta.1": {
+        "type": "package",
+        "dependencies": {
+          "Xamarin.AndroidX.Biometric": "1.1.0.9"
+        },
+        "compile": {
+          "lib/net6.0-android31.0/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-android31.0/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
       "System.IdentityModel.Tokens.Jwt/7.3.0": {
         "type": "package",
         "dependencies": {
@@ -17938,6 +18200,31 @@
         },
         "build": {
           "buildTransitive/net6.0-android31.0/Xamarin.AndroidX.Arch.Core.Runtime.targets": {}
+        }
+      },
+      "Xamarin.AndroidX.Biometric/1.1.0.9": {
+        "type": "package",
+        "dependencies": {
+          "Xamarin.AndroidX.Activity": "1.4.0.2",
+          "Xamarin.AndroidX.Annotation": "1.3.0.3",
+          "Xamarin.AndroidX.AppCompat": "1.4.1.1",
+          "Xamarin.AndroidX.Core": "1.7.0.2",
+          "Xamarin.AndroidX.Fragment": "1.4.1.1",
+          "Xamarin.AndroidX.Lifecycle.LiveData.Core": "2.4.1.1",
+          "Xamarin.AndroidX.Lifecycle.ViewModel": "2.4.1.1"
+        },
+        "compile": {
+          "lib/net6.0-android31.0/Xamarin.AndroidX.Biometric.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-android31.0/Xamarin.AndroidX.Biometric.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net6.0-android31.0/Xamarin.AndroidX.Biometric.targets": {}
         }
       },
       "Xamarin.AndroidX.Browser/1.5.0.3": {
@@ -20353,6 +20640,22 @@
           }
         }
       },
+      "Plugin.Fingerprint/3.0.0-beta.1": {
+        "type": "package",
+        "dependencies": {
+          "Xamarin.AndroidX.Biometric": "1.1.0.9"
+        },
+        "compile": {
+          "lib/net6.0-android31.0/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-android31.0/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
       "System.IdentityModel.Tokens.Jwt/7.3.0": {
         "type": "package",
         "dependencies": {
@@ -20710,6 +21013,31 @@
         },
         "build": {
           "buildTransitive/net6.0-android31.0/Xamarin.AndroidX.Arch.Core.Runtime.targets": {}
+        }
+      },
+      "Xamarin.AndroidX.Biometric/1.1.0.9": {
+        "type": "package",
+        "dependencies": {
+          "Xamarin.AndroidX.Activity": "1.4.0.2",
+          "Xamarin.AndroidX.Annotation": "1.3.0.3",
+          "Xamarin.AndroidX.AppCompat": "1.4.1.1",
+          "Xamarin.AndroidX.Core": "1.7.0.2",
+          "Xamarin.AndroidX.Fragment": "1.4.1.1",
+          "Xamarin.AndroidX.Lifecycle.LiveData.Core": "2.4.1.1",
+          "Xamarin.AndroidX.Lifecycle.ViewModel": "2.4.1.1"
+        },
+        "compile": {
+          "lib/net6.0-android31.0/Xamarin.AndroidX.Biometric.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-android31.0/Xamarin.AndroidX.Biometric.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net6.0-android31.0/Xamarin.AndroidX.Biometric.targets": {}
         }
       },
       "Xamarin.AndroidX.Browser/1.5.0.3": {
@@ -23120,6 +23448,22 @@
           }
         }
       },
+      "Plugin.Fingerprint/3.0.0-beta.1": {
+        "type": "package",
+        "dependencies": {
+          "System.Runtime.InteropServices.NFloat.Internal": "6.0.1"
+        },
+        "compile": {
+          "lib/net6.0-ios15.2/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-ios15.2/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
       "System.Diagnostics.Debug/4.3.0": {
         "type": "package",
         "dependencies": {
@@ -24337,6 +24681,22 @@
         "runtime": {
           "lib/net6.0/Newtonsoft.Json.dll": {
             "related": ".xml"
+          }
+        }
+      },
+      "Plugin.Fingerprint/3.0.0-beta.1": {
+        "type": "package",
+        "dependencies": {
+          "System.Runtime.InteropServices.NFloat.Internal": "6.0.1"
+        },
+        "compile": {
+          "lib/net6.0-ios15.2/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-ios15.2/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
           }
         }
       },
@@ -25699,6 +26059,22 @@
           }
         }
       },
+      "Plugin.Fingerprint/3.0.0-beta.1": {
+        "type": "package",
+        "dependencies": {
+          "System.Runtime.InteropServices.NFloat.Internal": "6.0.1"
+        },
+        "compile": {
+          "lib/net6.0-ios15.2/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-ios15.2/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
       "runtime.any.System.Globalization/4.3.0": {
         "type": "package",
         "compile": {
@@ -27055,6 +27431,22 @@
         "runtime": {
           "lib/net6.0/Newtonsoft.Json.dll": {
             "related": ".xml"
+          }
+        }
+      },
+      "Plugin.Fingerprint/3.0.0-beta.1": {
+        "type": "package",
+        "dependencies": {
+          "System.Runtime.InteropServices.NFloat.Internal": "6.0.1"
+        },
+        "compile": {
+          "lib/net6.0-ios15.2/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-ios15.2/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
           }
         }
       },
@@ -28417,6 +28809,22 @@
           }
         }
       },
+      "Plugin.Fingerprint/3.0.0-beta.1": {
+        "type": "package",
+        "dependencies": {
+          "System.Runtime.InteropServices.NFloat.Internal": "6.0.1"
+        },
+        "compile": {
+          "lib/net6.0-ios15.2/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-ios15.2/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
       "runtime.any.System.Globalization/4.3.0": {
         "type": "package",
         "compile": {
@@ -29773,6 +30181,22 @@
         "runtime": {
           "lib/net6.0/Newtonsoft.Json.dll": {
             "related": ".xml"
+          }
+        }
+      },
+      "Plugin.Fingerprint/3.0.0-beta.1": {
+        "type": "package",
+        "dependencies": {
+          "System.Runtime.InteropServices.NFloat.Internal": "6.0.1"
+        },
+        "compile": {
+          "lib/net6.0-ios15.2/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-ios15.2/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
           }
         }
       },
@@ -31135,6 +31559,22 @@
           }
         }
       },
+      "Plugin.Fingerprint/3.0.0-beta.1": {
+        "type": "package",
+        "dependencies": {
+          "System.Runtime.InteropServices.NFloat.Internal": "6.0.1"
+        },
+        "compile": {
+          "lib/net6.0-ios15.2/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-ios15.2/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
       "runtime.any.System.Globalization/4.3.0": {
         "type": "package",
         "compile": {
@@ -32494,6 +32934,22 @@
           }
         }
       },
+      "Plugin.Fingerprint/3.0.0-beta.1": {
+        "type": "package",
+        "dependencies": {
+          "System.Runtime.InteropServices.NFloat.Internal": "6.0.1"
+        },
+        "compile": {
+          "lib/net6.0-ios15.2/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-ios15.2/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
       "runtime.any.System.Globalization/4.3.0": {
         "type": "package",
         "compile": {
@@ -33815,6 +34271,22 @@
           }
         }
       },
+      "Plugin.Fingerprint/3.0.0-beta.1": {
+        "type": "package",
+        "dependencies": {
+          "System.Runtime.InteropServices.NFloat.Internal": "6.0.1"
+        },
+        "compile": {
+          "lib/net6.0-maccatalyst15.2/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-maccatalyst15.2/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
       "System.Diagnostics.DiagnosticSource/6.0.1": {
         "type": "package",
         "dependencies": {
@@ -33881,6 +34353,14 @@
         },
         "build": {
           "buildTransitive/netcoreapp3.1/_._": {}
+        }
+      },
+      "System.Runtime.InteropServices.NFloat.Internal/6.0.1": {
+        "type": "package",
+        "compile": {
+          "ref/net6.0/System.Runtime.InteropServices.dll": {
+            "related": ".xml"
+          }
         }
       },
       "System.Text.Encodings.Web/8.0.0": {
@@ -34833,6 +35313,22 @@
           }
         }
       },
+      "Plugin.Fingerprint/3.0.0-beta.1": {
+        "type": "package",
+        "dependencies": {
+          "System.Runtime.InteropServices.NFloat.Internal": "6.0.1"
+        },
+        "compile": {
+          "lib/net6.0-maccatalyst15.2/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-maccatalyst15.2/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
       "System.Diagnostics.DiagnosticSource/6.0.1": {
         "type": "package",
         "dependencies": {
@@ -34899,6 +35395,14 @@
         },
         "build": {
           "buildTransitive/netcoreapp3.1/_._": {}
+        }
+      },
+      "System.Runtime.InteropServices.NFloat.Internal/6.0.1": {
+        "type": "package",
+        "compile": {
+          "ref/net6.0/System.Runtime.InteropServices.dll": {
+            "related": ".xml"
+          }
         }
       },
       "System.Text.Encodings.Web/8.0.0": {
@@ -35845,6 +36349,22 @@
           }
         }
       },
+      "Plugin.Fingerprint/3.0.0-beta.1": {
+        "type": "package",
+        "dependencies": {
+          "System.Runtime.InteropServices.NFloat.Internal": "6.0.1"
+        },
+        "compile": {
+          "lib/net6.0-maccatalyst15.2/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-maccatalyst15.2/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
       "System.Diagnostics.DiagnosticSource/6.0.1": {
         "type": "package",
         "dependencies": {
@@ -35911,6 +36431,14 @@
         },
         "build": {
           "buildTransitive/netcoreapp3.1/_._": {}
+        }
+      },
+      "System.Runtime.InteropServices.NFloat.Internal/6.0.1": {
+        "type": "package",
+        "compile": {
+          "ref/net6.0/System.Runtime.InteropServices.dll": {
+            "related": ".xml"
+          }
         }
       },
       "System.Text.Encodings.Web/8.0.0": {
@@ -36857,6 +37385,22 @@
           }
         }
       },
+      "Plugin.Fingerprint/3.0.0-beta.1": {
+        "type": "package",
+        "dependencies": {
+          "System.Runtime.InteropServices.NFloat.Internal": "6.0.1"
+        },
+        "compile": {
+          "lib/net6.0-maccatalyst15.2/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-maccatalyst15.2/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
       "System.Diagnostics.DiagnosticSource/6.0.1": {
         "type": "package",
         "dependencies": {
@@ -36923,6 +37467,14 @@
         },
         "build": {
           "buildTransitive/netcoreapp3.1/_._": {}
+        }
+      },
+      "System.Runtime.InteropServices.NFloat.Internal/6.0.1": {
+        "type": "package",
+        "compile": {
+          "ref/net6.0/System.Runtime.InteropServices.dll": {
+            "related": ".xml"
+          }
         }
       },
       "System.Text.Encodings.Web/8.0.0": {
@@ -37869,6 +38421,22 @@
           }
         }
       },
+      "Plugin.Fingerprint/3.0.0-beta.1": {
+        "type": "package",
+        "dependencies": {
+          "System.Runtime.InteropServices.NFloat.Internal": "6.0.1"
+        },
+        "compile": {
+          "lib/net6.0-maccatalyst15.2/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-maccatalyst15.2/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
       "System.Diagnostics.DiagnosticSource/6.0.1": {
         "type": "package",
         "dependencies": {
@@ -37935,6 +38503,14 @@
         },
         "build": {
           "buildTransitive/netcoreapp3.1/_._": {}
+        }
+      },
+      "System.Runtime.InteropServices.NFloat.Internal/6.0.1": {
+        "type": "package",
+        "compile": {
+          "ref/net6.0/System.Runtime.InteropServices.dll": {
+            "related": ".xml"
+          }
         }
       },
       "System.Text.Encodings.Web/8.0.0": {
@@ -38881,6 +39457,22 @@
           }
         }
       },
+      "Plugin.Fingerprint/3.0.0-beta.1": {
+        "type": "package",
+        "dependencies": {
+          "System.Runtime.InteropServices.NFloat.Internal": "6.0.1"
+        },
+        "compile": {
+          "lib/net6.0-maccatalyst15.2/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-maccatalyst15.2/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
       "System.Diagnostics.DiagnosticSource/6.0.1": {
         "type": "package",
         "dependencies": {
@@ -38947,6 +39539,14 @@
         },
         "build": {
           "buildTransitive/netcoreapp3.1/_._": {}
+        }
+      },
+      "System.Runtime.InteropServices.NFloat.Internal/6.0.1": {
+        "type": "package",
+        "compile": {
+          "ref/net6.0/System.Runtime.InteropServices.dll": {
+            "related": ".xml"
+          }
         }
       },
       "System.Text.Encodings.Web/8.0.0": {
@@ -39893,6 +40493,22 @@
           }
         }
       },
+      "Plugin.Fingerprint/3.0.0-beta.1": {
+        "type": "package",
+        "dependencies": {
+          "System.Runtime.InteropServices.NFloat.Internal": "6.0.1"
+        },
+        "compile": {
+          "lib/net6.0-maccatalyst15.2/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-maccatalyst15.2/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
       "System.Diagnostics.DiagnosticSource/6.0.1": {
         "type": "package",
         "dependencies": {
@@ -39959,6 +40575,14 @@
         },
         "build": {
           "buildTransitive/netcoreapp3.1/_._": {}
+        }
+      },
+      "System.Runtime.InteropServices.NFloat.Internal/6.0.1": {
+        "type": "package",
+        "compile": {
+          "ref/net6.0/System.Runtime.InteropServices.dll": {
+            "related": ".xml"
+          }
         }
       },
       "System.Text.Encodings.Web/8.0.0": {
@@ -40905,6 +41529,22 @@
           }
         }
       },
+      "Plugin.Fingerprint/3.0.0-beta.1": {
+        "type": "package",
+        "dependencies": {
+          "System.Runtime.InteropServices.NFloat.Internal": "6.0.1"
+        },
+        "compile": {
+          "lib/net6.0-maccatalyst15.2/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-maccatalyst15.2/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
       "System.Diagnostics.DiagnosticSource/6.0.1": {
         "type": "package",
         "dependencies": {
@@ -40971,6 +41611,14 @@
         },
         "build": {
           "buildTransitive/netcoreapp3.1/_._": {}
+        }
+      },
+      "System.Runtime.InteropServices.NFloat.Internal/6.0.1": {
+        "type": "package",
+        "compile": {
+          "ref/net6.0/System.Runtime.InteropServices.dll": {
+            "related": ".xml"
+          }
         }
       },
       "System.Text.Encodings.Web/8.0.0": {
@@ -42128,6 +42776,19 @@
         "runtime": {
           "lib/net6.0/Newtonsoft.Json.dll": {
             "related": ".xml"
+          }
+        }
+      },
+      "Plugin.Fingerprint/3.0.0-beta.1": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0-windows10.0.19041/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-windows10.0.19041/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
           }
         }
       },
@@ -43325,6 +43986,19 @@
           }
         }
       },
+      "Plugin.Fingerprint/3.0.0-beta.1": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0-windows10.0.19041/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-windows10.0.19041/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
       "System.Diagnostics.DiagnosticSource/6.0.1": {
         "type": "package",
         "dependencies": {
@@ -44504,6 +45178,19 @@
         "runtime": {
           "lib/net6.0/Newtonsoft.Json.dll": {
             "related": ".xml"
+          }
+        }
+      },
+      "Plugin.Fingerprint/3.0.0-beta.1": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0-windows10.0.19041/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-windows10.0.19041/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
           }
         }
       },
@@ -45689,6 +46376,19 @@
           }
         }
       },
+      "Plugin.Fingerprint/3.0.0-beta.1": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0-windows10.0.19041/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-windows10.0.19041/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
       "System.Diagnostics.DiagnosticSource/6.0.1": {
         "type": "package",
         "dependencies": {
@@ -46868,6 +47568,19 @@
         "runtime": {
           "lib/net6.0/Newtonsoft.Json.dll": {
             "related": ".xml"
+          }
+        }
+      },
+      "Plugin.Fingerprint/3.0.0-beta.1": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0-windows10.0.19041/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-windows10.0.19041/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
           }
         }
       },
@@ -48053,6 +48766,19 @@
           }
         }
       },
+      "Plugin.Fingerprint/3.0.0-beta.1": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0-windows10.0.19041/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-windows10.0.19041/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
       "System.Diagnostics.DiagnosticSource/6.0.1": {
         "type": "package",
         "dependencies": {
@@ -49232,6 +49958,19 @@
         "runtime": {
           "lib/net6.0/Newtonsoft.Json.dll": {
             "related": ".xml"
+          }
+        }
+      },
+      "Plugin.Fingerprint/3.0.0-beta.1": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0-windows10.0.19041/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-windows10.0.19041/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
           }
         }
       },
@@ -50426,6 +51165,19 @@
         "runtime": {
           "lib/net6.0/Newtonsoft.Json.dll": {
             "related": ".xml"
+          }
+        }
+      },
+      "Plugin.Fingerprint/3.0.0-beta.1": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0-windows10.0.19041/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-windows10.0.19041/Plugin.Fingerprint.dll": {
+            "related": ".pdb;.xml"
           }
         }
       },
@@ -53423,6 +54175,62 @@
         "packageIcon.png"
       ]
     },
+    "Plugin.Fingerprint/3.0.0-beta.1": {
+      "sha512": "cqNBAiTB//+cwqaccfrEqg6MHfFFaC/22mWY9fm/eNrKWMrng8+jXdHC1HrxIBKzgQa3e2aZIVxO0SbbmXyCbA==",
+      "type": "package",
+      "path": "plugin.fingerprint/3.0.0-beta.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/monoandroid10.0/Plugin.Fingerprint.dll",
+        "lib/monoandroid10.0/Plugin.Fingerprint.pdb",
+        "lib/monoandroid10.0/Plugin.Fingerprint.xml",
+        "lib/monoandroid12.0/Plugin.Fingerprint.dll",
+        "lib/monoandroid12.0/Plugin.Fingerprint.pdb",
+        "lib/monoandroid12.0/Plugin.Fingerprint.xml",
+        "lib/net48/Plugin.Fingerprint.dll",
+        "lib/net48/Plugin.Fingerprint.pdb",
+        "lib/net48/Plugin.Fingerprint.xml",
+        "lib/net6.0-android31.0/Plugin.Fingerprint.dll",
+        "lib/net6.0-android31.0/Plugin.Fingerprint.pdb",
+        "lib/net6.0-android31.0/Plugin.Fingerprint.xml",
+        "lib/net6.0-ios15.2/Plugin.Fingerprint.dll",
+        "lib/net6.0-ios15.2/Plugin.Fingerprint.pdb",
+        "lib/net6.0-ios15.2/Plugin.Fingerprint.xml",
+        "lib/net6.0-maccatalyst15.2/Plugin.Fingerprint.dll",
+        "lib/net6.0-maccatalyst15.2/Plugin.Fingerprint.pdb",
+        "lib/net6.0-maccatalyst15.2/Plugin.Fingerprint.xml",
+        "lib/net6.0-windows10.0.19041/Plugin.Fingerprint.dll",
+        "lib/net6.0-windows10.0.19041/Plugin.Fingerprint.pdb",
+        "lib/net6.0-windows10.0.19041/Plugin.Fingerprint.xml",
+        "lib/netstandard2.0/Plugin.Fingerprint.dll",
+        "lib/netstandard2.0/Plugin.Fingerprint.pdb",
+        "lib/netstandard2.0/Plugin.Fingerprint.xml",
+        "lib/tizen40/Plugin.Fingerprint.dll",
+        "lib/tizen40/Plugin.Fingerprint.pdb",
+        "lib/tizen40/Plugin.Fingerprint.xml",
+        "lib/uap10.0.19041/Plugin.Fingerprint.dll",
+        "lib/uap10.0.19041/Plugin.Fingerprint.pdb",
+        "lib/uap10.0.19041/Plugin.Fingerprint.pri",
+        "lib/uap10.0.19041/Plugin.Fingerprint.xml",
+        "lib/xamarinios10/Plugin.Fingerprint.dll",
+        "lib/xamarinios10/Plugin.Fingerprint.pdb",
+        "lib/xamarinios10/Plugin.Fingerprint.xml",
+        "lib/xamarinmac20/Plugin.Fingerprint.dll",
+        "lib/xamarinmac20/Plugin.Fingerprint.pdb",
+        "lib/xamarinmac20/Plugin.Fingerprint.xml",
+        "lib/xamarintvos10/Plugin.Fingerprint.dll",
+        "lib/xamarintvos10/Plugin.Fingerprint.pdb",
+        "lib/xamarintvos10/Plugin.Fingerprint.xml",
+        "lib/xamarinwatchos10/Plugin.Fingerprint.dll",
+        "lib/xamarinwatchos10/Plugin.Fingerprint.pdb",
+        "lib/xamarinwatchos10/Plugin.Fingerprint.xml",
+        "plugin.fingerprint.3.0.0-beta.1.nupkg.sha512",
+        "plugin.fingerprint.nuspec",
+        "readme.md",
+        "xamarin_fingerprint.png"
+      ]
+    },
     "runtime.any.System.Globalization/4.3.0": {
       "sha512": "sMDBnad4rp4t7GY442Jux0MCUuKL4otn5BK6Ni0ARTXTSpRNBzZ7hpMfKSvnVSED5kYJm96YOWsqV0JH0d2uuw==",
       "type": "package",
@@ -55263,6 +56071,30 @@
         "xamarin.androidx.arch.core.runtime.nuspec"
       ]
     },
+    "Xamarin.AndroidX.Biometric/1.1.0.9": {
+      "sha512": "moLHbqseIHESgIt88MWVJtt7n8m+eyw2tEF8TNRmR9nmnsPLymvmRUA1juCYNO5iJsdagyPMpz4Tb8M6mqhtHQ==",
+      "type": "package",
+      "path": "xamarin.androidx.biometric/1.1.0.9",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.md",
+        "aar/androidx.biometric.biometric.aar",
+        "build/monoandroid12.0/Xamarin.AndroidX.Biometric.targets",
+        "build/net6.0-android31.0/Xamarin.AndroidX.Biometric.targets",
+        "buildTransitive/monoandroid12.0/Xamarin.AndroidX.Biometric.targets",
+        "buildTransitive/net6.0-android31.0/Xamarin.AndroidX.Biometric.targets",
+        "lib/monoandroid12.0/Xamarin.AndroidX.Biometric.dll",
+        "lib/monoandroid12.0/Xamarin.AndroidX.Biometric.pdb",
+        "lib/monoandroid12.0/Xamarin.AndroidX.Biometric.xml",
+        "lib/net6.0-android31.0/Xamarin.AndroidX.Biometric.dll",
+        "lib/net6.0-android31.0/Xamarin.AndroidX.Biometric.pdb",
+        "lib/net6.0-android31.0/Xamarin.AndroidX.Biometric.xml",
+        "proguard/proguard.txt",
+        "xamarin.androidx.biometric.1.1.0.9.nupkg.sha512",
+        "xamarin.androidx.biometric.nuspec"
+      ]
+    },
     "Xamarin.AndroidX.Browser/1.5.0.3": {
       "sha512": "ldwfIilT30WNt3nHokm9VYw9Hpunhb64d8szasTWfXSdB89F6DzSoNt7Nczb1xZ4coL98f7WqGNYzSj/IYnrJw==",
       "type": "package",
@@ -57002,6 +57834,7 @@
       "Microsoft.Maui.Controls.Compatibility >= 8.0.6",
       "Microsoft.NET.ILLink.Tasks >= 8.0.1",
       "Newtonsoft.Json >= 13.0.3",
+      "Plugin.Fingerprint >= 3.0.0-beta.1",
       "System.IdentityModel.Tokens.Jwt >= 7.3.0"
     ],
     "net8.0-ios17.2": [
@@ -57018,6 +57851,7 @@
       "Microsoft.Maui.Controls.Compatibility >= 8.0.6",
       "Microsoft.NET.ILLink.Tasks >= 8.0.1",
       "Newtonsoft.Json >= 13.0.3",
+      "Plugin.Fingerprint >= 3.0.0-beta.1",
       "System.IdentityModel.Tokens.Jwt >= 7.3.0"
     ],
     "net8.0-maccatalyst17.2": [
@@ -57034,6 +57868,7 @@
       "Microsoft.Maui.Controls.Compatibility >= 8.0.6",
       "Microsoft.NET.ILLink.Tasks >= 8.0.1",
       "Newtonsoft.Json >= 13.0.3",
+      "Plugin.Fingerprint >= 3.0.0-beta.1",
       "System.IdentityModel.Tokens.Jwt >= 7.3.0"
     ],
     "net8.0-windows10.0.19041": [
@@ -57049,6 +57884,7 @@
       "Microsoft.Maui.Controls >= 8.0.6",
       "Microsoft.Maui.Controls.Compatibility >= 8.0.6",
       "Newtonsoft.Json >= 13.0.3",
+      "Plugin.Fingerprint >= 3.0.0-beta.1",
       "System.IdentityModel.Tokens.Jwt >= 7.3.0"
     ]
   },
@@ -57059,11 +57895,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorB2C\\MsalAuthInMauiBlazor\\MsalAuthInMauiBlazor.csproj",
+      "projectUniqueName": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorBiometricsTest\\MsalAuthInMauiBlazor.csproj",
       "projectName": "MsalAuthInMauiBlazor",
-      "projectPath": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorB2C\\MsalAuthInMauiBlazor\\MsalAuthInMauiBlazor.csproj",
+      "projectPath": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorBiometricsTest\\MsalAuthInMauiBlazor.csproj",
       "packagesPath": "C:\\Users\\jsanda\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorB2C\\MsalAuthInMauiBlazor\\obj\\",
+      "outputPath": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorBiometricsTest\\obj\\",
       "projectStyle": "PackageReference",
       "crossTargeting": true,
       "fallbackFolders": [
@@ -57167,6 +58003,10 @@
             "target": "Package",
             "version": "[13.0.3, )"
           },
+          "Plugin.Fingerprint": {
+            "target": "Package",
+            "version": "[3.0.0-beta.1, )"
+          },
           "System.IdentityModel.Tokens.Jwt": {
             "target": "Package",
             "version": "[7.3.0, )"
@@ -57249,6 +58089,10 @@
           "Newtonsoft.Json": {
             "target": "Package",
             "version": "[13.0.3, )"
+          },
+          "Plugin.Fingerprint": {
+            "target": "Package",
+            "version": "[3.0.0-beta.1, )"
           },
           "System.IdentityModel.Tokens.Jwt": {
             "target": "Package",
@@ -57333,6 +58177,10 @@
             "target": "Package",
             "version": "[13.0.3, )"
           },
+          "Plugin.Fingerprint": {
+            "target": "Package",
+            "version": "[3.0.0-beta.1, )"
+          },
           "System.IdentityModel.Tokens.Jwt": {
             "target": "Package",
             "version": "[7.3.0, )"
@@ -57410,6 +58258,10 @@
           "Newtonsoft.Json": {
             "target": "Package",
             "version": "[13.0.3, )"
+          },
+          "Plugin.Fingerprint": {
+            "target": "Package",
+            "version": "[3.0.0-beta.1, )"
           },
           "System.IdentityModel.Tokens.Jwt": {
             "target": "Package",

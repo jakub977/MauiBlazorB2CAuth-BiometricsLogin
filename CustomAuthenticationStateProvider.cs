@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
+﻿using Microsoft.AspNetCore.Components.Authorization;
 using System.Security.Claims;
 using System.Text.Json;
 
@@ -24,8 +23,6 @@ namespace MsalAuthInMauiBlazor
             NotifyAuthenticationStateChanged(Task.FromResult(state));
 
             return state;
-
-            //return await Task.FromResult(new AuthenticationState(new ClaimsPrincipal(user)));
         }
 
 

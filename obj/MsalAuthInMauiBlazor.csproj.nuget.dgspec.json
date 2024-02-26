@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorB2C\\MsalAuthInMauiBlazor\\MsalAuthInMauiBlazor.csproj": {}
+    "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorBiometricsTest\\MsalAuthInMauiBlazor.csproj": {}
   },
   "projects": {
-    "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorB2C\\MsalAuthInMauiBlazor\\MsalAuthInMauiBlazor.csproj": {
+    "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorBiometricsTest\\MsalAuthInMauiBlazor.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorB2C\\MsalAuthInMauiBlazor\\MsalAuthInMauiBlazor.csproj",
+        "projectUniqueName": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorBiometricsTest\\MsalAuthInMauiBlazor.csproj",
         "projectName": "MsalAuthInMauiBlazor",
-        "projectPath": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorB2C\\MsalAuthInMauiBlazor\\MsalAuthInMauiBlazor.csproj",
+        "projectPath": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorBiometricsTest\\MsalAuthInMauiBlazor.csproj",
         "packagesPath": "C:\\Users\\jsanda\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorB2C\\MsalAuthInMauiBlazor\\obj\\",
+        "outputPath": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorBiometricsTest\\obj\\",
         "projectStyle": "PackageReference",
         "crossTargeting": true,
         "fallbackFolders": [
@@ -115,6 +115,10 @@
               "target": "Package",
               "version": "[13.0.3, )"
             },
+            "Plugin.Fingerprint": {
+              "target": "Package",
+              "version": "[3.0.0-beta.1, )"
+            },
             "System.IdentityModel.Tokens.Jwt": {
               "target": "Package",
               "version": "[7.3.0, )"
@@ -197,6 +201,10 @@
             "Newtonsoft.Json": {
               "target": "Package",
               "version": "[13.0.3, )"
+            },
+            "Plugin.Fingerprint": {
+              "target": "Package",
+              "version": "[3.0.0-beta.1, )"
             },
             "System.IdentityModel.Tokens.Jwt": {
               "target": "Package",
@@ -281,6 +289,10 @@
               "target": "Package",
               "version": "[13.0.3, )"
             },
+            "Plugin.Fingerprint": {
+              "target": "Package",
+              "version": "[3.0.0-beta.1, )"
+            },
             "System.IdentityModel.Tokens.Jwt": {
               "target": "Package",
               "version": "[7.3.0, )"
@@ -358,6 +370,10 @@
             "Newtonsoft.Json": {
               "target": "Package",
               "version": "[13.0.3, )"
+            },
+            "Plugin.Fingerprint": {
+              "target": "Package",
+              "version": "[3.0.0-beta.1, )"
             },
             "System.IdentityModel.Tokens.Jwt": {
               "target": "Package",

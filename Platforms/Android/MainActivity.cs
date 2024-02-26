@@ -5,6 +5,7 @@ using Android.OS;
 using Android.Runtime;
 using Microsoft.Identity.Client;
 using MsalAuthInMauiBlazor.MsalClient;
+using Plugin.Fingerprint;
 
 namespace MsalAuthInMauiBlazor
 {
@@ -20,6 +21,9 @@ namespace MsalAuthInMauiBlazor
             // Configure platform specific parameters
             PlatformConfig.Instance.RedirectUri = AndroidRedirectURI;
             PlatformConfig.Instance.ParentWindow = this;
+
+            // Biometrics
+            CrossFingerprint.SetCurrentActivityResolver(() => this);
         }
 
         /// <summary>

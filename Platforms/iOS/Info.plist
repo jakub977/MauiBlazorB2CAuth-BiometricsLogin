@@ -45,5 +45,7 @@
 			</array>
 		</dict>
 	</array>
+	<key>NSFaceIDUsageDescription</key>
+    <string>This app needs faceID for authentication</string>
 </dict>
 </plist>
