@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "KrwSAplHsZQXaOqh1RStTRr9ZemivALphRliK51sXio=",
+  "Hash": "yiGpPE2wFMCkzshxwS1M+sHE+Zkw5MFN0wQkjEs7dU8=",
   "Source": "MsalAuthInMauiBlazor",
   "BasePath": "/",
   "Mode": "Root",
@@ -10,7 +10,7 @@
     {
       "Name": "MsalAuthInMauiBlazor\\wwwroot",
       "Source": "MsalAuthInMauiBlazor",
-      "ContentRoot": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorBiometricsTest\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazor Biometrics Test\\wwwroot\\",
       "BasePath": "/",
       "Pattern": "**"
     }
@@ -36,10 +36,10 @@
       "OriginalItemSpec": "C:\\Users\\jsanda\\.nuget\\packages\\microsoft.aspnetcore.components.webassembly.authentication\\8.0.1\\staticwebassets\\AuthenticationService.js"
     },
     {
-      "Identity": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorBiometricsTest\\obj\\Debug\\net8.0-android\\scopedcss\\bundle\\MsalAuthInMauiBlazor.styles.css",
+      "Identity": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazor Biometrics Test\\obj\\Debug\\net8.0-android\\scopedcss\\bundle\\MsalAuthInMauiBlazor.styles.css",
       "SourceId": "MsalAuthInMauiBlazor",
       "SourceType": "Computed",
-      "ContentRoot": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorBiometricsTest\\obj\\Debug\\net8.0-android\\scopedcss\\bundle\\",
+      "ContentRoot": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazor Biometrics Test\\obj\\Debug\\net8.0-android\\scopedcss\\bundle\\",
       "BasePath": "/",
       "RelativePath": "MsalAuthInMauiBlazor.styles.css",
       "AssetKind": "All",
@@ -52,13 +52,13 @@
       "AssetTraitValue": "ApplicationBundle",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorBiometricsTest\\obj\\Debug\\net8.0-android\\scopedcss\\bundle\\MsalAuthInMauiBlazor.styles.css"
+      "OriginalItemSpec": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazor Biometrics Test\\obj\\Debug\\net8.0-android\\scopedcss\\bundle\\MsalAuthInMauiBlazor.styles.css"
     },
     {
-      "Identity": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorBiometricsTest\\obj\\Debug\\net8.0-android\\scopedcss\\projectbundle\\MsalAuthInMauiBlazor.bundle.scp.css",
+      "Identity": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazor Biometrics Test\\obj\\Debug\\net8.0-android\\scopedcss\\projectbundle\\MsalAuthInMauiBlazor.bundle.scp.css",
       "SourceId": "MsalAuthInMauiBlazor",
       "SourceType": "Computed",
-      "ContentRoot": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorBiometricsTest\\obj\\Debug\\net8.0-android\\scopedcss\\projectbundle\\",
+      "ContentRoot": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazor Biometrics Test\\obj\\Debug\\net8.0-android\\scopedcss\\projectbundle\\",
       "BasePath": "/",
       "RelativePath": "MsalAuthInMauiBlazor.bundle.scp.css",
       "AssetKind": "All",
@@ -71,13 +71,13 @@
       "AssetTraitValue": "ProjectBundle",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorBiometricsTest\\obj\\Debug\\net8.0-android\\scopedcss\\projectbundle\\MsalAuthInMauiBlazor.bundle.scp.css"
+      "OriginalItemSpec": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazor Biometrics Test\\obj\\Debug\\net8.0-android\\scopedcss\\projectbundle\\MsalAuthInMauiBlazor.bundle.scp.css"
     },
     {
-      "Identity": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorBiometricsTest\\wwwroot\\css\\app.css",
+      "Identity": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazor Biometrics Test\\wwwroot\\css\\app.css",
       "SourceId": "MsalAuthInMauiBlazor",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorBiometricsTest\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazor Biometrics Test\\wwwroot\\",
       "BasePath": "/",
       "RelativePath": "css/app.css",
       "AssetKind": "All",
@@ -93,10 +93,10 @@
       "OriginalItemSpec": "wwwroot\\css\\app.css"
     },
     {
-      "Identity": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorBiometricsTest\\wwwroot\\css\\bootstrap\\bootstrap.min.css",
+      "Identity": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazor Biometrics Test\\wwwroot\\css\\bootstrap\\bootstrap.min.css",
       "SourceId": "MsalAuthInMauiBlazor",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorBiometricsTest\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazor Biometrics Test\\wwwroot\\",
       "BasePath": "/",
       "RelativePath": "css/bootstrap/bootstrap.min.css",
       "AssetKind": "All",
@@ -112,10 +112,10 @@
       "OriginalItemSpec": "wwwroot\\css\\bootstrap\\bootstrap.min.css"
     },
     {
-      "Identity": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorBiometricsTest\\wwwroot\\css\\bootstrap\\bootstrap.min.css.map",
+      "Identity": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazor Biometrics Test\\wwwroot\\css\\bootstrap\\bootstrap.min.css.map",
       "SourceId": "MsalAuthInMauiBlazor",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorBiometricsTest\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazor Biometrics Test\\wwwroot\\",
       "BasePath": "/",
       "RelativePath": "css/bootstrap/bootstrap.min.css.map",
       "AssetKind": "All",
@@ -131,10 +131,10 @@
       "OriginalItemSpec": "wwwroot\\css\\bootstrap\\bootstrap.min.css.map"
     },
     {
-      "Identity": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorBiometricsTest\\wwwroot\\favicon.png",
+      "Identity": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazor Biometrics Test\\wwwroot\\favicon.png",
       "SourceId": "MsalAuthInMauiBlazor",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorBiometricsTest\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazor Biometrics Test\\wwwroot\\",
       "BasePath": "/",
       "RelativePath": "favicon.png",
       "AssetKind": "All",
@@ -150,10 +150,10 @@
       "OriginalItemSpec": "wwwroot\\favicon.png"
     },
     {
-      "Identity": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorBiometricsTest\\wwwroot\\index.html",
+      "Identity": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazor Biometrics Test\\wwwroot\\index.html",
       "SourceId": "MsalAuthInMauiBlazor",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorBiometricsTest\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazor Biometrics Test\\wwwroot\\",
       "BasePath": "/",
       "RelativePath": "index.html",
       "AssetKind": "All",

@@ -103,9 +103,6 @@
     }
 
 
-    ToastDuration duration = ToastDuration.Long;
-    public double fontSize = 16;
-
 
     // Methods
 
@@ -157,7 +154,7 @@
 
         Globals.IsLoading = true;
 
-        var toast = Toast.Make("You have successfully signed in!", duration, fontSize); // Creates a toast to show when login succeeds.
+        var toast = Toast.Make("You have successfully signed in!", ToastDuration.Long, 16); // Creates a toast to show when login succeeds.
 
         try
         {
@@ -234,53 +231,9 @@
     }
 
 
-    // public async Task LoginWithBiometrics()
-    // {
-    //     var isAvailable = await CrossFingerprint.Current.IsAvailableAsync();
-
-    //     if (isAvailable)
-    //     {
-    //         var request = new AuthenticationRequestConfiguration
-    //         ("Login using biometrics", "Confirm login with your biometrics")
-    //             {
-    //                 FallbackTitle = "Use PIN",
-    //                 AllowAlternativeAuthentication = true,
-    //             };
-
-    //         var result = await CrossFingerprint.Current.AuthenticateAsync(request);
-
-    //         if (result.Authenticated)
-    //         {
-    //             Globals.AccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJlbWFpbHMiOiJqb2huLmRvZUB0ZW1wbGF0ZS5jb20ifQ.X4SPsTuny0-7hd0pqqtd7hU_s7z9oy_H1By6ygyH9pk"; // Put something as a token to authenticate the app.
-
-    //             await _auth.GetAuthenticationStateAsync(); // Rechecks the Authentication state.
-
-    //             navigation.NavigateTo("/", true); // Forces navigation to the main page and reload.
-
-    //             IsLoggedIn = true;
-
-    //             await Task.Delay(250);
-
-    //             var toast = Toast.Make("You have successfully signed in with biometrics!", ToastDuration.Long, 16); // Creates a toast to show when login succeeds.
-    //             await toast.Show(); // Displays the success toaster.
-    //         }
-    //         else
-    //         {
-    //             var toast = Toast.Make("You have NOT signed in with biometrics!", ToastDuration.Long, 16); // Creates a toast to show when login succeeds.
-    //             await toast.Show(); // Displays the errror toaster.
-    //         }
-    //     }
-    //     else
-    //     {
-    //         var toast = Toast.Make("Biometric login is not set on your phone!", ToastDuration.Long, 16); // Creates a toast to show when login succeeds.
-    //         await toast.Show(); // Displays the success toaster.
-    //     }
-    // }
-
-
     private async void OnLogoutClicked()
     {
-        var toast = Toast.Make("You have successfully signed out from your account!", duration, fontSize); // Creates a toast to show when logout succeeds.
+        var toast = Toast.Make("You have successfully signed out from your account!", ToastDuration.Long, 16); // Creates a toast to show when logout succeeds.
 
         try
         {

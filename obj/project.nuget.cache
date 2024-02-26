@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "OddX3DGwPYsrIJc03mqTk1Ky1OIs/Jc/sXApun4cgKX7DJ2hrGWfyBWUqYzabN3fq8DC7wnH89m+W3JAfj61bg==",
+  "dgSpecHash": "DK5kvtzzWp4r7b0dzdwMfVl4uk/vN62/uVrqsf6vnTYZvHlNVmK7UmndGTjIU7a1XMXUw9PevLRjsvz7bdOIFA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorBiometricsTest\\MsalAuthInMauiBlazor.csproj",
+  "projectFilePath": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazor Biometrics Test\\MsalAuthInMauiBlazor.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\jsanda\\.nuget\\packages\\blazored.localstorage\\4.4.0\\blazored.localstorage.4.4.0.nupkg.sha512",
     "C:\\Users\\jsanda\\.nuget\\packages\\communitytoolkit.maui\\7.0.1\\communitytoolkit.maui.7.0.1.nupkg.sha512",

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorBiometricsTest\\MsalAuthInMauiBlazor.csproj": {}
+    "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazor Biometrics Test\\MsalAuthInMauiBlazor.csproj": {}
   },
   "projects": {
-    "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorBiometricsTest\\MsalAuthInMauiBlazor.csproj": {
+    "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazor Biometrics Test\\MsalAuthInMauiBlazor.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorBiometricsTest\\MsalAuthInMauiBlazor.csproj",
+        "projectUniqueName": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazor Biometrics Test\\MsalAuthInMauiBlazor.csproj",
         "projectName": "MsalAuthInMauiBlazor",
-        "projectPath": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorBiometricsTest\\MsalAuthInMauiBlazor.csproj",
+        "projectPath": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazor Biometrics Test\\MsalAuthInMauiBlazor.csproj",
         "packagesPath": "C:\\Users\\jsanda\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazorBiometricsTest\\obj\\",
+        "outputPath": "C:\\Users\\jsanda\\OneDrive - Principal engineering s.r.o\\Plocha\\MauiBlazor Biometrics Test\\obj\\",
         "projectStyle": "PackageReference",
         "crossTargeting": true,
         "fallbackFolders": [

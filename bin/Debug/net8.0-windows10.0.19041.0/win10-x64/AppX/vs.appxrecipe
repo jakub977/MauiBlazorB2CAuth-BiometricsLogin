@@ -10,14 +10,14 @@
     <PackageArchitecture>x64</PackageArchitecture>
     <PackageIdentityName>com.companyname.msalauthinmauiblazor</PackageIdentityName>
     <PackageIdentityPublisher>CN=User Name</PackageIdentityPublisher>
-    <IntermediateOutputPath>C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\</IntermediateOutputPath>
+    <IntermediateOutputPath>C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\</IntermediateOutputPath>
     <RemoteDeploymentType>CopyToDevice</RemoteDeploymentType>
     <PackageRegistrationPath>
     </PackageRegistrationPath>
     <RemoveNonLayoutFiles>false</RemoveNonLayoutFiles>
     <DeployOptionalPackages>false</DeployOptionalPackages>
     <WindowsSdkPath>C:\Program Files %28x86%29\Windows Kits\10\</WindowsSdkPath>
-    <LayoutDir>C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\AppX</LayoutDir>
+    <LayoutDir>C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\AppX</LayoutDir>
     <RegisteredManifestChecksum>5A1510885FEB9E4FD490D097903C291B92510BEC187CF9E5B482F33CFD4B1AF9</RegisteredManifestChecksum>
     <RegisteredPackageMoniker>com.companyname.msalauthinmauiblazor_1.0.0.1_x64__9zz4h110yvjzm</RegisteredPackageMoniker>
     <RegisteredUserModeAppID>com.companyname.msalauthinmauiblazor_9zz4h110yvjzm!App</RegisteredUserModeAppID>
@@ -26,268 +26,292 @@
     <RegisteredVersion>1.0.0.1</RegisteredVersion>
   </PropertyGroup>
   <ItemGroup>
-    <AppXManifest Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\AppxManifest.xml">
+    <AppXManifest Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2024-02-25T13:47:50.189</Modified>
+      <Modified>2024-02-26T10:29:38.638</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\resources.pri">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\resources.pri">
       <PackagePath>resources.pri</PackagePath>
-      <Modified>2024-02-25T12:35:57.930</Modified>
+      <Modified>2024-02-26T10:28:51.979</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\MsalAuthInMauiBlazor.runtimeconfig.json">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\MsalAuthInMauiBlazor.runtimeconfig.json">
       <PackagePath>MsalAuthInMauiBlazor.runtimeconfig.json</PackagePath>
-      <Modified>2024-02-25T12:35:57.632</Modified>
+      <Modified>2024-02-26T10:28:51.855</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\MsalAuthInMauiBlazor.dll">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\MsalAuthInMauiBlazor.dll">
       <PackagePath>MsalAuthInMauiBlazor.dll</PackagePath>
-      <Modified>2024-02-25T13:47:49.889</Modified>
+      <Modified>2024-02-26T10:28:51.428</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\apphost.exe">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\apphost.exe">
       <PackagePath>MsalAuthInMauiBlazor.exe</PackagePath>
-      <Modified>2024-02-25T13:47:49.905</Modified>
+      <Modified>2024-02-26T10:28:51.428</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\Resources\Raw\AboutAssets.txt">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\Resources\Raw\AboutAssets.txt">
       <PackagePath>AboutAssets.txt</PackagePath>
       <Modified>2024-01-29T11:25:00.000</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\wwwroot\css\app.css">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\wwwroot\css\app.css">
       <PackagePath>wwwroot\css\app.css</PackagePath>
       <Modified>2024-02-09T13:50:51.729</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\wwwroot\css\bootstrap\bootstrap.min.css">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\wwwroot\css\bootstrap\bootstrap.min.css">
       <PackagePath>wwwroot\css\bootstrap\bootstrap.min.css</PackagePath>
       <Modified>2024-01-29T11:25:00.000</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\wwwroot\css\bootstrap\bootstrap.min.css.map">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\wwwroot\css\bootstrap\bootstrap.min.css.map">
       <PackagePath>wwwroot\css\bootstrap\bootstrap.min.css.map</PackagePath>
       <Modified>2024-01-29T11:25:00.000</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\wwwroot\favicon.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\wwwroot\favicon.png">
       <PackagePath>wwwroot\favicon.png</PackagePath>
       <Modified>2024-01-29T11:25:00.000</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\wwwroot\index.html">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\wwwroot\index.html">
       <PackagePath>wwwroot\index.html</PackagePath>
       <Modified>2024-02-25T13:10:55.157</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appicon.ico">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\sp\splashSplashScreen.scale-100.png">
+      <PackagePath>splashSplashScreen.scale-100.png</PackagePath>
+      <Modified>2024-02-26T10:28:48.632</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\sp\splashSplashScreen.scale-125.png">
+      <PackagePath>splashSplashScreen.scale-125.png</PackagePath>
+      <Modified>2024-02-26T10:28:48.663</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\sp\splashSplashScreen.scale-150.png">
+      <PackagePath>splashSplashScreen.scale-150.png</PackagePath>
+      <Modified>2024-02-26T10:28:48.678</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\sp\splashSplashScreen.scale-200.png">
+      <PackagePath>splashSplashScreen.scale-200.png</PackagePath>
+      <Modified>2024-02-26T10:28:48.710</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\sp\splashSplashScreen.scale-400.png">
+      <PackagePath>splashSplashScreen.scale-400.png</PackagePath>
+      <Modified>2024-02-26T10:28:48.836</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\f\OpenSans-Regular.ttf">
+      <PackagePath>OpenSans-Regular.ttf</PackagePath>
+      <Modified>2024-01-29T11:25:00.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appicon.ico">
       <PackagePath>appicon.ico</PackagePath>
-      <Modified>2024-02-25T12:35:35.485</Modified>
+      <Modified>2024-02-26T10:28:49.920</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLargeTile.scale-100.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLargeTile.scale-100.png">
       <PackagePath>appiconLargeTile.scale-100.png</PackagePath>
-      <Modified>2024-02-25T12:35:36.534</Modified>
+      <Modified>2024-02-26T10:28:50.643</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLargeTile.scale-125.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLargeTile.scale-125.png">
       <PackagePath>appiconLargeTile.scale-125.png</PackagePath>
-      <Modified>2024-02-25T12:35:36.584</Modified>
+      <Modified>2024-02-26T10:28:50.690</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLargeTile.scale-150.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLargeTile.scale-150.png">
       <PackagePath>appiconLargeTile.scale-150.png</PackagePath>
-      <Modified>2024-02-25T12:35:36.634</Modified>
+      <Modified>2024-02-26T10:28:50.722</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLargeTile.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLargeTile.scale-200.png">
       <PackagePath>appiconLargeTile.scale-200.png</PackagePath>
-      <Modified>2024-02-25T12:35:36.735</Modified>
+      <Modified>2024-02-26T10:28:50.769</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLargeTile.scale-400.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLargeTile.scale-400.png">
       <PackagePath>appiconLargeTile.scale-400.png</PackagePath>
-      <Modified>2024-02-25T12:35:37.084</Modified>
+      <Modified>2024-02-26T10:28:50.942</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.altform-lightunplated_targetsize-16.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.altform-lightunplated_targetsize-16.png">
       <PackagePath>appiconLogo.altform-lightunplated_targetsize-16.png</PackagePath>
-      <Modified>2024-02-25T12:35:35.786</Modified>
+      <Modified>2024-02-26T10:28:50.109</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.altform-lightunplated_targetsize-24.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.altform-lightunplated_targetsize-24.png">
       <PackagePath>appiconLogo.altform-lightunplated_targetsize-24.png</PackagePath>
-      <Modified>2024-02-25T12:35:35.802</Modified>
+      <Modified>2024-02-26T10:28:50.109</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.altform-lightunplated_targetsize-256.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.altform-lightunplated_targetsize-256.png">
       <PackagePath>appiconLogo.altform-lightunplated_targetsize-256.png</PackagePath>
-      <Modified>2024-02-25T12:35:35.852</Modified>
+      <Modified>2024-02-26T10:28:50.156</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.altform-lightunplated_targetsize-32.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.altform-lightunplated_targetsize-32.png">
       <PackagePath>appiconLogo.altform-lightunplated_targetsize-32.png</PackagePath>
-      <Modified>2024-02-25T12:35:35.819</Modified>
+      <Modified>2024-02-26T10:28:50.125</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.altform-lightunplated_targetsize-48.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.altform-lightunplated_targetsize-48.png">
       <PackagePath>appiconLogo.altform-lightunplated_targetsize-48.png</PackagePath>
-      <Modified>2024-02-25T12:35:35.819</Modified>
+      <Modified>2024-02-26T10:28:50.125</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.altform-unplated_targetsize-16.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.altform-unplated_targetsize-16.png">
       <PackagePath>appiconLogo.altform-unplated_targetsize-16.png</PackagePath>
-      <Modified>2024-02-25T12:35:35.703</Modified>
+      <Modified>2024-02-26T10:28:50.046</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.altform-unplated_targetsize-24.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.altform-unplated_targetsize-24.png">
       <PackagePath>appiconLogo.altform-unplated_targetsize-24.png</PackagePath>
-      <Modified>2024-02-25T12:35:35.717</Modified>
+      <Modified>2024-02-26T10:28:50.062</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.altform-unplated_targetsize-256.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.altform-unplated_targetsize-256.png">
       <PackagePath>appiconLogo.altform-unplated_targetsize-256.png</PackagePath>
-      <Modified>2024-02-25T12:35:35.780</Modified>
+      <Modified>2024-02-26T10:28:50.100</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.altform-unplated_targetsize-32.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.altform-unplated_targetsize-32.png">
       <PackagePath>appiconLogo.altform-unplated_targetsize-32.png</PackagePath>
-      <Modified>2024-02-25T12:35:35.719</Modified>
+      <Modified>2024-02-26T10:28:50.062</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.altform-unplated_targetsize-48.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.altform-unplated_targetsize-48.png">
       <PackagePath>appiconLogo.altform-unplated_targetsize-48.png</PackagePath>
-      <Modified>2024-02-25T12:35:35.736</Modified>
+      <Modified>2024-02-26T10:28:50.078</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.scale-100.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.scale-100.png">
       <PackagePath>appiconLogo.scale-100.png</PackagePath>
-      <Modified>2024-02-25T12:35:35.519</Modified>
+      <Modified>2024-02-26T10:28:49.936</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.scale-125.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.scale-125.png">
       <PackagePath>appiconLogo.scale-125.png</PackagePath>
-      <Modified>2024-02-25T12:35:35.535</Modified>
+      <Modified>2024-02-26T10:28:49.951</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.scale-150.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.scale-150.png">
       <PackagePath>appiconLogo.scale-150.png</PackagePath>
-      <Modified>2024-02-25T12:35:35.552</Modified>
+      <Modified>2024-02-26T10:28:49.951</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.scale-200.png">
       <PackagePath>appiconLogo.scale-200.png</PackagePath>
-      <Modified>2024-02-25T12:35:35.569</Modified>
+      <Modified>2024-02-26T10:28:49.967</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.scale-400.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.scale-400.png">
       <PackagePath>appiconLogo.scale-400.png</PackagePath>
-      <Modified>2024-02-25T12:35:35.585</Modified>
+      <Modified>2024-02-26T10:28:49.983</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.targetsize-16.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.targetsize-16.png">
       <PackagePath>appiconLogo.targetsize-16.png</PackagePath>
-      <Modified>2024-02-25T12:35:35.602</Modified>
+      <Modified>2024-02-26T10:28:49.990</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.targetsize-24.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.targetsize-24.png">
       <PackagePath>appiconLogo.targetsize-24.png</PackagePath>
-      <Modified>2024-02-25T12:35:35.619</Modified>
+      <Modified>2024-02-26T10:28:50.000</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.targetsize-256.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.targetsize-256.png">
       <PackagePath>appiconLogo.targetsize-256.png</PackagePath>
-      <Modified>2024-02-25T12:35:35.686</Modified>
+      <Modified>2024-02-26T10:28:50.046</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.targetsize-32.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.targetsize-32.png">
       <PackagePath>appiconLogo.targetsize-32.png</PackagePath>
-      <Modified>2024-02-25T12:35:35.636</Modified>
+      <Modified>2024-02-26T10:28:50.000</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.targetsize-48.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.targetsize-48.png">
       <PackagePath>appiconLogo.targetsize-48.png</PackagePath>
-      <Modified>2024-02-25T12:35:35.653</Modified>
+      <Modified>2024-02-26T10:28:50.015</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconMediumTile.scale-100.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconMediumTile.scale-100.png">
       <PackagePath>appiconMediumTile.scale-100.png</PackagePath>
-      <Modified>2024-02-25T12:35:36.102</Modified>
+      <Modified>2024-02-26T10:28:50.300</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconMediumTile.scale-125.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconMediumTile.scale-125.png">
       <PackagePath>appiconMediumTile.scale-125.png</PackagePath>
-      <Modified>2024-02-25T12:35:36.118</Modified>
+      <Modified>2024-02-26T10:28:50.314</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconMediumTile.scale-150.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconMediumTile.scale-150.png">
       <PackagePath>appiconMediumTile.scale-150.png</PackagePath>
-      <Modified>2024-02-25T12:35:36.135</Modified>
+      <Modified>2024-02-26T10:28:50.329</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconMediumTile.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconMediumTile.scale-200.png">
       <PackagePath>appiconMediumTile.scale-200.png</PackagePath>
-      <Modified>2024-02-25T12:35:36.169</Modified>
+      <Modified>2024-02-26T10:28:50.361</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconMediumTile.scale-400.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconMediumTile.scale-400.png">
       <PackagePath>appiconMediumTile.scale-400.png</PackagePath>
-      <Modified>2024-02-25T12:35:36.234</Modified>
+      <Modified>2024-02-26T10:28:50.400</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconSmallTile.scale-100.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconSmallTile.scale-100.png">
       <PackagePath>appiconSmallTile.scale-100.png</PackagePath>
-      <Modified>2024-02-25T12:35:35.968</Modified>
+      <Modified>2024-02-26T10:28:50.236</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconSmallTile.scale-125.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconSmallTile.scale-125.png">
       <PackagePath>appiconSmallTile.scale-125.png</PackagePath>
-      <Modified>2024-02-25T12:35:35.981</Modified>
+      <Modified>2024-02-26T10:28:50.251</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconSmallTile.scale-150.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconSmallTile.scale-150.png">
       <PackagePath>appiconSmallTile.scale-150.png</PackagePath>
-      <Modified>2024-02-25T12:35:36.035</Modified>
+      <Modified>2024-02-26T10:28:50.251</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconSmallTile.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconSmallTile.scale-200.png">
       <PackagePath>appiconSmallTile.scale-200.png</PackagePath>
-      <Modified>2024-02-25T12:35:36.052</Modified>
+      <Modified>2024-02-26T10:28:50.266</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconSmallTile.scale-400.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconSmallTile.scale-400.png">
       <PackagePath>appiconSmallTile.scale-400.png</PackagePath>
-      <Modified>2024-02-25T12:35:36.083</Modified>
+      <Modified>2024-02-26T10:28:50.282</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconStoreLogo.scale-100.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconStoreLogo.scale-100.png">
       <PackagePath>appiconStoreLogo.scale-100.png</PackagePath>
-      <Modified>2024-02-25T12:35:35.869</Modified>
+      <Modified>2024-02-26T10:28:50.172</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconStoreLogo.scale-125.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconStoreLogo.scale-125.png">
       <PackagePath>appiconStoreLogo.scale-125.png</PackagePath>
-      <Modified>2024-02-25T12:35:35.885</Modified>
+      <Modified>2024-02-26T10:28:50.188</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconStoreLogo.scale-150.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconStoreLogo.scale-150.png">
       <PackagePath>appiconStoreLogo.scale-150.png</PackagePath>
-      <Modified>2024-02-25T12:35:35.901</Modified>
+      <Modified>2024-02-26T10:28:50.188</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconStoreLogo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconStoreLogo.scale-200.png">
       <PackagePath>appiconStoreLogo.scale-200.png</PackagePath>
-      <Modified>2024-02-25T12:35:35.918</Modified>
+      <Modified>2024-02-26T10:28:50.204</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconStoreLogo.scale-400.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconStoreLogo.scale-400.png">
       <PackagePath>appiconStoreLogo.scale-400.png</PackagePath>
-      <Modified>2024-02-25T12:35:35.935</Modified>
+      <Modified>2024-02-26T10:28:50.219</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconWideTile.scale-100.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconWideTile.scale-100.png">
       <PackagePath>appiconWideTile.scale-100.png</PackagePath>
-      <Modified>2024-02-25T12:35:36.251</Modified>
+      <Modified>2024-02-26T10:28:50.408</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconWideTile.scale-125.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconWideTile.scale-125.png">
       <PackagePath>appiconWideTile.scale-125.png</PackagePath>
-      <Modified>2024-02-25T12:35:36.285</Modified>
+      <Modified>2024-02-26T10:28:50.424</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconWideTile.scale-150.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconWideTile.scale-150.png">
       <PackagePath>appiconWideTile.scale-150.png</PackagePath>
-      <Modified>2024-02-25T12:35:36.319</Modified>
+      <Modified>2024-02-26T10:28:50.455</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconWideTile.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconWideTile.scale-200.png">
       <PackagePath>appiconWideTile.scale-200.png</PackagePath>
-      <Modified>2024-02-25T12:35:36.350</Modified>
+      <Modified>2024-02-26T10:28:50.486</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconWideTile.scale-400.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconWideTile.scale-400.png">
       <PackagePath>appiconWideTile.scale-400.png</PackagePath>
-      <Modified>2024-02-25T12:35:36.502</Modified>
+      <Modified>2024-02-26T10:28:50.612</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\dotnet_bot.scale-100.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\dotnet_bot.scale-100.png">
       <PackagePath>dotnet_bot.scale-100.png</PackagePath>
-      <Modified>2024-02-25T12:35:35.552</Modified>
+      <Modified>2024-02-26T10:28:49.967</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\dotnet_bot.scale-125.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\dotnet_bot.scale-125.png">
       <PackagePath>dotnet_bot.scale-125.png</PackagePath>
-      <Modified>2024-02-25T12:35:35.569</Modified>
+      <Modified>2024-02-26T10:28:49.990</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\dotnet_bot.scale-150.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\dotnet_bot.scale-150.png">
       <PackagePath>dotnet_bot.scale-150.png</PackagePath>
-      <Modified>2024-02-25T12:35:35.585</Modified>
+      <Modified>2024-02-26T10:28:50.000</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\dotnet_bot.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\dotnet_bot.scale-200.png">
       <PackagePath>dotnet_bot.scale-200.png</PackagePath>
-      <Modified>2024-02-25T12:35:35.619</Modified>
+      <Modified>2024-02-26T10:28:50.042</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\dotnet_bot.scale-400.png">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\resizetizer\r\dotnet_bot.scale-400.png">
       <PackagePath>dotnet_bot.scale-400.png</PackagePath>
-      <Modified>2024-02-25T12:35:35.719</Modified>
+      <Modified>2024-02-26T10:28:50.109</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\appsettings.Development.json">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\appsettings.Development.json">
       <PackagePath>appsettings.Development.json</PackagePath>
       <Modified>2024-01-29T11:25:00.000</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\appsettings.json">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\appsettings.json">
       <PackagePath>appsettings.json</PackagePath>
       <Modified>2024-01-31T12:08:42.256</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\MsalAuthInMauiBlazor.deps.json">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\MsalAuthInMauiBlazor.deps.json">
       <PackagePath>MsalAuthInMauiBlazor.deps.json</PackagePath>
-      <Modified>2024-02-25T12:35:57.482</Modified>
+      <Modified>2024-02-26T10:28:51.837</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\jsanda\.nuget\packages\microsoft.windows.sdk.net.ref\10.0.19041.31\lib\net6.0\Microsoft.Windows.SDK.NET.dll">
       <PackagePath>Microsoft.Windows.SDK.NET.dll</PackagePath>
@@ -733,19 +757,19 @@
       <PackagePath>wwwroot\_content\Microsoft.AspNetCore.Components.WebAssembly.Authentication\AuthenticationService.js</PackagePath>
       <Modified>2023-11-30T19:07:52.000</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\scopedcss\bundle\MsalAuthInMauiBlazor.styles.css">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\scopedcss\bundle\MsalAuthInMauiBlazor.styles.css">
       <PackagePath>wwwroot\MsalAuthInMauiBlazor.styles.css</PackagePath>
-      <Modified>2024-02-25T12:35:29.691</Modified>
+      <Modified>2024-02-26T10:28:43.738</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\scopedcss\projectbundle\MsalAuthInMauiBlazor.bundle.scp.css">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\scopedcss\projectbundle\MsalAuthInMauiBlazor.bundle.scp.css">
       <PackagePath>wwwroot\MsalAuthInMauiBlazor.bundle.scp.css</PackagePath>
-      <Modified>2024-02-25T12:35:29.691</Modified>
+      <Modified>2024-02-26T10:28:43.738</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\Shared\MainLayout.razor.css">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\Shared\MainLayout.razor.css">
       <PackagePath>Shared\MainLayout.razor.css</PackagePath>
       <Modified>2024-01-29T11:25:00.000</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazorBiometricsTest\Shared\NavMenu.razor.css">
+    <AppxPackagedFile Include="C:\Users\jsanda\OneDrive - Principal engineering s.r.o\Plocha\MauiBlazor Biometrics Test\Shared\NavMenu.razor.css">
       <PackagePath>Shared\NavMenu.razor.css</PackagePath>
       <Modified>2024-02-12T08:34:10.331</Modified>
     </AppxPackagedFile>

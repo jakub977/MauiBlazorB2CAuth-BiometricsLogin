@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MsalAuthInMauiBlazor")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0+aee3951704db023526ab6af090ccc1347d4ca3b3")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0")]
 [assembly: System.Reflection.AssemblyProductAttribute("MsalAuthInMauiBlazor")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MsalAuthInMauiBlazor")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

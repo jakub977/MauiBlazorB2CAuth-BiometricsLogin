@@ -1,11 +1,6 @@
 ﻿@page "/user"
 
 @inject AuthenticationStateProvider _auth;
-@using System.IdentityModel.Tokens.Jwt
-@using System.Security.Claims
-@using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Components.Authorization
-@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 
 
 
@@ -88,10 +83,19 @@ else
                     }
                 </div>
             }
+
+
+            <!-- Log Out Modal Component -->
+            <LogoutModalComponent></LogoutModalComponent>
+
         </Authorized>
 
         <NotAuthorized>
             You are not authorized to see user details. Log in!
+
+            <!-- Log In Modal -->
+            <LoginModalComponent></LoginModalComponent>
+
         </NotAuthorized>
     </AuthorizeView>
 }

@@ -1,7 +1,6 @@
 ﻿@page "/fetchdata"
 
-@using Microsoft.AspNetCore.Authorization
-@using MsalAuthInMauiBlazor.Data
+
 @inject WeatherForecastService ForecastService
 
 
@@ -45,10 +44,19 @@ else
                     </tbody>
                 </table>
             }
+
+
+            <!-- Log Out Modal Component -->
+            <LogoutModalComponent></LogoutModalComponent>
+
         </Authorized>
 
         <NotAuthorized>
             You are not authorized to see weather data. Log in!
+
+            <!-- Log In Modal -->
+            <LoginModalComponent></LoginModalComponent>
+
         </NotAuthorized>
     </AuthorizeView>
 }
